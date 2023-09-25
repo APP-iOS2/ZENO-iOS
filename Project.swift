@@ -4,16 +4,22 @@ let projectName = "Zeno"
 let orgName = "https://github.com/gnksbm/Zeno"
 let bundleID = "com.Zeno"
 let infoPlist: [String: InfoPlist.Value] = [
-    "CFBundleDisplayName": "ZenoApp",
-    "CFBundleShortVersionString": "1.0",
-    "CFBundleVersion": "1.0.0",
-//    "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
+    "BundleDisplayName": "ZenoAppTest",
+    "BundleShortVersionString": "1.0",
+    "BundleVersion": "1.0.0",
+    "UILaunchStoryboardName": "LaunchScreen",
+    //"LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
+    //"CFBundleURLTypes": [
+    //    [
+    //        "CFBundleTypeRole": "Editor",
+    //        "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+    //    ]
+    //],
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
     .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
 ])
-
 
 let project = Project(
     name: projectName,
@@ -33,7 +39,6 @@ let project = Project(
             resources: ["\(projectName)/Resources/**"],
             scripts: [
                 .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint"),
-//                .pre(path: "Scripts/matching_google_service_info_plist.sh", name: "Matching GoogleService-Info.plist Script")
             ],
             dependencies: [
 //                .package(product: "FirebaseAnalytics"),
