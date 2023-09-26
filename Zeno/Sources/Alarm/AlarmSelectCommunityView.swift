@@ -33,6 +33,8 @@ struct AlarmSelectCommunityView: View {
     }
 }
 
-#Preview {
-    AlarmSelectCommunityView(selectedCommunityId: .constant("aaa"), communityArray: [])
+struct AlarmSelectCommunityView_Preview: PreviewProvider {
+    static var previews: some View {
+        AlarmSelectCommunityView(selectedCommunityId: .constant("aaa"), communityArray: [])
+    }
 }

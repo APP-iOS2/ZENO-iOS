@@ -30,6 +30,8 @@ struct AlarmSelectCommunityCellView: View {
     }
 }
 
-#Preview {
-    AlarmSelectCommunityCellView(selectedCommunityId: .constant("aaa"), community: Community(communityName: "name", description: "des", createdAt: 1092348102))
+struct AlarmSelectCommunityCellView_Preview: PreviewProvider {
+    static var previews: some View {
+        AlarmSelectCommunityCellView(selectedCommunityId: .constant("aaa"), community: Community(communityName: "name", description: "des", createdAt: 1092348102))
+    }
 }

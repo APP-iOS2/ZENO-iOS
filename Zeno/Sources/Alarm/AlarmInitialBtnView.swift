@@ -70,7 +70,7 @@ struct AlarmInitialBtnView: View {
                         .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
                 }
                 .tossAlert(
-                  isPresented: $isLackingCoin,
+                  isPresented: $isLackingInitialTicket,
                   title: "초성확인권이 부족합니다.",
                   primaryButtonTitle: "확인",
                   primaryAction: { /* 송금 로직 */ }
@@ -86,8 +86,6 @@ struct AlarmInitialBtnView: View {
                     AlarmInitialView()
                 })
                 .padding(.bottom, 20)
-                
-                
                 Button {
                 } label: {
                     Text("다음에")

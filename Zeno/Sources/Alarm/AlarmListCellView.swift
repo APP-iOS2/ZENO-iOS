@@ -37,10 +37,12 @@ struct AlarmListCellView: View {
             }
         }
         .listRowInsets(EdgeInsets(top: 12, leading: -20, bottom: 20, trailing: 12))
-        .listSectionSpacing(20)
+        //.listSectionSpacing(20)
     }
 }
 
-#Preview {
-    AlarmListCellView(isShowPaymentSheet: .constant(false), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", zenoID: "dd", zenoString: "zeno", isPaid: false, createdAt: 91842031))
+struct AlarmListCellView_Preview: PreviewProvider {
+    static var previews: some View {
+        AlarmListCellView(isShowPaymentSheet: .constant(false), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", zenoID: "dd", zenoString: "zeno", isPaid: false, createdAt: 91842031))
+    }
 }
