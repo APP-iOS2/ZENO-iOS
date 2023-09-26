@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let projectName = "Zeno"
-let orgName = "https://github.com/gnksbm/Zeno"
+let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
 let bundleID = "com.Zeno"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "ZenoAppTest",
