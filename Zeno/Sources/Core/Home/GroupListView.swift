@@ -17,6 +17,7 @@ struct GroupListView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
                 ForEach(0..<4) { _ in
                     Button {
                         // TODO: 그룹 변경 로직
