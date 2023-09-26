@@ -9,7 +9,7 @@
 import Foundation
 
 struct BuddyList: Identifiable {
-	var id: String
+	var id: String = UUID().uuidString
 	var communityId: String
 	var communityName: String
 	var buddyId: [String]

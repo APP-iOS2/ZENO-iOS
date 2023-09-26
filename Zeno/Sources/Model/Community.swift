@@ -10,9 +10,10 @@ import Foundation
 
 struct Community: Identifiable {
 	var id: String = UUID().uuidString
+	/// 커뮤니티 이름
 	let communityName: String
+	/// 커뮤니티 소개
 	var description: String
-	var createdAt: Double  // 생성일
-	
-	// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요
+	/// 커뮤니티 생성일
+	var createdAt: Double
 }
