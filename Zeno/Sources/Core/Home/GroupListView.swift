@@ -33,7 +33,7 @@ struct GroupListView: View {
                                             .frame(width: 5, height: 5)
                                             .foregroundColor(.red)
                                     }
-                                    Text("공지사항\(index)")
+                                    Text("새로운 알림\(index)")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -41,11 +41,12 @@ struct GroupListView: View {
                             Spacer()
                             Image(systemName: "chevron.forward")
                         }
-                        .padding(5)
+                        .padding()
                         .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(lineWidth: 0)
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke()
                         )
+                        .padding(5)
                     }
                 }
                 NavigationLink {
@@ -56,6 +57,12 @@ struct GroupListView: View {
                         Text("새로운 그룹 만들기")
                         Spacer()
                     }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke()
+                    )
+                    .padding(5)
                 }
                 .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
