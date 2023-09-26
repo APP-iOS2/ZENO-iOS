@@ -44,7 +44,7 @@ struct SelectCommunityView: View {
                     
                     /// 그룹들 나오는 뷰
                     commuityListView()
-                        .padding(.top,10)
+                        .padding(.top, 10)
                     
                     /// 카드 뷰
                     ScrollViewReader { ScrollViewProxy in
