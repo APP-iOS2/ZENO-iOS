@@ -15,9 +15,9 @@ struct Zeno: Identifiable {
     var zenoDescription: String {
         return ""
     }
-    // 보류 var isApprove: Bool // 질문 추가시 관리자 승인 여부, true 인 것들만 zeno 에 나옴
 }
 
+#if DEBUG
 extension Zeno {
     static let ZenoQuestions: [Zeno] = [
         Zeno(question: "혼자 밑도끝도 없이 망상을 할 것 같은 사람.", zenoImage: "image1"),
@@ -52,3 +52,4 @@ extension Zeno {
         Zeno(question: "새벽에 전화하고 싶은 사람.", zenoImage: "image30")
     ]
 }
+#endif
