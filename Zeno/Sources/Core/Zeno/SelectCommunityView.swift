@@ -25,6 +25,7 @@ struct SelectCommunityView: View {
                             .frame(width: 50, height: 50)
                         if isPlay == false {
                             Text("제노를 플레이 할 그룹을 선택해주세요")
+                                .selectCommunity2()
                                 .padding(.bottom, 20)
                         } else {
                             VStack {
@@ -43,6 +44,7 @@ struct SelectCommunityView: View {
                     
                     /// 그룹들 나오는 뷰
                     commuityListView()
+                        .padding(.top,10)
                     
                     /// 카드 뷰
                     ScrollViewReader { ScrollViewProxy in
@@ -94,13 +96,13 @@ struct SelectCommunityView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .opacity(0.7)
                             VStack {
-                                Text(community.communityName)
-                                    .padding(20)
-                                    .foregroundColor(.white)
                                 Image(community.communityImage)
                                     .resizable()
                                     .frame(width: 50, height: 50)
                                     .scaledToFit()
+                                Text(community.communityName)
+                                    .padding(20)
+                                    .foregroundColor(.white)
                             }
                         }
                         .frame(width: 180, height: 150)

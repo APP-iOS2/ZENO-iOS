@@ -11,7 +11,7 @@ import SwiftUI
 struct ZenoView: View {
     var body: some View {
         VStack {
-            LottieView(lottieFile: "nudgeDevil")
+            LottieView(lottieFile: "beforeZenoFirst")
             Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
         }
     }

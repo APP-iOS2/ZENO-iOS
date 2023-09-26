@@ -24,7 +24,7 @@ struct SelectCommunity: ViewModifier {
 struct SelectCommunity2: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 16))
+            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
     }
 }
 
