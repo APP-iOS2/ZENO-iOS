@@ -12,16 +12,7 @@ struct HomeMainView: View {
     var body: some View {
 		NavigationStack {
 			ScrollView {
-				// 호호
-				ForEach(0..<100) { _ in
-					Text("하이루")
-						.frame(width: .infinity, height: 30)
-				}
-				// 호호
-				ForEach(0..<100) { _ in
-					Text("하이루")
-						.frame(width: .infinity, height: 30)
-				}
+				Text("하이")
 			}
 		}
     }// body
