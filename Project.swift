@@ -37,6 +37,7 @@ let project = Project(
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
+            entitlements: "\(projectName)/\(projectName).entitlements",
             scripts: [
                 .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint"),
             ],
