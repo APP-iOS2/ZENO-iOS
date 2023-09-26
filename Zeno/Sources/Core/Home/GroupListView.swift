@@ -41,12 +41,7 @@ struct GroupListView: View {
                             Spacer()
                             Image(systemName: "chevron.forward")
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke()
-                        )
-                        .padding(5)
+                        .groupCell()
                     }
                 }
                 NavigationLink {
@@ -57,12 +52,7 @@ struct GroupListView: View {
                         Text("새로운 그룹 만들기")
                         Spacer()
                     }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke()
-                    )
-                    .padding(5)
+                    .groupCell()
                 }
                 .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
