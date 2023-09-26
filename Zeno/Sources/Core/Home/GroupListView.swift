@@ -11,11 +11,17 @@ import SwiftUI
 struct GroupListView: View {
     @Binding var isPresented: Bool
     @State private var searchTerm: String = ""
+    @State private var fraction: Double = 0.8
+    @State private var detent: PresentationDetent = .fraction(0.8)
+    @State private var detents: Set<PresentationDetent> = [.fraction(0.8), .fraction(1)]
     var body: some View {
         NavigationStack {
             ScrollView {
+                // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
                 ForEach(0..<4) { _ in
-                    NavigationLink {
+                    Button {
+                        // TODO: 그룹 변경 로직
+                        isPresented = false
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
@@ -32,6 +38,15 @@ struct GroupListView: View {
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(lineWidth: 0)
                         )
+                    }
+                }
+                NavigationLink {
+                    AddNewGroupView(detent: $detent, isPresented: $isPresented)
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle")
+                        Text("새로운 그룹 만들기")
+                        Spacer()
                     }
                 }
                 .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
@@ -52,11 +67,17 @@ struct GroupListView: View {
                 }
             }
         }
+        .presentationDetents(detents, selection: $detent)
     }
 }
 
 struct GroupListView_Previews: PreviewProvider {
+    @State static var isPresented = true
+    
     static var previews: some View {
-        GroupListView(isPresented: .constant(true))
+        HomeMainView()
+            .sheet(isPresented: $isPresented) {
+                GroupListView(isPresented: $isPresented)
+            }
     }
 }
