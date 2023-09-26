@@ -10,10 +10,10 @@ import SwiftUI
 
 struct GroupListView: View {
     @Binding var isPresented: Bool
+    let newGroupAction: () -> Void
+    
     @State private var searchTerm: String = ""
-    @State private var fraction: Double = 0.8
-    @State private var detent: PresentationDetent = .fraction(0.8)
-    @State private var detents: Set<PresentationDetent> = [.fraction(0.8), .fraction(1)]
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -44,8 +44,9 @@ struct GroupListView: View {
                         .groupCell()
                     }
                 }
-                NavigationLink {
-                    AddNewGroupView(detent: $detent, isPresented: $isPresented)
+                Button {
+                    newGroupAction()
+                    isPresented = false
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle")
@@ -56,7 +57,7 @@ struct GroupListView: View {
                 }
                 .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
-            .padding()
+            .padding(.horizontal)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("그룹 목록")
@@ -72,17 +73,16 @@ struct GroupListView: View {
                 }
             }
         }
-        .presentationDetents(detents, selection: $detent)
+        .presentationDetents([
+            .fraction(0.8),
+            .fraction(1)
+        ])
+        .presentationDragIndicator(.hidden)
     }
 }
 
 struct GroupListView_Previews: PreviewProvider {
-    @State static var isPresented = true
-    
     static var previews: some View {
-        HomeMainView()
-            .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
-            }
+        GroupListView(isPresented: .constant(true), newGroupAction: { })
     }
 }

@@ -9,12 +9,33 @@
 import SwiftUI
 
 struct HomeMainView: View {
+    @State private var isPresented = false
+    @State private var isNavigated = false
+    
     var body: some View {
 		NavigationStack {
 			ScrollView {
-				Text("하이")
+                Button {
+                    isPresented = true
+                } label: {
+                    HStack {
+                        Text("멋쟁이 사자처럼")
+                        Image(systemName: "chevron.down")
+                        Spacer()
+                    }
+                    .foregroundColor(.primary)
+                    .padding()
+                }
 			}
+            .navigationDestination(isPresented: $isNavigated) {
+                AddNewGroupView(isPresented: $isNavigated)
+            }
 		}
+        .sheet(isPresented: $isPresented) {
+            GroupListView(isPresented: $isPresented) {
+                isNavigated = true
+            }
+        }
     }// body
 }
 

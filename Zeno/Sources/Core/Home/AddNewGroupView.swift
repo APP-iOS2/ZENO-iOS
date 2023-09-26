@@ -10,7 +10,6 @@ import SwiftUI
 import PhotosUI
 
 struct AddNewGroupView: View {
-    @Binding var detent: PresentationDetent
     @Binding var isPresented: Bool
     
     @Environment(\.dismiss) private var dismiss
@@ -20,6 +19,7 @@ struct AddNewGroupView: View {
     @State private var description: String = ""
     @State private var personnel: Int = 2
     @State private var isGroupSearchable: Bool = true
+    
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
             PhotosPicker(selection: $selection) {
@@ -76,12 +76,6 @@ struct AddNewGroupView: View {
                 .disabled(title.isEmpty)
             }
         }
-        .onAppear {
-            detent = .fraction(1)
-        }
-        .onDisappear {
-            detent = .fraction(0.8)
-        }
         .onChange(of: selection) { newValue in
             newValue?.loadTransferable(type: Data.self) { result in
                 switch result {
@@ -99,12 +93,7 @@ struct AddNewGroupView: View {
 }
 
 struct AddNewGroupView_Previews: PreviewProvider {
-    @State static var isPresented = true
-    
     static var previews: some View {
-        HomeMainView()
-            .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
-            }
+        AddNewGroupView(isPresented: .constant(true))
     }
 }
