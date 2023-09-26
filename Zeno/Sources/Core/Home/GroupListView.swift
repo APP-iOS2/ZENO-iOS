@@ -19,6 +19,7 @@ struct GroupListView: View {
             ScrollView {
                 ForEach(0..<4) { _ in
                     Button {
+                        // TODO: 그룹 변경 로직
                         isPresented = false
                     } label: {
                         HStack {
