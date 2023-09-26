@@ -42,12 +42,6 @@ struct AlarmInitialBtnView: View {
                     Text("(C)60 선택된 사람의 초성 확인")
                         .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
                 }
-                .tossAlert(
-                  isPresented: $isLackingCoin,
-                  title: "코인이 부족합니다.",
-                  primaryButtonTitle: "확인",
-                  primaryAction: { /* 송금 로직 */ }
-                )
                 .alert("코인을 사용하여 확인하시겠습니까 ?", isPresented: $usingCoin) {
                     Button(role: .destructive) {
                         isShowingSheet1.toggle()
@@ -69,12 +63,6 @@ struct AlarmInitialBtnView: View {
                     Text("(2번 남음)유료 결제 후 초성 확인")
                         .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
                 }
-                .tossAlert(
-                  isPresented: $isLackingInitialTicket,
-                  title: "초성확인권이 부족합니다.",
-                  primaryButtonTitle: "확인",
-                  primaryAction: { /* 송금 로직 */ }
-                )
                 .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
                     Button(role: .destructive) {
                         isShowingSheet2.toggle()
@@ -93,6 +81,18 @@ struct AlarmInitialBtnView: View {
                         .font(.footnote)
                 }
             }
+            .tossAlert(
+              isPresented: $isLackingCoin,
+              title: "코인이 부족합니다.",
+              primaryButtonTitle: "확인",
+              primaryAction: { /* 송금 로직 */ }
+            )
+            .tossAlert(
+              isPresented: $isLackingInitialTicket,
+              title: "초성확인권이 부족합니다.",
+              primaryButtonTitle: "확인",
+              primaryAction: { /* 송금 로직 */ }
+            )
         }
     }
 }
