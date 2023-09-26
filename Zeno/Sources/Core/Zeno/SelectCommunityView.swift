@@ -25,7 +25,6 @@ struct SelectCommunityView: View {
                             .frame(width: 50, height: 50)
                         if isPlay == false {
                             Text("제노를 플레이 할 그룹을 선택해주세요")
-                                .selectCommunity2()
                                 .padding(.bottom, 20)
                         } else {
                             VStack {
@@ -59,7 +58,7 @@ struct SelectCommunityView: View {
                     
                             LottieView(lottieFile: "beforeZeno")
                                 .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
-                                .offset(x: -.screenWidth/3, y: .screenHeight/5)
+                                .offset(x: -.screenWidth/3, y: .screenHeight/5.2)
                         }
                     }
                 }
