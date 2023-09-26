@@ -26,7 +26,6 @@ struct SelectCommunityView: View {
                         if isPlay == false {
                             Text("제노를 플레이 할 그룹을 선택해주세요")
                                 .padding(.bottom, 20)
-                            
                         } else {
                             VStack {
                                 Text(communityName)
