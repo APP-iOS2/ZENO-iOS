@@ -14,7 +14,7 @@ struct Community: Identifiable {
 	var description: String
 	var createdAt: Double  // 생성일
     var communityImage: String {
-        return "LLLogo" } //임시로 만들어놨음
+        return "LLLogo" } // 임시로 만들어놨음
 	// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요
 }
 

@@ -18,18 +18,22 @@ struct SelectGroupView: View {
             Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
             
             VStack {
-                customScrollView(isplay: $isPlay, commuintyName: $communityName)
+                customScrollView()
                 if isPlay == false {
                     Text("제노를 플레이 할 그룹을 선택해주세요")
                         .selectCommunity()
                 } else {
-                    VStack{
+                    VStack {
                         Text(communityName)
                             .selectCommunity()
                         Button {
                             // 버튼 동작 추가
                         } label: {
-                            Text("go")
+                            Text("Start")
+                                .padding(.top, 10)
+                                .padding(.leading, .screenWidth * 0.7)
+                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                .foregroundColor(.white)
                         }
                     }
                 }
@@ -45,7 +49,8 @@ struct SelectGroupView: View {
 }
 
 @ViewBuilder
-func customScrollView(isplay: Binding<Bool>, commuintyName: Binding<String>) -> some View {
+// isplay: Binding<Bool>, commuintyName: Binding<String>
+func customScrollView() -> some View {
     ScrollView(.horizontal, showsIndicators: false) {
         HStack {
             ForEach(0..<30, id: \.self) { index in
@@ -57,7 +62,7 @@ func customScrollView(isplay: Binding<Bool>, commuintyName: Binding<String>) -> 
                         RoundedRectangle(cornerRadius: 20)
                         VStack {
                             Text(community.communityName)
-                                //.font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
+                            // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                                 .padding(20)
                                 .foregroundColor(.white)
                             Image(community.communityImage)
@@ -67,12 +72,12 @@ func customScrollView(isplay: Binding<Bool>, commuintyName: Binding<String>) -> 
                                 .clipShape(Circle())
                         }
                     }
-                    .onTapGesture {
-                        isplay.wrappedValue = true
-                        commuintyName.wrappedValue = community.communityName
-                    }
+//                    .onTapGesture {
+//                        isplay.wrappedValue = true
+//                        commuintyName.wrappedValue = community.communityName
+//                    }
                     .rotation3DEffect(
-                        Angle(degrees: getPercentage(geo: geometry) * 40),
+                        Angle(degrees: getPercentage(geo: geometry) * 10),
                         axis: (x: 0.0, y: 0.1, z: 0.0)
                     )
                 }
@@ -84,7 +89,7 @@ func customScrollView(isplay: Binding<Bool>, commuintyName: Binding<String>) -> 
 }
 
 func getPercentage(geo: GeometryProxy) -> Double {
-    let maxDistance = UIScreen.main.bounds.width / 2
+    let maxDistance = CGFloat.screenWidth / 2
     let currentX = geo.frame(in: .global).midX
     return 1.0 - (currentX / maxDistance)
 }

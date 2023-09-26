@@ -10,8 +10,10 @@ import SwiftUI
 
 struct ZenoView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            .font(Font.custom("BMDOHYEON", size: 20))
+        VStack {
+            LottieView(lottieFile: "nudgeDevil")
+            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        }
     }
 }
 

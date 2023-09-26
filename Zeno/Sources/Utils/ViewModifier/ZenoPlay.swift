@@ -21,8 +21,21 @@ struct SelectCommunity: ViewModifier {
     }
 }
 
+struct SelectCommunity2: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 16))
+    }
+}
+
 extension View {
     func selectCommunity() -> some View {
         modifier(SelectCommunity())
+    }
+}
+
+extension View {
+    func selectCommunity2() -> some View {
+        modifier(SelectCommunity2())
     }
 }
