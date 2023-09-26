@@ -18,6 +18,8 @@ struct Alarm: Identifiable {
 	let recieveUserID: String
 	/// 알림을 받은 유저 이름
 	let recieveUserName: String
+    /// 커뮤니티 ID
+    let communityID: String
 	/// 
 	let zenoID: String // 제노 Id
 	let zenoString: String // 제노 내용
