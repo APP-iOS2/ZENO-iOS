@@ -1,5 +1,5 @@
 //
-//  TossModifier.swift
+//  CashAlertModifier.swift
 //  Zeno
 //
 //  Created by Jisoo HAM on 2023/09/26.
@@ -8,9 +8,10 @@
 
 import SwiftUI
 
-struct TossAlertModifier: ViewModifier {
+struct CashAlertModifier: ViewModifier {
     @Binding var isPresented: Bool
     let title: String
+    let content: String
     let primaryButtonTitle: String
     let primaryAction: () -> Void
     
@@ -31,6 +32,7 @@ struct TossAlertModifier: ViewModifier {
                     AlarmCoinShortageView(
                         isPresented: self.$isPresented,
                         title: self.title,
+                        content: self.content,
                         primaryButtonTitle: self.primaryButtonTitle,
                         primaryAction: self.primaryAction
                     )

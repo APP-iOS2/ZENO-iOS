@@ -8,48 +8,32 @@
 
 import SwiftUI
 
-extension View {
-  func tossAlert(
-    isPresented: Binding<Bool>,
-    title: String,
-    primaryButtonTitle: String,
-    primaryAction: @escaping () -> Void
-  ) -> some View {
-    return modifier(
-      TossAlertModifier(
-        isPresented: isPresented,
-        title: title,
-        primaryButtonTitle: primaryButtonTitle,
-        primaryAction: primaryAction
-      )
-    )
-  }
-}
-
 struct AlarmCoinShortageView: View {
     @Binding var isPresented: Bool
     let title: String
+    let content: String
     let primaryButtonTitle: String
     let primaryAction: () -> Void
-
+    let user = User.dummy
+    
     var body: some View {
       VStack(spacing: 22) {
         Image("caution")
           .resizable()
           .scaledToFit()
-          .frame(width: 60)
+          .frame(width: 40)
+          .padding(.top, 30)
 
         Text(title)
           .font(.title2)
           .bold()
-          .foregroundColor(.black)
 
         Divider()
 
-        HStack {
-          Text("보유하고 있는 코인 : 40")
+        VStack {
+            Text(content)
         }
-        .font(.title2)
+        .bold()
 
         Button {
           primaryAction()
@@ -78,11 +62,12 @@ struct AlarmCoinShortageView: View {
 
 struct AlarmCoinShortageView_Previews: PreviewProvider {
     static var previews: some View {
-      Text("토스 알러트 테스트")
+      Text("알러트 테스트")
         .modifier(
-          TossAlertModifier(
+          CashAlertModifier(
             isPresented: .constant(true),
             title: "제목",
+            content: "내용",
             primaryButtonTitle: "버튼 이름",
             primaryAction: { })
         )

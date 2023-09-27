@@ -8,20 +8,16 @@
 
 import SwiftUI
 
-extension View {
-    func initialButtonBackgroundModifier(fontColor: Color, color: Color) -> some View {
-        modifier(InitialButtonBackgroundModifier(color: color, fontColor: fontColor))
-    }
-}
-
 struct AlarmInitialBtnView: View {
     // MARK: - Properties
     @State private var usingCoin: Bool = false
-    @State private var isShowingSheet1: Bool = false
     @State private var usingInitialTicket: Bool = false
+    
+    @State private var isShowingSheet1: Bool = false
     @State private var isShowingSheet2: Bool = false
-    @State var isLackingCoin: Bool = false
-    @State var isLackingInitialTicket: Bool = false
+    
+    @State private var isLackingCoin: Bool = false
+    @State private var isLackingInitialTicket: Bool = false
     
     let user = User.dummy
     
@@ -32,8 +28,9 @@ struct AlarmInitialBtnView: View {
                 Text("Zeno 초성 확인하기")
                     .bold()
                     .padding(.bottom, 50)
+                
                 Button {
-                    if user[4].coin >= 60 {
+                    if user[0].coin >= 60 {
                         usingCoin.toggle()
                     } else {
                         isLackingCoin.toggle()
@@ -54,13 +51,13 @@ struct AlarmInitialBtnView: View {
                 })
                 
                 Button {
-                    if user[4].showInitial > 0 {
+                    if user[0].showInitial > 0 {
                         usingInitialTicket.toggle()
                     } else {
                         isLackingInitialTicket.toggle()
                     }
                 } label: {
-                    Text("(2번 남음)유료 결제 후 초성 확인")
+                    Text("(\(user[0].showInitial)번 남음)유료 결제 후 초성 확인")
                         .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
                 }
                 .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
@@ -74,6 +71,7 @@ struct AlarmInitialBtnView: View {
                     AlarmInitialView()
                 })
                 .padding(.bottom, 20)
+                
                 Button {
                 } label: {
                     Text("다음에")
@@ -81,15 +79,17 @@ struct AlarmInitialBtnView: View {
                         .font(.footnote)
                 }
             }
-            .tossAlert(
+            .cashAlert(
               isPresented: $isLackingCoin,
               title: "코인이 부족합니다.",
+              content: "투표를 통해 코인을 모아보세요.",
               primaryButtonTitle: "확인",
               primaryAction: { /* 송금 로직 */ }
             )
-            .tossAlert(
+            .cashAlert(
               isPresented: $isLackingInitialTicket,
               title: "초성확인권이 부족합니다.",
+              content: "초성확인권을 구매하세요.",
               primaryButtonTitle: "확인",
               primaryAction: { /* 송금 로직 */ }
             )
