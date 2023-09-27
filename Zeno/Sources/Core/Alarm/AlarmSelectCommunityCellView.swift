@@ -25,6 +25,10 @@ struct AlarmSelectCommunityCellView: View {
                     selectedCommunityId = community.id
                 }
             Text("\(community.communityName)")
+                .font(.footnote)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 72)
         }
         .padding(.vertical)
     }
