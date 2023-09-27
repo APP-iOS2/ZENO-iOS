@@ -11,10 +11,13 @@ import Foundation
 struct Community: Identifiable {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
-	let communityName: String
+	var communityName: String
 	/// 커뮤니티 소개
 	var description: String
-
+    /// 커뮤니티 인원
+    var personnel: Int = 30
+    /// 검색 가능 여부
+    var isSearchable: Bool = true
     var communityImage: String {
         return "LLLogo"
     } // 임시로 만들어놨음

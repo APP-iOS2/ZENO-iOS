@@ -26,7 +26,7 @@ struct UserManagementCellView: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            Image(systemName: "person")
+            Image(systemName: "person.fill")
                 .font(.largeTitle)
             Spacer()
             VStack {
