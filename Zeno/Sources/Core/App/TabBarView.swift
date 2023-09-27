@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct TabBarView: View {
-	@State private var selectedTabIndex = 0
+    @State private var selectedTabIndex = 0
     var body: some View {
 		TabView(selection: $selectedTabIndex) {
 			HomeMainView()
@@ -40,7 +40,7 @@ struct TabBarView: View {
 				}
 				.tag(3)
 		}
-    }
+	}
 }
 
 struct TabBarView_Previews: PreviewProvider {
