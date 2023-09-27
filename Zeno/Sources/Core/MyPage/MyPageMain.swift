@@ -35,15 +35,27 @@ struct MyPageMain: View {
 							.clipShape(RoundedRectangle(cornerRadius: 30))
 							.padding()
 						VStack(alignment: .leading) {
-							Text("박서연")
-								.font(.system(.title3))
-								.fontWeight(.semibold)
+							HStack {
+                                Text("박서연 님")
+                                    .font(.system(.title3))
+                                    .fontWeight(.semibold)
+                                
+                                NavigationLink {
+                                    UserProfileEdit()
+                                } label: {
+                                    Image(systemName: "greaterthan")
+                                }
+                            }
 							Text("저는 사과러버에요.")
 						}
-						Spacer()
+                        Spacer()
+                        
+//                        Spacer()
 					}
 					.foregroundColor(.black)
-					.padding(.bottom, 30)
+//					.padding(.bottom, 30)
+                    
+                    UserMoneyView()
 					ScrollView(.horizontal, showsIndicators: false) {
 						HStack(spacing: 0) {
 							if isShowingZenoCoin {
@@ -52,20 +64,18 @@ struct MyPageMain: View {
 								megaphoneView
 							}
 						}
-						.frame(width: UIScreen.main.bounds.width, height: 80)
+						.frame(width: UIScreen.main.bounds.width, height: 60)
 					}
 					.background(Color.black)
 					.onAppear {
 						startTimer()
 					}
-					
-					UserMoneyView()
-					GroupSelectView()
-						.foregroundColor(.black)
+                    GroupSelectView()
+                        .foregroundColor(.black)
 				}
 			}
 			.foregroundColor(.white)
-			.navigationTitle("마이페이지")
+			.navigationTitle("마이제노")
 			.toolbar {
 				ToolbarItem {
 					NavigationLink {
@@ -76,6 +86,7 @@ struct MyPageMain: View {
 					}
 				}
 			}
+            .navigationBarTitleDisplayMode(.inline)
 		}
     }
 }

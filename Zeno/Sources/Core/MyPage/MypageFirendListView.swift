@@ -55,9 +55,10 @@ struct MypageFriendListView: View {
                         HStack(spacing: 10) {
                             Image(uiImage: friend.image)
                                 .resizable()
-                                .frame(width: 80, height: 80)
+                                .frame(width: 60, height: 60)
                                 .scaledToFit()
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
+//                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .clipShape(Circle())
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(friend.name)
                                     .font(.system(size: 20))
@@ -70,9 +71,10 @@ struct MypageFriendListView: View {
                         HStack(spacing: 10) {
                             Image(uiImage: friend.image)
                                 .resizable()
-                                .frame(width: 80, height: 80)
+                                .frame(width: 60, height: 60)
                                 .scaledToFit()
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
+//                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .clipShape(Circle())
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(friend.name)
                                     .font(.system(size: 20))
