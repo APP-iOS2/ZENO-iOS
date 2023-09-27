@@ -129,4 +129,5 @@ excluded:
     - Tuist
     - Frameworks
     - Project
+    - ./**/ZenoApp.swift
 reporter: "xcode"

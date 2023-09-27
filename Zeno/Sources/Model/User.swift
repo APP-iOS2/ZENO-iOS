@@ -41,7 +41,10 @@ struct User: Identifiable, Codable {
 #if DEBUG
 extension User {
     static let dummy: [User] = [
-		.init(name: "김찬형", gender: "남", kakaoToken: "", coin: 5, megaphone: 10, showInitial: 10, buddyList: ["커뮤니티ID": []])
+        .init(name: "김찬형", gender: "남", kakaoToken: "", coin: 5, megaphone: 10, showInitial: 10, buddyList: [
+            "커뮤니티ID": [.init(id: "id", name: "유저A", gender: "남")],
+            "커뮤니티ID2": [.init(id: "id", name: "유저B", gender: "여")],
+        ])
     ]
 }
 #endif
