@@ -10,7 +10,6 @@ import SwiftUI
 
 struct TabBarView: View {
 	@State private var selectedTabIndex = 0
-	
     var body: some View {
 		TabView(selection: $selectedTabIndex) {
 			HomeMainView()
