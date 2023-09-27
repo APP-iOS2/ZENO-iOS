@@ -18,26 +18,30 @@ struct GroupListView: View {
         NavigationStack {
             ScrollView {
                 // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
-                ForEach(0..<4) { _ in
+                ForEach(1..<5) { index in
                     Button {
                         // TODO: 그룹 변경 로직
                         isPresented = false
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("멋쟁이 사자처럼 iOS 2기")
-                                Text("공지사항......")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                Text("멋쟁이 사자처럼 iOS \(index)기")
+                                HStack {
+                                    // TODO: 새로운 알림으로 조건 변경
+                                    if index == 2 || index == 4 {
+                                        Circle()
+                                            .frame(width: 5, height: 5)
+                                            .foregroundColor(.red)
+                                    }
+                                    Text("새로운 알림\(index)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                             Spacer()
                             Image(systemName: "chevron.forward")
                         }
-                        .padding(5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(lineWidth: 0)
-                        )
+                        .groupCell()
                     }
                 }
                 NavigationLink {
@@ -48,6 +52,7 @@ struct GroupListView: View {
                         Text("새로운 그룹 만들기")
                         Spacer()
                     }
+                    .groupCell()
                 }
                 .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
