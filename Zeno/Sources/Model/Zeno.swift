@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Zeno: Identifiable {
+struct Zeno: Identifiable, Codable {
 	var id: String = UUID().uuidString
 	/// 제노 질문
 	let question: String

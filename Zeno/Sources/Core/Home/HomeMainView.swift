@@ -44,7 +44,7 @@ extension HomeMainView {
 	var newUserView: some View {
 		VStack {
 			HStack {
-				Text("새로 들어온 친구 \(User.dummy[0...1].count)")
+                Text("새로 들어온 친구 \(User.dummy[0...0].count)")
 					.font(.footnote)
 				Spacer()
 				Button {
@@ -59,7 +59,7 @@ extension HomeMainView {
 			}
 			if isShowingDetailNewBuddyToggle {
 				VStack {
-					ForEach(User.dummy[0...1]) { user in
+					ForEach(User.dummy[0...0]) { user in
 						userCell(user: user)
 					}
 				}
