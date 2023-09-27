@@ -13,6 +13,7 @@ struct HomeMainView: View {
 	@AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
 	@State private var isShowingUserSearchView = false
 	@State private var searchText = ""
+	@State private var isShowingHamburgerView = false
 	
 	var body: some View {
 		NavigationStack {
@@ -26,8 +27,15 @@ struct HomeMainView: View {
 				groupNameToolbarItem
 				hamburgerToolbarItem
 			}
+			.onTapGesture {
+				isShowingHamburgerView = false
+			}
+			
 		}
 		.tint(Color("MainPurple1"))
+		.overlay(
+			GroupSideBarView(isPresented: $isShowingHamburgerView, groupID: .constant("mutSa"))
+		)
 	}// body
 }
 
@@ -155,7 +163,7 @@ extension HomeMainView {
 	var hamburgerToolbarItem: some ToolbarContent {
 		ToolbarItem(placement: .navigationBarTrailing) {
 			Button {
-				print("햄버거 뷰 오픈 액션")
+				isShowingHamburgerView = true
 			} label: {
 				Image(systemName: "line.3.horizontal")
 			}
