@@ -7,10 +7,12 @@
 //
 
 import SwiftUI
+
 /// 초성 확인 뷰
 struct AlarmInitialView: View {
     // MARK: - Properties
     @State var isNudgingOn: Bool = false
+    @State private var counter: Int = 1
     let zenoDummy = Zeno.dummy
     var user = User.dummy
     
@@ -27,6 +29,7 @@ struct AlarmInitialView: View {
                 Text("\(zenoDummy[0].question)")
                 Text("으로 선택한 사람")
             }
+            // TODO: 나중엔 초성 보여주는 로직으로 처리할 것.
             Text("XㅈX")
                 .bold()
                 .frame(width: 160, height: 80)
@@ -46,7 +49,6 @@ struct AlarmInitialView: View {
             .alert("XㅈX님 찌르기 성공", isPresented: $isNudgingOn) {
                 Button {
                     isNudgingOn.toggle()
-                    // 애니메이션 부를 곳
                 } label: {
                     Text("확인")
                 }

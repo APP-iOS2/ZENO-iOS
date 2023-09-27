@@ -37,7 +37,7 @@ struct AlarmListCellView: View {
             }
         }
         .listRowInsets(EdgeInsets(top: 12, leading: -20, bottom: 20, trailing: 12))
-        //.listSectionSpacing(20)
+        // .listSectionSpacing(20)
     }
 }
 
