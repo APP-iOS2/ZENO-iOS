@@ -8,13 +8,19 @@
 
 import Foundation
 
-struct Alarm {
+struct Alarm: Identifiable {
+	var id: String = UUID().uuidString
+	/// 알림을 보낸 유저 ID
 	let sendUserID: String
+	/// 알림을 보낸 유저 이름
 	let sendUserName: String // 편의를 위해 추가
 	/// 알림을 받은 유저 ID
 	let recieveUserID: String
 	/// 알림을 받은 유저 이름
 	let recieveUserName: String
+    /// 커뮤니티 ID
+    let communityID: String
+	/// 
 	let zenoID: String // 제노 Id
 	let zenoString: String // 제노 내용
 	var isPaid: Bool

@@ -10,7 +10,9 @@ import Foundation
 
 struct User: Identifiable, Codable {
 	var id: String = UUID().uuidString
-	let name: String // 실명 직접받고
+	/// 이름
+	let name: String
+	/// 성별
 	let gender: String
 	/// 프로필 이미지
 	var profileImgUrlPath: String?
