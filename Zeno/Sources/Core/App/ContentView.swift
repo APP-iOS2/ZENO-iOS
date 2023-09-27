@@ -1,13 +1,13 @@
 import SwiftUI
 
-public struct StartView: View {
+public struct ContentView: View {
     public var body: some View {
-        TabView()
+        TabBarView()
     }
 }
 
 struct StartView_Previews: PreviewProvider {
     static var previews: some View {
-        StartView()
-    }
+        ContentView()
+	}
 }

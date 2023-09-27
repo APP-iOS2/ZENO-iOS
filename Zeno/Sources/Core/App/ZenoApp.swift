@@ -5,7 +5,7 @@ struct ZenoApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                StartView()
+                ContentView()
             }
         }
     }

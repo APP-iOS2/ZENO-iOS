@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct CustomNavigationBackBtn: View {
+struct ZenoNavigationBackBtn: View {
     let action: () -> Void
     var body: some View {
         Button {

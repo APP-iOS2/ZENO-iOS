@@ -1,13 +1,14 @@
 import ProjectDescription
 
 let projectName = "Zeno"
-let orgName = "https://github.com/gnksbm/Zeno"
+let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
 let bundleID = "com.Zeno"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "ZenoAppTest",
     "BundleShortVersionString": "1.0",
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
+//    "Fonts provided by application" : [ "BMDOHYEON.tff" ]
     //"LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
     //"CFBundleURLTypes": [
     //    [
@@ -27,6 +28,8 @@ let project = Project(
     packages: [
 //        .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "10.0.0")),
 //        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.0.0")),
+        .remote(url:"https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0"))
+
     ],
     targets: [
         .init(
@@ -48,6 +51,7 @@ let project = Project(
 //                .package(product: "KakaoSDKUser"),
 //                .package(product: "KakaoSDKAuth"),
 //                .package(product: "KakaoSDKCommon"),
+                .package(product: "Lottie")
             ],
             settings: config
         )
