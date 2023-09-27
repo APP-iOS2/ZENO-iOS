@@ -36,10 +36,6 @@ struct MypageFriendListView: View {
     
     @State private var selectedGroup = GroupName.all.rawValue
     
-//    private var filteredData: [TestPerson] {
-//        return testData.filter { $0.groupinfo == selectedGroup }
-//    }
-    
     var body: some View {
         VStack(alignment: .trailing) {
             Picker("피커테스트", selection: $selectedGroup) {
