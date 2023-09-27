@@ -8,37 +8,65 @@
 
 import SwiftUI
 
+enum MainTab: Int, CaseIterable, Identifiable {
+    case home, zeno, alert, myPage
+    
+    @ViewBuilder
+    var view: some View {
+        switch self {
+        case .home:
+            HomeMainView()
+        case .zeno:
+            SelectCommunityView()
+        case .alert:
+            AlarmView()
+        case .myPage:
+            MyPageMain()
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .home:
+            return "홈"
+        case .zeno:
+            return "제노"
+        case .alert:
+            return "알림"
+        case .myPage:
+            return "마이페이지"
+        }
+    }
+    
+    var imageName: String {
+        switch self {
+        case .home:
+            return "house"
+        case .zeno:
+            return "z.circle.fill"
+        case .alert:
+            return "bell.fill"
+        case .myPage:
+            return "person.circle"
+        }
+    }
+    
+    var id: Self { self }
+}
+
 struct TabBarView: View {
     @State private var selectedTabIndex = 0
+    
     var body: some View {
 		TabView(selection: $selectedTabIndex) {
-			HomeMainView()
-				.tabItem {
-					Image(systemName: "house")
-					Text("홈")
-				}
-				.tag(0)
-			
-			SelectCommunityView()
-				.tabItem {
-					Image(systemName: "z.circle.fill")
-					Text("제노")
-				}
-				.tag(1)
-			
-			AlarmView()
-				.tabItem {
-					Image(systemName: "bell.fill")
-					Text("알림")
-				}
-				.tag(2)
-			
-			MyPageMain()
-				.tabItem {
-					Image(systemName: "person.circle")
-					Text("마이페이지")
-				}
-				.tag(3)
+            ForEach(MainTab.allCases) { tab in
+                tab.view
+                    .tabItem {
+                        Image(systemName: tab.imageName)
+                        Text(tab.title)
+                    }
+                    .tag(tab.rawValue)
+            }
 		}
 	}
 }
