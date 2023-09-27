@@ -26,14 +26,14 @@ struct TabBarView: View {
 				}
 				.tag(1)
 			
-			HomeMainView()
+			AlarmView()
 				.tabItem {
 					Image(systemName: "bell.fill")
 					Text("알림")
 				}
 				.tag(2)
 			
-			HomeMainView()
+			MyPageMain()
 				.tabItem {
 					Image(systemName: "person.circle")
 					Text("마이페이지")

@@ -13,7 +13,7 @@ struct AlarmInitialView: View {
     // MARK: - Properties
     @State var isNudgingOn: Bool = false
     @State private var counter: Int = 1
-    let zenoDummy = Zeno.dummy
+	let zenoDummy = Zeno.ZenoQuestions
     var user = User.dummy
     
     // MARK: - View
