@@ -66,7 +66,6 @@ extension HomeMainView {
 		.animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
 	}
 	/// 그룹 내 유저 목록 뷰
-	@ViewBuilder
 	var userListView: some View {
 		VStack {
 			if isShowingUserSearchView {
@@ -109,6 +108,9 @@ extension HomeMainView {
 		.cornerRadius(10)
 		.padding(.horizontal)
 		.animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
+		.sheet(isPresented: $isShowingGroupListSheet) {
+			GroupListView(isPresented: $isShowingGroupListSheet)
+		}
 	}
 	/// 유저 셀 뷰
 	func userCell(user: User) -> some View {
@@ -135,7 +137,6 @@ extension HomeMainView {
 	var groupNameToolbarItem: some ToolbarContent {
 		ToolbarItem(placement: .navigationBarLeading) {
 			Button {
-				print("그룹 뷰 시트 오픈 액션")
 				isShowingGroupListSheet.toggle()
 			} label: {
 				HStack {
