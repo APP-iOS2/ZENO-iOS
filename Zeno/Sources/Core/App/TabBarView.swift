@@ -19,7 +19,7 @@ struct TabBarView: View {
 				}
 				.tag(0)
 			
-			HomeMainView()
+			SelectCommunityView()
 				.tabItem {
 					Image(systemName: "z.circle.fill")
 					Text("제노")
