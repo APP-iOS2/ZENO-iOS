@@ -16,7 +16,7 @@ struct AlarmInitialBtnView: View {
     
     @State private var usingCoin: Bool = false
     @State private var usingInitialTicket: Bool = false
-
+    
     let showInitialViewAction: () -> Void
     let user = User.dummy
     
@@ -31,12 +31,16 @@ struct AlarmInitialBtnView: View {
                 if user[0].coin >= 60 {
                     usingCoin.toggle()
                 } else {
-                    isLackingCoin.toggle()
                     isPresented = false
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        print(" 코인 결제 임")
+                        isLackingCoin.toggle()
+                    }
                 }
             } label: {
                 Text("(C)60 선택된 사람의 초성 확인")
-                    .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
+                    .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
             .alert("코인을 사용하여 확인하시겠습니까 ?", isPresented: $usingCoin) {
                 Button(role: .destructive) {
@@ -46,17 +50,21 @@ struct AlarmInitialBtnView: View {
                     Text("확인")
                 }
             }
-
+            
             Button {
                 if user[0].showInitial > 0 {
                     usingInitialTicket.toggle()
                 } else {
-                    isLackingInitialTicket.toggle()
                     isPresented = false
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        print(" 유료 결제 임")
+                        isLackingInitialTicket.toggle()
+                    }
                 }
             } label: {
                 Text("(\(user[0].showInitial)번 남음)유료 결제 후 초성 확인")
-                    .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
+                    .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
             .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
                 Button(role: .destructive) {
