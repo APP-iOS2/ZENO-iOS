@@ -29,17 +29,21 @@ struct AddNewGroupView: View {
                     .frame(width: 200, height: 200)
                     .cornerRadius(100)
             }
-            TextField("그룹 이름", text: $title, prompt: Text("그룹 이름"))
-                .bold()
-            TextField("그룹 설명", text: $description, prompt: Text("그룹 설명"))
-                .bold()
+            Group {
+                TextField("그룹 이름", text: $title, prompt: Text("그룹 이름"))
+                TextField("그룹 설명", text: $description, prompt: Text("그룹 설명"))
+            }
+            .groupTF()
             HStack {
                 Text("그룹 인원")
                     .bold()
                 Spacer()
                 Picker("그룹 인원", selection: $personnel) {
                     ForEach(0..<100) { index in
-                        Text("\(index) 명")
+                        // TODO: selection과 index가 안맞아서 예외처리로 뷰 구현했는데 좋은 방법이 있다면 수정 요망
+                        if index > 1 {
+                            Text("\(index) 명")
+                        }
                     }
                 }
             }
@@ -60,7 +64,7 @@ struct AddNewGroupView: View {
         .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                CustomNavigationBackBtn {
+                ZenoNavigationBackBtn {
                     dismiss()
                 }
             }

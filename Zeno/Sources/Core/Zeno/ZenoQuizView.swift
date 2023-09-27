@@ -55,7 +55,7 @@ struct ZenoQuizView: View {
     }
     
     func selectUser(user: User) {
-        answer.append(.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, isPaid: false, createdAt: Date.timeIntervalSinceReferenceDate))
+		answer.append(.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, isPaid: false, createdAt: Date.timeIntervalSinceReferenceDate))
         resetUsers()
         if selected + 1 < zenoList.count {
             selected += 1
