@@ -19,6 +19,7 @@ struct SelectCommunityView: View {
         NavigationStack {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
+                
                 VStack {
                     Group {
                         LottieView(lottieFile: "nudgeDevil")
@@ -50,7 +51,6 @@ struct SelectCommunityView: View {
                         ZStack {
                             cardView()
                                 .onChange(of: selected) { _ in
-                                    print("onChanged")
                                     withAnimation {
                                         ScrollViewProxy.scrollTo(selected, anchor: .top)
                                 }
