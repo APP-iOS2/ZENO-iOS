@@ -22,13 +22,12 @@ struct AlarmSelectCommunityView: View {
             .padding(.leading)
             
             ScrollView(.horizontal) {
-                HStack(spacing: 10) {
+                HStack(spacing: 4) {
                     ForEach(communityArray) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
                     }
                 }
             }
-            .padding()
         }
     }
 }
