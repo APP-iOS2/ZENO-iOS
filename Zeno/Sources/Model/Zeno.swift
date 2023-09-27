@@ -15,9 +15,7 @@ struct Zeno: Identifiable {
 	/// 제노 이미지
 	let zenoImage: String
 	/// 제노 설명(이름)
-	var zenoDescription: String {
-        return ""
-    }
+	var zenoDescription: String { return "" }
 }
 
 #if DEBUG
