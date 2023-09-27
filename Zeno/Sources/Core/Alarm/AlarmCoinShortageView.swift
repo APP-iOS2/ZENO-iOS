@@ -44,7 +44,7 @@ struct AlarmCoinShortageView: View {
             .bold()
             .frame(maxWidth: .infinity)
         }
-        .initialButtonBackgroundModifier(fontColor: .white, color: .purple)
+        .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
       }
       .padding(.horizontal, 24)
       .padding(.vertical, 18)
