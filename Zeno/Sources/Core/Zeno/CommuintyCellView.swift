@@ -21,7 +21,7 @@ struct CommuintyCellView: View {
                 .clipShape(Circle())
                 .padding(.trailing, 10)
             Text(community.communityName)
-                // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 20))
+                 .font(ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 17))
                 .foregroundColor(.white.opacity(0.7))
             Spacer()
         }

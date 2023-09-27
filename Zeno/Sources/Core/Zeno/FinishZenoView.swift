@@ -24,7 +24,7 @@ struct FinishZenoView: View {
     
     var body: some View {
         ZStack {
-//            RadialGradient(gradient: Gradient(colors: [.purple, .mainColor]), center: .center, startRadius: 5, endRadius: 500).ignoresSafeArea()
+            RadialGradient(gradient: Gradient(colors: [.purple, .mainColor]), center: .center, startRadius: 5, endRadius: 500).ignoresSafeArea()
             VStack {
                 LottieView(lottieFile: "beforeZenoFirst")
                 Text("다음 제노까지 \(timeRemaining) ")

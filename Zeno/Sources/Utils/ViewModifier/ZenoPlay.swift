@@ -13,18 +13,17 @@ struct SelectCommunity: ViewModifier {
         content
             .padding(20)
             .foregroundColor(.white)
-        // .font(ZenoFontFamily.NanumBarunGothicOTF.light.swiftUIFont(size: 16))
-            .frame(width: .screenWidth * 0.9)
-            .background(Color.black.opacity(0.2))
-            .cornerRadius(10)
-            .padding(.top, 60)        
+            .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 20))
+            .frame(width: .screenWidth )
+            //.background(Color.black.opacity(0.8))
     }
 }
 
 struct SelectCommunity2: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
+            .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 20))
+            .padding(.bottom, 20)
     }
 }
 
