@@ -30,7 +30,6 @@ struct HomeMainView: View {
 			.onTapGesture {
 				isShowingHamburgerView = false
 			}
-			
 		}
 		.tint(Color("MainPurple1"))
 		.overlay(
