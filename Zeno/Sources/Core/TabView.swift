@@ -10,14 +10,14 @@ import SwiftUI
 
 struct TabView: View {
     var body: some View {
-		NavigationStack {
-			Text("하이")
-		}
+        Text("하이")
     }
 }
 
 struct TabView_Previews: PreviewProvider {
     static var previews: some View {
-        TabView()
+        NavigationStack {
+            TabView()
+        }
     }
 }

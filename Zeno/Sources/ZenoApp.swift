@@ -4,7 +4,9 @@ import SwiftUI
 struct ZenoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                StartView()
+            }
         }
     }
 }
