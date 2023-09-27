@@ -1,4 +1,6 @@
 disabled_rules: # 사용하지 않는 룰
+    # 배열의 마지막의 comma에 대한 경고
+    - trailing_comma
     # 라인의 마지막에는 빈 여백이 있으면 안 됨
     - trailing_whitespace
 
