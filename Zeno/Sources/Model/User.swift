@@ -28,8 +28,8 @@ struct User: Identifiable, Codable {
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구유저데이터1, 친구유저데이터2 ...]
 	var buddyList: [Community.ID: [MinUserData]]
-	
-	struct MinUserData: Codable {
+	/// 최소한의 친구 구조체
+	struct MinUserData: Codable { // 최소한의 유저 데이터를 가지고 있는 구조체. 해당 구조체로 id를 따로 검색하지 않아도 되지만 값이 수정된다면 해당하는 객체마다 값을 바꿔줘야함
 		let id: String
 		var name: String
 		let gender: String
@@ -41,10 +41,111 @@ struct User: Identifiable, Codable {
 #if DEBUG
 extension User {
     static let dummy: [User] = [
-        .init(name: "김찬형", gender: "남", kakaoToken: "", coin: 5, megaphone: 10, showInitial: 10, buddyList: [
-            "커뮤니티ID": [.init(id: "id", name: "유저A", gender: "남")],
-            "커뮤니티ID2": [.init(id: "id", name: "유저B", gender: "여")],
-        ])
+		.init(name: "원강묵",
+			  gender: "남",
+			  profileImgUrlPath: "이미지URL",
+			  description: "하이",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "김건섭",
+			  gender: "남",
+			  profileImgUrlPath: "이미지URL",
+			  description: "안녕하세용 건섭입니다",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "유하은",
+			  gender: "여",
+			  profileImgUrlPath: "이미지URL",
+			  description: "유하~",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "박서연",
+			  gender: "여",
+			  profileImgUrlPath: "이미지URL",
+			  description: "반갑습니다아~",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "신우진",
+			  gender: "남",
+			  profileImgUrlPath: "이미지URL",
+			  description: "내 MBTI는 CUTE",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "안효명",
+			  gender: "남",
+			  profileImgUrlPath: "이미지URL",
+			  description: "안효명하세용~",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
+		.init(name: "함지수",
+			  gender: "여",
+			  profileImgUrlPath: "이미지URL",
+			  description: "둥둥둥~~둥둥둥~~이건 입에서나는 베이스소리가 아니여",
+			  kakaoToken: "카카오토큰",
+			  coin: 10,
+			  megaphone: 10,
+			  showInitial: 10,
+			  buddyList: [
+				"커뮤니티1ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+				"커뮤니티2ID": [
+					.init(id: "친구1ID", name: "버디1", gender: "남"),
+					.init(id: "친구1ID", name: "버디1", gender: "남")],
+			  ]),
     ]
 }
 #endif

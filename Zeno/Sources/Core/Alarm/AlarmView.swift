@@ -11,15 +11,7 @@ import SwiftUI
 struct AlarmView: View {
     // MARK: 프로토타입 Test 데이터
     @State var alarmArray: [Alarm] = [Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동1", communityID: "commId", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301), Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동2", communityID: "commId", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301)]
-    @State var communityArray: [Community] = [Community(communityName: "aaa", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "bbb", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "ccc", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "ddd", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "eee", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "fff", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "ggg", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "hhh", description: "bbb", createdAt: 10924810),
-                                              Community(communityName: "iii", description: "bbb", createdAt: 10924810)]
+	@State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false

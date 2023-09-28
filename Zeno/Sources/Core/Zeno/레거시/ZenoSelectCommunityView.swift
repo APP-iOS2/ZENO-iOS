@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ZenoSelectCommunityView: View {
-    private let communities = Community.CommunitySamples
+    private let communities = Community.dummy
     
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
@@ -80,7 +80,7 @@ struct ZenoSelectCommunityView: View {
     
     func cardView() -> some View {
             TabView {
-                ForEach(Community.CommunitySamples) { community in
+                ForEach(Community.dummy) { community in
                     GeometryReader { geometry in
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)

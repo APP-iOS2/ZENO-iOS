@@ -34,6 +34,6 @@ struct CommuintyCellView: View {
 
 struct CommuintyCellView_Previews: PreviewProvider {
     static var previews: some View {
-        CommuintyCellView(community: Community(communityName: "멋쟁이 사자처럼", description: "세계 최고 부트 캠프 멋쟁이 사자처럼입니다~ ", createdAt: 20230603))
+		CommuintyCellView(community: Community.dummy[0])
     }
 }

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SelectCommunityView: View {
-    private let communities = Community.CommunitySamples
+    private let communities = Community.dummy
     
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
@@ -115,7 +115,7 @@ struct SelectCommunityView: View {
                     .padding()
                 }
             }
-            .frame(width: CGFloat(Community.CommunitySamples.count) * 510 )
+            .frame(width: CGFloat(Community.dummy.count) * 510 )
         }
     }
 }
