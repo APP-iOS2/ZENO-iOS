@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SelectGroupView: View {
-    private let communities = Community.CommunitySamples
+    private let communities = Community.dummy
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
     
@@ -55,8 +55,8 @@ func customScrollView() -> some View {
         HStack {
             ForEach(0..<30, id: \.self) { index in
                 GeometryReader { geometry in
-                    let communityIndex = index % Community.CommunitySamples.count
-                    let community = Community.CommunitySamples[communityIndex]
+                    let communityIndex = index % Community.dummy.count
+                    let community = Community.dummy[communityIndex]
                     
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)

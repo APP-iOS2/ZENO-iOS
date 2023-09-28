@@ -10,18 +10,16 @@ import SwiftUI
 
 struct HomeMainView: View {
 	@State private var isShowingGroupListSheet = false
-	@AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
 	@State private var isShowingUserSearchView = false
-	@State private var searchText = ""
 	@State private var isShowingHamburgerView = false
+	@State private var searchText = ""
+	@AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
 	
 	var body: some View {
 		NavigationStack {
-			ZStack {
-				ScrollView {
-					newUserView
-					userListView
-				}
+			ScrollView {
+				newUserView
+				userListView
 			}
 			.toolbar {
 				groupNameToolbarItem
@@ -30,8 +28,11 @@ struct HomeMainView: View {
 			.onTapGesture {
 				isShowingHamburgerView = false
 			}
+			.sheet(isPresented: $isShowingGroupListSheet) {
+				GroupListView(isPresented: $isShowingGroupListSheet)
+			}
 		}
-		.tint(Color("MainPurple1"))
+		.tint(.black)
 		.overlay(
 			GroupSideBarView(isPresented: $isShowingHamburgerView, groupID: .constant("mutSa"))
 		)
@@ -39,12 +40,13 @@ struct HomeMainView: View {
 }
 
 extension HomeMainView {
+	// MARK: - 메인 뷰
+	
 	/// 새로들어온 유저 뷰
-	@ViewBuilder
 	var newUserView: some View {
 		VStack {
 			HStack {
-                Text("새로 들어온 친구 \(User.dummy[0...0].count)")
+				Text("새로 들어온 친구 \(User.dummy[0..<5].count)")
 					.font(.footnote)
 				Spacer()
 				Button {
@@ -58,20 +60,27 @@ extension HomeMainView {
 				}
 			}
 			if isShowingDetailNewBuddyToggle {
-				VStack {
-					ForEach(User.dummy[0...0]) { user in
-						userCell(user: user)
+				ScrollView(.horizontal) {
+					HStack(spacing: 15) {
+						ForEach(User.dummy[0..<5]) { user in
+							VStack(spacing: 5) {
+								Image(systemName: "person.circle")
+									.resizable()
+									.frame(width: 30, height: 30)
+								Text("\(user.name)")
+									.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+							}
+						}
 					}
 				}
+				.scrollIndicators(.hidden)
 			}
 		}
-		.padding()
-//		.background(Color("MainPink3"))
-		.cornerRadius(10)
-		.padding(.horizontal)
+		.modifier(HomeListModifier())
 		.animation(.default, value: isShowingDetailNewBuddyToggle)
 		.animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
 	}
+	
 	/// 그룹 내 유저 목록 뷰
 	var userListView: some View {
 		VStack {
@@ -104,42 +113,54 @@ extension HomeMainView {
 					}
 				}
 				VStack {
-					ForEach(User.dummy+User.dummy) { user in
+					ForEach(User.dummy) { user in
 						userCell(user: user)
 					}
 				}
 			}
 		}
-		.padding()
-//		.background(Color("MainPink3"))
-		.cornerRadius(10)
-		.padding(.horizontal)
+		.modifier(HomeListModifier())
 		.animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
-		.sheet(isPresented: $isShowingGroupListSheet) {
-			GroupListView(isPresented: $isShowingGroupListSheet)
-		}
 	}
+	
 	/// 유저 셀 뷰
 	func userCell(user: User) -> some View {
 		HStack {
-			if let image = user.profileImgUrlPath {
-				Image(systemName: "person.circle") // 사용자 프로필이미지 들어가야함
+			if user.profileImgUrlPath != nil {
+				// 사용자 프로필이미지 들어가야함
+				Image(systemName: "person.circle")
+					.resizable()
+					.frame(width: 30, height: 30)
 			} else {
 				Image(systemName: "person.circle")
+					.resizable()
+					.frame(width: 30, height: 30)
 			}
-			Text("\(user.name)")
+			VStack(alignment: .leading) {
+				// 유저 이름
+				Text("\(user.name)")
+					.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+					.padding(.bottom, 1)
+				// 유저 한줄 소개
+				Text("\(user.description)")
+					.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+					.foregroundColor(Color(uiColor: .systemGray4))
+					.lineLimit(1)
+			}
+			.padding(.leading, 4)
 			Spacer()
 			Button {
 				print("친구추가 버튼")
 			} label: {
 				Text("친구추가")
-					.font(.system(size: 10))
+					.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
 			}
 		}
-		.padding()
-		.background(Color("MainPink2"))
-		.cornerRadius(10)
+		.modifier(HomeListCellModifier())
 	}
+	
+	// MARK: - 툴바
+	
 	/// 그룹 이름 툴바아이템
 	var groupNameToolbarItem: some ToolbarContent {
 		ToolbarItem(placement: .navigationBarLeading) {
@@ -147,17 +168,15 @@ extension HomeMainView {
 				isShowingGroupListSheet.toggle()
 			} label: {
 				HStack {
-					Text("멋쟁이 사자처럼 iOS 2기")
-						.font(.title2)
+					Text("\(Community.dummy[0].communityName)")
+						.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
 					Image(systemName: "chevron.down")
 						.font(.caption)
 				}
 			}
-			
-			Text("멋쟁이 사자처럼 2기")
-				.font(.title2)
 		}
 	}
+	
 	/// 햄버거 툴바아이템
 	var hamburgerToolbarItem: some ToolbarContent {
 		ToolbarItem(placement: .navigationBarTrailing) {
@@ -165,6 +184,7 @@ extension HomeMainView {
 				isShowingHamburgerView = true
 			} label: {
 				Image(systemName: "line.3.horizontal")
+					.fontWeight(.semibold)
 			}
 		}
 	}

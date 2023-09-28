@@ -31,9 +31,7 @@ struct EditGroupView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selection: PhotosPickerItem?
     @Binding var community: Community
-    @State private var emptyCommunity: Community = .init(
-        communityName: "", description: "", createdAt: Date().timeIntervalSinceReferenceDate
-    )
+	@State private var emptyCommunity: Community = Community.dummy[0]
     @State private var selectedImg: Image = Image(systemName: "plus.circle")
     
     var body: some View {
