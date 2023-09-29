@@ -24,7 +24,9 @@ struct SelectCommunity: ViewModifier {
 struct SelectCommunity2: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
+            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+            .padding(.bottom, 20)
+            .foregroundColor(Color.hex("281E44"))
     }
 }
 
@@ -32,9 +34,7 @@ extension View {
     func selectCommunity() -> some View {
         modifier(SelectCommunity())
     }
-}
-
-extension View {
+    
     func selectCommunity2() -> some View {
         modifier(SelectCommunity2())
     }

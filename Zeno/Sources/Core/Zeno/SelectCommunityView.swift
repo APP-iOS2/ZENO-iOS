@@ -19,17 +19,17 @@ struct SelectCommunityView: View {
         NavigationStack {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
-                
                 VStack {
                     Group {
                         LottieView(lottieFile: "nudgeDevil")
                             .frame(width: 50, height: 50)
                         if isPlay == false {
                             Text("제노를 플레이 할 그룹을 선택해주세요")
-                                .padding(.bottom, 20)
+                                .selectCommunity2()     
                         } else {
                             VStack {
                                 Text(communityName)
+                                    .selectCommunity2()
                                 NavigationLink {
                                     ZenoView()
                                 } label: {
@@ -58,7 +58,7 @@ struct SelectCommunityView: View {
                     
                             LottieView(lottieFile: "beforeZeno")
                                 .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
-                                .offset(x: -.screenWidth/3, y: .screenHeight/5.2)
+                                .offset(x: -.screenWidth/3, y: .screenHeight/6.2)
                         }
                     }
                 }
@@ -100,22 +100,24 @@ struct SelectCommunityView: View {
                                     .frame(width: 50, height: 50)
                                     .scaledToFit()
                                 Text(community.communityName)
+                                    .font(ZenoFontFamily.NanumBarunGothicOTF.regular
+                                        .swiftUIFont(size: 15))
                                     .padding(20)
                                     .foregroundColor(.white)
                             }
                         }
-                        .frame(width: 180, height: 150)
+                        .frame(width: 320, height: 200)
                         .id(community.id)
                         .rotation3DEffect(
                             Angle(degrees: getPercentage(geo: geometry) * 40),
                             axis: (x: 0.0, y: 0.1, z: 0.0)
                         )
                      }
-                    .frame(width: 180, height: 150)
+                    .frame(width: 320, height: 200)
                     .padding()
                 }
             }
-            .frame(width: CGFloat(Community.dummy.count) * 510 )
+            .frame(width: CGFloat(Community.dummy.count) * 610 )
         }
     }
 }
