@@ -101,7 +101,7 @@ struct SelectCommunityView: View {
                                     .scaledToFit()
                                 Text(community.communityName)
                                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular
-                                        .swiftUIFont(size: 15))
+                                        .swiftUIFont(size: 17))
                                     .padding(20)
                                     .foregroundColor(.white)
                             }
