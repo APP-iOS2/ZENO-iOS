@@ -16,7 +16,6 @@ struct CommuintyCellView: View {
             Spacer()
             Image(asset: ZenoImages(name: community.communityImage))
                 .resizable()
-                .scaledToFit()
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
                 .padding(.trailing, 10)
