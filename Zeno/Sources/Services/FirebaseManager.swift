@@ -6,7 +6,6 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift

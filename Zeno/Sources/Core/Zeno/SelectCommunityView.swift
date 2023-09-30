@@ -58,7 +58,7 @@ struct SelectCommunityView: View {
                     
                             LottieView(lottieFile: "beforeZeno")
                                 .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
-                                .offset(x: -.screenWidth/3, y: .screenHeight/6.2)
+                                .offset(x: -.screenWidth/3, y: .screenHeight/5.4)
                         }
                     }
                 }
@@ -83,7 +83,7 @@ struct SelectCommunityView: View {
                 }
             }
         }
-        .frame(width: 100, height: 40 * CGFloat(communities.count + 4))
+        .frame(width: .screenWidth/3, height: .screenHeight/3)
     }
     
     func cardView() -> some View {
@@ -119,6 +119,7 @@ struct SelectCommunityView: View {
             }
             .frame(width: CGFloat(Community.dummy.count) * 610 )
         }
+        .frame(minWidth: CGFloat(Community.dummy.count) * 100)
     }
 }
 
