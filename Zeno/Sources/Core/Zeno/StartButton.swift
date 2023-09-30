@@ -10,7 +10,17 @@ import SwiftUI
 
 struct StartButton: View {
     var body: some View {
-        Rectangle()
+        ZStack {
+            Text("START")
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                .foregroundColor(.black)
+            Rectangle()
+                .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.05)
+                .cornerRadius(10)
+                .foregroundColor(.mainColor)
+                .opacity(0.5)
+                .shadow(color: Color.mainColor2, radius: 5, x: 5, y: 5)
+        }
     }
 }
 

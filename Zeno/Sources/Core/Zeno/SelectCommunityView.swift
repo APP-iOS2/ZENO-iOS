@@ -20,55 +20,55 @@ struct SelectCommunityView: View {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                 VStack {
-                    Group {
-                        LottieView(lottieFile: "nudgeDevil")
-                            .frame(width: 50, height: 50)
-                        if isPlay == false {
-                            Text("제노를 플레이 할 그룹을 선택해주세요")
-                                .selectCommunity2()     
-                        } else {
-                            VStack {
-                                Text(communityName)
-                                    .selectCommunity2()
-                                NavigationLink {
-                                    ZenoView()
-                                } label: {
-                                    Text("Start")
-                                        .padding(.leading, .screenWidth * 0.7)
-                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                        .foregroundColor(.white)
-                                }
+                    ScrollViewReader { ScrollViewProxy in
+                        cardView()
+                            .onChange(of: selected) { _ in
+                                withAnimation {
+                                    ScrollViewProxy.scrollTo(selected, anchor: .top)
                             }
                         }
                     }
-                    
                     /// 그룹들 나오는 뷰
                     commuityListView()
                         .padding(.top, 10)
                     
-                    /// 카드 뷰
-                    ScrollViewReader { ScrollViewProxy in
-                        ZStack {
-                            cardView()
-                                .onChange(of: selected) { _ in
-                                    withAnimation {
-                                        ScrollViewProxy.scrollTo(selected, anchor: .top)
+                        Group {
+                            LottieView(lottieFile: "nudgeDevil")
+                                .frame(width: 50, height: 50)
+                            if isPlay == false {
+                                Text("제노를 플레이 할 그룹을 선택해주세요")
+                                    .selectCommunity2()
+                            } else {
+                                VStack {
+                                    ZStack {
+                                        Text(communityName)
+                                            .selectCommunity2()
+                                    }
+                                    NavigationLink {
+                                        ZenoView()
+                                    } label: {
+                                        Text("Start")
+                                            .padding(.leading, .screenWidth * 0.7)
+                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                            .foregroundColor(.white)
+                                    }
                                 }
                             }
-                    
-                            LottieView(lottieFile: "beforeZeno")
-                                .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
-                                .offset(x: -.screenWidth/3, y: .screenHeight/5.4)
                         }
+                    ZStack {
+                        LottieView(lottieFile: "beforeZeno")
+                            .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
+                            .offset(x: -.screenWidth/3, y: -40)
                     }
                 }
             }
+            .offset(y: 100)
             .onAppear {
                 isPlay = false
             }
         }
     }
-    
+   
     func commuityListView() -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack {
