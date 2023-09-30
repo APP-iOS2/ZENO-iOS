@@ -18,7 +18,9 @@ struct AlarmSelectCommunityCellView: View {
                 .frame(width: 60)
                 .overlay(
                     Circle()
-                        .stroke(Color.red, style: StrokeStyle(lineWidth: 2))
+                        .strokeBorder(
+                            AngularGradient(gradient: Gradient(colors: [.red, .yellow, .green, .blue, .purple, .red]), center: .center), lineWidth: 3
+                        )
                         .opacity(community.id == selectedCommunityId ? 1 : 0)
                 )
                 .onTapGesture {
