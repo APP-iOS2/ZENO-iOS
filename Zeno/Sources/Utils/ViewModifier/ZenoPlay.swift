@@ -30,9 +30,21 @@ struct SelectCommunity2: ViewModifier {
     }
 }
 
+struct OpacityAndWhite: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(.white)
+            .opacity(0.8)
+    }
+}
+
 extension View {
     func selectCommunity() -> some View {
         modifier(SelectCommunity())
+    }
+    
+    func opacityAndWhite() -> some View {
+        modifier(OpacityAndWhite())
     }
     
     func selectCommunity2() -> some View {

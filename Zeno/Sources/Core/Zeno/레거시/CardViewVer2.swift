@@ -23,11 +23,13 @@ struct CardViewVer2: View {
             HStack(alignment: .center, spacing: peekAmount) {
                 ForEach(communities.indices, id: \.self) { index in
                     Image(communities[index].communityImage)
+                        .resizable()
                         .frame(width: itemWidth, height: 200)
+                        .scaledToFit()
                         .overlay(alignment: .bottomLeading) {
                             Text(communities[index].communityName)
                                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
-                                .offset(y:70)
+                                .offset(y: 70)
                                 .opacity(self.opacityForText(at: index, in: geometry))
                         }
                         .scaleEffect(self.scaleValueForItem(at: index, in: geometry))

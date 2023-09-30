@@ -12,6 +12,7 @@ extension Color {
     static let mainColor = Color(red: 123/255, green: 103/255, blue: 200/255)
     static let ggullungColor = Color(red: 49/255, green: 43/255, blue: 92/255)
     static let mainColor2 = #colorLiteral(red: 0.1589618165, green: 0.1237950838, blue: 0.2860623389, alpha: 1)
+    static let black2 = #colorLiteral(red: 0.08453956991, green: 0.08453956991, blue: 0.08453956991, alpha: 1)
     
 	static func hex(_ hex: String) -> Self {
 		let scanner = Scanner(string: hex)
