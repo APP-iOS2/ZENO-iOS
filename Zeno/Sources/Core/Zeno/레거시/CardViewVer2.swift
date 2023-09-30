@@ -6,7 +6,7 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-// 리스를 눌렀을 때 위치를,, 어 그니까 게산해서 위치를 옮겨라!!
+// TODO: 리스를 눌렀을 때 위치를,, 어 그니까 게산해서 위치를 옮겨라!!
 
 import SwiftUI
 
