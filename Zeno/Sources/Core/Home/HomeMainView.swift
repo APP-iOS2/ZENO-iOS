@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct HomeMainView: View {
+	@EnvironmentObject var contentViewModel: ContentViewModel
 	@State private var isShowingGroupListSheet = false
 	@State private var isShowingUserSearchView = false
 	@State private var isShowingHamburgerView = false
@@ -18,6 +19,26 @@ struct HomeMainView: View {
 	var body: some View {
 		NavigationStack {
 			ScrollView {
+				Button {
+					AuthService.shared.logout()
+				} label: {
+					loginButtonLabel(title: "(임시)로그아웃 버튼", tintColor: .white, backgroundColor: .red)
+				}
+				Button {
+					if let currentUser = contentViewModel.currentUser {
+						print("🔵 현재 로그인된 유저 정보:\n \(currentUser)")
+					} else {
+						print("ContentViewMdoel currentUser 없음")
+					}
+					if let usersession = contentViewModel.userSession {
+						print("🔵 현재 userSeesion:\n \(usersession)")
+					} else {
+						print("ContentViewMdoel usersession 없음")
+					}
+				} label: {
+					loginButtonLabel(title: "(임시)ContentViewModel에 저장된 현재 로그인된 유저 정보 불러오기", tintColor: .black, backgroundColor: .blue)
+				}
+				
 				newUserView
 				userListView
 			}
