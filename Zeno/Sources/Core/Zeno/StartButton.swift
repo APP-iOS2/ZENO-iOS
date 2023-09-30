@@ -19,7 +19,6 @@ struct StartButton: View {
                 .cornerRadius(10)
                 .foregroundColor(.mainColor)
                 .opacity(0.5)
-                .shadow(color: Color.mainColor2, radius: 5, x: 5, y: 5)
         }
     }
 }

@@ -13,27 +13,27 @@ struct CardViewVer2: View {
     @State private var dragOffset: CGFloat = 0
     
     private let numberOfItems: Int = 5
-    private let itemWidth: CGFloat = 300
-    private let peekAmount: CGFloat = -10
-    private let dragThreshold: CGFloat = 100
+    private let itemWidth: CGFloat = 250
+    private let peekAmount: CGFloat = 10
+    private let dragThreshold: CGFloat = 70
     private let communities = Community.dummy
     
     var body: some View {
         GeometryReader { geometry in
-            HStack(spacing: peekAmount) {
+            HStack(alignment: .center, spacing: peekAmount) {
                 ForEach(communities.indices, id: \.self) { index in
                     Image(communities[index].communityImage)
-                        .frame(width: itemWidth, height: 450)
+                        .frame(width: itemWidth, height: 200)
                         .overlay(alignment: .bottomLeading) {
                             Text(communities[index].communityName)
                                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
-                                .offset(y: 40)
+                                .offset(y:70)
                                 .opacity(self.opacityForText(at: index, in: geometry))
                         }
                         .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
                 }
             }
-            .offset(x: calculateOffset() + dragOffset)
+            .offset(x: calculateOffset() + dragOffset + 60)
             .gesture(
                 DragGesture(coordinateSpace: .global)
                     .onChanged { value in
@@ -81,7 +81,7 @@ struct CardViewVer2: View {
         let itemPosition = CGFloat(index) * (itemWidth + peekAmount) + currentItemOffset + itemWidth / 2
         let distanceFromCenter = abs(geometry.size.width / 2 - itemPosition)
         let threshold: CGFloat = itemWidth / 2
-        let opacity = min(1, max(0, (threshold - distanceFromCenter) / threshold))
+        let opacity = min(1, max(0, (threshold - distanceFromCenter) / threshold)+0.3)
         return Double(opacity)
     }
 }
