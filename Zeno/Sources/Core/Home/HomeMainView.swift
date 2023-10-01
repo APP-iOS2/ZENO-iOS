@@ -54,9 +54,9 @@ struct HomeMainView: View {
 			}
 		}
 		.tint(.black)
-		.overlay(
-			GroupSideBarView(isPresented: $isShowingHamburgerView, groupID: .constant("mutSa"))
-		)
+    .overlay(
+            SideMenuView(isPresented: $isShowingHamburgerView, community: Community.dummy[0])
+        )
 	}// body
 }
 
@@ -212,7 +212,8 @@ extension HomeMainView {
 }
 
 struct HomeMainView_Previews: PreviewProvider {
-	static var previews: some View {
-		HomeMainView()
-	}
+    static var previews: some View {
+        /*HomeMainView()*/
+        TabBarView()
+    }
 }
