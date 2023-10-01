@@ -15,7 +15,7 @@ struct Community: Identifiable {
 	/// 커뮤니티 소개
 	var description: String
 	/// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요 ⭐️
-	var communityImage: String { return "LLLogo" } // 임 시로만들어놨음
+	var communityImage: String
 	/// 커뮤니티 생성일
 	var createdAt: Double
 	/// 커뮤니티 인원
@@ -35,7 +35,7 @@ struct Community: Identifiable {
 extension Community {
 	static let dummy: [Community] = [
 		.init(communityName: "멋쟁이 사자처럼 iOS앱스쿨 2기",
-			  description: "멋쟁이 iOS개발자 되기위해 Deep Diving",
+              description: "멋쟁이 iOS개발자 되기위해 Deep Diving", communityImage: "LLLogo",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
@@ -47,25 +47,25 @@ extension Community {
 				.init(id: "유저5", joinedAt: Date().timeIntervalSince1970),
 			  ]),
 		.init(communityName: "새싹 영등포 iOS 3기",
-			  description: "푸릇푸릇 자라나는 우리는 새싹",
+              description: "푸릇푸릇 자라나는 우리는 새싹", communityImage: "sesac",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 30,
 			  isSearchable: true,
 			  joinMembers: []),
 		.init(communityName: "앨런 스쿨 12기",
-			  description: "서로서로 의지하며 공부하기",
+              description: "서로서로 의지하며 공부하기", communityImage: "image2",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 20,
 			  isSearchable: true,
 			  joinMembers: []),
 		.init(communityName: "야곰 아카데미 iOS챌린지 5기",
-			  description: "야~~~곰",
+              description: "야~~~곰", communityImage: "yagom",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
 			  joinMembers: []),
 		.init(communityName: "할맥 모임 88기",
-			  description: "마셔마셔 먹고 죽어",
+              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 10,
 			  isSearchable: true,

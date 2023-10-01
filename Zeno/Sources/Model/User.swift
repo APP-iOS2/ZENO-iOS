@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 struct User: Identifiable, Hashable, Codable {
 	var id: String = UUID().uuidString
 	/// 이름
@@ -28,7 +29,7 @@ struct User: Identifiable, Hashable, Codable {
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
 	var buddyList: [Community.ID: [User.ID]]
-
+  
 //    struct MinUserData: Codable {
 //        let id: String
 //        var name: String
@@ -43,7 +44,7 @@ extension User {
 	static let dummy: [User] = [
 		.init(name: "원강묵",
 			  gender: "남",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "하이",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -55,7 +56,7 @@ extension User {
 			  ]),
 		.init(name: "김건섭",
 			  gender: "남",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "안녕하세용 건섭입니다",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -67,7 +68,7 @@ extension User {
 			  ]),
 		.init(name: "유하은",
 			  gender: "여",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "유하~",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -79,7 +80,7 @@ extension User {
 			  ]),
 		.init(name: "박서연",
 			  gender: "여",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "반갑습니다아~",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -91,7 +92,7 @@ extension User {
 			  ]),
 		.init(name: "신우진",
 			  gender: "남",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "내 MBTI는 CUTE",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -103,7 +104,7 @@ extension User {
 			  ]),
 		.init(name: "안효명",
 			  gender: "남",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "안효명하세용~",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
@@ -115,7 +116,7 @@ extension User {
 			  ]),
 		.init(name: "함지수",
 			  gender: "여",
-			  profileImgUrlPath: "이미지URL",
+			  profileImgUrlPath: "person",
 			  description: "둥둥둥~~둥둥둥~~이건 입에서나는 베이스소리가 아니여",
 			  kakaoToken: "카카오토큰",
 			  coin: 10,

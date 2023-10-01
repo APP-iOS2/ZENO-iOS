@@ -20,8 +20,7 @@ struct ZenoApp: App {
         WindowGroup {
             ContentView()
                 .onAppear {
-                    
-                }
+            }
         }
     }
 }

@@ -29,7 +29,7 @@ struct ZenoSelectCommunityView: View {
                             VStack {
                                 Text(communityName)
                                 NavigationLink {
-                                    ZenoView()
+                                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
                                 } label: {
                                     Text("Start")
                                         .padding(.leading, .screenWidth * 0.7)
