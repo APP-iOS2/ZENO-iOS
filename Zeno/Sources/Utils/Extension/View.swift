@@ -29,4 +29,15 @@ extension View {
     func initialButtonBackgroundModifier(fontColor: Color, color: Color) -> some View {
         modifier(InitialButtonBackgroundModifier(color: color, fontColor: fontColor))
     }
+	/// 로그인버튼라벨
+	func loginButtonLabel(title: String, tintColor: Color, backgroundColor: Color) -> some View {
+		Text(title)
+			.frame(maxWidth: .infinity)
+			.padding()
+			.background(backgroundColor)
+			.cornerRadius(10)
+			.padding(.horizontal)
+			.padding(.top, 6)
+			.tint(tintColor)
+	}
 }
