@@ -12,9 +12,18 @@ struct GroupSideBarView: View {
     @Binding var isPresented: Bool
     // 커뮤니티 정보
     let community: Community
+    // Group ID를 받아서 알림여부를 가져온다. groupID가 없을때 어떻게 가져오는지는 확인해봐야함.
+    @AppStorage private var isgroupAlarmSaved: Bool
     
     // 현재 알람만 선택이 되어있는지 여부를 따지면 되지만 추후 확장성을 위해 배열로 코딩.
     @State private var clickedButtons: [Bool] = .init(repeating: false, count: 3)
+    
+    init(isPresented: Binding<Bool>, community: Community) {
+        self.community = community
+        self._isPresented = isPresented
+        _isgroupAlarmSaved = .init(wrappedValue: false, "swj") // 현재 community.id가 uuid로 따져서 계속 변함.
+    }
+    
     @State private var selectIndex: Int = 0
     @State private var isSelectContent: Bool = false
     @State private var isSettingPresented: Bool = false
@@ -28,28 +37,14 @@ struct GroupSideBarView: View {
         let date = Date(timeIntervalSince1970: doubleDate)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-
+        
         let formattedDate = dateFormatter.string(from: date)
         
         return formattedDate
     }
-        
+    
     var body: some View {
-        // Group ID를 받아서 알림여부를 가져온다. groupID가 없을때 어떻게 가져오는지는 확인해봐야함.
-        @AppStorage(community.id) var isgroupAlarmSaved: Bool = false // 기본값만 지정해준것일뿐 실제 가져온 값은 다를 수 있다.
-        
-        // isgroupAlarmSaved가 true인 경우 index = 1에 있는 알람의 값을 true로 변경해준다.
-        if isgroupAlarmSaved {
-            clickedButtons = clickedButtons.enumerated().map { (index, element) in
-                if index == 1 {
-                    return true
-                } else {
-                    return element
-                }
-            }
-        }
-         
-        return VStack(alignment: .leading) {
+        VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(community.communityName)
@@ -70,8 +65,13 @@ struct GroupSideBarView: View {
                     ForEach(GroupSideMenuItem.items) { item in
                         Button(action: {
                             selectIndex = item.id
-                            isPresented = false
-                            isSelectContent.toggle()
+                            
+                            if selectIndex == 1 {
+                                shareText()
+                            } else {
+                                isPresented = false
+                                isSelectContent.toggle()
+                            }
                         }, label: {
                             HStack {
                                 Text(item.contents)
@@ -98,7 +98,7 @@ struct GroupSideBarView: View {
                         case 0: // 그룹 나가기 alert
                             isGroupOutAlert.toggle()
                         case 1: // 그룹별 알림 여부 Toast하나 만들어서 띄우자. (커스텀 공통으로 가져가기)
-                            break
+                            isgroupAlarmSaved.toggle()
                         case 2: // 그룹 설정
                             isPresented = false
                             isSettingPresented.toggle()
@@ -117,17 +117,17 @@ struct GroupSideBarView: View {
                         }
                     })
                     .foregroundStyle(Color.ggullungColor)
-                   
+                    
                     if index == 0 { Spacer() }
                 }
             }
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
-            .background(Color.yellow.opacity(0.2))
+            .background(Color.purple.opacity(0.2))
         }
         .fullScreenCover(isPresented: $isSettingPresented, content: {
-            GroupSettingView()
+            GroupSettingView(community: community)
         })
         .fullScreenCover(isPresented: $isSelectContent, content: {
             GroupSideMenuItem.getView(index: selectIndex)
@@ -138,6 +138,18 @@ struct GroupSideBarView: View {
         } message: {
             Text("해당 그룹으로 진행되던 모든 알림 및 정보들이 삭제됩니다.")
         }
+        .onAppear {
+            // isgroupAlarmSaved가 true인 경우 index = 1에 있는 알람의 값을 true로 변경해준다.
+            if isgroupAlarmSaved {
+                self.clickedButtons = clickedButtons.enumerated().map { (index, element) in
+                    if index == 1 {
+                        return true
+                    } else {
+                        return element
+                    }
+                }
+            }
+        }
     }
     
     // MARK: Methods
@@ -147,6 +159,39 @@ struct GroupSideBarView: View {
         // 해당그룹의 정보로 사이드바를 구성하였기때문에 사이드바의 Parent뷰가 refresh되어야 함.
         isPresented = false
     }
+    
+    /// 공유 시트
+    private func shareText() {
+        let activityVC = UIActivityViewController(
+                         activityItems: ["\(community.communityName)",
+                                         URL(string: "https://www.naver.com")!,
+                                        ],
+                         applicationActivities: [KakaoActivity(), IGActivity()])
+        
+        // 공유 제외할 것들. (기본 제공중에서)
+//        activityVC.excludedActivityTypes = [.postToTwitter,
+//            .postToWeibo,
+//            .postToVimeo,
+//            .postToFlickr,
+//            .postToTencentWeibo,
+//            .saveToCameraRoll,
+//            .mail,
+//            .print,
+//            .assignToContact
+//        ]
+                
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            if let mainWindow = windowScene.windows.first {
+                mainWindow.rootViewController?.present(
+                    activityVC,
+                    animated: true,
+                    completion: {
+                        print("공유창 나타나면서 할 작업들?")
+                    }
+                )
+            }
+        }
+    }
 }
 
 // MARK: 사이드바메뉴 Item 구조체
@@ -154,7 +199,7 @@ struct GroupSideMenuItem: Identifiable {
     let id: Int
     let contents: String
     
-    static var items: [GroupSideMenuItem] = [
+    static let items: [GroupSideMenuItem] = [
         .init(id: 0, contents: "구성원 관리"),
         .init(id: 1, contents: "그룹 초대")
     ]
@@ -163,11 +208,9 @@ struct GroupSideMenuItem: Identifiable {
     static func getView(index: Int) -> some View {
         switch index {
         case 0:
-            Text("첫번째")
+            GroupMemberManageView()
         case 1:
-            Text("두번째")
-        case 2:
-            EmptyView()
+            EmptyView() // 공유 메서드로 끗.
         default:
             EmptyView()
         }
