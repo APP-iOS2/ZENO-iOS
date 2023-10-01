@@ -44,6 +44,10 @@ struct AlarmInitialBtnView: View {
             }
             .alert("코인을 사용하여 확인하시겠습니까 ?", isPresented: $usingCoin) {
                 Button(role: .destructive) {
+                } label: {
+                    Text("취소")
+                }
+                Button(role: .cancel) {
                     showInitialViewAction()
                     isPresented = false
                 } label: {
@@ -56,7 +60,6 @@ struct AlarmInitialBtnView: View {
                     usingInitialTicket.toggle()
                 } else {
                     isPresented = false
-                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         print(" 유료 결제 임")
                         isLackingInitialTicket.toggle()
@@ -68,6 +71,10 @@ struct AlarmInitialBtnView: View {
             }
             .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
                 Button(role: .destructive) {
+                } label: {
+                    Text("취소")
+                }
+                Button(role: .cancel) {
                     showInitialViewAction()
                     isPresented = false
                 } label: {
