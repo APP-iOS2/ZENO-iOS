@@ -1,5 +1,5 @@
 //
-//  AddNewGroupView.swift
+//  EditGroupView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -9,20 +9,35 @@
 import SwiftUI
 import PhotosUI
 
-struct AddNewGroupView: View {
+struct EditGroupView: View {
+    enum EditMode {
+        case addNew, edit
+        
+        var title: String {
+            switch self {
+            case .addNew:
+                return "그룹 만들기"
+            case .edit:
+                return "그룹 설정"
+            }
+        }
+    }
+    
+    let editMode: EditMode
+    
     @Binding var detent: PresentationDetent
     @Binding var isPresented: Bool
     
     @Environment(\.dismiss) private var dismiss
     @State private var selection: PhotosPickerItem?
+    @Binding var community: Community
+	@State private var emptyCommunity: Community = Community.dummy[0]
     @State private var selectedImg: Image = Image(systemName: "plus.circle")
-    @State private var title: String = ""
-    @State private var description: String = ""
-    @State private var personnel: Int = 2
-    @State private var isGroupSearchable: Bool = true
+    
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
             PhotosPicker(selection: $selection) {
+                // TODO: community.communityImage로 변경
                 selectedImg
                     .resizable()
                 // TODO: frame, radius 상수값으로 픽스?
@@ -30,15 +45,15 @@ struct AddNewGroupView: View {
                     .cornerRadius(100)
             }
             Group {
-                TextField("그룹 이름", text: $title, prompt: Text("그룹 이름"))
-                TextField("그룹 설명", text: $description, prompt: Text("그룹 설명"))
+                TextField("그룹 이름", text: $emptyCommunity.communityName, prompt: Text("그룹 이름"))
+                TextField("그룹 설명", text: $emptyCommunity.description, prompt: Text("그룹 설명"))
             }
             .groupTF()
             HStack {
                 Text("그룹 인원")
                     .bold()
                 Spacer()
-                Picker("그룹 인원", selection: $personnel) {
+                Picker("그룹 인원", selection: $emptyCommunity.personnel) {
                     ForEach(0..<100) { index in
                         // TODO: selection과 index가 안맞아서 예외처리로 뷰 구현했는데 좋은 방법이 있다면 수정 요망
                         if index > 1 {
@@ -46,8 +61,9 @@ struct AddNewGroupView: View {
                         }
                     }
                 }
+                .pickerStyle(.menu)
             }
-            Toggle(isOn: $isGroupSearchable) {
+            Toggle(isOn: $emptyCommunity.isSearchable) {
                 VStack(alignment: .leading) {
                     Text("검색 허용")
                         .bold()
@@ -57,9 +73,8 @@ struct AddNewGroupView: View {
             }
         }
         .font(.title)
-        .pickerStyle(.menu)
         .padding()
-        .navigationTitle("그룹 만들기")
+        .navigationTitle(editMode.title)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .toolbar {
@@ -70,17 +85,34 @@ struct AddNewGroupView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("완료") {
-                    // TODO: 그룹 추가 함수
+                    switch editMode {
+                    case .addNew:
+                        // TODO: 그룹 추가 함수
+                        break
+                    case .edit:
+                        community = emptyCommunity
+                    }
                     isPresented = false
                 }
-                .disabled(title.isEmpty)
+                .disabled(emptyCommunity.communityName.isEmpty)
             }
         }
+        .interactiveDismissDisabled()
         .onAppear {
-            detent = .fraction(1)
+            switch editMode {
+            case .addNew:
+                detent = .fraction(1)
+            case .edit:
+                break
+            }
         }
         .onDisappear {
-            detent = .fraction(0.8)
+            switch editMode {
+            case .addNew:
+                detent = .fraction(0.8)
+            case .edit:
+                break
+            }
         }
         .onChange(of: selection) { newValue in
             newValue?.loadTransferable(type: Data.self) { result in
@@ -98,7 +130,7 @@ struct AddNewGroupView: View {
     }
 }
 
-struct AddNewGroupView_Previews: PreviewProvider {
+struct EditGroupView_Previews: PreviewProvider {
     @State static var isPresented = true
     
     static var previews: some View {

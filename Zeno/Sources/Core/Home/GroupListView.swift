@@ -45,7 +45,8 @@ struct GroupListView: View {
                     }
                 }
                 NavigationLink {
-                    AddNewGroupView(detent: $detent, isPresented: $isPresented)
+                    // TODO: constant 뷰 연결 후 수정
+                    EditGroupView(editMode: .addNew, detent: $detent, isPresented: $isPresented, community: .constant(.dummy[0]))
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle")

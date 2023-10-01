@@ -25,6 +25,10 @@ struct AlarmSelectCommunityCellView: View {
                     selectedCommunityId = community.id
                 }
             Text("\(community.communityName)")
+                .font(.footnote)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: 72)
         }
         .padding(.vertical)
     }
@@ -32,6 +36,6 @@ struct AlarmSelectCommunityCellView: View {
 
 struct AlarmSelectCommunityCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmSelectCommunityCellView(selectedCommunityId: .constant("aaa"), community: Community(communityName: "name", description: "des", createdAt: 1092348102))
+		AlarmSelectCommunityCellView(selectedCommunityId: .constant("aaa"), community: Community.dummy[0])
     }
 }

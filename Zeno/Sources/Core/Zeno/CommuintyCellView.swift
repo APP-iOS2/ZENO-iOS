@@ -16,12 +16,11 @@ struct CommuintyCellView: View {
             Spacer()
             Image(asset: ZenoImages(name: community.communityImage))
                 .resizable()
-                .scaledToFit()
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
                 .padding(.trailing, 10)
             Text(community.communityName)
-                // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 20))
+                 .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 15))
                 .foregroundColor(.white.opacity(0.7))
             Spacer()
         }
@@ -34,6 +33,6 @@ struct CommuintyCellView: View {
 
 struct CommuintyCellView_Previews: PreviewProvider {
     static var previews: some View {
-        CommuintyCellView(community: Community(communityName: "멋쟁이 사자처럼", description: "세계 최고 부트 캠프 멋쟁이 사자처럼입니다~ ", createdAt: 20230603))
+		CommuintyCellView(community: Community.dummy[0])
     }
 }

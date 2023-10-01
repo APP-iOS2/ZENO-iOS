@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct SelectCommunityView: View {
-    private let communities = Community.CommunitySamples
+    private let communities = Community.dummy
     
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
@@ -19,56 +19,56 @@ struct SelectCommunityView: View {
         NavigationStack {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
-                
                 VStack {
-                    Group {
-                        LottieView(lottieFile: "nudgeDevil")
-                            .frame(width: 50, height: 50)
-                        if isPlay == false {
-                            Text("제노를 플레이 할 그룹을 선택해주세요")
-                                .padding(.bottom, 20)
-                        } else {
-                            VStack {
-                                Text(communityName)
-                                NavigationLink {
-                                    ZenoView()
-                                } label: {
-                                    Text("Start")
-                                        .padding(.leading, .screenWidth * 0.7)
-                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                        .foregroundColor(.white)
-                                }
+                    ScrollViewReader { ScrollViewProxy in
+                        cardView()
+                            .onChange(of: selected) { _ in
+                                withAnimation {
+                                    ScrollViewProxy.scrollTo(selected, anchor: .top)
                             }
                         }
                     }
-                    
                     /// 그룹들 나오는 뷰
                     commuityListView()
                         .padding(.top, 10)
                     
-                    /// 카드 뷰
-                    ScrollViewReader { ScrollViewProxy in
-                        ZStack {
-                            cardView()
-                                .onChange(of: selected) { _ in
-                                    withAnimation {
-                                        ScrollViewProxy.scrollTo(selected, anchor: .top)
+                        Group {
+                            LottieView(lottieFile: "nudgeDevil")
+                                .frame(width: 50, height: 50)
+                            if isPlay == false {
+                                Text("제노를 플레이 할 그룹을 선택해주세요")
+                                    .selectCommunity2()
+                            } else {
+                                VStack {
+                                    ZStack {
+                                        Text(communityName)
+                                            .selectCommunity2()
+                                    }
+                                    NavigationLink {
+                                        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+                                    } label: {
+                                        Text("Start")
+                                            .padding(.leading, .screenWidth * 0.7)
+                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                            .foregroundColor(.white)
+                                    }
                                 }
                             }
-                    
-                            LottieView(lottieFile: "beforeZeno")
-                                .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
-                                .offset(x: -.screenWidth/3, y: .screenHeight/5.2)
                         }
+                    ZStack {
+                        LottieView(lottieFile: "beforeZeno")
+                            .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.3)
+                            .offset(x: -.screenWidth/3, y: -40)
                     }
                 }
             }
+            .offset(y: 100)
             .onAppear {
                 isPlay = false
             }
         }
     }
-    
+   
     func commuityListView() -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack {
@@ -83,7 +83,7 @@ struct SelectCommunityView: View {
                 }
             }
         }
-        .frame(width: 100, height: 40 * CGFloat(communities.count + 4))
+        .frame(width: .screenWidth/3, height: .screenHeight/3)
     }
     
     func cardView() -> some View {
@@ -100,23 +100,26 @@ struct SelectCommunityView: View {
                                     .frame(width: 50, height: 50)
                                     .scaledToFit()
                                 Text(community.communityName)
+                                    .font(ZenoFontFamily.NanumBarunGothicOTF.regular
+                                        .swiftUIFont(size: 17))
                                     .padding(20)
                                     .foregroundColor(.white)
                             }
                         }
-                        .frame(width: 180, height: 150)
+                        .frame(width: 320, height: 200)
                         .id(community.id)
                         .rotation3DEffect(
                             Angle(degrees: getPercentage(geo: geometry) * 40),
                             axis: (x: 0.0, y: 0.1, z: 0.0)
                         )
                      }
-                    .frame(width: 180, height: 150)
+                    .frame(width: 320, height: 200)
                     .padding()
                 }
             }
-            .frame(width: CGFloat(Community.CommunitySamples.count) * 510 )
+            .frame(width: CGFloat(Community.dummy.count) * 610 )
         }
+        .frame(minWidth: CGFloat(Community.dummy.count) * 100)
     }
 }
 

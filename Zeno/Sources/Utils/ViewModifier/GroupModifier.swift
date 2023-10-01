@@ -27,6 +27,14 @@ struct GroupTFModifier: ViewModifier {
     }
 }
 
+struct GroupManagementTitleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .bold()
+            .font(.title)
+    }
+}
+
 extension View {
     func groupCell() -> some View {
         modifier(GroupListViewModifier())
@@ -34,5 +42,9 @@ extension View {
     
     func groupTF() -> some View {
         modifier(GroupTFModifier())
+    }
+    
+    func gmTitle() -> some View {
+        modifier(GroupManagementTitleModifier())
     }
 }
