@@ -20,7 +20,6 @@ struct UserMoneyView: View {
                 Text("친구")
                     .font(.system(size: 15))
             }
-            //                .frame(width: geometry.size.width / 3)
             .frame(width: UIScreen.main.bounds.width/3)
             
             /// 코인
@@ -30,14 +29,13 @@ struct UserMoneyView: View {
                     .fontWeight(.semibold)
                 
                 HStack(spacing: 0) {
-                    Image("coin")
+                    Image("pointCoin")
                         .resizable()
                         .frame(width: 20, height: 20)
                     Text("코인")
                         .font(.system(size: 15))
                 }
             }
-            //                .frame(width: geometry.size.width / 3)
             .frame(width: UIScreen.main.bounds.width/3)
             
             /// 지목 받은 제노
@@ -48,9 +46,7 @@ struct UserMoneyView: View {
                 Text("득표수")
                     .font(.system(size: 15))
             }
-            //                .frame(width: geometry.size.width / 3)
             .frame(width: UIScreen.main.bounds.width/3)
-            //            }
         }
         .frame(minHeight: 90)
         .background(.purple)
