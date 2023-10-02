@@ -23,7 +23,7 @@ final class KakaoActivity: UIActivity {
     }
     
     override var activityImage: UIImage? {
-        return UIImage(named: "kakaotalk") ?? UIImage(systemName: "xmark.circle")
+        return UIImage(named: "kakaotalkLogo") ?? UIImage(systemName: "xmark.circle")
     }
     
     override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
