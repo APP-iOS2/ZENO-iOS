@@ -29,8 +29,8 @@ let project = Project(
         .remote(url: "https://github.com/simibac/ConfettiSwiftUI", requirement: .upToNextMajor(from: "1.0.0")),
         .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "10.0.0")),
         .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.0.0")),
-        .remote(url:"https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0"))
-
+        .remote(url: "https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0")),
+        .remote(url: "https://github.com/apple/swift-protobuf.git", requirement: .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
         .init(
@@ -46,6 +46,7 @@ let project = Project(
             ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
+                .package(product: "SwiftProtobuf"),
 //                .package(product: "FirebaseAnalytics"),
 //                .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
