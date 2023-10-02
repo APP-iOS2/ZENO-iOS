@@ -48,7 +48,7 @@ struct SettingTextFieldView: View {
             HStack {
                 TextField("\(textOriginal)", text: $value)
                     .focused($isTextFocused)
-                    .onChange(of: value) { _, newValue in
+                    .onChange(of: value) { newValue in
                         if value.count > textMaxCount {
                             value = String(newValue.prefix(textMaxCount))
                         }
@@ -76,7 +76,7 @@ struct SettingTextFieldView: View {
             
             Spacer()
         }
-        .contentShape(.rect)
+//        .contentShape(.rect)
         .hideKeyboardOnTap()
         .onAppear {
             textCount = value.count

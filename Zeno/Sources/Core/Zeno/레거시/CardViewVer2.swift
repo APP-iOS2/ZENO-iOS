@@ -74,8 +74,7 @@ struct CardViewVer2: View {
     func finalizePosition(dragValue: DragGesture.Value) {
         if dragValue.predictedEndTranslation.width > dragThreshold && currentIndex > 0 {
             currentIndex -= 1  // Decrement the current inde
-        }
-        else if dragValue.predictedEndTranslation.width < -dragThreshold && currentIndex < numberOfItems - 1 {
+        } else if dragValue.predictedEndTranslation.width < -dragThreshold && currentIndex < numberOfItems - 1 {
             currentIndex += 1  // Increment the current index
         }
     }

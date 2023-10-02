@@ -22,7 +22,6 @@ struct Blur: UIViewRepresentable {
     }
 }
 
-
 struct VisualEffectView: UIViewRepresentable {
     let style: UIBlurEffect.Style
 

@@ -45,7 +45,6 @@ struct GroupMemberManageView: View {
                         Text("새로 신청한 유저")
                             .font(.title3)
                     }
-                    
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)

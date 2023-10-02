@@ -8,10 +8,11 @@
 
 import Foundation
 
-
 struct User: Identifiable, Hashable, Codable {
 	var id: String = UUID().uuidString
-	/// 이름
+    /// pw
+    var pw: String { return "1234"} // ⭐️ 패스워드 추가
+    /// 이름
 	let name: String
 	/// 성별
 	let gender: String
@@ -28,7 +29,8 @@ struct User: Identifiable, Hashable, Codable {
 	/// 초성보기 사용권 잔여 횟수
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
-	var buddyList: [Community.ID: [User.ID]]
+	var buddyList: [Community.ID: [User.ID]]?
+    // ⭐️ 이거 옵셔널이어야하지 않나~
   
 //    struct MinUserData: Codable {
 //        let id: String

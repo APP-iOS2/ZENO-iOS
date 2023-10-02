@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-
 // 커스텀 액티비티 클래스 생성
 final class KakaoActivity: UIActivity {
     override class var activityCategory: UIActivity.Category {
