@@ -19,7 +19,6 @@ struct KakaoLoginView: View {
                 .background(.yellow)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
         }
-
     }
 }
 
