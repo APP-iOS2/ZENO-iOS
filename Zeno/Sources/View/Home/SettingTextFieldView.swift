@@ -76,7 +76,7 @@ struct SettingTextFieldView: View {
             
             Spacer()
         }
-//        .contentShape(.rect)
+        .contentShape(Rectangle())
         .hideKeyboardOnTap()
         .onAppear {
             textCount = value.count

@@ -10,8 +10,6 @@ import Foundation
 
 struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	var id: String = UUID().uuidString
-    /// pw
-    var pw: String { return "1234"} // ⭐️ 패스워드 추가
     /// 이름
 	let name: String
 	/// 성별
@@ -29,9 +27,19 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	/// 초성보기 사용권 잔여 횟수
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
-	var buddyList: [Community.ID: [User.ID]]?
-    // ⭐️ 이거 옵셔널이어야하지 않나~
-  
+	var buddyList: [Community.ID: [User.ID]]
+    /// 제노 시작 시간
+    var ZenoStartAt: Double = Date().timeIntervalSince1970
+    /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
+    var ZenoStartDate: String {
+        let dateOrderedAt: Date = Date(timeIntervalSince1970: ZenoStartAt)
+        
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ko_kr")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+        dateFormatter.dateFormat = "MM월dd일 HH:mm"
+        return dateFormatter.string(from: dateOrderedAt)
+    }
 //    struct MinUserData: Codable {
 //        let id: String
 //        var name: String
