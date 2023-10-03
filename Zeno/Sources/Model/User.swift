@@ -10,8 +10,6 @@ import Foundation
 
 struct User: Identifiable, Hashable, Codable {
 	var id: String = UUID().uuidString
-    /// pw
-    var pw: String { return "1234"} // ⭐️ 패스워드 추가
     /// 이름
 	let name: String
 	/// 성별
