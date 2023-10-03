@@ -42,7 +42,6 @@ class SignInManager: UIViewController, ObservableObject {
                 .document(userInfo.id)
                 .setData([
                     "ud": userInfo.id,
-                    "pw": userInfo.pw,
                     "name": userInfo.name,
                     "proImage": userInfo.profileImgUrlPath ?? "default value",
                     // TODO: 업로드 할 유저 정보 더 적어야 함
