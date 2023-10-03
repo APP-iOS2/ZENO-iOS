@@ -56,11 +56,15 @@ class AuthService {
 		}
 	}
 	/// 이메일 회원가입 정보 등록하기
-	func uploadUserData(user: User) async {
-		self.currentUser = user
-		guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
-		try? await Firestore.firestore().collection("Users").document(user.id).setData(encodedUser)
-	}
+    func uploadUserData(user: User) async {
+        self.currentUser = user
+        try? await FirebaseManager.shared.create(data: user)
+    }
+//	func uploadUserData(user: User) async {
+//		self.currentUser = user
+//		guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
+//		try? await Firestore.firestore().collection("Users").document(user.id).setData(encodedUser)
+//	}
 	
 	/// 유저 데이터 가져오기
 	func loadUserData() async throws {
@@ -82,8 +86,15 @@ class AuthService {
 extension AuthService {
 	/// 유저 패치하기
 	static func fetchUser(withUid uid: String) async throws -> User {
-		let snapshot = try await Firestore.firestore().collection("Users").document(uid).getDocument()
-		print("유저 패치")
-		return try snapshot.data(as: User.self)
+        let result = await FirebaseManager.shared.read(type: User.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
+        }
+//		let snapshot = try await Firestore.firestore().collection("Users").document(uid).getDocument()
+//		print("유저 패치")
+//		return try snapshot.data(as: User.self)
 	}
 }

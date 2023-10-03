@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable {
+struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	var id: String = UUID().uuidString
     /// pw
     var pw: String { return "1234"} // ⭐️ 패스워드 추가

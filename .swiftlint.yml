@@ -25,6 +25,8 @@ disabled_rules: # 사용하지 않는 룰
     - nesting
     # todo알람 지우기
     - todo
+    # 파일 줄번호 제한
+    - file_length
 
 analyzer_rules:
     # 모든 선언은 한 번 이상 사용되어야 함
