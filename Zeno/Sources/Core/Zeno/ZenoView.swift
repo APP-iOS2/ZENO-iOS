@@ -17,13 +17,13 @@ struct ZenoView: View {
     @State private var answer: [Alarm] = []
     
     var body: some View {
-        if selected < zenoList.count  {
+        if selected < zenoList.count {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
                 VStack(alignment: .center) {
-                    ProgressView(value: Double(selected), total: Double(zenoList.count)) {
-                        Text("\(selected + 1) / \(zenoList.count)")
+                    ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
+                        Text("\(selected+1) / \(zenoList.count)")
                     }
                     .opacityAndWhite()
                     .bold()
@@ -70,6 +70,7 @@ struct ZenoView: View {
                     resetUsers()
                 }
             }
+            .navigationBarBackButtonHidden(true)
         } else {
             FinishZenoView()
         }
