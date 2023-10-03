@@ -1,20 +1,20 @@
 import SwiftUI
 
-public struct ContentView: View {
-	@StateObject var contentViewModel = ContentViewModel()
+struct InitialView: View {
+//    @StateObject var contentViewModel = ContentViewModel()
+    @EnvironmentObject private var userViewModel: UserViewModel
 	@State var isLoading: Bool = true
 	
-    public var body: some View {
+    var body: some View {
 		ZStack {
 			Group {
 				// 로그인 분기 처리
-				if contentViewModel.currentUser == nil {
+				if userViewModel.currentUser == nil {
 					LoginView()
 						.environmentObject(EmailLoginViewModel())
 						.tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
 				} else {
 					TabBarView()
-						.environmentObject(contentViewModel)
 				}
 			}
 			// 런치스크린
@@ -31,7 +31,7 @@ public struct ContentView: View {
     }
 }
 
-extension ContentView {
+extension InitialView {
 	/// 런치스크린
 	var launchScreenView: some View {
 		ZStack(alignment: .center) {
@@ -56,6 +56,6 @@ extension ContentView {
 
 struct StartView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        InitialView()
 	}
 }

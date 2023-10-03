@@ -18,16 +18,4 @@ class EmailLoginViewModel: ObservableObject {
 	@Published var registrationName: String = ""
 	@Published var registrationGender: String = ""
 	@Published var registrationDescription: String = ""
-	
-	func login() async throws {
-		try await AuthService.shared.login(email: email, password: password)
-	}
-	
-	func createUser() async throws {
-		try await AuthService.shared.createUser(email: registrationEmail,
-												passwrod: registrationPassword,
-												name: registrationName,
-												gender: registrationName,
-												description: registrationDescription)
-	}
 }

@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct EmailRegistrationView: View {
-	@EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+	@EnvironmentObject var userViewModel: UserViewModel
 	
     var body: some View {
 		VStack {
@@ -27,7 +28,7 @@ struct EmailRegistrationView: View {
 			Button {
 				Task {
 					do {
-						try await emailLoginViewModel.createUser()
+                        try await userViewModel.createUser(email: emailLoginViewModel.email, passwrod: emailLoginViewModel.password, name: emailLoginViewModel.registrationName, gender: emailLoginViewModel.registrationGender, description: emailLoginViewModel.registrationDescription)
 					} catch {
 						print("회원가입 실패 \(error.localizedDescription)")
 					}

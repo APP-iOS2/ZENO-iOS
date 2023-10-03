@@ -6,18 +6,16 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
-class AuthService {
+class UserViewModel: ObservableObject {
 	/// 파이어베이스 Auth의 User
 	@Published var userSession: FirebaseAuth.User?
 	/// 현재 로그인된 유저
 	@Published var currentUser: User?
-	/// 싱글톤 사용하기
-	static let shared = AuthService()
 	
 	init() {
 		Task {
@@ -25,7 +23,8 @@ class AuthService {
 		}
 	}
 	/// 이메일 로그인
-	func login(email: String, password: String) async throws {
+	@MainActor
+    func login(email: String, password: String) async throws {
 		do {
 			let result = try await Auth.auth().signIn(withEmail: email, password: password)
 			self.userSession = result.user
@@ -60,18 +59,13 @@ class AuthService {
         self.currentUser = user
         try? await FirebaseManager.shared.create(data: user)
     }
-//	func uploadUserData(user: User) async {
-//		self.currentUser = user
-//		guard let encodedUser = try? Firestore.Encoder().encode(user) else { return }
-//		try? await Firestore.firestore().collection("Users").document(user.id).setData(encodedUser)
-//	}
-	
 	/// 유저 데이터 가져오기
-	func loadUserData() async throws {
+    @MainActor
+    func loadUserData() async throws {
 		self.userSession = Auth.auth().currentUser
 		guard let currentUid = userSession?.uid else { return print("로그인된 유저 없음")}
 		print("\(currentUid)")
-		self.currentUser = try await AuthService.fetchUser(withUid: currentUid)
+		self.currentUser = try await UserViewModel.fetchUser(withUid: currentUid)
 		print("현재 로그인된 유저: \(currentUser ?? User.dummy[0])")
 	}
 	/// 로그아웃
@@ -83,7 +77,7 @@ class AuthService {
 }
 
 /// static 메서드 모아놓은 extension
-extension AuthService {
+extension UserViewModel {
 	/// 유저 패치하기
 	static func fetchUser(withUid uid: String) async throws -> User {
         let result = await FirebaseManager.shared.read(type: User.self, id: uid)
@@ -93,8 +87,5 @@ extension AuthService {
         case .failure(let error):
             throw error
         }
-//		let snapshot = try await Firestore.firestore().collection("Users").document(uid).getDocument()
-//		print("유저 패치")
-//		return try snapshot.data(as: User.self)
 	}
 }
