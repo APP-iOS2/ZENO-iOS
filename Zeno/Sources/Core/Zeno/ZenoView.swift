@@ -12,6 +12,7 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let allMyFriends: [User]
     let loggedUser: User = .dummy[0]
+    
     @State private var users: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
