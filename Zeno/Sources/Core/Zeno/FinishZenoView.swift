@@ -37,6 +37,7 @@ struct FinishZenoView: View {
                     .offset(y: -.screenHeight * 0.2)
             }
         }
+        .navigationBarBackButtonHidden()
         .onAppear {
             updateTimeRemaining()
         }
