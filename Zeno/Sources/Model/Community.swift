@@ -64,12 +64,12 @@ extension Community {
 			  personnel: 100,
 			  isSearchable: true,
 			  joinMembers: []),
-		.init(communityName: "할맥 모임 88기",
-              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
-			  createdAt: Date().timeIntervalSince1970,
-			  personnel: 10,
-			  isSearchable: true,
-			  joinMembers: []),
+//		.init(communityName: "할맥 모임 88기",
+//              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
+//			  createdAt: Date().timeIntervalSince1970,
+//			  personnel: 10,
+//			  isSearchable: true,
+//			  joinMembers: []),
 	]
 }
 #endif

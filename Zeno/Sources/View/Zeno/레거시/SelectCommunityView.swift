@@ -78,7 +78,7 @@ struct SelectCommunityView: View {
                         selected = community.id
                         communityName = community.communityName
                     } label: {
-                        CommuintyCellView(community: community)
+                        CommuintyCellView(community: community, isBold: false)
                     }
                 }
             }

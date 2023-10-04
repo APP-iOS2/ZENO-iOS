@@ -148,7 +148,4 @@ final class AuthManager: ObservableObject {
             throw(error)
         }
     }
-    
-
-    
 }
