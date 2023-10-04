@@ -65,7 +65,7 @@ struct AlarmInitialView: View {
                     Button {
                         isCheckInitialTwice = true
                     } label: {
-                        Text("다시 뽑기")
+                        Text("다시 확인")
                             .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                             .foregroundStyle(.black)
                             .background(
@@ -76,12 +76,12 @@ struct AlarmInitialView: View {
                 }
             }
             .alert("초성 확인권을 사용하여 한번 더 확인하시겠습니까?", isPresented: $isCheckInitialTwice) {
-                Button(role: .destructive) {
+                Button(role: .cancel) {
                     isCheckInitialTwice = false
                 } label: {
                     Text("취소")
                 }
-                Button(role: .cancel) {
+                Button(role: .destructive) {
                     chosung = ChosungCheck(word: user[6].name)
                 } label: {
                     Text("사용")
@@ -89,7 +89,7 @@ struct AlarmInitialView: View {
             }
         }
     }
-    
+    /// 초성 확인 로직
     func ChosungCheck(word: String) -> String {
         var initialResult = ""
         // 문자열하나씩 짤라서 확인
