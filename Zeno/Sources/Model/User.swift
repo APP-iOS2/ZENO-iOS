@@ -40,13 +40,6 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
         dateFormatter.dateFormat = "MM월dd일 HH:mm"
         return dateFormatter.string(from: dateOrderedAt)
     }
-//    struct MinUserData: Codable {
-//        let id: String
-//        var name: String
-//        let gender: String
-//        var profileImgUrlPath: String?
-//        var description: String = ""
-//    }
 }
 
 #if DEBUG

@@ -9,7 +9,6 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
-import Firebase
 import FirebaseCore
 import FirebaseStorage
 import SwiftUI
@@ -112,7 +111,7 @@ final class AuthManager: ObservableObject {
     }
     
     // MARK: - 사용 중인 유저의 프로필 사진을 수정
-    func updateUserProfileImage(uid: String, image: String) async throws -> Void {
+    func updateUserProfileImage(uid: String, image: String) async throws {
         let path = database.collection("User")
         do {
             try await path.document(uid).updateData(["proImage": image])

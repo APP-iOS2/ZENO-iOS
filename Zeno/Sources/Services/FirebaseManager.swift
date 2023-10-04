@@ -48,6 +48,8 @@ enum FirebaseError: Error {
     case failToRead
     case failToUpdate
     case failToDelete
+    case failToGetDocuments
+    case documentToData
 }
 
 final class FirebaseManager {
@@ -107,6 +109,29 @@ final class FirebaseManager {
         } catch {
             throw FirebaseError.failToDelete
         }
+    }
+    
+    func readDocumentsWithIDs<T>(type: T.Type, ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
+        var results: [Result<T, FirebaseError>] = []
+        let collectionRef = db.collection("\(type)")
+        var values: [String]
+        switch ids.isEmpty {
+        case true:
+            values = ["empty"]
+        case false:
+            values = ids
+        }
+        let query = collectionRef.whereField("id", in: values)
+        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+        for item in snapshot.documents {
+            do {
+                let result = try item.data(as: T.self)
+                results.append(.success(result))
+            } catch {
+                results.append(.failure(FirebaseError.documentToData))
+            }
+        }
+        return results
     }
 //    func uploadDummyArray<T: CanUseFirebase>(datas: [T]) async where T: Encodable {
 //        datas.forEach { data in

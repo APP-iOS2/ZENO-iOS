@@ -21,6 +21,7 @@ struct UserManagementCellView: View {
             }
         }
     }
+    
     @Binding var user: User
     let actionType: ActionType
     
