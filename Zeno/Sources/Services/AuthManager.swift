@@ -19,7 +19,6 @@ import KakaoSDKUser
 
 @MainActor
 final class AuthManager: ObservableObject {
-    
     // MARK: Badge Properties
     /// badges: View에서 실제로 사용되는 뱃지들의 "이름"을 담은 배열
     /// bearimagesDatas: Storage로 부터 다운 받는 Data형식 뱃지 배열, 해당 배열값을 통해 이미지를 보여줄 수 있음
@@ -55,7 +54,7 @@ final class AuthManager: ObservableObject {
     }
     
     // MARK: - 사용 중인 유저의 닉네임을 수정
-    func updateUserNickName(uid: String, nickname: String) async throws -> Void {
+    func updateUserNickName(uid: String, nickname: String) async throws {
         let path = database.collection("User")
         do {
             try await path.document(uid).updateData(["name": nickname])

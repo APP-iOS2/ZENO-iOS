@@ -20,16 +20,6 @@ struct HomeMainView: View {
 	var body: some View {
 		NavigationStack {
 			ScrollView {
-				Button {
-                    userViewModel.logout()
-				} label: {
-					loginButtonLabel(title: "(임시)로그아웃 버튼", tintColor: .white, backgroundColor: .red)
-				}
-				Button {
-				} label: {
-					loginButtonLabel(title: "(임시)ContentViewModel에 저장된 현재 로그인된 유저 정보 불러오기", tintColor: .black, backgroundColor: .blue)
-				}
-				
 				newUserView
 				userListView
 			}

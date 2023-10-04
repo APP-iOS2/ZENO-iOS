@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-protocol CanUseFirebase: Identifiable {
+protocol CanUseFirebase {
     var id: String { get }
 }
 

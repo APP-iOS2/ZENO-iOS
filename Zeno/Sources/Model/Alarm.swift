@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Alarm: Identifiable, Codable {
+struct Alarm: Identifiable, Codable, CanUseFirebase {
 	let id: String
 	/// 알림을 보낸 유저 ID
 	let sendUserID: String

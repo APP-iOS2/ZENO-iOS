@@ -28,7 +28,12 @@ struct EmailRegistrationView: View {
 			Button {
 				Task {
 					do {
-                        try await userViewModel.createUser(email: emailLoginViewModel.email, passwrod: emailLoginViewModel.password, name: emailLoginViewModel.registrationName, gender: emailLoginViewModel.registrationGender, description: emailLoginViewModel.registrationDescription)
+                        try await userViewModel.createUser(
+							email: emailLoginViewModel.registrationEmail,
+							passwrod: emailLoginViewModel.registrationPassword,
+							name: emailLoginViewModel.registrationName,
+							gender: emailLoginViewModel.registrationGender,
+							description: emailLoginViewModel.registrationDescription)
 					} catch {
 						print("회원가입 실패 \(error.localizedDescription)")
 					}

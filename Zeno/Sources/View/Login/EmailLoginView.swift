@@ -31,7 +31,9 @@ struct EmailLoginView: View {
 			Button {
 				Task {
 					do {
-                        try await userViewModel.login(email: emailLoginViewModel.email, password: emailLoginViewModel.password)
+                        try await userViewModel.login(
+							email: emailLoginViewModel.email,
+							password: emailLoginViewModel.password)
 					} catch {
 						print("로그인 실패 \(error.localizedDescription)")
 					}

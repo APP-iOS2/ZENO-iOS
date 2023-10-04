@@ -35,6 +35,7 @@ class UserViewModel: ObservableObject {
 		}
 	}
 	/// 이메일 회원가입
+	@MainActor
 	func createUser(email: String, passwrod: String, name: String, gender: String, description: String) async throws {
 		do {
 			let result = try await Auth.auth().createUser(withEmail: email, password: passwrod)
