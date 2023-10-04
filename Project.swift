@@ -2,7 +2,7 @@ import ProjectDescription
 
 let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
-let bundleID = "com.Zeno"
+let bundleID = "education.techit.zeno.dev"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "ZenoAppTest",
     "BundleShortVersionString": "1.0",
@@ -34,6 +34,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: bundleID,
+            deploymentTarget: .iOS(targetVersion: "16.0", devices: .iphone),
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
