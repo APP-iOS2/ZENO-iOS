@@ -133,6 +133,21 @@ final class FirebaseManager {
         }
         return results
     }
+    
+    func readAllCollection<T>(type: T.Type) async -> [Result<T, FirebaseError>] where T: Decodable {
+        var results: [Result<T, FirebaseError>] = []
+        let collectionRef = db.collection("\(type)")
+        guard let query = try? await collectionRef.getDocuments() else { return [] }
+        for docSnapshot in query.documents {
+            do {
+                let result = try docSnapshot.data(as: T.self)
+                results.append(.success(result))
+            } catch {
+                results.append(.failure(FirebaseError.documentToData))
+            }
+        }
+        return results
+    }
 //    func uploadDummyArray<T: CanUseFirebase>(datas: [T]) async where T: Encodable {
 //        datas.forEach { data in
 //            let collectionRef = db.collection("\(type(of: data))")

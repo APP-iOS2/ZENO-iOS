@@ -12,7 +12,7 @@ struct GroupListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var homeViewModel: HomeViewModel
     @Binding var isPresented: Bool
-    @State private var searchTerm: String = ""
+//    @State private var searchTerm: String = ""
     @State private var fraction: Double = 0.8
     @State private var detent: PresentationDetent = .fraction(0.8)
     @State private var detents: Set<PresentationDetent> = [.fraction(0.8), .fraction(1)]
@@ -20,11 +20,15 @@ struct GroupListView: View {
         NavigationStack {
             ScrollView {
                 // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
-                ForEach(Array(zip(homeViewModel.communities, homeViewModel.communities.indices)), id: \.1) { community, index in
+                ForEach(Array(zip(homeViewModel.searchedCommunity, homeViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
                         // TODO: 그룹 변경 로직
-                        homeViewModel.selectedCommunity = index
-                        isPresented = false
+                        if homeViewModel.joinedCommunities.contains(community) {
+                            homeViewModel.selectedCommunity = index
+                            isPresented = false
+                        } else {
+                            // TODO: 새로운 그룹 가입 뷰
+                        }
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
@@ -58,7 +62,7 @@ struct GroupListView: View {
                     }
                     .groupCell()
                 }
-                .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
+                .searchable(text: $homeViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
             .padding()
             .toolbar {

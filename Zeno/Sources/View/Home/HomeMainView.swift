@@ -21,14 +21,14 @@ struct HomeMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if !homeViewModel.communities.isEmpty {
+                if !homeViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }
             }
             .toolbar {
                 groupNameToolbarItem
-                if !homeViewModel.communities.isEmpty {
+                if !homeViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
             }
@@ -42,13 +42,13 @@ struct HomeMainView: View {
         .tint(.black)
         .overlay(
             SideMenuView(isPresented: $isShowingHamburgerView,
-                         community: homeViewModel.communities.count - 1 >= homeViewModel.selectedCommunity ?
-                         homeViewModel.communities[homeViewModel.selectedCommunity] :
+                         community: homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity ?
+                         homeViewModel.joinedCommunities[homeViewModel.selectedCommunity] :
                             Community.dummy[0]
                         )
         )
         .task {
-            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
+            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])  
         }
         .onChange(of: homeViewModel.selectedCommunity) { _ in
             Task {
@@ -102,14 +102,14 @@ extension HomeMainView {
         VStack {
             if isShowingUserSearchView {
                 HStack {
-                    TextField(text: $homeViewModel.searchTerm) {
+                    TextField(text: $homeViewModel.userSearchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
                     Spacer()
                     Button {
                         isShowingUserSearchView = false
-                        homeViewModel.searchTerm = ""
+                        homeViewModel.userSearchTerm = ""
                     } label: {
                         Text("취소")
                             .font(.caption)
@@ -187,16 +187,16 @@ extension HomeMainView {
                 isShowingGroupListSheet.toggle()
             } label: {
                 HStack {
-                    if !homeViewModel.communities.isEmpty {
-                        if homeViewModel.communities.count - 1 >= homeViewModel.selectedCommunity {
+                    if !homeViewModel.joinedCommunities.isEmpty {
+                        if homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity {
                             Text(
-                                homeViewModel.communities[
+                                homeViewModel.joinedCommunities[
                                     homeViewModel.selectedCommunity
                                 ].communityName
                             )
                         } else {
                             Text(
-                                homeViewModel.communities[0].communityName
+                                homeViewModel.joinedCommunities[0].communityName
                             )
                         }
                     } else {

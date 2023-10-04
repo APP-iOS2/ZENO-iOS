@@ -13,7 +13,7 @@ struct CommuintyCellView: View {
     let isBold: Bool
     
     var body: some View {
-        HStack(){
+        HStack {
             Image(asset: ZenoImages(name: community.communityImage))
                 .resizable()
                 .frame(width: 40, height: 40)
