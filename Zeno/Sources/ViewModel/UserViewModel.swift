@@ -93,20 +93,16 @@ class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: 이 함수가 자원 갉아먹고 있음 
     func comparingTime() -> Double {
         if let currentUser = currentUser {
             let afterZenoTime = currentUser.zenoStartAt + 10
             let currentTime = Date().timeIntervalSince1970
             
             if currentTime >= afterZenoTime {
-                print("-----------")
-                print("\(currentTime)")
-                print("\(currentUser.zenoStartAt)")
-                print("\(afterZenoTime)")
-                
-                return currentTime - currentUser.zenoStartAt
+                return afterZenoTime - currentUser.zenoStartAt
             } else {
-                return currentUser.zenoStartAt - currentTime
+                return currentUser.zenoStartAt - afterZenoTime
             }
         } else {
             return 0.0

@@ -16,7 +16,9 @@ struct FinishZenoView: View {
     @State private var finishedText: String?
     @State private var timeRemaining = ""
     @State private var isTimeUp = false
-    @State private var futureData: Date? // Optional로 선언
+    @State private var futureDate = Calendar.current.date(byAdding: .second, value: Int(self.comparingTime()), to: Date())
+    // Optional로 선언
+    @State var stack = NavigationPath()
     
     @EnvironmentObject private var userViewModel: UserViewModel
     
@@ -35,7 +37,8 @@ struct FinishZenoView: View {
     }
     
     var body: some View {
-        Group {
+        if isTimeUp == false {
+            Group {
                 ZStack {
                     VStack {
                         LottieView(lottieFile: "beforeZenoFirst")
@@ -51,19 +54,37 @@ struct FinishZenoView: View {
                 }
                 .navigationBarBackButtonHidden()
                 .onAppear {
-                    myZenoTimer = Int(userViewModel.comparingTime())
-                    if let futureDate = Calendar.current.date(byAdding: .second, value: Int(myZenoTimer), to: Date()) {
-                        futureData = futureDate
-                    }
                     updateTimeRemaining()
                 }
                 .onReceive(timer) {_ in
                     updateTimeRemaining()
                 }
             }
+        } else {
+            SelectCommunityVer2()
+            // TODO: NavigationPath 써야함
+            // stack.removeLast()
+                .onAppear {
+                    userViewModel.currentUser!.startZeno = false
+            }
         }
     }
-
+    
+    func comparingTime() -> Double {
+        if let currentUser = userViewModel.currentUser {
+            let afterZenoTime = currentUser.zenoStartAt + 10
+            let currentTime = Date().timeIntervalSince1970
+            
+            if currentTime >= afterZenoTime {
+                return afterZenoTime - currentUser.zenoStartAt
+            } else {
+                return currentUser.zenoStartAt - afterZenoTime
+            }
+        } else {
+            return 0.0
+        }
+    }
+}
 
 struct FinishZenoView_Previews: PreviewProvider {
     static var previews: some View {
