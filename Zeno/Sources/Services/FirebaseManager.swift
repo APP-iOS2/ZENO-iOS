@@ -113,7 +113,15 @@ final class FirebaseManager {
     
     func readDocumentsWithIDs<T>(type: T.Type, ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
-        let query = db.collection("\(type)").whereField("id", in: ids)
+        let collectionRef = db.collection("\(type)")
+        var values: [String]
+        switch ids.isEmpty {
+        case true:
+            values = ["empty"]
+        case false:
+            values = ids
+        }
+        let query = collectionRef.whereField("id", in: values)
         guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
         for item in snapshot.documents {
             do {

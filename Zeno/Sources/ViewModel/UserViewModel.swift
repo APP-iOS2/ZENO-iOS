@@ -59,6 +59,7 @@ class UserViewModel: ObservableObject {
 		}
 	}
 	/// 이메일 회원가입 정보 등록하기
+    @MainActor
     func uploadUserData(user: User) async {
         self.currentUser = user
         try? await FirebaseManager.shared.create(data: user)

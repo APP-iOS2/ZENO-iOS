@@ -48,7 +48,7 @@ struct HomeMainView: View {
                         )
         )
         .task {
-            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? [])
+            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
         }
         .onChange(of: homeViewModel.selectedCommunity) { _ in
             Task {

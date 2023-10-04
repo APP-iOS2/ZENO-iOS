@@ -7,8 +7,6 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 class HomeViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
@@ -20,9 +18,14 @@ class HomeViewModel: ObservableObject {
     
     @Published var searchTerm: String = ""
     var searchedUsers: [User] {
-        normalUsers.filter { $0.name.contains(searchTerm) }
+        if searchTerm.isEmpty {
+            return normalUsers
+        } else {
+            return normalUsers.filter { $0.name.contains(searchTerm) }
+        }
     }
     
+    @MainActor
     func fetchCommunity(keys: [String]) async {
         let results = await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: keys)
         let communities = results.compactMap {
@@ -36,6 +39,7 @@ class HomeViewModel: ObservableObject {
         self.communities = communities
     }
     
+    @MainActor
     func fetchAllUser() async {
         if communities.count - 1 >= selectedCommunity {
             await fetchNormalUser()
