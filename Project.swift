@@ -34,7 +34,7 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: bundleID,
-            deploymentTarget: .iOS(targetVersion: "16.0", devices: .iphone),
+            deploymentTarget: .iOS(targetVersion: "16.4", devices: .iphone),
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
