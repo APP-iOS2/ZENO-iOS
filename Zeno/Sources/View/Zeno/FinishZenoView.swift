@@ -28,7 +28,7 @@ struct FinishZenoView: View {
     
     var body: some View {
         if timeRemaining == "0 분 0 초 남았어요" {
-                        SelectCommunityView()
+                        SelectCommunityVer2()
                     }
         ZStack {
             VStack {

@@ -19,6 +19,7 @@ struct SelectCommunityVer2: View {
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
+    @State private var useConfentti: Bool = true
     
     var body: some View {
         NavigationStack {
@@ -31,7 +32,6 @@ struct SelectCommunityVer2: View {
                                 ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
                             }
                         }
-                        
                         .offset(y: .screenHeight * 0.04)
                         .offset(x: currentIndex == 0 ? .screenWidth * 0.19 : 0 )
                         .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
@@ -63,7 +63,10 @@ struct SelectCommunityVer2: View {
                 selected = communities[index].id
                 communityName = communities[index].communityName
                 currentIndex = index
-                counter += 1
+                if useConfentti {
+                    counter += 1
+                    useConfentti = false
+                }
             } label: {
                 HStack {
                     Image(asset: ZenoImages(name: communities[index].communityImage))

@@ -17,7 +17,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
         case .home:
             HomeMainView()
         case .zeno:
-            SelectCommunityView()
+            SelectCommunityVer2()
         case .alert:
             AlarmView()
         case .myPage:

@@ -15,18 +15,17 @@ struct StartButton: View {
         ZStack {
             Rectangle()
                 .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
-                .cornerRadius(10)
-                .foregroundColor(isplay ? .mainColor : .gray)
+                .cornerRadius(26)
+                .foregroundColor(isplay ? .purple2 : .gray)
                 .opacity(0.5)
                 .shadow(radius: 3)
             Image(systemName: "play.fill")
-                .font(.system(size:21))
+                .font(.system(size: 21))
                 .offset(x: -.screenWidth * 0.3)
-                .foregroundColor(isplay ? .purple2 : .gray)
+                .foregroundColor(isplay ? .white : .gray)
             Text("START")
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                .foregroundColor(isplay ? .purple2 : .gray)
-           
+                .foregroundColor(isplay ? .white : .gray)
         }
     }
 }
