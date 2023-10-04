@@ -28,6 +28,7 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
 	var buddyList: [Community.ID: [User.ID]]
+    var joinedCommunities: [JoinedCommunity] = []
     /// 제노 시작 시간
     var ZenoStartAt: Double = Date().timeIntervalSince1970
     /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
@@ -40,13 +41,12 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
         dateFormatter.dateFormat = "MM월dd일 HH:mm"
         return dateFormatter.string(from: dateOrderedAt)
     }
-//    struct MinUserData: Codable {
-//        let id: String
-//        var name: String
-//        let gender: String
-//        var profileImgUrlPath: String?
-//        var description: String = ""
-//    }
+    
+    struct JoinedCommunity: Identifiable, Codable, Hashable {
+        var id: Community.ID
+        let joinedAt: Double
+        var friends: [User.ID]
+    }
 }
 
 #if DEBUG

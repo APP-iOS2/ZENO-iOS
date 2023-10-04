@@ -22,6 +22,9 @@ class UserViewModel: ObservableObject {
 			try await loadUserData()
 		}
 	}
+    init(currentUser: User) {
+        self.currentUser = currentUser
+    }
 	/// 이메일 로그인
 	@MainActor
     func login(email: String, password: String) async throws {
