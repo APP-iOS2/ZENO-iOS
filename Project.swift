@@ -9,13 +9,13 @@ let infoPlist: [String: InfoPlist.Value] = [
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
 //    "Fonts provided by application" : [ "BMDOHYEON.tff" ]
-    //"LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
-    //"CFBundleURLTypes": [
-    //    [
-    //        "CFBundleTypeRole": "Editor",
-    //        "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
-    //    ]
-    //],
+    "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
+    "CFBundleURLTypes": [
+        [
+            "CFBundleTypeRole": "Editor",
+            "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+        ]
+    ],
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
@@ -28,9 +28,9 @@ let project = Project(
     packages: [
         .remote(url: "https://github.com/simibac/ConfettiSwiftUI", requirement: .upToNextMajor(from: "1.0.0")),
         .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "10.0.0")),
-//        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.0.0")),
-        .remote(url:"https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0"))
-
+        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.0.0")),
+        .remote(url: "https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0")),
+        .remote(url: "https://github.com/apple/swift-protobuf.git", requirement: .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
         .init(
@@ -46,6 +46,7 @@ let project = Project(
             ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
+                .package(product: "SwiftProtobuf"),
 //                .package(product: "FirebaseAnalytics"),
 //                .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
@@ -54,9 +55,9 @@ let project = Project(
 				.package(product: "FirebaseStorage"),
 				.package(product: "FirebaseDatabase"),
 				.package(product: "FirebaseDatabaseSwift"),
-//                .package(product: "KakaoSDKUser"),
-//                .package(product: "KakaoSDKAuth"),
-//                .package(product: "KakaoSDKCommon"),
+                .package(product: "KakaoSDKUser"),
+                .package(product: "KakaoSDKAuth"),
+                .package(product: "KakaoSDKCommon"),
                 .package(product: "Lottie")
             ],
             settings: config

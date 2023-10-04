@@ -8,30 +8,68 @@
 
 import Foundation
 
-struct Community: Identifiable {
+struct Community: Identifiable, Codable, CanUseFirebase {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
-	let communityName: String
+	var communityName: String
 	/// 커뮤니티 소개
 	var description: String
-
-  var communityImage: String {
-        return "LLLogo" } // 임 시로만들어놨음
-	// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요
-
+	/// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요 ⭐️
+	var communityImage: String
 	/// 커뮤니티 생성일
 	var createdAt: Double
+	/// 커뮤니티 인원
+	var personnel: Int
+	/// 검색 가능 여부
+	var isSearchable: Bool = true
+	/// 커뮤니티에 가입된 유저
+	var joinMembers: [Member]
+	/// 커뮤니티에 가입된 유저 구조체
+	struct Member: Codable { // 이 구조체는 앞으로 유저id값을 검색해서 사용자 정보를 얻어낼 예정 User의 minUserdata와 뭐가 편한지 비교 해봅시다.
+		var id: String
+		var joinedAt: Double
+	}
 }
 
 #if DEBUG
 extension Community {
 	static let dummy: [Community] = [
-		.init(communityName: "멋쟁이 사자처럼 iOS앱스쿨 2기", description: "멋쟁이 iOS개발자 되기위해 Deep Diving", createdAt: Date().timeIntervalSince1970),
-		.init(communityName: "새싹 영등포 iOS 3기", description: "푸릇푸릇 자라나는 우리는 새싹", createdAt: Date().timeIntervalSince1970),
-		.init(communityName: "앨런 스쿨 12기", description: "서로서로 의지하며 공부하기", createdAt: Date().timeIntervalSince1970),
-		.init(communityName: "야곰 아카데미 iOS챌린지 5기", description: "야~~~곰", createdAt: Date().timeIntervalSince1970),
-		.init(communityName: "할맥 모임 88기", description: "마셔마셔 먹고 죽어", createdAt: Date().timeIntervalSince1970),
+		.init(communityName: "멋쟁이 사자처럼 iOS앱스쿨 2기",
+              description: "멋쟁이 iOS개발자 되기위해 Deep Diving", communityImage: "LLLogo",
+			  createdAt: Date().timeIntervalSince1970,
+			  personnel: 100,
+			  isSearchable: true,
+			  joinMembers: [
+				.init(id: "유저1", joinedAt: Date().timeIntervalSince1970),
+				.init(id: "유저2", joinedAt: Date().timeIntervalSince1970),
+				.init(id: "유저3", joinedAt: Date().timeIntervalSince1970),
+				.init(id: "유저4", joinedAt: Date().timeIntervalSince1970),
+				.init(id: "유저5", joinedAt: Date().timeIntervalSince1970),
+			  ]),
+		.init(communityName: "새싹 영등포 iOS 3기",
+              description: "푸릇푸릇 자라나는 우리는 새싹", communityImage: "sesac",
+			  createdAt: Date().timeIntervalSince1970,
+			  personnel: 30,
+			  isSearchable: true,
+			  joinMembers: []),
+		.init(communityName: "앨런 스쿨 12기",
+              description: "서로서로 의지하며 공부하기", communityImage: "image2",
+			  createdAt: Date().timeIntervalSince1970,
+			  personnel: 20,
+			  isSearchable: true,
+			  joinMembers: []),
+		.init(communityName: "야곰 아카데미 iOS챌린지 5기",
+              description: "야~~~곰", communityImage: "yagom",
+			  createdAt: Date().timeIntervalSince1970,
+			  personnel: 100,
+			  isSearchable: true,
+			  joinMembers: []),
+		.init(communityName: "할맥 모임 88기",
+              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
+			  createdAt: Date().timeIntervalSince1970,
+			  personnel: 10,
+			  isSearchable: true,
+			  joinMembers: []),
 	]
-   static let CommunitySamples: [Community] = [Community(communityName: "멋쟁이 사자처럼", description: "세계 최고 부트 캠프 멋쟁이 사자처럼입니다~", createdAt: 20230603), Community(communityName: "새싹 영등포 2기", description: "지구 최고 부트 캠프 새싹 입니다~", createdAt: 20230203), Community(communityName: "야곰 부트캠프 3기", description: "우주 최고 부트캠프 야곰 부트캠프 입니다 ~", createdAt: 20240705)]
 }
 #endif
