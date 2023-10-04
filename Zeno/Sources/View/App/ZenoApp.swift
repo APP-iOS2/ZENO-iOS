@@ -15,10 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 @main
 struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var userViewModel = UserViewModel()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            InitialView()
+                .environmentObject(userViewModel)
         }
     }
 }

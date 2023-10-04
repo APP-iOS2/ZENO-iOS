@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct EmailLoginView: View {
-	@EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+	@EnvironmentObject var userViewModel: UserViewModel
 	
 	var body: some View {
 		VStack {
@@ -30,7 +31,7 @@ struct EmailLoginView: View {
 			Button {
 				Task {
 					do {
-						try await emailLoginViewModel.login()
+                        try await userViewModel.login(email: emailLoginViewModel.email, password: emailLoginViewModel.password)
 					} catch {
 						print("로그인 실패 \(error.localizedDescription)")
 					}

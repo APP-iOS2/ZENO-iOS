@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable {
+struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	var id: String = UUID().uuidString
     /// 이름
 	let name: String
