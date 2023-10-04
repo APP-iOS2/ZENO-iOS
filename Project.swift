@@ -2,13 +2,12 @@ import ProjectDescription
 
 let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
-let bundleID = "com.Zeno"
+let bundleID = "education.techit.zeno.dev"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "ZenoAppTest",
     "BundleShortVersionString": "1.0",
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
-//    "Fonts provided by application" : [ "BMDOHYEON.tff" ]
     "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
     "CFBundleURLTypes": [
         [
@@ -38,17 +37,19 @@ let project = Project(
             platform: .iOS,
             product: .app,
             bundleId: bundleID,
+            deploymentTarget: .iOS(targetVersion: "16.4", devices: .iphone),
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
+            entitlements: "\(projectName)/\(projectName).entitlements",
             scripts: [
                 .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint"),
             ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
                 .package(product: "SwiftProtobuf"),
-//                .package(product: "FirebaseAnalytics"),
-//                .package(product: "FirebaseMessaging"),
+                .package(product: "FirebaseAnalytics"),
+                .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
                 .package(product: "FirebaseFirestoreSwift"),
 				.package(product: "FirebaseAuth"),
