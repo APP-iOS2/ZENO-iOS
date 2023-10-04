@@ -19,6 +19,7 @@ struct AlarmView: View {
     @State private var isLackingCoin: Bool = false
     @State private var isLackingInitialTicket: Bool = false
     
+    @State private var isPurchaseSheet: Bool = false
     @State private var selectAlarm: Alarm?
     
     var body: some View {
@@ -67,8 +68,12 @@ struct AlarmView: View {
                   title: "초성확인권이 부족합니다.",
                   content: "초성확인권을 구매하세요.",
                   primaryButtonTitle: "확인",
-                  primaryAction: { /* 송금 로직 */ }
+                  primaryAction: { isPurchaseSheet.toggle() }
                 )
+                .sheet(isPresented: $isPurchaseSheet, content: {
+                    // 무드가 너무 안맞는거 같은데 .
+                    PurchaseView()
+                })
             }
         }
     }

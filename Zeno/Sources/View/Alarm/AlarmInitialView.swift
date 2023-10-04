@@ -12,12 +12,11 @@ import SwiftUI
 struct AlarmInitialView: View {
     // MARK: - Properties
     @EnvironmentObject var alarmVM: AlarmViewModel
+    @EnvironmentObject var userVM: UserViewModel
     @State var isNudgingOn: Bool = false
     @State var isCheckInitialTwice: Bool = false
-    @State private var counter: Int = 1
+    @State private var counter: Int = 0
     @State private var chosung: String = ""
-    let zenoDummy = Zeno.ZenoQuestions
-    let user = User.dummy
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
     let selectAlarm: Alarm
     
@@ -29,6 +28,7 @@ struct AlarmInitialView: View {
                     .resizable()
                     .frame(width: 120, height: 120)
                     .clipShape(Circle())
+                    .confettiCannon(counter: $counter, num: 50, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 235)
                 
                 VStack(spacing: 4) {
                     Text("\(selectAlarm.recieveUserName)님을")
@@ -46,6 +46,7 @@ struct AlarmInitialView: View {
                     )
                 Button {
                     isNudgingOn = true
+                    counter += 1
                 } label: {
                     Text("찌르기")
                         .frame(width: 120, height: 30)
@@ -65,16 +66,18 @@ struct AlarmInitialView: View {
             }
             .toolbar {
                 ToolbarItem {
-                    Button {
-                        isCheckInitialTwice = true
-                    } label: {
-                        Text("다시 확인")
-                            .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                            .foregroundStyle(.black)
-                            .background(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.mainColor, lineWidth: 1)
-                            )
+                    if userVM.currentUser?.showInitial ?? 0 > 0 {
+                        Button {
+                            isCheckInitialTwice = true
+                        } label: {
+                            Text("다시 확인")
+                                .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                                .foregroundStyle(.black)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 25)
+                                        .stroke(Color.mainColor, lineWidth: 1)
+                                )
+                        }
                     }
                 }
             }
@@ -83,10 +86,13 @@ struct AlarmInitialView: View {
                     isCheckInitialTwice = false
                 }
                 let secondButton = Alert.Button.default(Text("사용")) {
+                    Task {
+                        await userVM.updateUserInitialCheck(to: -1)
+                    }
                     chosung = ChosungCheck(word: selectAlarm.sendUserName)
                 }
                 return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
-                             message: Text(""),
+                             message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
                              primaryButton: firstButton, secondaryButton: secondButton)
             }
         }
@@ -120,5 +126,6 @@ struct AlarmInitialView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
             .environmentObject(AlarmViewModel())
+            .environmentObject(UserViewModel())
     }
 }

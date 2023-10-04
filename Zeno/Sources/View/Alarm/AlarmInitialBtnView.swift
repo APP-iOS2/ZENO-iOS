@@ -30,7 +30,6 @@ struct AlarmInitialBtnView: View {
             Button {
                 if userVM.currentUser?.coin ?? 0 >= 60 {
                     usingCoin.toggle()
-                    // -60 코인 로직 필요함.
                 } else {
                     isPresented = false
                     
@@ -48,6 +47,9 @@ struct AlarmInitialBtnView: View {
                 }
                 let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
+                    Task {
+                        await userVM.updateUserCoin(to: -60)
+                    }
                     isPresented = false
                 }
                 return Alert(title: Text("(C)60을 사용하여 확인하시겠습니까 ?"),
@@ -74,6 +76,9 @@ struct AlarmInitialBtnView: View {
                 }
                 let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
+                    Task {
+                        await userVM.updateUserInitialCheck(to: -1)
+                    }
                     isPresented = false
                 }
                 return Alert(title: Text("초성 확인권 1개를 사용하여 확인하시겠습니까 ?"),

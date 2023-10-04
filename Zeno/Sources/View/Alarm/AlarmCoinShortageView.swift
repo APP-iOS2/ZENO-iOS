@@ -14,7 +14,6 @@ struct AlarmCoinShortageView: View {
     let content: String
     let primaryButtonTitle: String
     let primaryAction: () -> Void
-    let user = User.dummy
     
     var body: some View {
       VStack(spacing: 22) {
