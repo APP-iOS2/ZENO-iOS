@@ -43,6 +43,6 @@ struct AlarmListCellView: View {
 
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmListCellView(isShowPaymentSheet: .constant(false), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmListCellView(isShowPaymentSheet: .constant(false), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
     }
 }

@@ -75,22 +75,21 @@ struct AlarmInitialView: View {
                     }
                 }
             }
-            .alert("초성 확인권을 사용하여 한번 더 확인하시겠습니까?", isPresented: $isCheckInitialTwice) {
-                Button(role: .cancel) {
+            .alert(isPresented: $isCheckInitialTwice) {
+                let firstButton = Alert.Button.destructive(Text("취소")) {
                     isCheckInitialTwice = false
-                } label: {
-                    Text("취소")
                 }
-                Button(role: .destructive) {
+                let secondButton = Alert.Button.default(Text("사용")) {
                     chosung = ChosungCheck(word: user[6].name)
-                } label: {
-                    Text("사용")
                 }
+                return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
+                             message: Text(""),
+                             primaryButton: firstButton, secondaryButton: secondButton)
             }
         }
     }
     /// 초성 확인 로직
-    func ChosungCheck(word: String) -> String {
+    private func ChosungCheck(word: String) -> String {
         var initialResult = ""
         // 문자열하나씩 짤라서 확인
         for char in word {

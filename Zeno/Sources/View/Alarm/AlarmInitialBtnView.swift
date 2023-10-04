@@ -42,17 +42,16 @@ struct AlarmInitialBtnView: View {
                 Text("(C)60 선택된 사람의 초성 확인")
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
-            .alert("코인을 사용하여 확인하시겠습니까 ?", isPresented: $usingCoin) {
-                Button(role: .destructive) {
-                } label: {
-                    Text("취소")
+            .alert(isPresented: $usingCoin) {
+                let firstButton = Alert.Button.destructive(Text("취소")) {
                 }
-                Button(role: .cancel) {
+                let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
                     isPresented = false
-                } label: {
-                    Text("확인")
                 }
+                return Alert(title: Text("코인을 사용하여 확인하시겠습니까 ?"),
+                             message: Text(""),
+                             primaryButton: firstButton, secondaryButton: secondButton)
             }
             
             Button {
@@ -69,17 +68,16 @@ struct AlarmInitialBtnView: View {
                 Text("(\(user[0].showInitial)번 남음)유료 결제 후 초성 확인")
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
-            .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
-                Button(role: .destructive) {
-                } label: {
-                    Text("취소")
+            .alert(isPresented: $usingInitialTicket) {
+                let firstButton = Alert.Button.destructive(Text("취소")) {
                 }
-                Button(role: .cancel) {
+                let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
                     isPresented = false
-                } label: {
-                    Text("확인")
                 }
+                return Alert(title: Text("초성 확인권을 사용하여 확인하시겠습니까 ?"),
+                             message: Text(""),
+                             primaryButton: firstButton, secondaryButton: secondButton)
             }
             .padding(.bottom, 20)
             

@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct AlarmView: View {
-    // MARK: 프로토타입 Test 데이터
-    @State var alarmArray: [Alarm] = [Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동1", communityID: "commId", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301), Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동2", communityID: "commId", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301)]
+    @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
+    @State var alarmArray: [Alarm] = [Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동1", communityID: "commId", showUserID: "1234", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301), Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동2", communityID: "commId", showUserID: "1235", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301)]
 	@State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
@@ -66,5 +66,6 @@ struct AlarmView: View {
 struct AlarmView_Preview: PreviewProvider {
     static var previews: some View {
         AlarmView()
+            .environmentObject(AlarmViewModel())
     }
 }
