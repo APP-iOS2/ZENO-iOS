@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AlarmListCellView: View {
-    @Binding var isShowPaymentSheet: Bool
+    @Binding var selectAlarm: Alarm?
     let alarm: Alarm
     
     var body: some View {
@@ -25,9 +25,10 @@ struct AlarmListCellView: View {
                             .font(.title3)
                         + Text("에 \(alarm.recieveUserName) 님을 선택했습니다.")
                     }
-                    .onTapGesture {
-                        isShowPaymentSheet = true
-                    }
+                }
+                .onTapGesture {
+                    selectAlarm = alarm
+                    print("\(selectAlarm?.recieveUserName ?? "error")")
                 }
                 // TODO: 커뮤니티 사진 클릭해도 공유 기능이 동작된다. 터치영역 수정해야 함
                 ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
@@ -43,6 +44,6 @@ struct AlarmListCellView: View {
 
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmListCellView(isShowPaymentSheet: .constant(false), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
     }
 }

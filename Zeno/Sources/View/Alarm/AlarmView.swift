@@ -10,7 +10,6 @@ import SwiftUI
 
 struct AlarmView: View {
     @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
-    @State var alarmArray: [Alarm] = [Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동1", communityID: "commId", showUserID: "1234", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301), Alarm(sendUserID: "sendId", sendUserName: "sendUser", recieveUserID: "recieveId", recieveUserName: "홍길동2", communityID: "commId", showUserID: "1235", zenoID: "zenoId", zenoString: "친해지고 싶은 사람", createdAt: 3015982301)]
 	@State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
@@ -20,19 +19,22 @@ struct AlarmView: View {
     @State private var isLackingCoin: Bool = false
     @State private var isLackingInitialTicket: Bool = false
     
+    @State private var selectAlarm: Alarm?
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
                     
-                    //            List(alarmArray.filter{$0.communityID == selectedCommunityId}) { alarm in
                     List {
-                        ForEach(alarmArray) { alarm in
-                            AlarmListCellView(isShowPaymentSheet: $isShowPaymentSheet, alarm: alarm)
+                        ForEach(alarmVM.alarmArray.filter { $0.communityID == selectedCommunityId }) { alarm in
+                            AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                         }
                         .navigationDestination(isPresented: $isShowInitialView) {
-                            AlarmInitialView()
+                            if let selectAlarm {
+                                AlarmInitialView(selectAlarm: selectAlarm)
+                            }
                         }
                     }
                     .sheet(isPresented: $isShowPaymentSheet, content: {
@@ -42,6 +44,13 @@ struct AlarmView: View {
                         }
                         .presentationDetents([.fraction(0.75)])
                     })
+                    
+                    Button(action: {
+                        isShowPaymentSheet = true
+                    }, label: {
+                        Text("선택하기")
+                    })
+                    .buttonStyle(.borderedProminent)
                 }
                 .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                 .cashAlert(
