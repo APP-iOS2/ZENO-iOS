@@ -11,11 +11,17 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 class HomeViewModel: ObservableObject {
+    private let firebaseManager = FirebaseManager.shared
+    
     @AppStorage("selectedCommunity") var selectedCommunity: Int = 0
     @Published var communities: [Community] = []
     @Published var recentlyJoinedUsers: [User] = []
     @Published var normalUsers: [User] = []
-    private let firebaseManager = FirebaseManager.shared
+    
+    @Published var searchTerm: String = ""
+    var searchedUsers: [User] {
+        normalUsers.filter { $0.name.contains(searchTerm) }
+    }
     
     func fetchCommunity(keys: [String]) async {
         let results = await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: keys)

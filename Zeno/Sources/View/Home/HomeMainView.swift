@@ -15,7 +15,7 @@ struct HomeMainView: View {
     @State private var isShowingGroupListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
-    @State private var searchText = ""
+    
     @AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
     
     var body: some View {
@@ -102,18 +102,21 @@ extension HomeMainView {
         VStack {
             if isShowingUserSearchView {
                 HStack {
-                    TextField(text: $searchText) {
+                    TextField(text: $homeViewModel.searchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
                     Spacer()
                     Button {
                         isShowingUserSearchView = false
-                        searchText = ""
+                        homeViewModel.searchTerm = ""
                     } label: {
                         Text("취소")
                             .font(.caption)
                     }
+                }
+                ForEach(homeViewModel.searchedUsers) { user in
+                    userCell(user: user)
                 }
             } else {
                 HStack {
