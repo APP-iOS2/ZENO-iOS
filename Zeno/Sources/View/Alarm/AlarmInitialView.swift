@@ -11,6 +11,7 @@ import SwiftUI
 /// 초성 확인 뷰
 struct AlarmInitialView: View {
     // MARK: - Properties
+    @EnvironmentObject var alarmVM: AlarmViewModel
     @State var isNudgingOn: Bool = false
     @State var isCheckInitialTwice: Bool = false
     @State private var counter: Int = 1
@@ -18,6 +19,7 @@ struct AlarmInitialView: View {
     let zenoDummy = Zeno.ZenoQuestions
     let user = User.dummy
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+    let selectAlarm: Alarm
     
     // MARK: - View
     var body: some View {
@@ -29,10 +31,11 @@ struct AlarmInitialView: View {
                     .clipShape(Circle())
                 
                 VStack(spacing: 4) {
-                    Text("\(user[0].name)님을")
-                    Text("\(zenoDummy[0].question)")
+                    Text("\(selectAlarm.recieveUserName)님을")
+                    Text("\(selectAlarm.zenoString)")
                     Text("으로 선택한 사람")
                 }
+                .padding(.bottom, 10)
                 Text(chosung)
                     .bold()
                     .frame(width: 160, height: 80)
@@ -58,7 +61,7 @@ struct AlarmInitialView: View {
             }
             .padding()
             .task {
-                chosung = ChosungCheck(word: user[6].name)
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
             }
             .toolbar {
                 ToolbarItem {
@@ -80,7 +83,7 @@ struct AlarmInitialView: View {
                     isCheckInitialTwice = false
                 }
                 let secondButton = Alert.Button.default(Text("사용")) {
-                    chosung = ChosungCheck(word: user[6].name)
+                    chosung = ChosungCheck(word: selectAlarm.sendUserName)
                 }
                 return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
                              message: Text(""),
@@ -115,6 +118,7 @@ struct AlarmInitialView: View {
 
 struct AlarmInitialView_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmInitialView()
+        AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+            .environmentObject(AlarmViewModel())
     }
 }

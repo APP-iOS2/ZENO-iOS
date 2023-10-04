@@ -28,7 +28,7 @@ struct AlarmView: View {
                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
                     
                     List {
-                        ForEach(alarmVM.alarmArray.filter { $0.communityID == selectedCommunityId }) { alarm in
+                        ForEach(alarmVM.alarmArray.filter { selectedCommunityId == "" || $0.communityID == selectedCommunityId }) { alarm in
                             AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                         }
                         .navigationDestination(isPresented: $isShowInitialView) {
@@ -46,7 +46,9 @@ struct AlarmView: View {
                     })
                     
                     Button(action: {
-                        isShowPaymentSheet = true
+                        if let selectAlarm {
+                            isShowPaymentSheet = true
+                        }
                     }, label: {
                         Text("선택하기")
                     })
@@ -76,5 +78,6 @@ struct AlarmView_Preview: PreviewProvider {
     static var previews: some View {
         AlarmView()
             .environmentObject(AlarmViewModel())
+            .environmentObject(UserViewModel())
     }
 }
