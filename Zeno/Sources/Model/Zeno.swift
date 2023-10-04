@@ -8,16 +8,14 @@
 
 import Foundation
 
-struct Zeno: Identifiable {
+struct Zeno: Identifiable, Codable, CanUseFirebase {
 	var id: String = UUID().uuidString
 	/// 제노 질문
 	let question: String
 	/// 제노 이미지
 	let zenoImage: String
 	/// 제노 설명(이름)
-	var zenoDescription: String {
-        return ""
-    }
+	var zenoDescription: String { return "" }
 }
 
 #if DEBUG
