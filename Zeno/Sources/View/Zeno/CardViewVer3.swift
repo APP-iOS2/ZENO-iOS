@@ -1,5 +1,5 @@
 //
-//  CardViewVer2.swift
+//  CardViewVer3.swift
 //  Zeno
 //
 //  Created by 유하은 on 2023/09/30.
@@ -10,11 +10,11 @@
 
 import SwiftUI
 
-struct CardViewVer2: View {
-    @State private var currentIndex: Int = 0
+struct CardViewVer3: View {
+    @State var currentIndex: Int
     @State private var dragOffset: CGFloat = 0
     
-    private let numberOfItems: Int = 5
+    private let numberOfItems: Int = Community.dummy.count
     private let itemWidth: CGFloat = 250
     private let peekAmount: CGFloat = 10
     private let dragThreshold: CGFloat = 70
@@ -54,7 +54,6 @@ struct CardViewVer2: View {
             )
         }
         .padding(.leading)
-        .offset(y: 150)
     }
 
     func calculateOffset() -> CGFloat {
@@ -89,8 +88,8 @@ struct CardViewVer2: View {
     }
 }
 
-struct CardViewVer2_Previews: PreviewProvider {
+struct CardViewVer3_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewVer2()
+        CardViewVer3(currentIndex: 2)
     }
 }

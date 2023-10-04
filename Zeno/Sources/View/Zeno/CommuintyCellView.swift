@@ -10,29 +10,27 @@ import SwiftUI
 
 struct CommuintyCellView: View {
     let community: Community
+    let isBold: Bool
     
     var body: some View {
-        HStack {
-            Spacer()
+        HStack(){
             Image(asset: ZenoImages(name: community.communityImage))
                 .resizable()
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
                 .padding(.trailing, 10)
             Text(community.communityName)
-                 .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 15))
-                .foregroundColor(.white.opacity(0.7))
+                .font(isBold ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 15) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
+                .foregroundColor(.black.opacity(0.7))
+                .bold()
             Spacer()
         }
-        .frame(width: .screenWidth * 0.75, height: .screenHeight * 0.05)
-        .padding(20)
-        .background(Color.black.opacity(0.2))
-        .cornerRadius(20)
+        .frame(width: .screenWidth * 0.8)
     }
 }
 
 struct CommuintyCellView_Previews: PreviewProvider {
     static var previews: some View {
-		CommuintyCellView(community: Community.dummy[0])
+        CommuintyCellView(community: Community.dummy[0], isBold: true)
     }
 }
