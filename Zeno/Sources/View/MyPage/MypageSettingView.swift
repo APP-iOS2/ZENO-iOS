@@ -44,9 +44,12 @@ struct MypageSettingView: View {
         .padding()
     }
     
+    @ViewBuilder
     private func linkView(_ label: String, _ url: String) -> some View {
-        Link(destination: URL(string: url)!) {
-            rowView(label)
+        if let url = URL(string: url) {
+            Link(destination: url) {
+                rowView(label)
+            }
         }
     }
 }

@@ -162,9 +162,10 @@ struct GroupSideBarView: View {
     
     /// 공유 시트
     private func shareText() {
+        guard let url = URL(string: "https://www.naver.com") else { return }
         let activityVC = UIActivityViewController(
                          activityItems: ["\(community.communityName)",
-                                         URL(string: "https://www.naver.com")!,
+                                         url,
                                         ],
                          applicationActivities: [KakaoActivity(), IGActivity()])
         
