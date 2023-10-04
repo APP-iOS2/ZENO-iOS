@@ -64,7 +64,7 @@ final class FirebaseManager {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
         
         do {
-            try await documentRef.setData(data.mirrorToDic())
+            try await documentRef.setData(from: data)
         } catch {
             throw FirebaseError.failToCreate
         }
@@ -148,11 +148,11 @@ final class FirebaseManager {
         }
         return results
     }
-//    func uploadDummyArray<T: CanUseFirebase>(datas: [T]) async where T: Encodable {
-//        datas.forEach { data in
-//            let collectionRef = db.collection("\(type(of: data))")
-//            collectionRef.document(data.id).setData(<#T##documentData: [String : Any]##[String : Any]#>)
-//            collectionRef.document(data.id).setData(data.mirrorToDic())
-//        }
-//    }
+    
+    func uploadDummyArray<T: CanUseFirebase>(datas: [T]) async where T: Encodable {
+        await datas.forEach { data in
+            let collectionRef = db.collection("\(type(of: data))")
+            try? collectionRef.document(data.id).setData(from: data)
+        }
+    }
 }

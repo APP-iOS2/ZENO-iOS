@@ -29,7 +29,7 @@ class HomeViewModel: ObservableObject {
     @Published var communitySearchTerm: String = ""
     var searchedCommunity: [Community] {
         if communitySearchTerm.isEmpty {
-            return allCommunities
+            return joinedCommunities
         } else {
             return allCommunities.filter { $0.communityName.contains(communitySearchTerm) }
         }

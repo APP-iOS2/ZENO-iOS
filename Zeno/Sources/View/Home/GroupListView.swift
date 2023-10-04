@@ -12,17 +12,12 @@ struct GroupListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var homeViewModel: HomeViewModel
     @Binding var isPresented: Bool
-//    @State private var searchTerm: String = ""
-    @State private var fraction: Double = 0.8
-    @State private var detent: PresentationDetent = .fraction(0.8)
-    @State private var detents: Set<PresentationDetent> = [.fraction(0.8), .fraction(1)]
+    
     var body: some View {
         NavigationStack {
             ScrollView {
-                // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
                 ForEach(Array(zip(homeViewModel.searchedCommunity, homeViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
-                        // TODO: 그룹 변경 로직
                         if homeViewModel.joinedCommunities.contains(community) {
                             homeViewModel.selectedCommunity = index
                             isPresented = false
@@ -52,8 +47,6 @@ struct GroupListView: View {
                     }
                 }
                 NavigationLink {
-                    // TODO: constant 뷰 연결 후 수정
-                    EditGroupView(editMode: .addNew, detent: $detent, isPresented: $isPresented, community: .constant(.dummy[0]))
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle")
@@ -80,7 +73,7 @@ struct GroupListView: View {
                 }
             }
         }
-        .presentationDetents(detents, selection: $detent)
+        .presentationDetents([.fraction(0.8)])
     }
 }
 
