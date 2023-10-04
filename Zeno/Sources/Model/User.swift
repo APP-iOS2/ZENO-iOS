@@ -28,11 +28,13 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
 	var buddyList: [Community.ID: [User.ID]]
+    /// 제노를 했는지 안했는지 여부
+    var startZeno: Bool = false
     /// 제노 시작 시간
-    var ZenoStartAt: Double = Date().timeIntervalSince1970
+    var zenoStartAt: Double = 0
     /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
-    var ZenoStartDate: String {
-        let dateOrderedAt: Date = Date(timeIntervalSince1970: ZenoStartAt)
+    var zenoStartDate: String {
+        let dateOrderedAt: Date = Date(timeIntervalSince1970: zenoStartAt)
         
         let dateFormatter: DateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_kr")

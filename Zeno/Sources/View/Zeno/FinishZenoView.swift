@@ -9,55 +9,65 @@
 import SwiftUI
 
 struct FinishZenoView: View {
-    var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    @State private var myZenoTimer: Int = 0
     @State private var count: Int = 1
     @State private var finishedText: String?
     @State private var timeRemaining = ""
-    let futureData: Date = Calendar.current.date(byAdding: .second, value: 20, to: Date()) ?? Date()
+    @State private var isTimeUp = false
+    @State private var futureData: Date? // Optional로 선언
+    
+    @EnvironmentObject private var userViewModel: UserViewModel
     
     func updateTimeRemaining() {
-        let remaining = Calendar.current.dateComponents([.minute, .second], from: Date(), to: futureData)
-        let minute = remaining.minute ?? 0
-        let second = remaining.second ?? 0
-        timeRemaining = "\(minute) 분 \(second) 초 남았어요"
-        
-        if timeRemaining == "0 분 0 초 남았어요" {
-            self.timer.upstream.connect().cancel()
+        if let futureDate = futureData {
+            let remaining = Calendar.current.dateComponents([.minute, .second], from: Date(), to: futureDate)
+            let minute = remaining.minute ?? 0
+            let second = remaining.second ?? 0
+            timeRemaining = "\(minute) 분 \(second) 초 남았어요"
+            
+            if minute == 0 && second <= 0 {
+                self.timer.upstream.connect().cancel()
+                isTimeUp = true
+            }
         }
     }
     
     var body: some View {
-        if timeRemaining == "0 분 0 초 남았어요" {
-                        SelectCommunityVer2()
+        Group {
+                ZStack {
+                    VStack {
+                        LottieView(lottieFile: "beforeZenoFirst")
+                        Text("다음 제노까지 \(timeRemaining) ")
+                            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
+                            .font(.largeTitle)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.ggullungColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                            .offset(y: -.screenHeight * 0.2)
                     }
-        ZStack {
-            VStack {
-                LottieView(lottieFile: "beforeZenoFirst")
-                Text("다음 제노까지 \(timeRemaining) ")
-                    .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
-                    .font(.largeTitle)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.ggullungColor)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
-                    .offset(y: -.screenHeight * 0.2)
+                }
+                .navigationBarBackButtonHidden()
+                .onAppear {
+                    myZenoTimer = Int(userViewModel.comparingTime())
+                    if let futureDate = Calendar.current.date(byAdding: .second, value: Int(myZenoTimer), to: Date()) {
+                        futureData = futureDate
+                    }
+                    updateTimeRemaining()
+                }
+                .onReceive(timer) {_ in
+                    updateTimeRemaining()
+                }
             }
         }
-        .navigationBarBackButtonHidden()
-        .onAppear {
-            updateTimeRemaining()
-        }
-        .onReceive(timer) {_ in
-//            withAnimation(.default) {
-//                count = count == 5 ? 1 : count + 1
-//            }
-            updateTimeRemaining()
-        }
     }
-}
+
 
 struct FinishZenoView_Previews: PreviewProvider {
     static var previews: some View {
         FinishZenoView()
+            .environmentObject(UserViewModel())
     }
 }

@@ -17,6 +17,8 @@ struct ZenoView: View {
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
         if selected < zenoList.count {
             ZStack {
@@ -35,6 +37,11 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
+                                if selected > 9 {
+                                    Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
+                                    print("서버에 업데이트 함")
+                                    await userViewModel.updateZenoTimer() }
+                                }
                                 selected += 1
                                 resetUsers()
                             } label: {
@@ -87,5 +94,6 @@ struct ZenoView: View {
 struct ZenoView_pro: PreviewProvider {
     static var previews: some View {
         ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+            .environmentObject(UserViewModel())
     }
 }
