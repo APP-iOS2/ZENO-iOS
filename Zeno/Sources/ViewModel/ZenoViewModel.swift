@@ -10,5 +10,4 @@ import Foundation
 import KakaoSDKAuth
 
 class ZenoViewModle: ObservableObject {
-
 }
