@@ -22,42 +22,39 @@ struct SelectCommunityVer2: View {
     @State private var useConfentti: Bool = true
     
     @EnvironmentObject private var userViewModel: UserViewModel
-
+    
     var body: some View {
         NavigationStack {
-            if userViewModel.currentUser!.startZeno == false || userViewModel.readyForTimer() == true {
-                VStack {
-                    ScrollViewReader { ScrollViewProxy in
-                        CardViewVer2(currentIndex: currentIndex)
-                            .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
-                            .onChange(of: currentIndex) { _ in
-                                withAnimation {
-                                    ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                }
-                            }
-                            .offset(y: .screenHeight * 0.04)
-                            .offset(x: currentIndex == 0 ? .screenWidth * 0.19 : 0 )
-                            .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
-                    }
-                    commuityListView()
-                        .background(.clear)
-                    NavigationLink {
-                        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
-                    } label: {
-                        VStack {
-                            if isPlay == false {
-                                Text("그룹을 선택해주세요")
-                                    .padding(.bottom, 10)
-                                StartButton(isplay: isPlay)
-                            } else {
-                                StartButton(isplay: isPlay)
+            VStack {
+                ScrollViewReader { ScrollViewProxy in
+                    CardViewVer2(currentIndex: currentIndex)
+                        .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                        .onChange(of: currentIndex) { _ in
+                            withAnimation {
+                                ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
                             }
                         }
-                    }
-                    .disabled(isPlay == false)
+                        .offset(y: .screenHeight * 0.04)
+                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
+                        .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
                 }
-            } else {
-                FinishZenoView()
+                commuityListView()
+                    .background(.clear)
+                NavigationLink {
+                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+                } label: {
+                    VStack {
+                        if isPlay == false {
+                            Text("그룹을 선택해주세요")
+                                .padding(.bottom, 10)
+                            StartButton(isplay: isPlay)
+                        } else {
+                            StartButton(isplay: isPlay)
+                        }
+                    }
+                }
+                .offset(y: -20)
+                .disabled(isPlay == false)
             }
         }
     }

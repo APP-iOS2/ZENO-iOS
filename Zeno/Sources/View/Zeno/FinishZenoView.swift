@@ -16,12 +16,13 @@ struct FinishZenoView: View {
     @State private var count: Int = 1
     @State private var finishedText: String?
     @State private var timeRemaining = ""
-    @State private var isTimeUp = false
+    @State private var timesUp = false
     @State private var futureData: Date? // Optional로 선언
     @State var stack = NavigationPath()
     
     @EnvironmentObject private var userViewModel: UserViewModel
-    
+    @Environment(\.dismiss) private var dismiss
+
     func updateTimeRemaining() {
         if let futureDate = futureData {
             let remaining = Calendar.current.dateComponents([.minute, .second], from: Date(), to: futureDate)
@@ -31,12 +32,13 @@ struct FinishZenoView: View {
             
             if minute == 0 && second <= 0 {
                 self.timer.upstream.connect().cancel()
+                timesUp = true
             }
         }
     }
     
     var body: some View {
-        if userViewModel.readyForTimer() {
+        if timesUp == false {
             Group {
                 ZStack {
                     VStack {
@@ -71,7 +73,7 @@ struct FinishZenoView: View {
             // stack.removeLast()
                 .task {
                     print("시간 끝남")
-                    await userViewModel.updateUserStartAt(to: 0)
+                    print("\(timesUp)")
                     await userViewModel.updateUserStartZeno(to: false)
             }
         }
@@ -81,9 +83,7 @@ struct FinishZenoView: View {
         let currentTime = Date().timeIntervalSince1970
 
         if let currentUser = userViewModel.currentUser,
-           let zenoEndAt = currentUser.zenoEndAt,
-           let zenoStartAt = currentUser.zenoStartAt
-        {
+           let zenoEndAt = currentUser.zenoEndAt {
             return zenoEndAt - currentTime
         } else {
             return 0.0

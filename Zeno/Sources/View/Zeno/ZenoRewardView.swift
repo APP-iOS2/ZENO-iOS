@@ -38,6 +38,7 @@ struct ZenoRewardView: View {
                     .stroke()
             )
         }
+        // .navigationBarBackButtonHidden(true)
     }
 }
 

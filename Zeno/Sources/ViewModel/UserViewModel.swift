@@ -17,7 +17,7 @@ class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    @Published var coolTime: Int = 10
+    @Published var coolTime: Int = 8
     
     init() {
         Task {
@@ -83,11 +83,11 @@ class UserViewModel: ObservableObject {
     }
     
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
+    /// TODO : zenoStartTime 지우기
     func updateZenoTimer() async {
         do {
             guard let currentUser = currentUser else { return }
             let zenoStartTime = Date().timeIntervalSince1970
-            try await FirebaseManager.shared.update(data: currentUser, value: \.zenoStartAt, to: zenoStartTime)
             try await FirebaseManager.shared.update(data: currentUser, value: \.zenoEndAt, to: zenoStartTime + Double(coolTime))
             try await loadUserData()
             print("------------------------")
@@ -100,18 +100,19 @@ class UserViewModel: ObservableObject {
     }
     
     ///zenoStartAt시간만 바꿔주는 함수
-    func updateUserStartAt(to: Double?) async {
-        do {
-            guard let currentUser = currentUser else { return }
-            try await FirebaseManager.shared.update(data: currentUser, value: \.zenoStartAt, to: to)
-            try await loadUserData()
-            print("updateUserStartAt ")
-        } catch {
-            print("Error updateStartZeno : \(error)")
-        }
-    }
+//    func updateUserStartAt(to: Double?) async {
+//        do {
+//            guard let currentUser = currentUser else { return }
+//            try await FirebaseManager.shared.update(data: currentUser, value: \.zenoStartAt, to: to)
+//            try await loadUserData()
+//            print("updateUserStartAt ")
+//        } catch {
+//            print("Error updateStartZeno : \(error)")
+//        }
+//    }
     
-    /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함
+    // 나갔다 들어오면 초기화를 목표로
+    /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 (서버가 맞을지 유저 디포츠가 맞을진 모르겟음)
     func updateUserStartZeno(to: Bool) async {
         do {
             guard let currentUser = currentUser else { return }
@@ -129,7 +130,7 @@ class UserViewModel: ObservableObject {
 
         if let currentUser = currentUser,
            let zenoEndAt = currentUser.zenoEndAt {
-            if currentTime >= zenoEndAt {
+            if currentTime <= zenoEndAt {
                 return true
             } else {
                 return false
@@ -145,8 +146,7 @@ class UserViewModel: ObservableObject {
         let currentTime = Date().timeIntervalSince1970
 
         if let currentUser = currentUser,
-           let zenoEndAt = currentUser.zenoEndAt,
-           let zenoStartAt = currentUser.zenoStartAt {
+           let zenoEndAt = currentUser.zenoEndAt {
                 return zenoEndAt - currentTime
         } else {
             return 0.0

@@ -81,7 +81,7 @@ struct ZenoView: View {
             }
             .navigationBarBackButtonHidden(true)
         } else {
-            FinishZenoView()
+            ZenoRewardView()
         }
     }
 

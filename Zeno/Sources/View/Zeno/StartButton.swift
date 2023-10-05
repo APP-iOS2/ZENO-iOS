@@ -15,7 +15,7 @@ struct StartButton: View {
         ZStack {
             Rectangle()
                 .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
-                .cornerRadius(26)
+                .cornerRadius(20)
                 .foregroundColor(isplay ? .purple2 : .gray)
                 .opacity(0.5)
                 .shadow(radius: 3)
