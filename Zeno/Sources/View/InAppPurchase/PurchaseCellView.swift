@@ -25,7 +25,6 @@ struct PurchaseCellView: View {
     let itemPrice: String
     
     var purchaseAction: () -> Void
-    var updateUserPurchaseInfo: () -> Void
     
     var body: some View {
         VStack {
@@ -50,9 +49,7 @@ struct PurchaseCellView: View {
                 Spacer()
             }
             Button {
-                // TODO: 나중에 IAP 로 연결
                 purchaseAction()
-                updateUserPurchaseInfo()
             } label: {
                 Text("결제하기")
                     .foregroundColor(.white)
@@ -72,8 +69,8 @@ struct PurchaseCellView: View {
     }
 }
 
-//struct PurchaseCellView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "당신을 제노한 사람의 초성이 궁금하신가요 ?", itemFeature1: "초성 확인", itemFeature2: "찌르기", itemPrice: 1.99)
-//    }
-//}
+struct PurchaseCellView_Previews: PreviewProvider {
+    static var previews: some View {
+        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "당신을 제노한 사람의 초성이 궁금하신가요 ?", itemFeature1: "초성 확인", itemFeature2: "찌르기", itemPrice: "1.99", purchaseAction: { })
+    }
+}

@@ -48,15 +48,22 @@ struct PurchaseView: View {
                             Task {
                                 do {
                                     let purchaseResult = try await iAPVM.purchase(product)
+                                    
                                     if await purchaseResult?.finish() != nil {
-                                        await userVM.updateUserInitialCheck(to: 10)
+                                        switch purchaseResult?.productID {
+                                        case "initialCheck":
+                                            await userVM.updateUserInitialCheck(to: 10)
+                                        case "megaphone":
+                                            // MARK: - 이후 메가폰 카운트 올려주는 함수 호출하면 됨.
+                                            await userVM.updateUserMegaphone(to: 1)
+                                        default:
+                                            break
+                                        }
                                     }
                                 } catch {
                                     print(error)
                                 }
                             }
-                        } updateUserPurchaseInfo: {
-                            // 
                         }
                     }
                 }
@@ -67,11 +74,10 @@ struct PurchaseView: View {
     }
 }
 
-//struct PurchaseView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PurchaseView()
-//            .environmentObject(IAPStore())
-//            .environmentObject(AlarmViewModel())
-//            .environmentObject(UserViewModel())
-//    }
-//}
+struct PurchaseView_Previews: PreviewProvider {
+    static var previews: some View {
+        PurchaseView()
+            .environmentObject(IAPStore())
+            .environmentObject(UserViewModel())
+    }
+}
