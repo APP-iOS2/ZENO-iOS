@@ -8,13 +8,15 @@
 
 import Foundation
 
-struct Community: Identifiable, Codable, CanUseFirebase {
+struct Community: Identifiable, Codable, FirebaseAvailable, Hashable {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
+    /// name으로 이름변경
 	var communityName: String
 	/// 커뮤니티 소개
 	var description: String
 	/// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요 ⭐️
+    /// image로 이름변경
 	var communityImage: String
 	/// 커뮤니티 생성일
 	var createdAt: Double
@@ -25,7 +27,7 @@ struct Community: Identifiable, Codable, CanUseFirebase {
 	/// 커뮤니티에 가입된 유저
 	var joinMembers: [Member]
 	/// 커뮤니티에 가입된 유저 구조체
-	struct Member: Codable, Identifiable { // 이 구조체는 앞으로 유저id값을 검색해서 사용자 정보를 얻어낼 예정 User의 minUserdata와 뭐가 편한지 비교 해봅시다.
+	struct Member: Codable, Identifiable, Hashable { // 이 구조체는 앞으로 유저id값을 검색해서 사용자 정보를 얻어낼 예정 User의 minUserdata와 뭐가 편한지 비교 해봅시다.
 		var id: String
 		let joinedAt: Double
 	}
