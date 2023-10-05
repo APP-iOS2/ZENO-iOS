@@ -79,6 +79,21 @@ class UserViewModel: ObservableObject {
 		self.userSession = nil
 		self.currentUser = nil
 	}
+    
+    /// 코인 사용 업데이트 함수
+    func updateUserCoin(to: Int) async {
+        guard let currentUser else { return }
+        var coin = currentUser.coin
+        self.currentUser?.coin += to
+        try? await FirebaseManager.shared.update(data: currentUser, value: \.coin, to: coin)
+    }
+    /// 초성확인권 사용 업데이트 함수
+    func updateUserInitialCheck(to: Int) async {
+        guard let currentUser else { return }
+        var initialCheck = currentUser.showInitial
+        self.currentUser?.showInitial += to
+        try? await FirebaseManager.shared.update(data: currentUser, value: \.showInitial, to: initialCheck)
+    }
 }
 
 /// static 메서드 모아놓은 extension

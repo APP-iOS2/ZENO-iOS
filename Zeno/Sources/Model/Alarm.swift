@@ -20,6 +20,8 @@ struct Alarm: Identifiable, Codable, FirebaseAvailable {
 	let recieveUserName: String
     /// 커뮤니티 ID
     let communityID: String
+    /// nudge와 alarm 통합했을 때 필요.
+    let showUserID: String // 편의성 10.04 추가
 	/// 제노 ID
 	let zenoID: String
 	/// 제노 내용
@@ -27,13 +29,14 @@ struct Alarm: Identifiable, Codable, FirebaseAvailable {
 	/// 제노 생성 일시
 	var createdAt: Double
 	
-	init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, recieveUserID: String, recieveUserName: String, communityID: String, zenoID: String, zenoString: String, createdAt: Double) {
+    init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, recieveUserID: String, recieveUserName: String, communityID: String, showUserID: String, zenoID: String, zenoString: String, createdAt: Double) {
 		self.id = id
 		self.sendUserID = sendUserID
 		self.sendUserName = sendUserName
 		self.recieveUserID = recieveUserID
 		self.recieveUserName = recieveUserName
 		self.communityID = communityID
+        self.showUserID = showUserID
 		self.zenoID = zenoID
 		self.zenoString = zenoString
 		self.createdAt = createdAt
