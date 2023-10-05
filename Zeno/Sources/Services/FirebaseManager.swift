@@ -9,39 +9,6 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-protocol CanUseFirebase {
-    var id: String { get }
-}
-
-extension CanUseFirebase {
-    func getPropertyName<T: CanUseFirebase, U>(_ keyPath: KeyPath<T, U>) -> String {
-        guard let propertyName = "\(keyPath.debugDescription)".split(separator: ".").last
-        else {
-            #if DEBUG
-            print(#function + ": fail to optional bind")
-            #endif
-            return ""
-        }
-        return String(propertyName)
-    }
-    
-    func mirrorToDic() -> [String: Any] {
-        let mirror = Mirror(reflecting: self)
-        var dictionary = [String: Any]()
-        
-        mirror.children.forEach {
-            guard let key = $0.label else {
-                #if DEBUG
-                print(#function + ": fail to optional bind")
-                #endif
-                return
-            }
-            dictionary[key] = $0.value
-        }
-        return dictionary
-    }
-}
-
 enum FirebaseError: Error {
     case emptyID
     case failToCreate
@@ -60,17 +27,17 @@ final class FirebaseManager {
     private init() { }
     
     // MARK: async
-    func create<T: CanUseFirebase>(data: T) async throws where T: Encodable {
+    func create<T: FirebaseAvailable>(data: T) async throws where T: Encodable {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
         
         do {
-            try await documentRef.setData(from: data)
+            try documentRef.setData(from: data)
         } catch {
             throw FirebaseError.failToCreate
         }
     }
     
-    func read<T: CanUseFirebase>(type: T.Type, id: String) async -> Result<T, Error> where T: Decodable {
+    func read<T: FirebaseAvailable>(type: T.Type, id: String) async -> Result<T, Error> where T: Decodable {
         guard !id.isEmpty else {
             return .failure(FirebaseError.emptyID)
         }
@@ -84,7 +51,7 @@ final class FirebaseManager {
         }
     }
     
-    func update<T: CanUseFirebase, U: Decodable>(data: T,
+    func update<T: FirebaseAvailable, U: Decodable>(data: T,
                                                  value keyPath: WritableKeyPath<T, U>,
                                                  to: U) async throws {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
@@ -96,7 +63,7 @@ final class FirebaseManager {
         }
     }
     
-    func delete<T: CanUseFirebase>(data: T) async throws {
+    func delete<T: FirebaseAvailable>(data: T) async throws {
         let documentID = data.id
         guard !documentID.isEmpty else {
             throw FirebaseError.emptyID
@@ -149,8 +116,8 @@ final class FirebaseManager {
         return results
     }
     
-    func uploadDummyArray<T: CanUseFirebase>(datas: [T]) async where T: Encodable {
-        await datas.forEach { data in
+    func uploadDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
+        datas.forEach { data in
             let collectionRef = db.collection("\(type(of: data))")
             try? collectionRef.document(data.id).setData(from: data)
         }

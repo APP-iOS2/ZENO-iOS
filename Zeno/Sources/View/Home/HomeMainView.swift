@@ -21,7 +21,7 @@ struct HomeMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if !homeViewModel.joinedCommunities.isEmpty {
+                if homeViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }

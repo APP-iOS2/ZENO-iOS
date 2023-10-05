@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Zeno: Identifiable, Codable, CanUseFirebase {
+struct Zeno: Identifiable, Codable, FirebaseAvailable {
 	var id: String = UUID().uuidString
 	/// 제노 질문
 	let question: String

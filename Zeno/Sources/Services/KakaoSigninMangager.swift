@@ -172,10 +172,10 @@ class KakaoSignInManager: NormalSignInManager {
                                 let kakaoEmail = user?.kakaoAccount?.email ?? ""
                                 let kakaoId = String(user?.id ?? 0)
                                 _ = "user" + UUID().uuidString
-                                let kakaoNickName = "user" + UUID().uuidString
+//                                let kakaoNickName = "user" + UUID().uuidString
 
                                 // firestore에 등록된 유저인지 확인 -> 등록된 유저면 로그인/신규유저면 회원가입하고 uid 획득
-                                let isNewby = try await self.isRegistered(email: kakaoEmail, pw: kakaoId, method: "kakao")
+                                _ = try await self.isRegistered(email: kakaoEmail, pw: kakaoId, method: "kakao")
 
                                 // 신규 유저인 경우
 //                                if isNewby != "" {

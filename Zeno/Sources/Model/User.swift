@@ -8,13 +8,14 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable, CanUseFirebase {
+struct User: Identifiable, Hashable, Codable, FirebaseAvailable {
 	var id: String = UUID().uuidString
     /// 이름
 	let name: String
 	/// 성별
 	let gender: String
 	/// 프로필 이미지
+    /// image로 이름변경
 	var profileImgUrlPath: String?
 	/// 한줄 소개
 	var description: String = ""

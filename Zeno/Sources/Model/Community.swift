@@ -8,13 +8,15 @@
 
 import Foundation
 
-struct Community: Identifiable, Codable, CanUseFirebase, Hashable {
+struct Community: Identifiable, Codable, FirebaseAvailable, Hashable {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
+    /// name으로 이름변경
 	var communityName: String
 	/// 커뮤니티 소개
 	var description: String
 	/// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요 ⭐️
+    /// image로 이름변경
 	var communityImage: String
 	/// 커뮤니티 생성일
 	var createdAt: Double
