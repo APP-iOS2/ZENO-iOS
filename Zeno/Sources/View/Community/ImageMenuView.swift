@@ -50,7 +50,7 @@ struct ImageMenuView: View {
         .opacity(isPresented ? 1 : 0)
         .animation(.easeInOut(duration: 0.3), value: isPresented)
         .fullScreenCover(isPresented: $isImagePicker, content: {
-            GroupImagePicker(selectedImage: $selectedImage)
+            CommImagePicker(selectedImage: $selectedImage)
         })
         .fullScreenCover(isPresented: $isCameraPicker, content: {
             // TODO: 카메라 띄우기

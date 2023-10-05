@@ -1,5 +1,5 @@
 //
-//  GroupSettingView.swift
+//  CommSettingView.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/09/28.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroupSettingView: View {
+struct CommSettingView: View {
     let community: Community
     
     @Environment(\.dismiss) var dismiss
@@ -174,7 +174,7 @@ extension View {
 
 struct GroupSettingView_Prieviews: PreviewProvider {
     static var previews: some View {
-        GroupSettingView(community: Community.dummy[0])
+        CommSettingView(community: Community.dummy[0])
         SettingTextFieldView(title: "그룹 설정", value: .constant("ddd"))
             .previewDisplayName("텍스트변경")
     }

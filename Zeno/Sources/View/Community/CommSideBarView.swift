@@ -1,5 +1,5 @@
 //
-//  GroupSideBarView.swift
+//  CommSideBarView.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/09/26.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroupSideBarView: View {
+struct CommSideBarView: View {
     @Binding var isPresented: Bool
     // 커뮤니티 정보
     let community: Community
@@ -62,7 +62,7 @@ struct GroupSideBarView: View {
                 
                 // MARK: 메뉴들
                 VStack(alignment: .leading, spacing: 40) {
-                    ForEach(GroupSideMenuItem.items) { item in
+                    ForEach(CommunitySideMenuItem.items) { item in
                         Button(action: {
                             selectIndex = item.id
                             
@@ -127,10 +127,10 @@ struct GroupSideBarView: View {
             .background(Color.purple.opacity(0.2))
         }
         .fullScreenCover(isPresented: $isSettingPresented, content: {
-            GroupSettingView(community: community)
+            CommSettingView(community: community)
         })
         .fullScreenCover(isPresented: $isSelectContent, content: {
-            GroupSideMenuItem.getView(index: selectIndex)
+            CommunitySideMenuItem.getView(index: selectIndex)
         })
         .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
             Button("예", role: .destructive) { groupOut() }
@@ -196,11 +196,11 @@ struct GroupSideBarView: View {
 }
 
 // MARK: 사이드바메뉴 Item 구조체
-struct GroupSideMenuItem: Identifiable {
+struct CommunitySideMenuItem: Identifiable {
     let id: Int
     let contents: String
     
-    static let items: [GroupSideMenuItem] = [
+    static let items: [CommunitySideMenuItem] = [
         .init(id: 0, contents: "구성원 관리"),
         .init(id: 1, contents: "그룹 초대")
     ]
@@ -209,7 +209,7 @@ struct GroupSideMenuItem: Identifiable {
     static func getView(index: Int) -> some View {
         switch index {
         case 0:
-            GroupMemberManageView()
+            CommMemberManageView()
         case 1:
             EmptyView() // 공유 메서드로 끗.
         default:
@@ -221,7 +221,7 @@ struct GroupSideMenuItem: Identifiable {
 struct GroupSideBarView_Preview: PreviewProvider {
     static var previews: some View {
         Group {
-            GroupSideBarView(isPresented: .constant(true), community: Community.dummy[0])
+            CommSideBarView(isPresented: .constant(true), community: Community.dummy[0])
         }
     }
 }
