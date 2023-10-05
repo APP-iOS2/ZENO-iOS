@@ -29,7 +29,7 @@ struct Alarm: Identifiable, Codable, CanUseFirebase {
 	/// 제노 생성 일시
 	var createdAt: Double
 	
-    init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, recieveUserID: String, recieveUserName: String, communityID: String, showUserID: String,zenoID: String, zenoString: String, createdAt: Double) {
+    init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, recieveUserID: String, recieveUserName: String, communityID: String, showUserID: String, zenoID: String, zenoString: String, createdAt: Double) {
 		self.id = id
 		self.sendUserID = sendUserID
 		self.sendUserName = sendUserName

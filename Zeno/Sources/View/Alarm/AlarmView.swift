@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AlarmView: View {
     @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
-	@State var communityArray: [Community] = Community.dummy
+    @State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false
@@ -22,6 +22,10 @@ struct AlarmView: View {
     @State private var isPurchaseSheet: Bool = false
     @State private var selectAlarm: Alarm?
     
+    init() {
+        UITableView.appearance().sectionFooterHeight = 0
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -29,7 +33,7 @@ struct AlarmView: View {
                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
                     
                     List {
-                        ForEach(alarmVM.alarmArray.filter { selectedCommunityId == "" || $0.communityID == selectedCommunityId }) { alarm in
+                        ForEach(alarmVM.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                             AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                         }
                         .navigationDestination(isPresented: $isShowInitialView) {
@@ -39,21 +43,11 @@ struct AlarmView: View {
                         }
                     }
                     .sheet(isPresented: $isShowPaymentSheet, content: {
-                        // TODO: 알람 정보 넘겨주기
                         AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
                             isShowInitialView = true
                         }
                         .presentationDetents([.fraction(0.75)])
                     })
-                    
-                    Button(action: {
-                        if let selectAlarm {
-                            isShowPaymentSheet = true
-                        }
-                    }, label: {
-                        Text("선택하기")
-                    })
-                    .buttonStyle(.borderedProminent)
                 }
                 .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                 .cashAlert(
@@ -71,9 +65,26 @@ struct AlarmView: View {
                   primaryAction: { isPurchaseSheet.toggle() }
                 )
                 .sheet(isPresented: $isPurchaseSheet, content: {
-                    // 무드가 너무 안맞는거 같은데 .
                     PurchaseView()
                 })
+                
+                VStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        if selectAlarm != nil {
+                            isShowPaymentSheet = true
+                        }
+                    }, label: {
+                        Text("선택하기")
+                            .font(.title3)
+                            .frame(maxWidth: .infinity)
+                    })
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color("MainPurple1"))
+                    .disabled(selectAlarm == nil ? true : false)
+                    .padding(.horizontal)
+                }
             }
         }
     }

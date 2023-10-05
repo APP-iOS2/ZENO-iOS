@@ -11,34 +11,58 @@ import SwiftUI
 struct AlarmListCellView: View {
     @Binding var selectAlarm: Alarm?
     let alarm: Alarm
-    
+        
     var body: some View {
         Section {
-            ZStack {
-                HStack(spacing: 8) {
+            VStack(alignment: .leading) {
+                HStack(spacing: 16) {
                     Circle()
-                        .frame(width: 70)
-                        .foregroundStyle(.green)
-                    
-                    VStack {
-                        Text("\(alarm.zenoString)")
-                            .font(.title3)
-                        + Text("에 \(alarm.recieveUserName) 님을 선택했습니다.")
+                        .frame(width: 50)
+                        .foregroundStyle(.gray)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    Color.hex("EB0FFE"), lineWidth: 2
+//                                    Color.hex("0F62FE")
+                                )
+                        )
+                    VStack(alignment: .leading) {
+                        Text("멋쟁이 사자처럼 . 여자")
+                            .padding(.bottom, 4)
+                        Text("3시간 전")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
                     }
                 }
-                .onTapGesture {
-                    selectAlarm = alarm
-                    print("\(selectAlarm?.recieveUserName ?? "error")")
+                .padding(.vertical)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("\(alarm.zenoString)")
+                            .bold()
+                        Text("\(alarm.recieveUserName) 님을 선택했습니다.")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                    
+                    Spacer()
+                    
+                    ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
+                        Image(systemName: "square.and.arrow.up")
+                            .frame(width: 40, height: 40)
+                    }
                 }
-                // TODO: 커뮤니티 사진 클릭해도 공유 기능이 동작된다. 터치영역 수정해야 함
-                ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
-                    Image(systemName: "square.and.arrow.up")
-                        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .bottomTrailing)
-                }
+                .padding(.bottom)
+            }
+            .onTapGesture {
+                selectAlarm = alarm
+                print("\(selectAlarm?.recieveUserName ?? "error")")
             }
         }
-        .listRowInsets(EdgeInsets(top: 12, leading: -20, bottom: 20, trailing: 12))
-        // .listSectionSpacing(20)
+        .listRowSeparator(.hidden)
+        .listRowBackground(alarm.id == selectAlarm?.id ? Color("MainPurple1") : Color(uiColor: .systemGray4))
     }
 }
 
