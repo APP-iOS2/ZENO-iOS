@@ -37,14 +37,12 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
-                                if selected > zenoList.count-1 {
+                                if selected == zenoList.count-1 {
                                     Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
-                                    print("서버에 업데이트 함")
                                     await userViewModel.updateZenoTimer()
+                                    await userViewModel.updateUserStartZeno(to: true)
                                     }
                                 }
-                                userViewModel.currentUser!.startZeno = true
-                                print("\(selected)")
                                 selected += 1
                                 resetUsers()
                             } label: {

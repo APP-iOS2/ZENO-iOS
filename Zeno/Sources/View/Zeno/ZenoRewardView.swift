@@ -25,8 +25,8 @@ struct ZenoRewardView: View {
             }
             .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 15))
             Spacer()
-            Button {
-                // TODO: 코인 관련 메서드 추가
+            NavigationLink {
+                FinishZenoView()
             } label: {
                 Text("코인 받고 끝내기")
                     .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))

@@ -25,7 +25,7 @@ struct SelectCommunityVer2: View {
 
     var body: some View {
         NavigationStack {
-            if userViewModel.currentUser!.startZeno == false || userViewModel.comparingTime() <= 0 {
+            if userViewModel.currentUser!.startZeno == false || userViewModel.readyForTimer() == true {
                 VStack {
                     ScrollViewReader { ScrollViewProxy in
                         CardViewVer2(currentIndex: currentIndex)

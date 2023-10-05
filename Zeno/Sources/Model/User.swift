@@ -31,17 +31,9 @@ struct User: Identifiable, Hashable, Codable, CanUseFirebase {
     /// 제노를 했는지 안했는지 여부
     var startZeno: Bool = false
     /// 제노 시작 시간
-    var zenoStartAt: Double = 0
-    /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
-    var zenoStartDate: String {
-        let dateOrderedAt: Date = Date(timeIntervalSince1970: zenoStartAt)
-        
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_kr")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        dateFormatter.dateFormat = "MM월dd일 HH:mm"
-        return dateFormatter.string(from: dateOrderedAt)
-    }
+    var zenoStartAt: Double?
+    /// 제노 끝나는 시간
+    var zenoEndAt: Double?
 }
 
 #if DEBUG

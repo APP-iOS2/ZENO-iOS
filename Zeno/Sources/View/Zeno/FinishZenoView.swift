@@ -10,14 +10,14 @@ import SwiftUI
 
 struct FinishZenoView: View {
     private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+    private let currentTime = Date().timeIntervalSince1970
+
     @State private var myZenoTimer: Int = 0
     @State private var count: Int = 1
     @State private var finishedText: String?
     @State private var timeRemaining = ""
     @State private var isTimeUp = false
-    @State private var futureDate = Calendar.current.date(byAdding: .second, value: Int(self.comparingTime()), to: Date())
-    // Optional로 선언
+    @State private var futureData: Date? // Optional로 선언
     @State var stack = NavigationPath()
     
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -31,13 +31,12 @@ struct FinishZenoView: View {
             
             if minute == 0 && second <= 0 {
                 self.timer.upstream.connect().cancel()
-                isTimeUp = true
             }
         }
     }
     
     var body: some View {
-        if isTimeUp == false {
+        if userViewModel.readyForTimer() {
             Group {
                 ZStack {
                     VStack {
@@ -54,6 +53,12 @@ struct FinishZenoView: View {
                 }
                 .navigationBarBackButtonHidden()
                 .onAppear {
+                    // MARK: 다른 뷰일때도 계속 나타남
+                    print("온어피어 나타남")
+                    myZenoTimer = Int(userViewModel.comparingTime())
+                    if let futureDate = Calendar.current.date(byAdding: .second, value: Int(myZenoTimer), to: Date()) {
+                        futureData = futureDate
+                    }
                     updateTimeRemaining()
                 }
                 .onReceive(timer) {_ in
@@ -64,22 +69,22 @@ struct FinishZenoView: View {
             SelectCommunityVer2()
             // TODO: NavigationPath 써야함
             // stack.removeLast()
-                .onAppear {
-                    userViewModel.currentUser!.startZeno = false
+                .task {
+                    print("시간 끝남")
+                    await userViewModel.updateUserStartAt(to: 0)
+                    await userViewModel.updateUserStartZeno(to: false)
             }
         }
     }
     
     func comparingTime() -> Double {
-        if let currentUser = userViewModel.currentUser {
-            let afterZenoTime = currentUser.zenoStartAt + 10
-            let currentTime = Date().timeIntervalSince1970
-            
-            if currentTime >= afterZenoTime {
-                return afterZenoTime - currentUser.zenoStartAt
-            } else {
-                return currentUser.zenoStartAt - afterZenoTime
-            }
+        let currentTime = Date().timeIntervalSince1970
+
+        if let currentUser = userViewModel.currentUser,
+           let zenoEndAt = currentUser.zenoEndAt,
+           let zenoStartAt = currentUser.zenoStartAt
+        {
+            return zenoEndAt - currentTime
         } else {
             return 0.0
         }
