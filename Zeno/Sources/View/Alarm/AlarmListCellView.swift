@@ -13,56 +13,62 @@ struct AlarmListCellView: View {
     let alarm: Alarm
         
     var body: some View {
-        Section {
-            VStack(alignment: .leading) {
-                HStack(spacing: 16) {
-                    Circle()
-                        .frame(width: 50)
-                        .foregroundStyle(.gray)
-                        .overlay(
-                            Circle()
-                                .strokeBorder(
-                                    Color.hex("EB0FFE"), lineWidth: 2
+        VStack(alignment: .leading) {
+            HStack(spacing: 16) {
+                Circle()
+                    .frame(width: 50)
+                    .foregroundStyle(.gray)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(
+                                Color.hex("EB0FFE"), lineWidth: 2
 //                                    Color.hex("0F62FE")
-                                )
-                        )
-                    VStack(alignment: .leading) {
-                        Text("멋쟁이 사자처럼 . 여자")
-                            .padding(.bottom, 4)
-                        Text("3시간 전")
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                    }
+                            )
+                    )
+                VStack(alignment: .leading) {
+                    Text("멋쟁이 사자처럼 . 여자")
+                        .padding(.bottom, 4)
+                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
+                    Text("3시간 전")
+                        .font(.caption)
+                        .foregroundStyle(.gray)
                 }
-                .padding(.vertical)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
                 
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("\(alarm.zenoString)")
-                            .bold()
-                        Text("\(alarm.recieveUserName) 님을 선택했습니다.")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                    
-                    Spacer()
-                    
-                    ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
-                        Image(systemName: "square.and.arrow.up")
-                            .frame(width: 40, height: 40)
-                    }
+                Spacer()
+                
+                ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
+                    Image(systemName: "square.and.arrow.up")
+                        .frame(width: 40, height: 40)
                 }
-                .padding(.bottom)
             }
+            .padding(.vertical)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
             .onTapGesture {
                 selectAlarm = alarm
-                print("\(selectAlarm?.recieveUserName ?? "error")")
             }
+            
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("\(alarm.zenoString)")
+                        .bold()
+                    Text("\(alarm.recieveUserName) 님을 선택했습니다.")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectAlarm = alarm
+                }
+                
+                Spacer()
+            }
+            .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
+            .padding(.bottom)
         }
-        .listRowSeparator(.hidden)
-        .listRowBackground(alarm.id == selectAlarm?.id ? Color("MainPurple1") : Color(uiColor: .systemGray4))
+        .padding()
+        .background(alarm.id == selectAlarm?.id ? Color("MainPurple1") : .white)
+        .clipped()
+        .cornerRadius(20)
     }
 }
 
