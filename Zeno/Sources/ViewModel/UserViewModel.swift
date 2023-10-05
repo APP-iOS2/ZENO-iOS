@@ -16,7 +16,7 @@ class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    private let coolTime: Int = 5
+    private let coolTime: Int = 15
     
     init() {
         Task {
@@ -88,6 +88,7 @@ class UserViewModel: ObservableObject {
         self.currentUser?.coin += to
         try? await FirebaseManager.shared.update(data: currentUser, value: \.coin, to: coin)
     }
+    
     /// 초성확인권 사용 업데이트 함수
     func updateUserInitialCheck(to: Int) async {
         guard let currentUser else { return }

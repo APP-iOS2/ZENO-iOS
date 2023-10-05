@@ -68,11 +68,10 @@ struct FinishZenoView: View {
                 }
             }
         } else {
-            SelectCommunityVer2()
+            SelectCommunityVer2(isSheetOn: false)
             // TODO: NavigationPath 써야함
             // stack.removeLast()
                 .task {
-                    print("시간 끝남")
                     print("\(timesUp)")
                     await userViewModel.updateUserStartZeno(to: false)
             }
