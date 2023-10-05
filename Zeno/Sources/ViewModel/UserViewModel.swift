@@ -103,15 +103,21 @@ class UserViewModel: ObservableObject {
     func updateUserCoin(to: Int) async {
         guard let currentUser else { return }
         var coin = currentUser.coin
-        self.currentUser?.coin += to
-        try? await firebaseManager.update(data: currentUser, value: \.coin, to: coin)
+        coin += to
+        try? await firebaseManager.update(data: currentUser,
+                                                 value: \.coin,
+                                                 to: coin)
+        try? await loadUserData()
     }
     /// 초성확인권 사용 업데이트 함수
     func updateUserInitialCheck(to: Int) async {
         guard let currentUser else { return }
         var initialCheck = currentUser.showInitial
-        self.currentUser?.showInitial += to
-        try? await firebaseManager.update(data: currentUser, value: \.showInitial, to: initialCheck)
+        initialCheck += to
+        try? await firebaseManager.update(data: currentUser,
+                                                 value: \.showInitial,
+                                                 to: initialCheck)
+        try? await loadUserData()
     }
     
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
