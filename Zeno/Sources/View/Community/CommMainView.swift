@@ -1,5 +1,5 @@
 //
-//  HomeMainView.swift
+//  CommMainView.swift
 //  Zeno
 //
 //  Created by Muker on 2023/09/26.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct HomeMainView: View {
+struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var communityViewModel: CommunityViewModel
     
@@ -36,7 +36,7 @@ struct HomeMainView: View {
                 isShowingHamburgerView = false
             }
             .sheet(isPresented: $isShowingGroupListSheet) {
-                GroupListView(isPresented: $isShowingGroupListSheet)
+                CommListView(isPresented: $isShowingGroupListSheet)
             }
         }
         .tint(.black)
@@ -48,7 +48,7 @@ struct HomeMainView: View {
                         )
         )
         .onAppear {
-            communityViewModel.filterJoinedCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
+            communityViewModel.filterJoinedCommunity(ids: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
         }
         .onChange(of: communityViewModel.selectedCommunity) { _ in
             Task {
@@ -58,7 +58,7 @@ struct HomeMainView: View {
     }// body
 }
 
-extension HomeMainView {
+extension CommMainView {
     // MARK: - 메인 뷰
     
     /// 새로들어온 유저 뷰

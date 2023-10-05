@@ -1,5 +1,5 @@
 //
-//  GroupListView.swift
+//  CommListView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroupListView: View {
+struct CommListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var communityViewModel: CommunityViewModel
     @Binding var isPresented: Bool
@@ -81,9 +81,9 @@ struct GroupListView_Previews: PreviewProvider {
     @State static var isPresented = true
     @State static var userViewModel = UserViewModel(currentUser: .dummy[0])
     static var previews: some View {
-        HomeMainView()
+        CommMainView()
             .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
+                CommListView(isPresented: $isPresented)
             }
             .environmentObject(userViewModel)
             .environmentObject(CommunityViewModel())

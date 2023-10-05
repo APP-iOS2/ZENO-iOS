@@ -1,5 +1,5 @@
 //
-//  EditGroupView.swift
+//  CommEditView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -9,7 +9,7 @@
 import SwiftUI
 import PhotosUI
 
-struct EditGroupView: View {
+struct CommEditView: View {
     enum EditMode {
         case addNew, edit
         
@@ -134,9 +134,9 @@ struct EditGroupView_Previews: PreviewProvider {
     @State static var isPresented = true
     
     static var previews: some View {
-        HomeMainView()
+        CommMainView()
             .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
+                CommListView(isPresented: $isPresented)
             }
     }
 }
