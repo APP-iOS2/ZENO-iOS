@@ -76,7 +76,7 @@ struct SelectCommunityView: View {
                     Button {
                         isPlay = true
                         selected = community.id
-                        communityName = community.communityName
+                        communityName = community.name
                     } label: {
                         CommuintyCellView(community: community, isBold: false)
                     }
@@ -95,11 +95,11 @@ struct SelectCommunityView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .opacity(0.7)
                             VStack {
-                                Image(community.communityImage)
+                                Image(community.imageURL ?? "")
                                     .resizable()
                                     .frame(width: 50, height: 50)
                                     .scaledToFit()
-                                Text(community.communityName)
+                                Text(community.name)
                                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular
                                         .swiftUIFont(size: 17))
                                     .padding(20)

@@ -26,7 +26,7 @@ struct AlarmSelectCommunityCellView: View {
                 .onTapGesture {
                     selectedCommunityId = community.id
                 }
-            Text("\(community.communityName)")
+            Text("\(community.name)")
                 .font(.footnote)
                 .lineLimit(1)
                 .truncationMode(.tail)

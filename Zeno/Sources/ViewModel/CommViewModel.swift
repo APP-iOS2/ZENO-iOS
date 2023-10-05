@@ -35,7 +35,7 @@ class CommViewModel: ObservableObject {
         if communitySearchTerm.isEmpty {
             return joinedCommunities
         } else {
-            return allCommunities.filter { $0.communityName.contains(communitySearchTerm) }
+            return allCommunities.filter { $0.name.contains(communitySearchTerm) }
         }
     }
     
