@@ -1,5 +1,5 @@
 //
-//  HomeViewModel.swift
+//  CommViewModel.swift
 //  Zeno
 //
 //  Created by Muker on 2023/10/04.
@@ -8,17 +8,19 @@
 
 import SwiftUI
 
-class CommunityViewModel: ObservableObject {
+class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
-    @AppStorage("selectedCommunity") var selectedCommunity: Int = 0
-    @Published var currentCommunity: Community?
-    @Published var allCommunities: [Community] = []
-    @Published var joinedCommunities: [Community] = []
     private var allCurrentUsers: [User] = []
     @Published var recentlyJoinedUsers: [User] = []
     @Published var normalUsers: [User] = []
-    
+    @AppStorage("selectedCommunity") var selectedCommunity: Int = 0
+    @Published var allCommunities: [Community] = []
+    @Published var joinedCommunities: [Community] = []
+    var currentCommunity: Community? {
+        guard joinedCommunities.count - 1 >= selectedCommunity else { return nil }
+        return joinedCommunities[selectedCommunity]
+    }
     @Published var userSearchTerm: String = ""
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
