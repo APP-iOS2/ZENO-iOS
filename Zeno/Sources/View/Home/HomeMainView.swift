@@ -10,7 +10,7 @@ import SwiftUI
 
 struct HomeMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var communityViewModel: CommunityViewModel
     
     @State private var isShowingGroupListSheet = false
     @State private var isShowingUserSearchView = false
@@ -21,14 +21,14 @@ struct HomeMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if homeViewModel.joinedCommunities.isEmpty {
+                if communityViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }
             }
             .toolbar {
                 groupNameToolbarItem
-                if !homeViewModel.joinedCommunities.isEmpty {
+                if !communityViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
             }
@@ -42,17 +42,17 @@ struct HomeMainView: View {
         .tint(.black)
         .overlay(
             SideMenuView(isPresented: $isShowingHamburgerView,
-                         community: homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity ?
-                         homeViewModel.joinedCommunities[homeViewModel.selectedCommunity] :
+                         community: communityViewModel.joinedCommunities.count - 1 >= communityViewModel.selectedCommunity ?
+                         communityViewModel.joinedCommunities[communityViewModel.selectedCommunity] :
                             Community.dummy[0]
                         )
         )
-        .task {
-            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])  
+        .onAppear {
+            communityViewModel.filterAllCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
         }
-        .onChange(of: homeViewModel.selectedCommunity) { _ in
+        .onChange(of: communityViewModel.selectedCommunity) { _ in
             Task {
-                await homeViewModel.fetchAllUser()
+                await communityViewModel.fetchAllUser()
             }
         }
     }// body
@@ -65,7 +65,7 @@ extension HomeMainView {
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(homeViewModel.normalUsers.count)")
+                Text("새로 들어온 친구 \(communityViewModel.normalUsers.count)")
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -78,7 +78,7 @@ extension HomeMainView {
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
-                        ForEach(homeViewModel.recentlyJoinedUsers) { user in
+                        ForEach(communityViewModel.recentlyJoinedUsers) { user in
                             VStack(spacing: 5) {
                                 Image(systemName: "person.circle")
                                     .resizable()
@@ -102,25 +102,25 @@ extension HomeMainView {
         VStack {
             if isShowingUserSearchView {
                 HStack {
-                    TextField(text: $homeViewModel.userSearchTerm) {
+                    TextField(text: $communityViewModel.userSearchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
                     Spacer()
                     Button {
                         isShowingUserSearchView = false
-                        homeViewModel.userSearchTerm = ""
+                        communityViewModel.userSearchTerm = ""
                     } label: {
                         Text("취소")
                             .font(.caption)
                     }
                 }
-                ForEach(homeViewModel.searchedUsers) { user in
+                ForEach(communityViewModel.searchedUsers) { user in
                     userCell(user: user)
                 }
             } else {
                 HStack {
-                    Text("친구 \(homeViewModel.normalUsers.count)")
+                    Text("친구 \(communityViewModel.normalUsers.count)")
                         .font(.footnote)
                     Spacer()
                     Button {
@@ -132,7 +132,7 @@ extension HomeMainView {
                     }
                 }
                 VStack {
-                    ForEach(homeViewModel.normalUsers) { user in
+                    ForEach(communityViewModel.normalUsers) { user in
                         userCell(user: user)
                     }
                 }
@@ -187,16 +187,16 @@ extension HomeMainView {
                 isShowingGroupListSheet.toggle()
             } label: {
                 HStack {
-                    if !homeViewModel.joinedCommunities.isEmpty {
-                        if homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity {
+                    if !communityViewModel.joinedCommunities.isEmpty {
+                        if communityViewModel.joinedCommunities.count - 1 >= communityViewModel.selectedCommunity {
                             Text(
-                                homeViewModel.joinedCommunities[
-                                    homeViewModel.selectedCommunity
+                                communityViewModel.joinedCommunities[
+                                    communityViewModel.selectedCommunity
                                 ].communityName
                             )
                         } else {
                             Text(
-                                homeViewModel.joinedCommunities[0].communityName
+                                communityViewModel.joinedCommunities[0].communityName
                             )
                         }
                     } else {
@@ -228,6 +228,6 @@ struct HomeMainView_Previews: PreviewProvider {
         /*HomeMainView()*/
         TabBarView()
             .environmentObject(UserViewModel(currentUser: .dummy[0]))
-            .environmentObject(HomeViewModel())
+            .environmentObject(CommunityViewModel())
     }
 }

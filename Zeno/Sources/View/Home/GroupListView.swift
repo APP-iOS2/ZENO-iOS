@@ -10,16 +10,16 @@ import SwiftUI
 
 struct GroupListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @EnvironmentObject private var communityViewModel: CommunityViewModel
     @Binding var isPresented: Bool
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                ForEach(Array(zip(homeViewModel.searchedCommunity, homeViewModel.searchedCommunity.indices)), id: \.1) { community, index in
+                ForEach(Array(zip(communityViewModel.searchedCommunity, communityViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
-                        if homeViewModel.joinedCommunities.contains(community) {
-                            homeViewModel.selectedCommunity = index
+                        if communityViewModel.joinedCommunities.contains(community) {
+                            communityViewModel.selectedCommunity = index
                             isPresented = false
                         } else {
                             // TODO: 새로운 그룹 가입 뷰
@@ -55,7 +55,7 @@ struct GroupListView: View {
                     }
                     .groupCell()
                 }
-                .searchable(text: $homeViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
+                .searchable(text: $communityViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
             .padding()
             .toolbar {
@@ -86,6 +86,6 @@ struct GroupListView_Previews: PreviewProvider {
                 GroupListView(isPresented: $isPresented)
             }
             .environmentObject(userViewModel)
-            .environmentObject(HomeViewModel())
+            .environmentObject(CommunityViewModel())
     }
 }

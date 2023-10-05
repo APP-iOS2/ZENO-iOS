@@ -8,12 +8,13 @@
 
 import SwiftUI
 
-class HomeViewModel: ObservableObject {
+class CommunityViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
     @AppStorage("selectedCommunity") var selectedCommunity: Int = 0
     @Published var allCommunities: [Community] = []
     @Published var joinedCommunities: [Community] = []
+    private var allCurrentUsers: [User] = []
     @Published var recentlyJoinedUsers: [User] = []
     @Published var normalUsers: [User] = []
     
@@ -41,17 +42,8 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    @MainActor
-    func fetchCommunity(keys: [String]) async {
-        let results = await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: keys)
-        let communities = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
+    func filterAllCommunity(keys: [String]) {
+        let communities = allCommunities.filter { keys.contains($0.id) }
         self.joinedCommunities = communities
     }
     
@@ -72,40 +64,33 @@ class HomeViewModel: ObservableObject {
     @MainActor
     func fetchAllUser() async {
         if joinedCommunities.count - 1 >= selectedCommunity {
-            await fetchNormalUser()
-            await fetchRecentlyUser()
+            let currentUserIDs = joinedCommunities[selectedCommunity].joinMembers.map { $0.id }
+            let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentUserIDs)
+            let currentUsers = results.compactMap {
+                switch $0 {
+                case .success(let success):
+                    return success
+                case .failure:
+                    return nil
+                }
+            }
+            self.allCurrentUsers = currentUsers
+            filterNormalUser()
+            filterRecentlyUser()
         }
     }
     
-    func fetchNormalUser() async {
-        let normalMemberID = joinedCommunities[selectedCommunity].joinMembers.filter {
-            $0.joinedAt - Date().timeIntervalSince1970 >= (-86400 * 3)
+    func filterNormalUser() {
+        let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
+            $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
         }.map { $0.id }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: normalMemberID)
-        let normalUsers = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
-        self.normalUsers = normalUsers
+        self.normalUsers = allCurrentUsers.filter { filterID.contains($0.id) }
     }
     
-    func fetchRecentlyUser() async {
-        let recentlyJoinedMemberID = joinedCommunities[selectedCommunity].joinMembers.filter {
-            $0.joinedAt - Date().timeIntervalSince1970 < (-86400 * 3)
+    func filterRecentlyUser() {
+        let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
+            $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
         }.map { $0.id }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: recentlyJoinedMemberID)
-        let recentlyJoinedUsers = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
-        self.recentlyJoinedUsers = recentlyJoinedUsers
+        self.recentlyJoinedUsers = allCurrentUsers.filter { filterID.contains($0.id) }
     }
 }
