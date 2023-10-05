@@ -24,6 +24,7 @@ struct Community: Identifiable, Codable, FirebaseAvailable, Hashable {
 	var personnel: Int
 	/// 검색 가능 여부
 	var isSearchable: Bool = true
+    var manager: User.ID
 	/// 커뮤니티에 가입된 유저
 	var joinMembers: [Member]
 	/// 커뮤니티에 가입된 유저 구조체
@@ -41,6 +42,7 @@ extension Community {
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
+              manager: "매니저",
 			  joinMembers: [
 				.init(id: "유저1", joinedAt: Date().timeIntervalSince1970),
 				.init(id: "유저2", joinedAt: Date().timeIntervalSince1970),
@@ -53,18 +55,21 @@ extension Community {
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 30,
 			  isSearchable: true,
+              manager: "매니저",
 			  joinMembers: []),
 		.init(communityName: "앨런 스쿨 12기",
               description: "서로서로 의지하며 공부하기", communityImage: "image2",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 20,
 			  isSearchable: true,
+              manager: "매니저",
 			  joinMembers: []),
 		.init(communityName: "야곰 아카데미 iOS챌린지 5기",
               description: "야~~~곰", communityImage: "yagom",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
+              manager: "매니저",
 			  joinMembers: []),
 //		.init(communityName: "할맥 모임 88기",
 //              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
