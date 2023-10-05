@@ -60,12 +60,6 @@ class UserViewModel: ObservableObject {
             print("🔴 회원가입 실패. 에러메세지: \(error.localizedDescription)")
         }
     }
-    /// 이메일 회원가입 정보 등록하기
-    @MainActor
-    func uploadUserData(user: User) async {
-        self.currentUser = user
-        try? await FirebaseManager.shared.create(data: user)
-    }
     /// 유저 데이터 가져오기
     @MainActor
     func loadUserData() async throws {
@@ -83,7 +77,6 @@ class UserViewModel: ObservableObject {
     }
     
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
-    /// TODO : zenoStartTime 지우기
     func updateZenoTimer() async {
         do {
             guard let currentUser = currentUser else { return }
@@ -99,19 +92,6 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    ///zenoStartAt시간만 바꿔주는 함수
-//    func updateUserStartAt(to: Double?) async {
-//        do {
-//            guard let currentUser = currentUser else { return }
-//            try await FirebaseManager.shared.update(data: currentUser, value: \.zenoStartAt, to: to)
-//            try await loadUserData()
-//            print("updateUserStartAt ")
-//        } catch {
-//            print("Error updateStartZeno : \(error)")
-//        }
-//    }
-    
-    // 나갔다 들어오면 초기화를 목표로
     /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 (서버가 맞을지 유저 디포츠가 맞을진 모르겟음)
     func updateUserStartZeno(to: Bool) async {
         do {
@@ -123,20 +103,39 @@ class UserViewModel: ObservableObject {
             print("Error updateStartZeno : \(error)")
         }
     }
+
+  
+	/// 로그아웃
+	func logout() {
+		try? Auth.auth().signOut()
+		self.userSession = nil
+		self.currentUser = nil
+	}
     
-    /// 타이머뷰를 보여줄건지 아닌지를 판단하는 함수
-    func readyForTimer() -> Bool {
+    /// 코인 사용 업데이트 함수
+    func updateUserCoin(to: Int) async {
+        guard let currentUser else { return }
+        var coin = currentUser.coin
+        self.currentUser?.coin += to
+        try? await FirebaseManager.shared.update(data: currentUser, value: \.coin, to: coin)
+    }
+    /// 초성확인권 사용 업데이트 함수
+    func updateUserInitialCheck(to: Int) async {
+        guard let currentUser else { return }
+        var initialCheck = currentUser.showInitial
+        self.currentUser?.showInitial += to
+        try? await FirebaseManager.shared.update(data: currentUser, value: \.showInitial, to: initialCheck)
+    }
+}
+
+     func comparingTime() -> Double {
         let currentTime = Date().timeIntervalSince1970
 
         if let currentUser = currentUser,
            let zenoEndAt = currentUser.zenoEndAt {
-            if currentTime <= zenoEndAt {
-                return true
-            } else {
-                return false
-            }
+                return zenoEndAt - currentTime
         } else {
-            return false
+            return 0.0
         }
     }
     
@@ -153,6 +152,7 @@ class UserViewModel: ObservableObject {
         }
     }
 }
+
 /// static 메서드 모아놓은 extension
 extension UserViewModel {
     /// 유저 패치하기

@@ -15,7 +15,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
     var view: some View {
         switch self {
         case .home:
-            HomeMainView()
+            CommMainView()
         case .zeno:
             SelectCommunityVer2()
         case .alert:

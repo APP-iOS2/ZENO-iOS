@@ -19,7 +19,7 @@ struct AlarmSelectCommunityCellView: View {
                 .overlay(
                     Circle()
                         .strokeBorder(
-                            AngularGradient(gradient: Gradient(colors: [.red, .yellow, .green, .blue, .purple, .red]), center: .center), lineWidth: 3
+                            AngularGradient(gradient: Gradient(colors: [.red, .yellow, .purple, .red]), center: .center), lineWidth: 3
                         )
                         .opacity(community.id == selectedCommunityId ? 1 : 0)
                 )

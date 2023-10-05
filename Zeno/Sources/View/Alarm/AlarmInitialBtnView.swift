@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AlarmInitialBtnView: View {
     // MARK: - Properties
+    @EnvironmentObject var userVM: UserViewModel
     @Binding var isPresented: Bool
     @Binding var isLackingCoin: Bool
     @Binding var isLackingInitialTicket: Bool
@@ -18,7 +19,6 @@ struct AlarmInitialBtnView: View {
     @State private var usingInitialTicket: Bool = false
     
     let showInitialViewAction: () -> Void
-    let user = User.dummy
     
     // MARK: - View
     var body: some View {
@@ -28,7 +28,7 @@ struct AlarmInitialBtnView: View {
                 .padding(.bottom, 50)
             
             Button {
-                if user[0].coin >= 60 {
+                if userVM.currentUser?.coin ?? 0 >= 60 {
                     usingCoin.toggle()
                 } else {
                     isPresented = false
@@ -39,24 +39,26 @@ struct AlarmInitialBtnView: View {
                     }
                 }
             } label: {
-                Text("(C)60 선택된 사람의 초성 확인")
+                Text("코인으로 초성 확인")
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
-            .alert("코인을 사용하여 확인하시겠습니까 ?", isPresented: $usingCoin) {
-                Button(role: .destructive) {
-                } label: {
-                    Text("취소")
+            .alert(isPresented: $usingCoin) {
+                let firstButton = Alert.Button.destructive(Text("취소")) {
                 }
-                Button(role: .cancel) {
+                let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
+                    Task {
+                        await userVM.updateUserCoin(to: -60)
+                    }
                     isPresented = false
-                } label: {
-                    Text("확인")
                 }
+                return Alert(title: Text("(C)60을 사용하여 확인하시겠습니까 ?"),
+                             message: Text("보유 코인:\(userVM.currentUser?.coin ?? 0)\n결제 후 잔여 코인: \((userVM.currentUser?.coin ?? 0) - 60)"),
+                             primaryButton: firstButton, secondaryButton: secondButton)
             }
             
             Button {
-                if user[0].showInitial > 0 {
+                if userVM.currentUser?.showInitial ?? 0 > 0 {
                     usingInitialTicket.toggle()
                 } else {
                     isPresented = false
@@ -66,20 +68,22 @@ struct AlarmInitialBtnView: View {
                     }
                 }
             } label: {
-                Text("(\(user[0].showInitial)번 남음)유료 결제 후 초성 확인")
+                Text("초성 확인권으로 초성 확인")
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
-            .alert("초성 확인권을 사용하여 확인하시겠습니까 ?", isPresented: $usingInitialTicket) {
-                Button(role: .destructive) {
-                } label: {
-                    Text("취소")
+            .alert(isPresented: $usingInitialTicket) {
+                let firstButton = Alert.Button.destructive(Text("취소")) {
                 }
-                Button(role: .cancel) {
+                let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
+                    Task {
+                        await userVM.updateUserInitialCheck(to: -1)
+                    }
                     isPresented = false
-                } label: {
-                    Text("확인")
                 }
+                return Alert(title: Text("초성 확인권 1개를 사용하여 확인하시겠습니까 ?"),
+                             message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
+                             primaryButton: firstButton, secondaryButton: secondButton)
             }
             .padding(.bottom, 20)
             
@@ -97,5 +101,6 @@ struct AlarmInitialBtnView: View {
 struct AlarmInitialBtnView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmInitialBtnView(isPresented: .constant(false), isLackingCoin: .constant(false), isLackingInitialTicket: .constant(false), showInitialViewAction: {})
+            .environmentObject(UserViewModel())
     }
 }

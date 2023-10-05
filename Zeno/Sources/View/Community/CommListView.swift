@@ -1,5 +1,5 @@
 //
-//  GroupListView.swift
+//  CommListView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -8,23 +8,22 @@
 
 import SwiftUI
 
-struct GroupListView: View {
+struct CommListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @EnvironmentObject private var communityViewModel: CommunityViewModel
     @Binding var isPresented: Bool
-    @State private var searchTerm: String = ""
-    @State private var fraction: Double = 0.8
-    @State private var detent: PresentationDetent = .fraction(0.8)
-    @State private var detents: Set<PresentationDetent> = [.fraction(0.8), .fraction(1)]
+    
     var body: some View {
         NavigationStack {
             ScrollView {
-                // TODO: db의 전체 그룹 중 searchTerm 변수를 이용해 filter된 리스트로 ForEach 대체
-                ForEach(Array(zip(homeViewModel.communities, homeViewModel.communities.indices)), id: \.1) { community, index in
+                ForEach(Array(zip(communityViewModel.searchedCommunity, communityViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
-                        // TODO: 그룹 변경 로직
-                        homeViewModel.selectedCommunity = index
-                        isPresented = false
+                        if communityViewModel.joinedCommunities.contains(community) {
+                            communityViewModel.selectedCommunity = index
+                            isPresented = false
+                        } else {
+                            // TODO: 새로운 그룹 가입 뷰
+                        }
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
@@ -48,8 +47,6 @@ struct GroupListView: View {
                     }
                 }
                 NavigationLink {
-                    // TODO: constant 뷰 연결 후 수정
-                    EditGroupView(editMode: .addNew, detent: $detent, isPresented: $isPresented, community: .constant(.dummy[0]))
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle")
@@ -58,7 +55,7 @@ struct GroupListView: View {
                     }
                     .groupCell()
                 }
-                .searchable(text: $searchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
+                .searchable(text: $communityViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
             .padding()
             .toolbar {
@@ -76,7 +73,7 @@ struct GroupListView: View {
                 }
             }
         }
-        .presentationDetents(detents, selection: $detent)
+        .presentationDetents([.fraction(0.8)])
     }
 }
 
@@ -84,11 +81,11 @@ struct GroupListView_Previews: PreviewProvider {
     @State static var isPresented = true
     @State static var userViewModel = UserViewModel(currentUser: .dummy[0])
     static var previews: some View {
-        HomeMainView()
+        CommMainView()
             .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
+                CommListView(isPresented: $isPresented)
             }
             .environmentObject(userViewModel)
-            .environmentObject(HomeViewModel())
+            .environmentObject(CommunityViewModel())
     }
 }

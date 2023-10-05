@@ -1,5 +1,5 @@
 //
-//  GroupImagePicker.swift
+//  CommImagePicker.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/10/01.
@@ -11,7 +11,7 @@ import UIKit
 import PhotosUI
 
 /// 갤러리 이미지 선택창
-struct GroupImagePicker: UIViewControllerRepresentable {
+struct CommImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     
     func makeUIViewController(context: Context) -> PHPickerViewController {
