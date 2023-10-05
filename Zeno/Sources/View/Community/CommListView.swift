@@ -27,7 +27,7 @@ struct CommListView: View {
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("\(community.communityName)")
+                                Text("\(community.name)")
 //                                HStack {
 //                                    // TODO: 새로운 알림으로 조건 변경
 //                                    if index == 2 || index == 4 {

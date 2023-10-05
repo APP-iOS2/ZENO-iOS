@@ -145,7 +145,7 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if user.profileImgUrlPath != nil {
+            if user.imageURL != nil {
                 // 사용자 프로필이미지 들어가야함
                 Image(systemName: "person.circle")
                     .resizable()
@@ -192,11 +192,11 @@ extension CommMainView {
                             Text(
                                 commViewModel.joinedCommunities[
                                     commViewModel.selectedCommunity
-                                ].communityName
+                                ].name
                             )
                         } else {
                             Text(
-                                commViewModel.joinedCommunities[0].communityName
+                                commViewModel.joinedCommunities[0].name
                             )
                         }
                     } else {
