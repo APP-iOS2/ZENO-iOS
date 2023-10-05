@@ -12,6 +12,7 @@ class CommunityViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     
     @AppStorage("selectedCommunity") var selectedCommunity: Int = 0
+    @Published var currentCommunity: Community?
     @Published var allCommunities: [Community] = []
     @Published var joinedCommunities: [Community] = []
     private var allCurrentUsers: [User] = []
@@ -42,8 +43,11 @@ class CommunityViewModel: ObservableObject {
         }
     }
     
-    func filterJoinedCommunity(ids: [String]) {
-        let communities = allCommunities.filter { ids.contains($0.id) }
+    func filterJoinedCommunity(user: User?) {
+        guard let user else { return }
+        let commIDs = user.commInfoList.filter { $0.id == joinedCommunities[selectedCommunity].id }
+                                       .flatMap { $0.buddyList }
+        let communities = allCommunities.filter { commIDs.contains($0.id) }
         self.joinedCommunities = communities
     }
     

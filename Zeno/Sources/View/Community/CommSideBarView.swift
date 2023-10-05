@@ -13,7 +13,7 @@ struct CommSideBarView: View {
     // 커뮤니티 정보
     let community: Community
     // Group ID를 받아서 알림여부를 가져온다. groupID가 없을때 어떻게 가져오는지는 확인해봐야함.
-    @AppStorage private var isgroupAlarmSaved: Bool
+    @AppStorage private var isGroupAlarmSaved: Bool
     
     // 현재 알람만 선택이 되어있는지 여부를 따지면 되지만 추후 확장성을 위해 배열로 코딩.
     @State private var clickedButtons: [Bool] = .init(repeating: false, count: 3)
@@ -21,16 +21,18 @@ struct CommSideBarView: View {
     init(isPresented: Binding<Bool>, community: Community) {
         self.community = community
         self._isPresented = isPresented
-        _isgroupAlarmSaved = .init(wrappedValue: false, "swj") // 현재 community.id가 uuid로 따져서 계속 변함.
+        _isGroupAlarmSaved = .init(wrappedValue: false, "swj") // 현재 community.id가 uuid로 따져서 계속 변함.
     }
     
     @State private var selectIndex: Int = 0
     @State private var isSelectContent: Bool = false
     @State private var isSettingPresented: Bool = false
     @State private var isGroupOutAlert: Bool = false
-    private let buttonSystemImage: [String] = ["rectangle.portrait.and.arrow.forward",
-                                               "bell.slash",
-                                               "gearshape"]
+    private let buttonSystemImage: [String] = [
+        "rectangle.portrait.and.arrow.forward",
+        "bell.slash",
+        "gearshape"
+    ]
     /// Double타입 날짜 String타입으로 변환
     private var convertDate: String {
         let doubleDate: Double = community.createdAt
@@ -98,7 +100,7 @@ struct CommSideBarView: View {
                         case 0: // 그룹 나가기 alert
                             isGroupOutAlert.toggle()
                         case 1: // 그룹별 알림 여부 Toast하나 만들어서 띄우자. (커스텀 공통으로 가져가기)
-                            isgroupAlarmSaved.toggle()
+                            isGroupAlarmSaved.toggle()
                         case 2: // 그룹 설정
                             isPresented = false
                             isSettingPresented.toggle()
@@ -140,7 +142,7 @@ struct CommSideBarView: View {
         }
         .onAppear {
             // isgroupAlarmSaved가 true인 경우 index = 1에 있는 알람의 값을 true로 변경해준다.
-            if isgroupAlarmSaved {
+            if isGroupAlarmSaved {
                 self.clickedButtons = clickedButtons.enumerated().map { (index, element) in
                     if index == 1 {
                         return true

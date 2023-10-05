@@ -29,21 +29,21 @@ class UserViewModel: ObservableObject {
     /// 이메일 로그인
     @MainActor
     func login(email: String, password: String) async throws {
-        do {
-            let result = try await Auth.auth().signIn(withEmail: email, password: password)
-            self.userSession = result.user
-            try await loadUserData()
-            print("🔵 로그인 성공")
-        } catch {
-            print("🔴 로그인 실패. 에러메세지: \(error.localizedDescription)")
-        }
-    }
-    /// 이메일 회원가입
-    @MainActor
-    func createUser(email: String, passwrod: String, name: String, gender: String, description: String) async throws {
-        do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: passwrod)
-            self.userSession = result.user
+		do {
+			let result = try await Auth.auth().signIn(withEmail: email, password: password)
+			self.userSession = result.user
+			try await loadUserData()
+			print("🔵 로그인 성공")
+		} catch {
+			print("🔴 로그인 실패. 에러메세지: \(error.localizedDescription)")
+		}
+	}
+	/// 이메일 회원가입
+	@MainActor
+	func createUser(email: String, passwrod: String, name: String, gender: String, description: String) async throws {
+		do {
+			let result = try await Auth.auth().createUser(withEmail: email, password: passwrod)
+			self.userSession = result.user
             let user = User(id: result.user.uid,
                             name: name,
                             gender: gender,
@@ -51,15 +51,15 @@ class UserViewModel: ObservableObject {
                             kakaoToken: "카카오토큰",
                             coin: 0,
                             megaphone: 0,
-                            showInitial: 0,
-                            buddyList: [:])
-            await uploadUserData(user: user)
-            print("🔵 회원가입 성공")
-        } catch {
-            print("🔴 회원가입 실패. 에러메세지: \(error.localizedDescription)")
-        }
-    }
-    /// 이메일 회원가입 정보 등록하기
+                            showInitial: 0
+            )
+			await uploadUserData(user: user)
+			print("🔵 회원가입 성공")
+		} catch {
+			print("🔴 회원가입 실패. 에러메세지: \(error.localizedDescription)")
+		}
+	}
+	/// 이메일 회원가입 정보 등록하기
     @MainActor
     func uploadUserData(user: User) async {
         self.currentUser = user

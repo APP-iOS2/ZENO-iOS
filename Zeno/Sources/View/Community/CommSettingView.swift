@@ -158,10 +158,12 @@ struct GroupItemDesign: ViewModifier {
             }
     }
     
-    let originalGradient = Gradient(colors: [.gray.opacity(0.3),
-                                             .gray.opacity(0.25),
-                                             .gray.opacity(0.23),
-                                             .gray.opacity(0.2)])
+    let originalGradient = Gradient(colors: [
+        .gray.opacity(0.3),
+        .gray.opacity(0.25),
+        .gray.opacity(0.23),
+        .gray.opacity(0.2)
+    ])
 }
 
 extension View {
