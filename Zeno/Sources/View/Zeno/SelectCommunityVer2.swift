@@ -21,6 +21,8 @@ struct SelectCommunityVer2: View {
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
     
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -33,7 +35,7 @@ struct SelectCommunityVer2: View {
                             }
                         }
                         .offset(y: .screenHeight * 0.04)
-                        .offset(x: currentIndex == 0 ? .screenWidth * 0.19 : 0 )
+                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
                         .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
                 }
                 commuityListView()
@@ -51,6 +53,7 @@ struct SelectCommunityVer2: View {
                         }
                     }
                 }
+                .offset(y: -20)
                 .disabled(isPlay == false)
             }
         }
@@ -94,5 +97,6 @@ struct SelectCommunityVer2: View {
 struct SelectCommunityVer2_Previews: PreviewProvider {
     static var previews: some View {
         SelectCommunityVer2()
+            .environmentObject(UserViewModel())
     }
 }
