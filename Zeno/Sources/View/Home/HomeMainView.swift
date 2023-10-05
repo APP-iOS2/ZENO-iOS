@@ -48,7 +48,7 @@ struct HomeMainView: View {
                         )
         )
         .onAppear {
-            communityViewModel.filterAllCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
+            communityViewModel.filterJoinedCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
         }
         .onChange(of: communityViewModel.selectedCommunity) { _ in
             Task {

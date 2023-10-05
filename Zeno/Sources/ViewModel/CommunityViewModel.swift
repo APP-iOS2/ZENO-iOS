@@ -42,8 +42,8 @@ class CommunityViewModel: ObservableObject {
         }
     }
     
-    func filterAllCommunity(keys: [String]) {
-        let communities = allCommunities.filter { keys.contains($0.id) }
+    func filterJoinedCommunity(ids: [String]) {
+        let communities = allCommunities.filter { ids.contains($0.id) }
         self.joinedCommunities = communities
     }
     
@@ -80,14 +80,14 @@ class CommunityViewModel: ObservableObject {
         }
     }
     
-    func filterNormalUser() {
+    private func filterNormalUser() {
         let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
             $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
         }.map { $0.id }
         self.normalUsers = allCurrentUsers.filter { filterID.contains($0.id) }
     }
     
-    func filterRecentlyUser() {
+    private func filterRecentlyUser() {
         let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
             $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
         }.map { $0.id }
