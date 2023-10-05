@@ -11,6 +11,7 @@ import SwiftUI
 struct AlarmView: View {
     @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
     @StateObject var iAPVM: IAPStore = IAPStore()
+    @EnvironmentObject var userViewModel: UserViewModel
     @State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
@@ -23,17 +24,16 @@ struct AlarmView: View {
     @State private var isPurchaseSheet: Bool = false
     @State private var selectAlarm: Alarm?
     
-    init() {
-        UITableView.appearance().sectionFooterHeight = 0
-    }
-    
     var body: some View {
         NavigationStack {
             ZStack {
+                Color("MainPink3")
+                    .ignoresSafeArea()
+                
                 VStack {
                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
                     
-                    List {
+                    ScrollView {
                         ForEach(alarmVM.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                             AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                         }
@@ -43,12 +43,16 @@ struct AlarmView: View {
                             }
                         }
                     }
+                    .padding()
                     .sheet(isPresented: $isShowPaymentSheet, content: {
                         AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
                             isShowInitialView = true
                         }
                         .presentationDetents([.fraction(0.75)])
                     })
+                }
+                .refreshable {
+                    await alarmVM.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
                 }
                 .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                 .cashAlert(
