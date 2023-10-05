@@ -1,5 +1,5 @@
 //
-//  GroupListView.swift
+//  CommListView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -8,18 +8,18 @@
 
 import SwiftUI
 
-struct GroupListView: View {
+struct CommListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-    @EnvironmentObject private var homeViewModel: HomeViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
     @Binding var isPresented: Bool
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                ForEach(Array(zip(homeViewModel.searchedCommunity, homeViewModel.searchedCommunity.indices)), id: \.1) { community, index in
+                ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
-                        if homeViewModel.joinedCommunities.contains(community) {
-                            homeViewModel.selectedCommunity = index
+                        if commViewModel.joinedCommunities.contains(community) {
+                            commViewModel.selectedCommunity = index
                             isPresented = false
                         } else {
                             // TODO: 새로운 그룹 가입 뷰
@@ -55,7 +55,7 @@ struct GroupListView: View {
                     }
                     .groupCell()
                 }
-                .searchable(text: $homeViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
+                .searchable(text: $commViewModel.communitySearchTerm, placement: .toolbar, prompt: "그룹을 검색해보세요")
             }
             .padding()
             .toolbar {
@@ -81,11 +81,11 @@ struct GroupListView_Previews: PreviewProvider {
     @State static var isPresented = true
     @State static var userViewModel = UserViewModel(currentUser: .dummy[0])
     static var previews: some View {
-        HomeMainView()
+        CommMainView()
             .sheet(isPresented: $isPresented) {
-                GroupListView(isPresented: $isPresented)
+                CommListView(isPresented: $isPresented)
             }
             .environmentObject(userViewModel)
-            .environmentObject(HomeViewModel())
+            .environmentObject(CommViewModel())
     }
 }

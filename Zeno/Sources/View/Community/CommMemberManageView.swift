@@ -1,5 +1,5 @@
 //
-//  GroupMemberManageView.swift
+//  CommMemberManageView.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/10/01.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroupMemberManageView: View {
+struct CommMemberManageView: View {
     @Environment(\.dismiss) var dismiss
     
     let groupMembers: [String] = .init(repeating: "김찬형", count: 10)  // 추후 데이터 변경
@@ -55,6 +55,6 @@ struct GroupMemberManageView: View {
 
 struct GroupMemberManageView_Preview: PreviewProvider {
     static var previews: some View {
-        GroupMemberManageView()
+        CommMemberManageView()
     }
 }

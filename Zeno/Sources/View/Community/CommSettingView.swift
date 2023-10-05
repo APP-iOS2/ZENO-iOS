@@ -1,5 +1,5 @@
 //
-//  GroupSettingView.swift
+//  CommSettingView.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/09/28.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroupSettingView: View {
+struct CommSettingView: View {
     let community: Community
     
     @Environment(\.dismiss) var dismiss
@@ -158,10 +158,12 @@ struct GroupItemDesign: ViewModifier {
             }
     }
     
-    let originalGradient = Gradient(colors: [.gray.opacity(0.3),
-                                             .gray.opacity(0.25),
-                                             .gray.opacity(0.23),
-                                             .gray.opacity(0.2)])
+    let originalGradient = Gradient(colors: [
+        .gray.opacity(0.3),
+        .gray.opacity(0.25),
+        .gray.opacity(0.23),
+        .gray.opacity(0.2)
+    ])
 }
 
 extension View {
@@ -174,7 +176,7 @@ extension View {
 
 struct GroupSettingView_Prieviews: PreviewProvider {
     static var previews: some View {
-        GroupSettingView(community: Community.dummy[0])
+        CommSettingView(community: Community.dummy[0])
         SettingTextFieldView(title: "그룹 설정", value: .constant("ddd"))
             .previewDisplayName("텍스트변경")
     }

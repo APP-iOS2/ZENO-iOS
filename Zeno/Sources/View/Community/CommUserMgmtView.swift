@@ -1,5 +1,5 @@
 //
-//  UserManagementView.swift
+//  CommUserMgmtView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/27.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct UserManagementView: View {
+struct CommUserMgmtView: View {
     @Binding var newUsers: [User]
     @Binding var existingUsers: [User]
     
@@ -21,7 +21,7 @@ struct UserManagementView: View {
             }
             ForEach($newUsers) { $user in
                 HStack(alignment: .center) {
-                    UserManagementCellView(user: $user, actionType: .accept)
+                    CommUserMgmtCellView(user: $user, actionType: .accept)
                 }
             }
             HStack {
@@ -30,7 +30,7 @@ struct UserManagementView: View {
                 Spacer()
             }
             ForEach($existingUsers) { $user in
-                UserManagementCellView(user: $user, actionType: .deport)
+                CommUserMgmtCellView(user: $user, actionType: .deport)
             }
         }
         .padding(.horizontal)
@@ -39,7 +39,7 @@ struct UserManagementView: View {
 
 struct UserManagementView_Previews: PreviewProvider {
     static var previews: some View {
-        UserManagementView(
+        CommUserMgmtView(
             newUsers: .constant(User.dummy),
             existingUsers: .constant(User.dummy)
         )

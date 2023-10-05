@@ -32,7 +32,7 @@ struct SideMenuView: View {
                 ZStack {
                     Color.init(uiColor: .systemBackground)
                     
-                    GroupSideBarView(isPresented: $isPresented, community: community)
+                    CommSideBarView(isPresented: $isPresented)
                 }
                 .frame(width: geometry.size.width * widthSizeRate)
                 // 누르기전에는 x 위치를 width만큼 줘서 화면에서 안보이게 한다.

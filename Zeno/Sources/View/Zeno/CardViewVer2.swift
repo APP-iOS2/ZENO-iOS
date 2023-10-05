@@ -53,7 +53,6 @@ struct CardViewVer2: View {
         let itemPosition = CGFloat(index) * (itemWidth + peekAmount) + currentItemOffset
         let distanceFromCenter = abs(geometry.size.width / 2 - itemPosition - itemWidth / 2)
         let scale: CGFloat = 0.8 + (0.2 * (1 - min(1, distanceFromCenter / (itemWidth + peekAmount))))
-        print("debug")
         return scale
     }
     

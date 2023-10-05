@@ -27,8 +27,12 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable {
 	var megaphone: Int
 	/// 초성보기 사용권 잔여 횟수
 	var showInitial: Int
-	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
-	var buddyList: [Community.ID: [User.ID]]
+    /// 제노를 했는지 안했는지 여부 
+    var startZeno: Bool = false
+    /// 제노 끝나는 시간
+    var zenoEndAt: Double?
+    /// 커뮤니티id, 친구관계, 커뮤니티알람
+    var commInfoList: [joinedCommInfo] = []
     /// 제노 시작 시간
     var ZenoStartAt: Double = Date().timeIntervalSince1970
     /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
@@ -40,6 +44,12 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable {
         dateFormatter.timeZone = TimeZone(abbreviation: "KST")
         dateFormatter.dateFormat = "MM월dd일 HH:mm"
         return dateFormatter.string(from: dateOrderedAt)
+    }
+    
+    struct joinedCommInfo: Hashable, Codable {
+        var id: Community.ID
+        var buddyList: [User.ID]
+        var alert: Bool
     }
 }
 
@@ -53,11 +63,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "김건섭",
 			  gender: "남",
 			  profileImgUrlPath: "person",
@@ -65,11 +72,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "유하은",
 			  gender: "여",
 			  profileImgUrlPath: "person",
@@ -77,11 +81,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "박서연",
 			  gender: "여",
 			  profileImgUrlPath: "person",
@@ -89,11 +90,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "신우진",
 			  gender: "남",
 			  profileImgUrlPath: "person",
@@ -101,11 +99,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "안효명",
 			  gender: "남",
 			  profileImgUrlPath: "person",
@@ -113,11 +108,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ]),
+			  showInitial: 10
+             ),
 		.init(name: "함지수",
 			  gender: "여",
 			  profileImgUrlPath: "person",
@@ -125,11 +117,8 @@ extension User {
 			  kakaoToken: "카카오토큰",
 			  coin: 10,
 			  megaphone: 10,
-			  showInitial: 10,
-			  buddyList: [
-				"커뮤니티1ID": ["친구1", "친구2", "친구3"],
-				"커뮤니티2ID": ["친구1", "친구2", "친구3"]
-			  ])
+			  showInitial: 10
+             )
 	]
 }
 #endif

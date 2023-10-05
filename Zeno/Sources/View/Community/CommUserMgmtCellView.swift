@@ -1,5 +1,5 @@
 //
-//  UserManagementCellView.swift
+//  CommUserMgmtCellView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/27.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct UserManagementCellView: View {
+struct CommUserMgmtCellView: View {
     enum ActionType {
         case accept, deport
         
@@ -55,6 +55,6 @@ struct UserManagementCellView: View {
 
 struct UserManagementCellView_Previews: PreviewProvider {
     static var previews: some View {
-        UserManagementCellView(user: .constant(.dummy[0]), actionType: .accept)
+        CommUserMgmtCellView(user: .constant(.dummy[0]), actionType: .accept)
     }
 }

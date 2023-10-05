@@ -1,5 +1,5 @@
 //
-//  HomeMainView.swift
+//  CommMainView.swift
 //  Zeno
 //
 //  Created by Muker on 2023/09/26.
@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-struct HomeMainView: View {
+struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var commViewModel: CommViewModel
     
     @State private var isShowingGroupListSheet = false
     @State private var isShowingUserSearchView = false
@@ -21,14 +21,14 @@ struct HomeMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if homeViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }
             }
             .toolbar {
                 groupNameToolbarItem
-                if !homeViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
             }
@@ -36,36 +36,36 @@ struct HomeMainView: View {
                 isShowingHamburgerView = false
             }
             .sheet(isPresented: $isShowingGroupListSheet) {
-                GroupListView(isPresented: $isShowingGroupListSheet)
+                CommListView(isPresented: $isShowingGroupListSheet)
             }
         }
         .tint(.black)
         .overlay(
             SideMenuView(isPresented: $isShowingHamburgerView,
-                         community: homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity ?
-                         homeViewModel.joinedCommunities[homeViewModel.selectedCommunity] :
+                         community: commViewModel.joinedCommunities.count - 1 >= commViewModel.selectedCommunity ?
+                         commViewModel.joinedCommunities[commViewModel.selectedCommunity] :
                             Community.dummy[0]
                         )
         )
-        .task {
-            await homeViewModel.fetchCommunity(keys: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])  
+        .onAppear {
+            commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
         }
-        .onChange(of: homeViewModel.selectedCommunity) { _ in
+        .onChange(of: commViewModel.selectedCommunity) { _ in
             Task {
-                await homeViewModel.fetchAllUser()
+                await commViewModel.fetchAllUser()
             }
         }
     }// body
 }
 
-extension HomeMainView {
+extension CommMainView {
     // MARK: - 메인 뷰
     
     /// 새로들어온 유저 뷰
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(homeViewModel.normalUsers.count)")
+                Text("새로 들어온 친구 \(commViewModel.normalUsers.count)")
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -78,7 +78,7 @@ extension HomeMainView {
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
-                        ForEach(homeViewModel.recentlyJoinedUsers) { user in
+                        ForEach(commViewModel.recentlyJoinedUsers) { user in
                             VStack(spacing: 5) {
                                 Image(systemName: "person.circle")
                                     .resizable()
@@ -102,25 +102,25 @@ extension HomeMainView {
         VStack {
             if isShowingUserSearchView {
                 HStack {
-                    TextField(text: $homeViewModel.userSearchTerm) {
+                    TextField(text: $commViewModel.userSearchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
                     Spacer()
                     Button {
                         isShowingUserSearchView = false
-                        homeViewModel.userSearchTerm = ""
+                        commViewModel.userSearchTerm = ""
                     } label: {
                         Text("취소")
                             .font(.caption)
                     }
                 }
-                ForEach(homeViewModel.searchedUsers) { user in
+                ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
                 }
             } else {
                 HStack {
-                    Text("친구 \(homeViewModel.normalUsers.count)")
+                    Text("친구 \(commViewModel.normalUsers.count)")
                         .font(.footnote)
                     Spacer()
                     Button {
@@ -132,7 +132,7 @@ extension HomeMainView {
                     }
                 }
                 VStack {
-                    ForEach(homeViewModel.normalUsers) { user in
+                    ForEach(commViewModel.normalUsers) { user in
                         userCell(user: user)
                     }
                 }
@@ -187,16 +187,16 @@ extension HomeMainView {
                 isShowingGroupListSheet.toggle()
             } label: {
                 HStack {
-                    if !homeViewModel.joinedCommunities.isEmpty {
-                        if homeViewModel.joinedCommunities.count - 1 >= homeViewModel.selectedCommunity {
+                    if !commViewModel.joinedCommunities.isEmpty {
+                        if commViewModel.joinedCommunities.count - 1 >= commViewModel.selectedCommunity {
                             Text(
-                                homeViewModel.joinedCommunities[
-                                    homeViewModel.selectedCommunity
+                                commViewModel.joinedCommunities[
+                                    commViewModel.selectedCommunity
                                 ].communityName
                             )
                         } else {
                             Text(
-                                homeViewModel.joinedCommunities[0].communityName
+                                commViewModel.joinedCommunities[0].communityName
                             )
                         }
                     } else {
@@ -228,6 +228,6 @@ struct HomeMainView_Previews: PreviewProvider {
         /*HomeMainView()*/
         TabBarView()
             .environmentObject(UserViewModel(currentUser: .dummy[0]))
-            .environmentObject(HomeViewModel())
+            .environmentObject(CommViewModel())
     }
 }
