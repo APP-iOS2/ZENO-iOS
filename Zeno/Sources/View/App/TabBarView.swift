@@ -56,6 +56,8 @@ enum MainTab: Int, CaseIterable, Identifiable {
 
 struct TabBarView: View {
     @State private var selectedTabIndex = 0
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject var alarmViewModel: AlarmViewModel = AlarmViewModel()
     
     var body: some View {
 		TabView(selection: $selectedTabIndex) {
@@ -68,6 +70,10 @@ struct TabBarView: View {
                     .tag(tab.rawValue)
             }
 		}
+        .environmentObject(alarmViewModel)
+        .task {
+            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+        }
 	}
 }
 

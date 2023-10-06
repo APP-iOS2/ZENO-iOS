@@ -36,7 +36,7 @@ struct AlarmListCellView: View {
                 
                 Spacer()
                 
-                ShareLink(item: "\(alarm.zenoString)에 \(alarm.recieveUserName) 님을 선택했습니다.") {
+                ShareLink(item: "\(alarm.zenoString)에 \(alarm.receiveUserName) 님을 선택했습니다.") {
                     Image(systemName: "square.and.arrow.up")
                         .frame(width: 40, height: 40)
                 }
@@ -52,7 +52,7 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
                         .bold()
-                    Text("\(alarm.recieveUserName) 님을 선택했습니다.")
+                    Text("\(alarm.receiveUserName) 님을 선택했습니다.")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -74,6 +74,6 @@ struct AlarmListCellView: View {
 
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
     }
 }

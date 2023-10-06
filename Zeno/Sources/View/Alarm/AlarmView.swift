@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct AlarmView: View {
-    @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
+    @EnvironmentObject var alarmViewModel: AlarmViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     @StateObject var iAPVM: IAPStore = IAPStore()
     @EnvironmentObject var userViewModel: UserViewModel
     @State var communityArray: [Community] = Community.dummy
@@ -34,7 +35,7 @@ struct AlarmView: View {
                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
                     
                     ScrollView {
-                        ForEach(alarmVM.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
+                        ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                             AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                         }
                         .navigationDestination(isPresented: $isShowInitialView) {
@@ -52,7 +53,7 @@ struct AlarmView: View {
                     })
                 }
                 .refreshable {
-                    await alarmVM.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+                    await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
                 }
                 .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                 .cashAlert(
