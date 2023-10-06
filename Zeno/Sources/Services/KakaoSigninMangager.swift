@@ -109,29 +109,30 @@ class KakaoSignInManager: NormalSignInManager {
             }
         }
     }
-    // MARK: - 카카오톡 로그인 함수
+    
+    /// 카카오톡 로그인 함수
     func kakaoTalkLogIn() async {
         UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
             if error != nil {
                 self.save(value: SignInError.kakaoTalkSignInError.rawValue, forkey: "error")
-             }
-            else {
-                UserApi.shared.me { user, error in
-                    if error != nil {
-                        self.save(value: SignInError.getKakaoUserInfoError.rawValue, forkey: "error")
-                    } else {
-                        Task {
-                            do {
-                                // 카카오 이메일, Id, 닉네임 값 임시 저장
-                                let kakaoEmail = user?.kakaoAccount?.email ?? ""
-                                let kakaoId = String(user?.id ?? 0)
-                                let kakaoNickName = "user" + UUID().uuidString
+            }
+           else {
+               UserApi.shared.me { user, error in
+                   if error != nil {
+                       self.save(value: SignInError.getKakaoUserInfoError.rawValue, forkey: "error")
+                   } else {
+                       Task {
+                           do {
+                               // 카카오 이메일, Id, 닉네임 값 임시 저장
+                               let kakaoEmail = user?.kakaoAccount?.email ?? ""
+                               let kakaoId = String(user?.id ?? 0)
+                               let kakaoNickName = "user" + UUID().uuidString
 
                                 // firestore에 등록된 유저인지 확인 -> 등록된 유저면 로그인/신규유저면 회원가입하고 uid 획득
                                 let isNewby = try await self.isRegistered(email: kakaoEmail, pw: kakaoId, method: "kakao")
 
                                 // 신규 유저인 경우
-                                if isNewby != "" {
+                               if !isNewby.isEmpty {
 
                                     // 새로운 User 객체 생성
 //                                    let newby = User(id: isNewby, name: kakaoNickName, email: kakaoEmail, pw: kakaoId, proImage: "bearWhite", badge: [], friends: [], loginMethod: "kakao", fcmToken: "")
@@ -157,6 +158,7 @@ class KakaoSignInManager: NormalSignInManager {
             }
         }
     }
+    
     // MARK: - 카카오계정 로그인 함수
     func kakaoAccountLogIn() async {
         UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in

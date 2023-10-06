@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct GroupSettingView: View {
-    let community: Community
+    var community: Community
     
     @Environment(\.dismiss) var dismiss
     @State private var groupName: String = ""
@@ -62,6 +62,9 @@ struct GroupSettingView: View {
                             Image(systemName: "camera.circle.fill")
                                 .font(.title)
                                 .tint(.gray)
+                                .alignmentGuide(HorizontalAlignment.trailing) { v in
+                                    v[HorizontalAlignment.trailing] + 11
+                                }
                         }
                 })
             }

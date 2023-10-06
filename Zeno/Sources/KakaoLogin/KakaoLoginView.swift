@@ -9,15 +9,36 @@
 import SwiftUI
 
 struct KakaoLoginView: View {
+    @EnvironmentObject private var userModel: UserViewModel
+    
     var body: some View {
-        Button {
-            print("로그인 버튼 tapped")
-        } label: {
-            Text("카카오톡으로 시작하기")
-                .padding()
-                .foregroundColor(.black)
-                .background(.yellow)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+        VStack {
+            Button {
+                Task {
+                    await userModel.kakaoLogin()
+                }
+                //            KakaoAuthService.shared.addAuthinKakao()
+            } label: {
+                Text("카카오톡으로 시작하기")
+                    .padding()
+                    .foregroundColor(.black)
+                    .background(.yellow)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+            }
+            
+            Button {
+                Task {
+                    await userModel.logoutWithKakao()
+                }
+    //            KakaoAuthService.shared.addAuthinKakao()
+            } label: {
+                Text("로그아웃")
+                    .padding()
+                    .foregroundColor(.black)
+                    .background(.yellow)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+            }
+            
         }
     }
 }
@@ -25,5 +46,6 @@ struct KakaoLoginView: View {
 struct KakaoLoginView_Previews: PreviewProvider {
     static var previews: some View {
         KakaoLoginView()
+            .environmentObject(UserViewModel())
     }
 }

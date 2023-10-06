@@ -50,6 +50,7 @@ enum FirebaseError: Error {
     case failToDelete
 }
 
+/// Firebase Manager 커스텀
 final class FirebaseManager {
     static let shared = FirebaseManager()
     
