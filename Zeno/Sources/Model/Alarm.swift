@@ -13,14 +13,18 @@ struct Alarm: Identifiable, Codable, FirebaseAvailable {
 	/// 알림을 보낸 유저 ID
 	let sendUserID: String
 	/// 알림을 보낸 유저 이름
-	let sendUserName: String // 편의를 위해 추가
-	/// 알림을 받은 유저 ID
+    let sendUserName: String // 편의를 위해 추가
+    /// 알림을 보낸 유저 FCM token
+    let sendUserFcmToken: String
+    /// 알림을 받은 유저 ID
 	let recieveUserID: String
 	/// 알림을 받은 유저 이름
-	let recieveUserName: String
+    let recieveUserName: String
+    /// 알림을 받은 유저 FCM token
+    let recieveUserFcmToken: String
     /// 커뮤니티 ID
     let communityID: String
-    /// nudge와 alarm 통합했을 때 필요.
+    /// nudge와 alarm 통합했을 때 필요. alarm 생성 시 recieveUserID 와 동일
     let showUserID: String // 편의성 10.04 추가
 	/// 제노 ID
 	let zenoID: String
@@ -28,19 +32,21 @@ struct Alarm: Identifiable, Codable, FirebaseAvailable {
 	let zenoString: String
 	/// 제노 생성 일시
 	var createdAt: Double
-	
-    init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, recieveUserID: String, recieveUserName: String, communityID: String, showUserID: String, zenoID: String, zenoString: String, createdAt: Double) {
-		self.id = id
-		self.sendUserID = sendUserID
-		self.sendUserName = sendUserName
-		self.recieveUserID = recieveUserID
-		self.recieveUserName = recieveUserName
-		self.communityID = communityID
+    
+    init(id: String = UUID().uuidString, sendUserID: String, sendUserName: String, sendUserFcmToken: String, recieveUserID: String, recieveUserName: String, recieveUserFcmToken: String, communityID: String, showUserID: String, zenoID: String, zenoString: String, createdAt: Double) {
+        self.id = id
+        self.sendUserID = sendUserID
+        self.sendUserName = sendUserName
+        self.sendUserFcmToken = sendUserFcmToken
+        self.recieveUserID = recieveUserID
+        self.recieveUserName = recieveUserName
+        self.recieveUserFcmToken = recieveUserFcmToken
+        self.communityID = communityID
         self.showUserID = showUserID
-		self.zenoID = zenoID
-		self.zenoString = zenoString
-		self.createdAt = createdAt
-	}
+        self.zenoID = zenoID
+        self.zenoString = zenoString
+        self.createdAt = createdAt
+    }
 }
 
 struct Nudge {
