@@ -88,6 +88,6 @@ struct SettingTextFieldView: View {
 
 struct SettingTextFieldView_Preview: PreviewProvider {
     static var previews: some View {
-        SettingTextFieldView(title: "그룹 이름", value: .constant("아아아아"))
+        SettingTextFieldView(title: "그룹 이름", value: .constant("아아아아아"))
     }
 }
