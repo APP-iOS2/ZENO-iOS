@@ -64,7 +64,7 @@ extension Community {
 			  manager: "매니저",
 			  joinMembers: []),
 		.init(name: "앨런 스쿨 12기",
-			  description: "서로서로 의지하며 공부하기", imageURL: "image2",
+			  description: "서로서로 의지하며 공부하기", imageURL: "allon",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 20,
 			  isSearchable: true,
