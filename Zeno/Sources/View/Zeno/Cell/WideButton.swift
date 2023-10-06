@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-
+/// buttonName : 이름, systemImage: 이미지, isplay: 버튼의 작동여부 
 struct WideButton: View {
     @State var buttonName: String
     @State var systemImage: String = "play.fill"
