@@ -8,6 +8,7 @@ let infoPlist: [String: InfoPlist.Value] = [
     "BundleShortVersionString": "1.0",
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
+    "UIBackgroundModes": ["remote-notification"],
     "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
     "CFBundleURLTypes": [
         [
