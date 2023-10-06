@@ -34,18 +34,18 @@ struct CommMainView: View {
                     hamburgerToolbarItem
                 }
             }
-            .onTapGesture {
-                isShowingHamburgerView = false
-            }
             .sheet(isPresented: $isShowingGroupListSheet) {
                 CommListView(isPresented: $isShowingGroupListSheet)
             }
+			.onTapGesture {
+				isShowingHamburgerView = false
+			}
         }
         .tint(.black)
         .overlay(
             SideMenuView(
                 isPresented: $isShowingHamburgerView,
-                community: commViewModel.currentCommunity ??               Community.dummy[0]
+                community: commViewModel.currentCommunity ?? Community.dummy[0]
             )
         )
         .onAppear {
