@@ -12,7 +12,7 @@ struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var commViewModel: CommViewModel
     
-    @State private var isShowingGroupListSheet = false
+    @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
     
@@ -21,7 +21,7 @@ struct CommMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if !commViewModel.joinedCommunities.isEmpty {
+                if commViewModel.currentCommunity != nil {
                     newUserView
                     userListView
                 }
@@ -30,12 +30,12 @@ struct CommMainView: View {
 				// 커뮤니티 선택 버튼
                 groupNameToolbarItem
 				// 햄버거 바
-                if !commViewModel.joinedCommunities.isEmpty {
+                if commViewModel.currentCommunity != nil {
                     hamburgerToolbarItem
                 }
             }
-            .sheet(isPresented: $isShowingGroupListSheet) {
-                CommListView(isPresented: $isShowingGroupListSheet)
+            .sheet(isPresented: $isShowingCommListSheet) {
+                CommListView(isPresented: $isShowingCommListSheet)
             }
 			.onTapGesture {
 				isShowingHamburgerView = false
@@ -185,7 +185,7 @@ extension CommMainView {
     var groupNameToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-                isShowingGroupListSheet.toggle()
+                isShowingCommListSheet.toggle()
             } label: {
                 HStack {
                     Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다")

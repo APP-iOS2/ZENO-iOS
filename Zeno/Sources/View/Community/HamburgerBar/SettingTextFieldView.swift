@@ -22,31 +22,29 @@ struct SettingTextFieldView: View {
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
 			HStack(spacing: 30) {
-				Button(action: {
+				Button {
 					value = textOriginal
 					dismiss()
-				}, label: {
+				} label: {
 					Image(systemName: "chevron.left")
 						.padding(.trailing, 30)
-				})
+				}
 				.tint(.black)
-				
 				Text(title)
-				
 				Spacer()
 				
-				Button(action: {
+				Button {
 					if value.isEmpty { value = textOriginal }
 					dismiss()
-				}, label: {
+				} label: {
 					Text("확인")
-				})
+				}
 				.tint(.black)
 			}
 			.padding()
 			
 			HStack {
-				TextField("\(textOriginal)", text: $value)
+				TextField("\(textOriginal)", text: $value, prompt: Text(title))
 					.focused($isTextFocused)
 					.onChange(of: value) { newValue in
 						if value.count > textMaxCount {
@@ -54,15 +52,15 @@ struct SettingTextFieldView: View {
 						}
 						textCount = value.count
 					}
-				
-				Button(action: {
-					value = ""
-					textCount = value.count
-				}, label: {
-					Image(systemName: "xmark.circle.fill")
-						.foregroundStyle(.gray.opacity(0.5))
-				})
-				
+                if textCount != 0 {
+                    Button {
+                        value = ""
+                        textCount = value.count
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.gray.opacity(0.5))
+                    }
+                }
 				Text("\(textCount)/\(textMaxCount)")
 					.font(.caption2)
 					.foregroundStyle(.gray.opacity(0.5))
@@ -88,6 +86,6 @@ struct SettingTextFieldView: View {
 
 struct SettingTextFieldView_Preview: PreviewProvider {
 	static var previews: some View {
-		SettingTextFieldView(title: "그룹 이름", value: .constant("아아아아"))
+		SettingTextFieldView(title: "그룹 이름", value: .constant(""))
 	}
 }

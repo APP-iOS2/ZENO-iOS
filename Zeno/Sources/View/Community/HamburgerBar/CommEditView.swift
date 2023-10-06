@@ -131,12 +131,7 @@ struct CommEditView: View {
 }
 
 struct EditGroupView_Previews: PreviewProvider {
-    @State static var isPresented = true
-    
     static var previews: some View {
-        CommMainView()
-            .sheet(isPresented: $isPresented) {
-                CommListView(isPresented: $isPresented)
-            }
+        CommEditView(editMode: .addNew, detent: .constant(.fraction(0.8)), isPresented: .constant(false), community: .constant(.dummy[0]))
     }
 }
