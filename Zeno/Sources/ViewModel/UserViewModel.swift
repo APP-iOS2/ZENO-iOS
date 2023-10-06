@@ -16,8 +16,7 @@ class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    var notificationService: NotificationService = .init()
-    private let coolTime: Int = 15
+    private let coolTime: Int = 30
     
     init() {
         Task {
@@ -110,33 +109,8 @@ class UserViewModel: ObservableObject {
              print("\(zenoStartTime)")
              print("\(zenoStartTime + Double(coolTime))")
              print("updateZenoTimer !! ")
-             self.notificationService.sendNotification()
          } catch {
              print("Error updating zeno timer: \(error)")
-         }
-     }
-     
-     /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 , startZeno와 함께 삭제해야함
-     func updateUserStartZeno(to: Bool) async {
-         do {
-             guard let currentUser = currentUser else { return }
-             try await FirebaseManager.shared.update(data: currentUser, value: \.startZeno, to: to)
-             try await loadUserData()
-             print("updateUserStartZeno ")
-         } catch {
-             print("Error updateStartZeno : \(error)")
-         }
-     }
-
-     /// 사용자한테 몇초 남았다고 초를 보여주는 함수
-     // MARK: 이 함수가 자원 갉아먹고 있음
-     func comparingTime() -> Double {
-         let currentTime = Date().timeIntervalSince1970
-         if let currentUser = currentUser,
-            let zenoEndAt = currentUser.zenoEndAt {
-             return zenoEndAt - currentTime
-         } else {
-             return 0.0
          }
      }
 }

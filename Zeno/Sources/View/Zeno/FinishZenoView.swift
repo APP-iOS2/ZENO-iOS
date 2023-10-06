@@ -41,7 +41,6 @@ struct FinishZenoView: View {
             // stack.removeLast()
                 .task {
                     print("\(timerViewModel.timesUp)")
-                    await userViewModel.updateUserStartZeno(to: false)
             }
         }
     }

@@ -40,8 +40,4 @@ class TimerViewModel: ObservableObject {
             return 0.0
         }
     }
-
-    
 }
-
-

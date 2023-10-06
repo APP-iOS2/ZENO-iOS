@@ -29,8 +29,6 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable {
 	var showInitial: Int
 	/// 친구관계 -> [커뮤니티ID: [친구 유저 id1, 친구 유저 id2, 친구 유저 id3]
 	var buddyList: [Community.ID: [User.ID]]
-    /// 제노를 했는지 안했는지 여부 
-    var startZeno: Bool = false
     /// 제노 끝나는 시간
     var zenoEndAt: Double?
 }
