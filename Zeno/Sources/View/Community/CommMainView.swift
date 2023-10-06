@@ -27,7 +27,9 @@ struct CommMainView: View {
                 }
             }
             .toolbar {
+				// 커뮤니티 선택 버튼
                 groupNameToolbarItem
+				// 햄버거 바
                 if !commViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
@@ -188,16 +190,11 @@ extension CommMainView {
             } label: {
                 HStack {
                     if !commViewModel.joinedCommunities.isEmpty {
+						
                         if commViewModel.joinedCommunities.count - 1 >= commViewModel.selectedCommunity {
-                            Text(
-                                commViewModel.joinedCommunities[
-                                    commViewModel.selectedCommunity
-                                ].name
-                            )
+                            Text(commViewModel.joinedCommunities[commViewModel.selectedCommunity].name)
                         } else {
-                            Text(
-                                commViewModel.joinedCommunities[0].name
-                            )
+                            Text(commViewModel.joinedCommunities[0].name)
                         }
                     } else {
                         Text("가입된 커뮤니티가 없습니다")
