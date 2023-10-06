@@ -28,7 +28,7 @@ struct FinishZenoView: View {
                     Button {
                         navigationSwitch = true
                     } label: {
-                        ClickButton(buttonName: "제노하러가기", isplay: true)
+                        WideButton(buttonName: "제노하러가기", isplay: true)
                     }
                 }
             }
