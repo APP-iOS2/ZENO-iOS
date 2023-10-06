@@ -55,7 +55,6 @@ struct SelectCommunityVer2: View {
                         }
                     }
                 }
-                .offset(y: -20)
                 .disabled(isPlay == false)
             }
         }
