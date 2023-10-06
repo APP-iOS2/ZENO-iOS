@@ -31,7 +31,7 @@ struct ZenoRewardView: View {
                 NavigationLink {
                     FinishZenoView()
                 } label: {
-                    StartButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
+                    ClickButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
                 }
             }
             .navigationBarBackButtonHidden()
