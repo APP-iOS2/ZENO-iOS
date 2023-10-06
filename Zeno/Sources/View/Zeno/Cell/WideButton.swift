@@ -29,6 +29,7 @@ struct WideButton: View {
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                 .foregroundColor(isplay ? .white : .gray)
         }
+        .offset(y: -20)
     }
 }
 
