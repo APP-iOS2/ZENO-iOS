@@ -44,7 +44,7 @@ let project = Project(
             resources: ["\(projectName)/Resources/**"],
             entitlements: "\(projectName)/\(projectName).entitlements",
             scripts: [
-                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint"),
+                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint", basedOnDependencyAnalysis: false),
             ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
