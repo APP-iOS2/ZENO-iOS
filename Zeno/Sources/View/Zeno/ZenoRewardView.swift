@@ -21,8 +21,8 @@ struct ZenoRewardView: View {
                     }
                     .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                     Group {
-                        Text("다음 문제 꾸러미는 15분 후에")
-                        Text("풀 수 있어요")
+                        Text("다음 문제 꾸러미는 ")
+                        Text("15분 후에 풀 수 있어요")
                     }
                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 16))
                 }
