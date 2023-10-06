@@ -61,11 +61,11 @@ func customScrollView() -> some View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)
                         VStack {
-                            Text(community.communityName)
+                            Text(community.name)
                             // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                                 .padding(20)
                                 .foregroundColor(.white)
-                            Image(community.communityImage)
+                            Image(community.imageURL ?? "")
                                 .resizable()
                                 .frame(width: 100, height: 100)
                                 .scaledToFit()

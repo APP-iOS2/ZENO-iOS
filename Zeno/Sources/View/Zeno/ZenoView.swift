@@ -46,7 +46,7 @@ struct ZenoView: View {
                                 resetUsers()
                             } label: {
                                 HStack {
-                                    Image(user.profileImgUrlPath ?? "person")
+                                    Image(user.imageURL ?? "person")
                                         .resizable()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(.black)

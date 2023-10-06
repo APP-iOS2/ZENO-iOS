@@ -66,7 +66,7 @@ struct SelectCommunityVer2: View {
             Button {
                 isPlay = true
                 selected = communities[index].id
-                communityName = communities[index].communityName
+                communityName = communities[index].name
                 currentIndex = index
                 if useConfentti {
                     counter += 1
@@ -74,12 +74,12 @@ struct SelectCommunityVer2: View {
                 }
             } label: {
                 HStack {
-                    Image(asset: ZenoImages(name: communities[index].communityImage))
+                    Image(asset: ZenoImages(name: communities[index].imageURL ?? ""))
                         .resizable()
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
                         .padding(.trailing, 10)
-                    Text(communities[index].communityName)
+                    Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.black.opacity(0.7))
                     Spacer()

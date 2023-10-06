@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AlarmView: View {
     @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
+    @StateObject var iAPVM: IAPStore = IAPStore()
     @State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
@@ -66,6 +67,7 @@ struct AlarmView: View {
                 )
                 .sheet(isPresented: $isPurchaseSheet, content: {
                     PurchaseView()
+                        .environmentObject(iAPVM)
                 })
                 
                 VStack {
@@ -93,7 +95,9 @@ struct AlarmView: View {
 struct AlarmView_Preview: PreviewProvider {
     static var previews: some View {
         AlarmView()
+        // 이건 프리뷰니까 생성()
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
+            .environmentObject(IAPStore())
     }
 }

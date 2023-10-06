@@ -20,12 +20,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var userViewModel = UserViewModel()
-    @StateObject private var communityViewModel = CommunityViewModel()
+    @StateObject private var commViewModel = CommViewModel()
     var body: some Scene {
         WindowGroup {
             InitialView()
                 .environmentObject(userViewModel)
-                .environmentObject(communityViewModel)
+                .environmentObject(commViewModel)
+                .task {
+                    FirebaseManager.shared.uploadDummyArray(datas: Community.dummy)
+                }
         }
     }
 }

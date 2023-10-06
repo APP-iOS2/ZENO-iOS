@@ -22,12 +22,12 @@ struct CardViewVer2: View {
             GeometryReader { geometry in
                 HStack(alignment: .center, spacing: peekAmount) {
                     ForEach(communities.indices, id: \.self) { index in
-                        Image(communities[index].communityImage)
+                        Image(communities[index].imageURL ?? "")
                             .resizable()
                             .frame(width: itemWidth, height: 160)
                             .scaledToFill()
                             .overlay(alignment: .bottomLeading) {
-                                Text(communities[index].communityName)
+                                Text(communities[index].name)
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                                     .offset(y: 70)
                                     .opacity(self.opacityForText(at: index, in: geometry))

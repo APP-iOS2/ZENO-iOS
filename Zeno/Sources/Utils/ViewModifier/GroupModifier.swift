@@ -30,8 +30,7 @@ struct GroupTFModifier: ViewModifier {
 struct GroupManagementTitleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .bold()
-            .font(.title)
+            .font(.title3)
     }
 }
 
