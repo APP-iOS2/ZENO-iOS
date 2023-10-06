@@ -1,5 +1,5 @@
 //
-//  StartButton.swift
+//  WideButton.swift
 //  Zeno
 //
 //  Created by 유하은 on 2023/09/30.
@@ -8,30 +8,33 @@
 
 import SwiftUI
 
-struct StartButton: View {
+struct WideButton: View {
+    @State var buttonName: String
+    @State var systemImage: String = "play.fill"
     let isplay: Bool
     
     var body: some View {
         ZStack {
             Rectangle()
                 .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
-                .cornerRadius(20)
+                .cornerRadius(15)
                 .foregroundColor(isplay ? .purple2 : .gray)
                 .opacity(0.5)
                 .shadow(radius: 3)
-            Image(systemName: "play.fill")
+            Image(systemName: systemImage)
                 .font(.system(size: 21))
                 .offset(x: -.screenWidth * 0.3)
                 .foregroundColor(isplay ? .white : .gray)
-            Text("START")
+            Text("\(buttonName)")
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                 .foregroundColor(isplay ? .white : .gray)
         }
+        .offset(y: -20)
     }
 }
 
-struct StartButton_Previews: PreviewProvider {
+struct WideButton_Previews: PreviewProvider {
     static var previews: some View {
-        StartButton(isplay: true)
+        WideButton(buttonName: "Start", systemImage: "play.fill", isplay: true)
     }
 }

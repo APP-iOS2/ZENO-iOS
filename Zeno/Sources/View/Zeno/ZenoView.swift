@@ -18,6 +18,7 @@ struct ZenoView: View {
     @State private var answer: [Alarm] = []
     
     @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject private var zenoViewModel: ZenoViewModel = ZenoViewModel()
     
     var body: some View {
         if selected < zenoList.count {
@@ -33,14 +34,17 @@ struct ZenoView: View {
                     Text(zenoList[selected].question)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
-                    Spacer()
+                    Image(zenoList[selected].zenoImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.4)
+                        .padding([.top, .bottom], 10)
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
                                 if selected == zenoList.count-1 {
                                     Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
                                     await userViewModel.updateZenoTimer()
-                                    await userViewModel.updateUserStartZeno(to: true)
                                     }
                                 }
                                 selected += 1
@@ -73,6 +77,7 @@ struct ZenoView: View {
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                     }
+                    .padding(.top,15)
                 }
                 .padding()
                 .onAppear {
@@ -90,7 +95,7 @@ struct ZenoView: View {
     }
 }
 
-//     answer.append(.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
+//   (.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
 
 struct ZenoView_pro: PreviewProvider {
     static var previews: some View {

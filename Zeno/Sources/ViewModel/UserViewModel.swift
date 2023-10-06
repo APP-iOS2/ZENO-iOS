@@ -17,7 +17,10 @@ class UserViewModel: ObservableObject {
     /// 현재 로그인된 유저
     @Published var currentUser: User?
     private let firebaseManager = FirebaseManager.shared
-    private let coolTime: Int = 5
+    /// ZenoViewSheet닫는용
+    @Published var isShowingSheet: Bool = false
+    
+    private let coolTime: Int = 7
     
     init() {
         Task {
@@ -109,6 +112,7 @@ class UserViewModel: ObservableObject {
                                           to: coin)
         try? await loadUserData()
     }
+    
     /// 초성확인권 사용 업데이트 함수
     func updateUserInitialCheck(to: Int) async {
         guard let currentUser else { return }
@@ -119,8 +123,19 @@ class UserViewModel: ObservableObject {
                                           to: initialCheck)
         try? await loadUserData()
     }
+    /// 메가폰 사용 업데이트 함수
+    func updateUserMegaphone(to: Int) async {
+        guard let currentUser else { return }
+        var megaphone = currentUser.megaphone
+        megaphone += to
+        try? await firebaseManager.update(data: currentUser,
+                                          value: \.megaphone,
+                                          to: megaphone)
+        try? await loadUserData()
+    }
     
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
+    @MainActor
     func updateZenoTimer() async {
         do {
             guard let currentUser = currentUser else { return }
@@ -133,18 +148,6 @@ class UserViewModel: ObservableObject {
             print("updateZenoTimer !! ")
         } catch {
             print("Error updating zeno timer: \(error)")
-        }
-    }
-    
-    /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 (서버가 맞을지 유저 디포츠가 맞을진 모르겟음)
-    func updateUserStartZeno(to: Bool) async {
-        do {
-            guard let currentUser = currentUser else { return }
-            try await firebaseManager.update(data: currentUser, value: \.startZeno, to: to)
-            try await loadUserData()
-            print("updateUserStartZeno ")
-        } catch {
-            print("Error updateStartZeno : \(error)")
         }
     }
     
