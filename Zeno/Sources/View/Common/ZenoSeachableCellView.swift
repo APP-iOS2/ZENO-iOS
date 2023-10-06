@@ -44,6 +44,6 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
-        .modifier(HomeListCellModifier())
+        .homeListCell()
     }
 }

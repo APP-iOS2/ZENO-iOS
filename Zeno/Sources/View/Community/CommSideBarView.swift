@@ -92,7 +92,7 @@ struct CommSideBarView: View {
             CommSettingView(community: commViewModel.currentCommunity ?? .dummy[0])
         }
         .fullScreenCover(isPresented: $isSelectContent) {
-            CommMemberManageView()
+            CommUserMgmtView()
         }
         .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
             Button("예", role: .destructive) { groupOut() }

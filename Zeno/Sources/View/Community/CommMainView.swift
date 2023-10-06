@@ -41,18 +41,17 @@ struct CommMainView: View {
         }
         .tint(.black)
         .overlay(
-            SideMenuView(isPresented: $isShowingHamburgerView,
-                         community: commViewModel.joinedCommunities.count - 1 >= commViewModel.selectedCommunity ?
-                         commViewModel.joinedCommunities[commViewModel.selectedCommunity] :
-                            Community.dummy[0]
-                        )
+            SideMenuView(
+                isPresented: $isShowingHamburgerView,
+                community: commViewModel.currentCommunity ??               Community.dummy[0]
+            )
         )
         .onAppear {
             commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
         }
-        .onChange(of: commViewModel.selectedCommunity) { _ in
+        .onChange(of: commViewModel.currentCommunity) { _ in
             Task {
-                await commViewModel.fetchAllUser()
+                await commViewModel.fetchCurrentUser()
             }
         }
     }// body
@@ -175,7 +174,7 @@ extension CommMainView {
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
-        .modifier(HomeListCellModifier())
+        .homeListCell()
     }
     
     // MARK: - 툴바
@@ -187,21 +186,7 @@ extension CommMainView {
                 isShowingGroupListSheet.toggle()
             } label: {
                 HStack {
-                    if !commViewModel.joinedCommunities.isEmpty {
-                        if commViewModel.joinedCommunities.count - 1 >= commViewModel.selectedCommunity {
-                            Text(
-                                commViewModel.joinedCommunities[
-                                    commViewModel.selectedCommunity
-                                ].name
-                            )
-                        } else {
-                            Text(
-                                commViewModel.joinedCommunities[0].name
-                            )
-                        }
-                    } else {
-                        Text("가입된 커뮤니티가 없습니다")
-                    }
+                    Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다")
                     Image(systemName: "chevron.down")
                         .font(.caption)
                 }
