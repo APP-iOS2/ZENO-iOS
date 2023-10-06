@@ -123,6 +123,16 @@ class UserViewModel: ObservableObject {
                                                  to: initialCheck)
         try? await loadUserData()
     }
+    /// 메가폰 사용 업데이트 함수
+    func updateUserMegaphone(to: Int) async {
+        guard let currentUser else { return }
+        var megaphone = currentUser.megaphone
+        megaphone += to
+        try? await firebaseManager.update(data: currentUser,
+                                                 value: \.megaphone,
+                                                 to: megaphone)
+        try? await loadUserData()
+    }
     
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
      func updateZenoTimer() async {

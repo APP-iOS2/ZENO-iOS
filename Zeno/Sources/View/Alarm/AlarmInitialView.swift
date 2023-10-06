@@ -11,8 +11,11 @@ import SwiftUI
 /// 초성 확인 뷰
 struct AlarmInitialView: View {
     // MARK: - Properties
+    @Environment(\.dismiss) private var dismiss
+    
     @EnvironmentObject var alarmVM: AlarmViewModel
     @EnvironmentObject var userVM: UserViewModel
+    
     @State var isNudgingOn: Bool = false
     @State var isCheckInitialTwice: Bool = false
     @State private var counter: Int = 0
@@ -55,6 +58,7 @@ struct AlarmInitialView: View {
                 .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
                     Button {
                         isNudgingOn.toggle()
+                        dismiss()
                     } label: {
                         Text("확인")
                     }
