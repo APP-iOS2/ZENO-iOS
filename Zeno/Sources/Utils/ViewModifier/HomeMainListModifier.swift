@@ -27,3 +27,9 @@ struct HomeListCellModifier: ViewModifier {
 			.cornerRadius(10)
 	}
 }
+
+extension View {
+    func homeListCell() -> some View {
+        modifier(HomeListCellModifier())
+    }
+}

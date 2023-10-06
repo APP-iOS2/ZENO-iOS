@@ -6,20 +6,22 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-// TODO: 마지막 첫번째 중간으로 옮기기, 선택됐을때 버튼 컬러 깜빡 되는거 말고 -> 색 변화, 셀뷰에서 코너래디우스 없애고 리스트 형식으로? 깔끔하게, 동그라미 아이콘들 일자로 정렬? alignment leading, 스타트 버튼 ( 후: 동그라미 없애는거,)
-
 import SwiftUI
 import ConfettiSwiftUI
 
 struct SelectCommunityVer2: View {
-    private let communities = Community.dummy
-    
+    @EnvironmentObject private var userViewModel: UserViewModel
+
+    @State private var stack = NavigationPath()
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
+    @State var isSheetOn: Bool = false
+    
+    private let communities = Community.dummy
     
     var body: some View {
         NavigationStack {
@@ -33,24 +35,27 @@ struct SelectCommunityVer2: View {
                             }
                         }
                         .offset(y: .screenHeight * 0.04)
-                        .offset(x: currentIndex == 0 ? .screenWidth * 0.19 : 0 )
+                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
                         .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
                 }
                 commuityListView()
                     .background(.clear)
-                NavigationLink {
-                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
-                } label: {
-                    VStack {
-                        if isPlay == false {
-                            Text("그룹을 선택해주세요")
-                                .padding(.bottom, 10)
-                            StartButton(isplay: isPlay)
-                        } else {
-                            StartButton(isplay: isPlay)
+                
+                VStack {
+                    if isPlay == false {
+                        Text("그룹을 선택해주세요")
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 10)
+                        StartButton(buttonName: "START", isplay: isPlay)
+                    } else {
+                        NavigationLink {
+                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+                        } label: {
+                            StartButton(buttonName: "START", isplay: isPlay)
                         }
                     }
                 }
+                .offset(y: -20)
                 .disabled(isPlay == false)
             }
         }
@@ -61,7 +66,7 @@ struct SelectCommunityVer2: View {
             Button {
                 isPlay = true
                 selected = communities[index].id
-                communityName = communities[index].communityName
+                communityName = communities[index].name
                 currentIndex = index
                 if useConfentti {
                     counter += 1
@@ -69,12 +74,12 @@ struct SelectCommunityVer2: View {
                 }
             } label: {
                 HStack {
-                    Image(asset: ZenoImages(name: communities[index].communityImage))
+                    Image(asset: ZenoImages(name: communities[index].imageURL ?? ""))
                         .resizable()
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
                         .padding(.trailing, 10)
-                    Text(communities[index].communityName)
+                    Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.black.opacity(0.7))
                     Spacer()
@@ -94,5 +99,6 @@ struct SelectCommunityVer2: View {
 struct SelectCommunityVer2_Previews: PreviewProvider {
     static var previews: some View {
         SelectCommunityVer2()
+            .environmentObject(UserViewModel())
     }
 }

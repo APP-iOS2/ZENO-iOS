@@ -27,7 +27,7 @@ struct CommSettingView: View {
             if let img = selectedImage {
                 return Image(uiImage: img)
             } else {
-                return Image("\(community.communityImage)") // 추후 어떤식으로 이미지 처리할지 미정.
+                return Image("\(community.imageURL)") // 추후 어떤식으로 이미지 처리할지 미정.
             }
         }
         
@@ -123,7 +123,7 @@ struct CommSettingView: View {
         }
         .overlay(ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage))
         .onAppear {
-            groupName = community.communityName
+            groupName = community.name
             groupDescription = community.description
         }
     }
@@ -158,10 +158,12 @@ struct GroupItemDesign: ViewModifier {
             }
     }
     
-    let originalGradient = Gradient(colors: [.gray.opacity(0.3),
-                                             .gray.opacity(0.25),
-                                             .gray.opacity(0.23),
-                                             .gray.opacity(0.2)])
+    let originalGradient = Gradient(colors: [
+        .gray.opacity(0.3),
+        .gray.opacity(0.25),
+        .gray.opacity(0.23),
+        .gray.opacity(0.2)
+    ])
 }
 
 extension View {

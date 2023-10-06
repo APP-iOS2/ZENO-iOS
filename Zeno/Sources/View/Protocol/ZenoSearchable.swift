@@ -10,6 +10,6 @@ import Foundation
 
 protocol ZenoSearchable: Identifiable {
     var name: String { get set }
-    var image: String? { get set }
+    var imageURL: String? { get set }
     var description: String { get set }
 }

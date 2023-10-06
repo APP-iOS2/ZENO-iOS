@@ -68,7 +68,7 @@ struct ZenoSelectCommunityView: View {
                     Button {
                         isPlay = true
                         selected = community.id
-                        communityName = community.communityName
+                        communityName = community.name
                     } label: {
                         CommuintyCellView(community: community, isBold: false)
                     }
@@ -86,10 +86,10 @@ struct ZenoSelectCommunityView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .opacity(0.7)
                             VStack {
-                                Text(community.communityName)
+                                Text(community.name)
                                     .padding(20)
                                     .foregroundColor(.white)
-                                Image(community.communityImage)
+                                Image(community.imageURL ?? "")
                                     .resizable()
                                     .frame(width: 50, height: 50)
                                     .scaledToFit()

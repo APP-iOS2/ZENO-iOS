@@ -22,12 +22,12 @@ struct CardViewVer2: View {
             GeometryReader { geometry in
                 HStack(alignment: .center, spacing: peekAmount) {
                     ForEach(communities.indices, id: \.self) { index in
-                        Image(communities[index].communityImage)
+                        Image(communities[index].imageURL ?? "")
                             .resizable()
                             .frame(width: itemWidth, height: 160)
                             .scaledToFill()
                             .overlay(alignment: .bottomLeading) {
-                                Text(communities[index].communityName)
+                                Text(communities[index].name)
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                                     .offset(y: 70)
                                     .opacity(self.opacityForText(at: index, in: geometry))
@@ -53,7 +53,6 @@ struct CardViewVer2: View {
         let itemPosition = CGFloat(index) * (itemWidth + peekAmount) + currentItemOffset
         let distanceFromCenter = abs(geometry.size.width / 2 - itemPosition - itemWidth / 2)
         let scale: CGFloat = 0.8 + (0.2 * (1 - min(1, distanceFromCenter / (itemWidth + peekAmount))))
-        print("debug")
         return scale
     }
     

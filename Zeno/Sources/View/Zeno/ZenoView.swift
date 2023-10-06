@@ -17,6 +17,8 @@ struct ZenoView: View {
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
         if selected < zenoList.count {
             ZStack {
@@ -35,11 +37,16 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
+                                if selected == zenoList.count-1 {
+                                    Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
+                                    await userViewModel.updateZenoTimer()
+                                    }
+                                }
                                 selected += 1
                                 resetUsers()
                             } label: {
                                 HStack {
-                                    Image(user.profileImgUrlPath ?? "person")
+                                    Image(user.imageURL ?? "person")
                                         .resizable()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(.black)
@@ -73,7 +80,7 @@ struct ZenoView: View {
             }
             .navigationBarBackButtonHidden(true)
         } else {
-            FinishZenoView()
+            ZenoRewardView()
         }
     }
 
@@ -87,5 +94,6 @@ struct ZenoView: View {
 struct ZenoView_pro: PreviewProvider {
     static var previews: some View {
         ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+            .environmentObject(UserViewModel())
     }
 }

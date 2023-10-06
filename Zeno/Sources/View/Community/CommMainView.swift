@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    @EnvironmentObject var communityViewModel: CommunityViewModel
+    @EnvironmentObject var commViewModel: CommViewModel
     
     @State private var isShowingGroupListSheet = false
     @State private var isShowingUserSearchView = false
@@ -21,14 +21,14 @@ struct CommMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if !communityViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }
             }
             .toolbar {
                 groupNameToolbarItem
-                if !communityViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
             }
@@ -41,18 +41,17 @@ struct CommMainView: View {
         }
         .tint(.black)
         .overlay(
-            SideMenuView(isPresented: $isShowingHamburgerView,
-                         community: communityViewModel.joinedCommunities.count - 1 >= communityViewModel.selectedCommunity ?
-                         communityViewModel.joinedCommunities[communityViewModel.selectedCommunity] :
-                            Community.dummy[0]
-                        )
+            SideMenuView(
+                isPresented: $isShowingHamburgerView,
+                community: commViewModel.currentCommunity ??               Community.dummy[0]
+            )
         )
         .onAppear {
-            communityViewModel.filterJoinedCommunity(ids: userViewModel.currentUser?.buddyList.map({ $0.key }) ?? ["currentUserIsNil"])
+            commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
         }
-        .onChange(of: communityViewModel.selectedCommunity) { _ in
+        .onChange(of: commViewModel.currentCommunity) { _ in
             Task {
-                await communityViewModel.fetchAllUser()
+                await commViewModel.fetchCurrentUser()
             }
         }
     }// body
@@ -65,7 +64,7 @@ extension CommMainView {
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(communityViewModel.normalUsers.count)")
+                Text("새로 들어온 친구 \(commViewModel.normalUsers.count)")
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -78,7 +77,7 @@ extension CommMainView {
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
-                        ForEach(communityViewModel.recentlyJoinedUsers) { user in
+                        ForEach(commViewModel.recentlyJoinedUsers) { user in
                             VStack(spacing: 5) {
                                 Image(systemName: "person.circle")
                                     .resizable()
@@ -102,25 +101,25 @@ extension CommMainView {
         VStack {
             if isShowingUserSearchView {
                 HStack {
-                    TextField(text: $communityViewModel.userSearchTerm) {
+                    TextField(text: $commViewModel.userSearchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
                     Spacer()
                     Button {
                         isShowingUserSearchView = false
-                        communityViewModel.userSearchTerm = ""
+                        commViewModel.userSearchTerm = ""
                     } label: {
                         Text("취소")
                             .font(.caption)
                     }
                 }
-                ForEach(communityViewModel.searchedUsers) { user in
+                ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
                 }
             } else {
                 HStack {
-                    Text("친구 \(communityViewModel.normalUsers.count)")
+                    Text("친구 \(commViewModel.normalUsers.count)")
                         .font(.footnote)
                     Spacer()
                     Button {
@@ -132,7 +131,7 @@ extension CommMainView {
                     }
                 }
                 VStack {
-                    ForEach(communityViewModel.normalUsers) { user in
+                    ForEach(commViewModel.normalUsers) { user in
                         userCell(user: user)
                     }
                 }
@@ -145,7 +144,7 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if user.profileImgUrlPath != nil {
+            if user.imageURL != nil {
                 // 사용자 프로필이미지 들어가야함
                 Image(systemName: "person.circle")
                     .resizable()
@@ -175,7 +174,7 @@ extension CommMainView {
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
-        .modifier(HomeListCellModifier())
+        .homeListCell()
     }
     
     // MARK: - 툴바
@@ -187,21 +186,7 @@ extension CommMainView {
                 isShowingGroupListSheet.toggle()
             } label: {
                 HStack {
-                    if !communityViewModel.joinedCommunities.isEmpty {
-                        if communityViewModel.joinedCommunities.count - 1 >= communityViewModel.selectedCommunity {
-                            Text(
-                                communityViewModel.joinedCommunities[
-                                    communityViewModel.selectedCommunity
-                                ].communityName
-                            )
-                        } else {
-                            Text(
-                                communityViewModel.joinedCommunities[0].communityName
-                            )
-                        }
-                    } else {
-                        Text("가입된 커뮤니티가 없습니다")
-                    }
+                    Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다")
                     Image(systemName: "chevron.down")
                         .font(.caption)
                 }
@@ -228,6 +213,6 @@ struct HomeMainView_Previews: PreviewProvider {
         /*HomeMainView()*/
         TabBarView()
             .environmentObject(UserViewModel(currentUser: .dummy[0]))
-            .environmentObject(CommunityViewModel())
+            .environmentObject(CommViewModel())
     }
 }

@@ -45,7 +45,7 @@ struct CommEditView: View {
                     .cornerRadius(100)
             }
             Group {
-                TextField("그룹 이름", text: $emptyCommunity.communityName, prompt: Text("그룹 이름"))
+                TextField("그룹 이름", text: $emptyCommunity.name, prompt: Text("그룹 이름"))
                 TextField("그룹 설명", text: $emptyCommunity.description, prompt: Text("그룹 설명"))
             }
             .groupTF()
@@ -94,7 +94,7 @@ struct CommEditView: View {
                     }
                     isPresented = false
                 }
-                .disabled(emptyCommunity.communityName.isEmpty)
+                .disabled(emptyCommunity.name.isEmpty)
             }
         }
         .interactiveDismissDisabled()

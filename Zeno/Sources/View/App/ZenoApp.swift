@@ -2,14 +2,17 @@ import SwiftUI
 import FirebaseCore
 import FirebaseMessaging
 
+
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     @AppStorage("fcmToken") var fcmToken: String = ""
-    
+
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Firebase 설정
         guard let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
               let options = FirebaseOptions(contentsOfFile: filePath)
         else { return true }
+        
         FirebaseApp.configure(options: options)
         
         // 원격 알림 등록
@@ -32,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
                 print("FCM registration token: \(token)")
             }
         }
-        
         return true
     }
     
@@ -83,12 +85,15 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
 struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var userViewModel = UserViewModel()
-    @StateObject private var communityViewModel = CommunityViewModel()
+    @StateObject private var commViewModel = CommViewModel()
     var body: some Scene {
         WindowGroup {
             InitialView()
                 .environmentObject(userViewModel)
-                .environmentObject(communityViewModel)
+                .environmentObject(commViewModel)
+                .task {
+                    FirebaseManager.shared.uploadDummyArray(datas: Community.dummy)
+                }
         }
     }
 }
