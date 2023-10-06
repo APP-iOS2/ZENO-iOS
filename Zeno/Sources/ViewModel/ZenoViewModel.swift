@@ -12,28 +12,12 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 
 class ZenoViewModel: ObservableObject {
-    @Published var userSession: FirebaseAuth.User?
-    @Published var isShowingSheet: Bool
     
+    @Published private var selected: Int = 0
+
     private let coolTime: Int = 15
     
-    init(isShowingSheet: Bool) {
-        self.isShowingSheet = isShowingSheet
+    init() {
+        
     }
-    
-    /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
-    func updateZenoTimer(currentUser: User?) async {
-         do {
-             guard let currentUser = currentUser else { return }
-             let zenoStartTime = Date().timeIntervalSince1970
-             try await FirebaseManager.shared.update(data: currentUser, value: \.zenoEndAt, to: zenoStartTime + Double(coolTime))
-             // try await loadUserData()
-             print("------------------------")
-             print("\(zenoStartTime)")
-             print("\(zenoStartTime + Double(coolTime))")
-             print("updateZenoTimer !! ")
-         } catch {
-             print("Error updating zeno timer: \(error)")
-         }
-     }
 }

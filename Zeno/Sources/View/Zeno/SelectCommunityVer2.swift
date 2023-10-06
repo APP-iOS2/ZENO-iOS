@@ -45,7 +45,7 @@ struct SelectCommunityVer2: View {
                     if isPlay == false {
                         Text("그룹을 선택해주세요")
                             .foregroundColor(.gray)
-                            .padding(.bottom, 10)
+                            .offset(y: -20)
                         WideButton(buttonName: "START", isplay: isPlay)
                     } else {
                         NavigationLink {

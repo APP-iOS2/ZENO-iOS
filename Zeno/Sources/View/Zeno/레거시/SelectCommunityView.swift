@@ -33,8 +33,6 @@ struct SelectCommunityView: View {
                         .padding(.top, 10)
                     
                         Group {
-                            LottieView(lottieFile: "nudgeDevil")
-                                .frame(width: 50, height: 50)
                             if isPlay == false {
                                 Text("제노를 플레이 할 그룹을 선택해주세요")
                                     .selectCommunity2()
