@@ -37,6 +37,9 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 	}
 }
 
+extension Community {
+    static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, manager: "", joinMembers: [], waitApprovalMembers: [])
+}
 #if DEBUG
 extension Community {
 	static let dummy: [Community] = [
@@ -61,7 +64,7 @@ extension Community {
 			  manager: "매니저",
 			  joinMembers: []),
 		.init(name: "앨런 스쿨 12기",
-			  description: "서로서로 의지하며 공부하기", imageURL: "image2",
+			  description: "서로서로 의지하며 공부하기", imageURL: "allon",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 20,
 			  isSearchable: true,

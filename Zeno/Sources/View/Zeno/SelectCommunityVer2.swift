@@ -6,22 +6,22 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-// TODO: 마지막 첫번째 중간으로 옮기기, 선택됐을때 버튼 컬러 깜빡 되는거 말고 -> 색 변화, 셀뷰에서 코너래디우스 없애고 리스트 형식으로? 깔끔하게, 동그라미 아이콘들 일자로 정렬? alignment leading, 스타트 버튼 ( 후: 동그라미 없애는거,)
-
 import SwiftUI
 import ConfettiSwiftUI
 
 struct SelectCommunityVer2: View {
-    private let communities = Community.dummy
-    
+    @EnvironmentObject private var userViewModel: UserViewModel
+
+    @State private var stack = NavigationPath()
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
+    @State var isSheetOn: Bool = false
     
-    @EnvironmentObject private var userViewModel: UserViewModel
+    private let communities = Community.dummy
     
     var body: some View {
         NavigationStack {
@@ -40,20 +40,21 @@ struct SelectCommunityVer2: View {
                 }
                 commuityListView()
                     .background(.clear)
-                NavigationLink {
-                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
-                } label: {
-                    VStack {
-                        if isPlay == false {
-                            Text("그룹을 선택해주세요")
-                                .padding(.bottom, 10)
-                            StartButton(isplay: isPlay)
-                        } else {
-                            StartButton(isplay: isPlay)
+                
+                VStack {
+                    if isPlay == false {
+                        Text("그룹을 선택해주세요")
+                            .foregroundColor(.gray)
+                            .offset(y: -20)
+                        WideButton(buttonName: "START", isplay: isPlay)
+                    } else {
+                        NavigationLink {
+                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+                        } label: {
+                            WideButton(buttonName: "START", isplay: isPlay)
                         }
                     }
                 }
-                .offset(y: -20)
                 .disabled(isPlay == false)
             }
         }

@@ -52,8 +52,8 @@ final class FirebaseManager {
     }
     
     func update<T: FirebaseAvailable, U: Decodable>(data: T,
-                                                 value keyPath: WritableKeyPath<T, U>,
-                                                 to: U) async throws {
+                                                    value keyPath: WritableKeyPath<T, U>,
+                                                    to: U) async throws {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
         
         do {

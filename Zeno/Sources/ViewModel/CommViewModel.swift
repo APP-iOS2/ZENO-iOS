@@ -27,25 +27,19 @@ class CommViewModel: ObservableObject {
     @Published var currentWaitApprovalMembers: [User] = []
 	/// 현재 커뮤니티에 최근 등록된 구성원
     var recentlyJoinedUsers: [User] {
-        if joinedCommunities.count - 1 >= selectedCommunity {
-            let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
-                $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
-            }.map { $0.id }
-            return currentCommUsers.filter { filterID.contains($0.id) }
-        } else {
-            return []
-        }
+        guard let currentCommunity else { return [] }
+        let filterID = currentCommunity.joinMembers.filter {
+            $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
+        }.map { $0.id }
+        return currentCommUsers.filter { filterID.contains($0.id) }
     }
 	/// 현재 커뮤니티에 구성원(최근 등록되지 않은)
     var normalUsers: [User] {
-        if joinedCommunities.count - 1 >= selectedCommunity {
-            let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
-                $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
-            }.map { $0.id }
-            return currentCommUsers.filter { filterID.contains($0.id) }
-        } else {
-            return []
-        }
+        guard let currentCommunity else { return [] }
+        let filterID = currentCommunity.joinMembers.filter {
+            $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
+        }.map { $0.id }
+        return currentCommUsers.filter { filterID.contains($0.id) }
     }
     
     @Published var userSearchTerm: String = ""
@@ -74,10 +68,10 @@ class CommViewModel: ObservableObject {
     func changeCommunity(index: Int) {
         selectedCommunity = index
     }
+    
     func filterJoinedCommunity(user: User?) {
         guard let user else { return }
-        let commIDs = user.commInfoList.filter { $0.id == joinedCommunities[selectedCommunity].id }
-                                       .flatMap { $0.buddyList }
+        let commIDs = user.commInfoList.map { $0.id }
         let communities = allCommunities.filter { commIDs.contains($0.id) }
         self.joinedCommunities = communities
     }
@@ -94,6 +88,41 @@ class CommViewModel: ObservableObject {
             }
         }
         self.allCommunities = communities
+    }
+    
+    @MainActor
+    func updateComm(comm: Community) async {
+        try? await firebaseManager.create(data: comm)
+        let result = await firebaseManager.read(type: Community.self, id: comm.id)
+        switch result {
+        case .success(let success):
+            guard let index = joinedCommunities.firstIndex(of: success) else { return }
+            joinedCommunities[index] = success
+        case .failure:
+            print(#function + "Community 읽어오기 실패")
+        }
+    }
+    
+    @MainActor
+    func newComm(comm: Community,
+                 user: User) async {
+        var newComm = comm
+        newComm.manager = user.id
+        newComm.createdAt = Date().timeIntervalSince1970
+        newComm.joinMembers = [
+            .init(
+                id: user.id,
+                joinedAt: Date().timeIntervalSince1970
+            )
+        ]
+        try? await firebaseManager.create(data: newComm)
+        let result = await firebaseManager.read(type: Community.self, id: newComm.id)
+        switch result {
+        case .success(let success):
+            allCommunities.append(success)
+        case .failure:
+            print(#function + "Community 읽어오기 실패")
+        }
     }
     
     @MainActor

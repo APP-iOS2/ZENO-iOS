@@ -79,7 +79,6 @@ struct SideMenuView: View {
     var body: some View {
         ZStack {
             Color.teal.opacity(0.5)
-            
             VStack(alignment: .trailing) {
                 HStack {
                     Spacer()
@@ -99,6 +98,8 @@ struct SideMenuView: View {
 struct SideMenuView_Preview: PreviewProvider {
     static var previews: some View {
        SideTestMainView()
+            .environmentObject(CommViewModel())
+            .environmentObject(UserViewModel())
     }
 }
 #endif
