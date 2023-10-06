@@ -1,5 +1,5 @@
 //
-//  StartButton.swift
+//  ClickButton.swift
 //  Zeno
 //
 //  Created by 유하은 on 2023/09/30.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct StartButton: View {
+struct ClickButton: View {
     @State var buttonName: String
     @State var systemImage: String = "play.fill"
     let isplay: Bool
@@ -29,11 +29,12 @@ struct StartButton: View {
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                 .foregroundColor(isplay ? .white : .gray)
         }
+        .offset(y: -20)
     }
 }
 
 struct StartButton_Previews: PreviewProvider {
     static var previews: some View {
-        StartButton(buttonName: "Start", isplay: true)
+        ClickButton(buttonName: "START", systemImage: "play.fill", isplay: true)
     }
 }

@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct FinishZenoView: View {
+    @State private var navigationSwitch: Bool = false
     @State private var stack = NavigationPath()
     @StateObject private var timerViewModel = TimerViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -25,12 +26,15 @@ struct FinishZenoView: View {
                         .blueAndBMfont()
                         .offset(y: 15)
                     Button {
-                        stack = .init()
+                        navigationSwitch = true
                     } label: {
-                        StartButton(buttonName: "제노하러가기", isplay: true)
+                        ClickButton(buttonName: "제노하러가기", isplay: true)
                     }
                 }
             }
+        }
+        .navigationDestination(isPresented: $navigationSwitch) {
+            SelectCommunityVer2()
         }
         .onAppear {
             timerViewModel.myZenoTimer = Int(timerViewModel.comparingTime(currentUser: userViewModel.currentUser))
