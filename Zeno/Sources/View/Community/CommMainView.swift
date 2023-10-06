@@ -21,14 +21,14 @@ struct CommMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if commViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     newUserView
                     userListView
                 }
             }
             .toolbar {
                 groupNameToolbarItem
-                if commViewModel.joinedCommunities.isEmpty {
+                if !commViewModel.joinedCommunities.isEmpty {
                     hamburgerToolbarItem
                 }
             }
@@ -144,7 +144,7 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if user.profileImgUrlPath != nil {
+            if user.imageURL != nil {
                 // 사용자 프로필이미지 들어가야함
                 Image(systemName: "person.circle")
                     .resizable()
