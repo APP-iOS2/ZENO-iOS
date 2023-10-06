@@ -21,41 +21,56 @@ struct ImageMenuView: View {
                 .onTapGesture {
                     isPresented = false
                 }
-            
             VStack(alignment: .leading, spacing: 30) {
                 Text("프로필 사진 등록")
                     .font(.headline)
-                Button(action: {
-                    isPresented = false
-                    isImagePicker = true
-                }, label: {
-                    Text("앨범에서 사진 선택")
-                })
-                Button(action: {
-                    isPresented = false
-                    isCameraPicker = true
-                }, label: {
-                    Text("사진 촬영")
-                })
+                ForEach(ImageBtn.allCases) { btn in
+                    Button {
+                        isPresented = false
+                        switch btn {
+                        case .album:
+                            isImagePicker = true
+                        case .camera:
+                            isCameraPicker = true
+                        }
+                    } label: {
+                        Text(btn.title)
+                    }
+                }
             }
             .font(.subheadline)
-            .tint(Color.black)
+            .tint(Color.primary)
             .padding()
             .frame(width: 250, alignment: .leading)
             .background {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.white)
+                    .fill(.background)
             }
         }
         .opacity(isPresented ? 1 : 0)
         .animation(.easeInOut(duration: 0.3), value: isPresented)
-        .fullScreenCover(isPresented: $isImagePicker, content: {
+        .fullScreenCover(isPresented: $isImagePicker) {
             CommImagePicker(selectedImage: $selectedImage)
-        })
-        .fullScreenCover(isPresented: $isCameraPicker, content: {
+        }
+        .fullScreenCover(isPresented: $isCameraPicker) {
             // TODO: 카메라 띄우기
-            GroupCameraPicker()
-        })
+            CommCameraPicker()
+        }
+    }
+    
+    enum ImageBtn: Identifiable, CaseIterable {
+        case album, camera
+        
+        var title: String {
+            switch self {
+            case .album:
+                return "앨범에서 사진 선택"
+            case .camera:
+                return "사진 촬영"
+            }
+        }
+        
+        var id: Self { self }
     }
 }
 

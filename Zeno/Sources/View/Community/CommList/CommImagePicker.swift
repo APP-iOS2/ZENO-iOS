@@ -81,7 +81,7 @@ func checkPhotoLibraryAuthorizationStatus() {
 }
 
 /// 카메라 켜기
-struct GroupCameraPicker: UIViewControllerRepresentable {
+struct CommCameraPicker: UIViewControllerRepresentable {
     func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> UIImagePickerController {
         // UIImagePickerController 인스턴스 반환
         let imagePicker = UIImagePickerController()
