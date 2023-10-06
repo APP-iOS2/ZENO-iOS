@@ -46,12 +46,12 @@ struct SelectCommunityVer2: View {
                         Text("그룹을 선택해주세요")
                             .foregroundColor(.gray)
                             .padding(.bottom, 10)
-                        StartButton(buttonName: "START", isplay: isPlay)
+                        WideButton(buttonName: "START", isplay: isPlay)
                     } else {
                         NavigationLink {
                             ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
                         } label: {
-                            StartButton(buttonName: "START", isplay: isPlay)
+                            WideButton(buttonName: "START", isplay: isPlay)
                         }
                     }
                 }

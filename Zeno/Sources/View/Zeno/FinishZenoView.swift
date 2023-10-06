@@ -27,7 +27,7 @@ struct FinishZenoView: View {
                     Button {
                         stack = .init()
                     } label: {
-                        StartButton(buttonName: "제노하러가기", isplay: true)
+                        WideButton(buttonName: "제노하러가기", isplay: true)
                     }
                 }
             }
