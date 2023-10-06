@@ -22,9 +22,12 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 	var personnel: Int
 	/// 검색 가능 여부
 	var isSearchable: Bool = true
+	/// 커뮤니티 그룹장
     var manager: User.ID
 	/// 커뮤니티에 가입된 유저
 	var joinMembers: [Member]
+	/// 커뮤니티 가입 신청 후 승인 대기중인 유저
+	var waitApprovalMembers: [Member] = []
 	/// 커뮤니티에 가입된 유저 구조체
 	struct Member: Codable, Identifiable, Hashable {
 		/// 유저 ID
