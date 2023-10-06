@@ -19,7 +19,7 @@ struct CommListView: View {
                 ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
                         if commViewModel.joinedCommunities.contains(community) {
-                            commViewModel.selectedCommunity = index
+                            commViewModel.changeCommunity(index: index)
                             isPresented = false
                         } else {
                             // TODO: 새로운 그룹 가입 뷰
@@ -27,7 +27,7 @@ struct CommListView: View {
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("\(community.communityName)")
+                                Text("\(community.name)")
 //                                HStack {
 //                                    // TODO: 새로운 알림으로 조건 변경
 //                                    if index == 2 || index == 4 {

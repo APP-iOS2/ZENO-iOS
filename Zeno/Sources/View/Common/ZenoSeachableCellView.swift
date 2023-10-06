@@ -14,7 +14,7 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
     
     var body: some View {
         HStack {
-            if item.image != nil {
+            if item.imageURL != nil {
                 // 사용자 프로필이미지 들어가야함
                 Image(systemName: "person.circle")
                     .resizable()
@@ -44,6 +44,6 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
-        .modifier(HomeListCellModifier())
+        .homeListCell()
     }
 }

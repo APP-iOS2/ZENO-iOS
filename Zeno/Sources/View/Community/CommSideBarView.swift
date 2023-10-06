@@ -21,7 +21,7 @@ struct CommSideBarView: View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(commViewModel.currentCommunity?.communityName ?? "가입된 커뮤니티가 없습니다.")
+                    Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다.")
                         .font(.headline)
                     Text("\(commViewModel.currentCommunity?.joinMembers.count ?? 0)명 참여중")
                         .font(.caption)
@@ -92,7 +92,7 @@ struct CommSideBarView: View {
             CommSettingView(community: commViewModel.currentCommunity ?? .dummy[0])
         }
         .fullScreenCover(isPresented: $isSelectContent) {
-            CommMemberManageView()
+            CommUserMgmtView()
         }
         .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
             Button("예", role: .destructive) { groupOut() }
@@ -147,7 +147,7 @@ struct CommSideBarView: View {
     private func shareText() {
         guard let url = URL(string: "https://www.naver.com") else { return }
         let activityVC = UIActivityViewController(
-            activityItems: ["\(commViewModel.currentCommunity?.communityName ?? "커뮤니티 nil")", url],
+            activityItems: ["\(commViewModel.currentCommunity?.name ?? "커뮤니티 nil")", url],
             applicationActivities: [KakaoActivity(), IGActivity()]
         )
         

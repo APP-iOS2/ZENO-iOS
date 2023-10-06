@@ -9,19 +9,6 @@
 import SwiftUI
 
 struct CommUserMgmtCellView: View {
-    enum ActionType {
-        case accept, deport
-        
-        var title: String {
-            switch self {
-            case .accept:
-                return "수락"
-            case .deport:
-                return "강퇴"
-            }
-        }
-    }
-    
     @Binding var user: User
     let actionType: ActionType
     
@@ -29,14 +16,14 @@ struct CommUserMgmtCellView: View {
         HStack(alignment: .center) {
             Image(systemName: "person.fill")
                 .font(.largeTitle)
-            Spacer()
-            VStack {
-                Text("소속그룹 프로퍼티??")
+                .padding(.horizontal)
+            VStack(alignment: .leading) {
                 Text(user.name)
-                Text("자기소개 프로퍼티??")
+                    .font(.headline)
+                Text(user.description)
+                    .font(.subheadline)
             }
             Spacer()
-            // TODO: db의 친구 리스트에 있는지 여부로 조건 변경
             Button(actionType.title) {
                 switch actionType {
                 case .accept:
@@ -47,9 +34,23 @@ struct CommUserMgmtCellView: View {
                     // TODO: 그룹에서 내보내기 메서드
                 }
             }
+            .padding(.horizontal)
         }
         .frame(width: .infinity)
         .padding(.vertical)
+    }
+    
+    enum ActionType {
+        case accept, deport
+        
+        var title: String {
+            switch self {
+            case .accept:
+                return "수락"
+            case .deport:
+                return "추방"
+            }
+        }
     }
 }
 
