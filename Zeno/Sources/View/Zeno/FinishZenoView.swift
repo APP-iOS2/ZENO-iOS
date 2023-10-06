@@ -9,85 +9,38 @@
 import SwiftUI
 
 struct FinishZenoView: View {
-    private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let currentTime = Date().timeIntervalSince1970
-
-    @State private var myZenoTimer: Int = 0
-    @State private var count: Int = 1
-    @State private var finishedText: String?
-    @State private var timeRemaining = ""
-    @State private var timesUp = false
-    @State private var futureData: Date? // Optional로 선언
-    @State var stack = NavigationPath()
-    
+    @State private var stack = NavigationPath()
+    @StateObject private var timerViewModel = TimerViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
-    @Environment(\.dismiss) private var dismiss
-
-    func updateTimeRemaining() {
-        if let futureDate = futureData {
-            let remaining = Calendar.current.dateComponents([.minute, .second], from: Date(), to: futureDate)
-            let minute = remaining.minute ?? 0
-            let second = remaining.second ?? 0
-            timeRemaining = "\(minute) 분 \(second) 초 남았어요"
-            
-            if minute == 0 && second <= 0 {
-                self.timer.upstream.connect().cancel()
-                timesUp = true
-            }
-        }
-    }
     
     var body: some View {
-        if timesUp == false {
-            Group {
-                ZStack {
-                    VStack {
-                        LottieView(lottieFile: "beforeZenoFirst")
-                        Text("다음 제노까지 \(timeRemaining) ")
-                            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
-                            .font(.largeTitle)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.ggullungColor)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                            .offset(y: -.screenHeight * 0.2)
+        ZStack {
+            VStack {
+                LottieView(lottieFile: "beforeZenoFirst")
+                if timerViewModel.timesUp == false {
+                    Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
+                        .blueAndBMfont()
+                } else {
+                    Text(" 시간이 다 됐어요! ")
+                        .blueAndBMfont()
+                        .offset(y: 15)
+                    Button {
+                        stack = .init()
+                    } label: {
+                        StartButton(buttonName: "제노하러가기", isplay: true)
                     }
                 }
-                .navigationBarBackButtonHidden()
-                .onAppear {
-                    // MARK: 다른 뷰일때도 계속 나타남
-                    print("온어피어 나타남")
-                    myZenoTimer = Int(userViewModel.comparingTime())
-                    if let futureDate = Calendar.current.date(byAdding: .second, value: Int(myZenoTimer), to: Date()) {
-                        futureData = futureDate
-                    }
-                    updateTimeRemaining()
-                }
-                .onReceive(timer) {_ in
-                    updateTimeRemaining()
-                }
-            }
-        } else {
-            SelectCommunityVer2()
-            // TODO: NavigationPath 써야함
-            // stack.removeLast()
-                .task {
-                    print("시간 끝남")
-                    print("\(timesUp)")
-                    await userViewModel.updateUserStartZeno(to: false)
             }
         }
-    }
-    
-    func comparingTime() -> Double {
-        let currentTime = Date().timeIntervalSince1970
-
-        if let currentUser = userViewModel.currentUser,
-           let zenoEndAt = currentUser.zenoEndAt {
-            return zenoEndAt - currentTime
-        } else {
-            return 0.0
+        .onAppear {
+            timerViewModel.myZenoTimer = Int(timerViewModel.comparingTime(currentUser: userViewModel.currentUser))
+            timerViewModel.futureData = Calendar.current.date(byAdding: .second, value: Int(timerViewModel.myZenoTimer), to: Date())
+            timerViewModel.updateTimeRemaining()
         }
+        .onReceive(timerViewModel.timer) {_ in
+            timerViewModel.updateTimeRemaining()
+        }
+        .navigationBarBackButtonHidden()
     }
 }
 

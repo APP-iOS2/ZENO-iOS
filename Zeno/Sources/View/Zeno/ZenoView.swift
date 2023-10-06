@@ -40,7 +40,6 @@ struct ZenoView: View {
                                 if selected == zenoList.count-1 {
                                     Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
                                     await userViewModel.updateZenoTimer()
-                                    await userViewModel.updateUserStartZeno(to: true)
                                     }
                                 }
                                 selected += 1

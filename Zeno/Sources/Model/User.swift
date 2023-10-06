@@ -26,8 +26,6 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 	var megaphone: Int
 	/// 초성보기 사용권 잔여 횟수
 	var showInitial: Int
-    /// 제노를 했는지 안했는지 여부 
-    var startZeno: Bool = false
     /// 제노 끝나는 시간
     var zenoEndAt: Double?
     /// 커뮤니티id, 친구관계, 커뮤니티알람
