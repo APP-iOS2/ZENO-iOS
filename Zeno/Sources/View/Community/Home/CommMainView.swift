@@ -48,7 +48,10 @@ struct CommMainView: View {
                 community: commViewModel.currentCommunity ?? Community.dummy[0]
             )
         )
-        .onAppear {
+        .onChange(of: commViewModel.allCommunities) { _ in
+            commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
+        }
+        .onChange(of: userViewModel.currentUser?.commInfoList) { _ in
             commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
         }
         .onChange(of: commViewModel.currentCommunity) { _ in

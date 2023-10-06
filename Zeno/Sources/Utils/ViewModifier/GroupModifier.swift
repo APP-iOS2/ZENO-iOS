@@ -82,6 +82,7 @@ extension View {
     func gmTitle() -> some View {
         modifier(GroupManagementTitleModifier())
     }
+    
     func customTappedViewDesign(isTapped: Binding<Bool>, tapAfterAction: @escaping () -> Void = { }) -> some View {
         modifier(GroupItemDesign(isTapped: isTapped) {
             tapAfterAction()

@@ -8,18 +8,18 @@
 
 import SwiftUI
 
-class CommSettingViewModel: ObservableObject {
-    @Published var groupName: String = ""
-    @Published var groupDescription: String = ""
-    @Published var isSearched: Bool = false
-    @Published var selectedNumber: Int = 0
-}
 struct CommSettingView: View {
     let community: Community
     let editMode: EditMode
-    @Environment(\.dismiss) var dismiss
-    @StateObject private var commSettingVM: CommSettingViewModel = .init()
+    
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var emptyCommunity: Community = .emptyComm
     @State private var isSelectItem: [Bool] = .init(repeating: false, count: 4)
+    @State private var isValueChanged: Bool = false
+    @State private var backActionWarning: Bool = false
     @State private var isGroupName: Bool = false
     @State private var isGroupDescription: Bool = false
     @State private var isImagePicker: Bool = false
@@ -28,15 +28,33 @@ struct CommSettingView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .padding(.trailing, 30)
+                ZenoNavigationBackBtn {
+                    if isValueChanged {
+                        backActionWarning = true
+                    } else {
+                        dismiss()
+                    }
                 }
                 .tint(.black)
                 Text("\(editMode.title)")
+                    .padding(.leading, 30)
                 Spacer()
+                Button("완료") {
+                    Task {
+                        switch editMode {
+                        case .addNew:
+                            guard let user = userViewModel.currentUser else { return }
+                            await commViewModel.newComm(comm: emptyCommunity, user: user)
+                            await userViewModel.joinNewGroup(newID: emptyCommunity.id)
+                        case .edit:
+                            await commViewModel.updateComm(comm: emptyCommunity)
+                        }
+                        dismiss()
+                    }
+                }
+                .disabled(!(!emptyCommunity.name.isEmpty &&
+                          isValueChanged)
+                )
             }
             .padding()
             Button {
@@ -61,76 +79,108 @@ struct CommSettingView: View {
             .padding()
             Spacer()
                 .frame(height: 30)
-            VStack(alignment: .leading, spacing: 10) {
-                Text("그룹 이름")
-                if commSettingVM.groupName.isEmpty {
-                    Text("그룹 이름을 입력하세요")
-                        .font(.callout)
-                        .foregroundStyle(.gray)
-                } else {
-                    Text(commSettingVM.groupName)
-                        .font(.callout)
-                        .foregroundStyle(.gray)
-                }
-            }
-            .customTappedViewDesign(isTapped: $isSelectItem[0]) {
-                isGroupName.toggle()
-            }
-            .fullScreenCover(isPresented: $isGroupName) {
-                SettingTextFieldView(title: "그룹 이름", value: $commSettingVM.groupName)
-            }
-            VStack(alignment: .leading, spacing: 0) {
-                Toggle("검색 허용", isOn: $commSettingVM.isSearched)
-                Text("그룹 이름과 소개를 검색할 수 있게 합니다.")
-                    .font(.caption)
-            }
-            .customTappedViewDesign(isTapped: $isSelectItem[1]) {
-                commSettingVM.isSearched.toggle()
-            }
-            
-            VStack(alignment: .leading, spacing: 10) {
-                Text("그룹 소개")
-                if commSettingVM.groupDescription.isEmpty {
-                    Text("그룹 소개를 입력하세요")
-                        .font(.callout)
-                        .foregroundStyle(.gray)
-                } else {
-                    Text(commSettingVM.groupDescription)
-                        .font(.callout)
-                        .foregroundStyle(.gray)
-                }
-            }
-            .customTappedViewDesign(isTapped: $isSelectItem[2]) {
-                isGroupDescription.toggle()
-            }
-            .fullScreenCover(isPresented: $isGroupDescription) {
-                SettingTextFieldView(title: "그룹 소개", value: $commSettingVM.groupDescription)
-            }
-            
-            HStack {
-                Text("그룹 정원")
-                Spacer()
-                Picker("groupNum", selection: $commSettingVM.selectedNumber) {
-                    // 최소 6명 최대 50명
-                    ForEach(6..<51) { number in
-                        Text("\(number) 명")
+            ForEach(Array(
+                zip($isSelectItem, isSelectItem.indices)
+            ), id: \.1) { $item, index in
+                commSettingItem(index: index)
+                    .customTappedViewDesign(isTapped: $item) {
+                        commSettingItemAction(index: index)()
                     }
-                }
-                .tint(.black)
             }
-            .customTappedViewDesign(isTapped: $isSelectItem[3])
-            
             Spacer()
         }
-        .overlay(ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage))
+        .overlay(
+            ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
+        )
+        .fullScreenCover(isPresented: $isGroupName) {
+            SettingTextFieldView(title: "그룹 이름", value: $emptyCommunity.name)
+        }
+        .fullScreenCover(isPresented: $isGroupDescription) {
+            SettingTextFieldView(title: "그룹 소개", value: $emptyCommunity.description)
+        }
+        .onChange(of: emptyCommunity) { newValue in
+            isValueChanged = community != newValue
+        }
         .onAppear {
             switch editMode {
             case .addNew:
                 break
             case .edit:
-                commSettingVM.groupName = community.name
-                commSettingVM.groupDescription = community.description
+                emptyCommunity = community
             }
+        }
+        .alert("저장되지 않은 변경사항이 있습니다.", isPresented: $backActionWarning) {
+            Button("나가기", role: .destructive) {
+                backActionWarning = false
+                dismiss()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func commSettingItem(index: Int) -> some View {
+        switch index {
+        case 0:
+            VStack(alignment: .leading, spacing: 10) {
+                Text("그룹 이름")
+                if emptyCommunity.name.isEmpty {
+                    Text("그룹 이름을 입력하세요")
+                        .font(.callout)
+                        .foregroundStyle(.gray)
+                } else {
+                    Text(emptyCommunity.name)
+                        .font(.callout)
+                        .foregroundStyle(.gray)
+                }
+            }
+        case 1:
+            VStack(alignment: .leading, spacing: 0) {
+                Toggle("검색 허용", isOn: $emptyCommunity.isSearchable)
+                Text("그룹 이름과 소개를 검색할 수 있게 합니다.")
+                    .font(.caption)
+            }
+        case 2:
+            VStack(alignment: .leading, spacing: 10) {
+                Text("그룹 소개")
+                if emptyCommunity.description.isEmpty {
+                    Text("그룹 소개를 입력하세요")
+                        .font(.callout)
+                        .foregroundStyle(.gray)
+                } else {
+                    Text(emptyCommunity.description)
+                        .font(.callout)
+                        .foregroundStyle(.gray)
+                }
+            }
+        case 3:
+            HStack {
+                Text("그룹 정원")
+                Spacer()
+                Picker("groupNum", selection: $emptyCommunity.personnel) {
+                    // 최소 6명 최대 50명
+                    ForEach(0..<51) { number in
+                        if number > 5 {
+                            Text("\(number) 명")
+                        }
+                    }
+                }
+                .tint(.black)
+            }
+        default:
+            EmptyView()
+        }
+    }
+    
+    func commSettingItemAction(index: Int) -> () -> Void {
+        switch index {
+        case 0:
+            return { isGroupName.toggle() }
+        case 1:
+            return { emptyCommunity.isSearchable.toggle() }
+        case 2:
+            return { isGroupDescription.toggle() }
+        default:
+            return { }
         }
     }
     
@@ -151,7 +201,8 @@ struct CommSettingView: View {
         if let img = selectedImage {
             return Image(uiImage: img)
         } else {
-            return Image("\(community.imageURL)") // 추후 어떤식으로 이미지 처리할지 미정.
+            // 추후 어떤식으로 이미지 처리할지 미정.
+            return Image("\(community.imageURL)")
         }
     }
 }

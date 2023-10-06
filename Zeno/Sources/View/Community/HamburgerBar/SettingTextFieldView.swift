@@ -14,54 +14,47 @@ struct SettingTextFieldView: View {
 	let title: String
 	@Binding var value: String
 	
-	@State private var textCount: Int = 0
-	@State private var textOriginal: String = ""
+    @State private var fixedText: String = ""
 	@FocusState private var isTextFocused: Bool // ios 15이상에서만 동작
 	let textMaxCount: Int = 50
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
 			HStack(spacing: 30) {
-				Button {
-					value = textOriginal
-					dismiss()
-				} label: {
-					Image(systemName: "chevron.left")
-						.padding(.trailing, 30)
-				}
-				.tint(.black)
+                ZenoNavigationBackBtn {
+                    dismiss()
+                }
 				Text(title)
 				Spacer()
-				
 				Button {
-					if value.isEmpty { value = textOriginal }
+					value = fixedText
 					dismiss()
 				} label: {
 					Text("확인")
 				}
-				.tint(.black)
+                .disabled(fixedText.isEmpty)
 			}
 			.padding()
-			
+            .tint(.black)
 			HStack {
-				TextField("\(textOriginal)", text: $value, prompt: Text(title))
+				TextField("\(fixedText)",
+                          text: $fixedText,
+                          prompt: Text(title))
 					.focused($isTextFocused)
-					.onChange(of: value) { newValue in
-						if value.count > textMaxCount {
-							value = String(newValue.prefix(textMaxCount))
+					.onChange(of: fixedText) { newValue in
+						if fixedText.count > textMaxCount {
+                            fixedText = String(newValue.prefix(textMaxCount))
 						}
-						textCount = value.count
 					}
-                if textCount != 0 {
+                if !fixedText.isEmpty {
                     Button {
-                        value = ""
-                        textCount = value.count
+                        fixedText = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.gray.opacity(0.5))
                     }
                 }
-				Text("\(textCount)/\(textMaxCount)")
+                Text("\(fixedText.count)/\(textMaxCount)")
 					.font(.caption2)
 					.foregroundStyle(.gray.opacity(0.5))
 			}
@@ -71,14 +64,12 @@ struct SettingTextFieldView: View {
 			}
 			.frame(maxWidth: .infinity)
 			.padding()
-			
 			Spacer()
 		}
 		.contentShape(Rectangle())
 		.hideKeyboardOnTap()
 		.onAppear {
-			textCount = value.count
-			textOriginal = "\(value)"
+			fixedText = value
 			isTextFocused = true
 		}
 	}

@@ -22,9 +22,6 @@ struct ZenoApp: App {
             InitialView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
-                .task {
-                    FirebaseManager.shared.uploadDummyArray(datas: Community.dummy)
-                }
         }
     }
 }

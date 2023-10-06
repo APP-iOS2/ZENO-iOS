@@ -15,14 +15,11 @@ struct CommUserMgmtView: View {
     var body: some View {
         VStack {
             HStack {
-                Button {
+                ZenoNavigationBackBtn {
                     dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .padding(.trailing, 30)
                 }
-                .tint(.black)
                 Text("구성원 관리")
+                    .padding(.leading, 30)
                 Spacer()
             }
             .padding()
@@ -51,6 +48,7 @@ struct CommUserMgmtView: View {
                             Spacer()
                             Text("\(commViewModel.currentCommUsers.count) 명")
                         }
+                        .padding(.top)
                     }
                 }
                 .gmTitle()
@@ -58,6 +56,7 @@ struct CommUserMgmtView: View {
                 .padding(.horizontal)
             }
         }
+        .tint(.black)
     }
 }
 
