@@ -10,17 +10,22 @@ import SwiftUI
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
-    
+    /// 현재 보고 있는 커뮤니티의 인덱스
     @AppStorage("selectedCommunity") private var selectedCommunity: Int = 0
+	/// 서버의 전체 커뮤니티 목록
     @Published private var allCommunities: [Community] = []
+	/// 현재 유저가 가입한 커뮤니티 목록
     @Published var joinedCommunities: [Community] = []
+	/// 현재 보고 있는 커뮤니티
     var currentCommunity: Community? {
         guard joinedCommunities.count - 1 >= selectedCommunity else { return nil }
         return joinedCommunities[selectedCommunity]
     }
-    
+    /// 현재 커뮤니티의 구성원
     @Published var currentCommUsers: [User] = []
+	/// 현재 커뮤니티에 가입 승인 대기중인 유저
     @Published var currentWaitApprovalMembers: [User] = []
+	/// 현재 커뮤니티에 최근 등록된 구성원
     var recentlyJoinedUsers: [User] {
         if joinedCommunities.count - 1 >= selectedCommunity {
             let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
@@ -31,6 +36,7 @@ class CommViewModel: ObservableObject {
             return []
         }
     }
+	/// 현재 커뮤니티에 구성원(최근 등록되지 않은)
     var normalUsers: [User] {
         if joinedCommunities.count - 1 >= selectedCommunity {
             let filterID = joinedCommunities[selectedCommunity].joinMembers.filter {
