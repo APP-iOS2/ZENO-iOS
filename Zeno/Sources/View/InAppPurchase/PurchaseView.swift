@@ -11,6 +11,7 @@ import SwiftUI
 struct PurchaseView: View {
     @EnvironmentObject var iAPVM: IAPStore
     @EnvironmentObject var userVM: UserViewModel
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationStack {
@@ -53,9 +54,11 @@ struct PurchaseView: View {
                                         switch purchaseResult?.productID {
                                         case "initialCheck":
                                             await userVM.updateUserInitialCheck(to: 10)
+                                            dismiss()
                                         case "megaphone":
                                             // MARK: - 이후 메가폰 카운트 올려주는 함수 호출하면 됨.
                                             await userVM.updateUserMegaphone(to: 1)
+                                            dismiss()
                                         default:
                                             break
                                         }
