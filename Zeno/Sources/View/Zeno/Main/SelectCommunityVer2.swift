@@ -6,14 +6,13 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-// TODO: 마지막 첫번째 중간으로 옮기기, 선택됐을때 버튼 컬러 깜빡 되는거 말고 -> 색 변화, 셀뷰에서 코너래디우스 없애고 리스트 형식으로? 깔끔하게, 동그라미 아이콘들 일자로 정렬? alignment leading, 스타트 버튼 ( 후: 동그라미 없애는거,)
-
 import SwiftUI
 import ConfettiSwiftUI
 
 struct SelectCommunityVer2: View {
-    private let communities = Community.dummy
-    
+    @EnvironmentObject private var userViewModel: UserViewModel
+
+    @State private var stack = NavigationPath()
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
     @State private var selected = ""
@@ -22,44 +21,43 @@ struct SelectCommunityVer2: View {
     @State private var useConfentti: Bool = true
     @State var isSheetOn: Bool = false
     
-    @EnvironmentObject private var userViewModel: UserViewModel
+    private let communities = Community.dummy
     
     var body: some View {
-        VStack {
-            ScrollViewReader { ScrollViewProxy in
-                CardViewVer2(currentIndex: currentIndex)
-                    .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
-                    .onChange(of: currentIndex) { _ in
-                        withAnimation {
-                            ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+        NavigationStack {
+            VStack {
+                ScrollViewReader { ScrollViewProxy in
+                    CardViewVer2(currentIndex: currentIndex)
+                        .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                        .onChange(of: currentIndex) { _ in
+                            withAnimation {
+                                ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+                            }
+                        }
+                        .offset(y: .screenHeight * 0.04)
+                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
+                        .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
+                }
+                commuityListView()
+                    .background(.clear)
+                
+                VStack {
+                    if isPlay == false {
+                        Text("그룹을 선택해주세요")
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 10)
+                        StartButton(buttonName: "START", isplay: isPlay)
+                    } else {
+                        NavigationLink {
+                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+                        } label: {
+                            StartButton(buttonName: "START", isplay: isPlay)
                         }
                     }
-                    .offset(y: .screenHeight * 0.04)
-                    .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
-                    .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
-            }
-            commuityListView()
-                .background(.clear)
-            
-            VStack {
-                if isPlay == false {
-                    Text("그룹을 선택해주세요")
-                        .foregroundColor(.gray)
-                        .padding(.bottom, 10)
-                    StartButton(isplay: isPlay)
-                } else {
-                    Button {
-                        isSheetOn = true
-                    } label: {
-                        StartButton(isplay: isPlay)
-                    }
                 }
+                .offset(y: -20)
+                .disabled(isPlay == false)
             }
-            .offset(y: -20)
-            .disabled(isPlay == false)
-        }
-        .fullScreenCover(isPresented: $isSheetOn) {
-            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
         }
     }
     

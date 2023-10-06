@@ -16,7 +16,10 @@ class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    private let coolTime: Int = 30
+    /// ZenoViewSheet닫는용
+    @Published var isShowingSheet: Bool = false
+    
+    private let coolTime: Int = 7
     
     init() {
         Task {
