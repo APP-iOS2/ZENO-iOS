@@ -35,6 +35,6 @@ struct ClickButton: View {
 
 struct StartButton_Previews: PreviewProvider {
     static var previews: some View {
-        ClickButton(buttonName: "Start", isplay: true)
+        ClickButton(buttonName: "START", systemImage: "play.fill", isplay: true)
     }
 }
