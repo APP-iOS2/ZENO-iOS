@@ -139,18 +139,6 @@ class UserViewModel: ObservableObject {
              print("Error updating zeno timer: \(error)")
          }
      }
-     
-     /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 (서버가 맞을지 유저 디포츠가 맞을진 모르겟음)
-     func updateUserStartZeno(to: Bool) async {
-         do {
-             guard let currentUser = currentUser else { return }
-             try await firebaseManager.update(data: currentUser, value: \.startZeno, to: to)
-             try await loadUserData()
-             print("updateUserStartZeno ")
-         } catch {
-             print("Error updateStartZeno : \(error)")
-         }
-     }
 
      // MARK: 이 함수가 자원 갉아먹고 있음
     /// 사용자한테 몇초 남았다고 초를 보여주는 함수
