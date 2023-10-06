@@ -21,6 +21,10 @@ class ZenoViewModel: ObservableObject {
         self.isShowingSheet = isShowingSheet
     }
     
+    
+    
+    
+    
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
     func updateZenoTimer(currentUser: User?) async {
          do {
@@ -42,7 +46,7 @@ class ZenoViewModel: ObservableObject {
          do {
              guard let currentUser = currentUser else { return }
              try await FirebaseManager.shared.update(data: currentUser, value: \.startZeno, to: to)
-             //try await loadUserData()
+             // try await loadUserData()
              print("updateUserStartZeno ")
          } catch {
              print("Error updateStartZeno : \(error)")

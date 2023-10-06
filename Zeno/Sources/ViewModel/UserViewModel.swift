@@ -16,6 +16,7 @@ class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
+    var notificationService: NotificationService = .init()
     private let coolTime: Int = 15
     
     init() {
@@ -23,6 +24,7 @@ class UserViewModel: ObservableObject {
             try await loadUserData()
         }
     }
+    
     init(currentUser: User) {
         self.currentUser = currentUser
     }
@@ -108,12 +110,13 @@ class UserViewModel: ObservableObject {
              print("\(zenoStartTime)")
              print("\(zenoStartTime + Double(coolTime))")
              print("updateZenoTimer !! ")
+             self.notificationService.sendNotification()
          } catch {
              print("Error updating zeno timer: \(error)")
          }
      }
      
-     /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 (서버가 맞을지 유저 디포츠가 맞을진 모르겟음)
+     /// 유저가 제노를 시작했는지, 안했는지 여부를 판단함 , startZeno와 함께 삭제해야함
      func updateUserStartZeno(to: Bool) async {
          do {
              guard let currentUser = currentUser else { return }
@@ -129,7 +132,6 @@ class UserViewModel: ObservableObject {
      // MARK: 이 함수가 자원 갉아먹고 있음
      func comparingTime() -> Double {
          let currentTime = Date().timeIntervalSince1970
-         
          if let currentUser = currentUser,
             let zenoEndAt = currentUser.zenoEndAt {
              return zenoEndAt - currentTime
