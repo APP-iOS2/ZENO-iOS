@@ -10,27 +10,36 @@ import SwiftUI
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
+    /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     private var currentUser: User?
-    
+    /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
     @AppStorage("selectedCommunity") private var selectedComm: Int = 0
+    /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
     @Published var allComm: [Community] = []
+    /// currentUser가 가입한 모든 커뮤니티
     @Published var joinedComm: [Community] = []
+    /// currentUser가 마지막으로 선택한 커뮤니티, 가입된 커뮤니티가 없으면 nil을 반환
     var currentComm: Community? {
         guard joinedComm.count - 1 >= selectedComm else { return nil }
         return joinedComm[selectedComm]
     }
-    
+    /// 선택된 커뮤니티의 모든 유저(본인 포함)
     @Published var currentCommMembers: [User] = []
+    /// 선택된 커뮤니티의 가입 대기중인 유저
     @Published var currentWaitApprovalMembers: [User] = []
+    /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
     var recentlyJoinedMembers: [User] {
         filterMembers(condition: .recentlyJoined)
     }
+    /// 선택된 커뮤니티의 가입한지 3일이 지난 유저
     var generalMembers: [User] {
         filterMembers(condition: .general)
     }
-    
+    /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
+    /// 모든 커뮤니티를 검색하기 위한 String
     @Published var communitySearchTerm: String = ""
+    /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
             return generalMembers
@@ -38,6 +47,7 @@ class CommViewModel: ObservableObject {
             return generalMembers.filter { $0.name.contains(userSearchTerm) }
         }
     }
+    /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
     var searchedCommunity: [Community] {
         if communitySearchTerm.isEmpty {
             return joinedComm
