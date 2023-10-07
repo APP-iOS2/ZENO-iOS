@@ -106,7 +106,7 @@ class CommViewModel: ObservableObject {
     func updateComm(comm: Community, image: UIImage?) async {
         do {
             if let image {
-                try await firebaseManager.createWithImage(data: newComm, image: image)
+                try await firebaseManager.createWithImage(data: comm, image: image)
             } else {
                 try await firebaseManager.create(data: comm)
             }

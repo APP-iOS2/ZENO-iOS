@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct ZenoSeachableCellView<T: ZenoSearchable>: View {
     let item: T
@@ -14,14 +15,9 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
     
     var body: some View {
         HStack {
-            if item.imageURL != nil {
-                // 사용자 프로필이미지 들어가야함
-                Image(systemName: "person.circle")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            } else {
-                Image(systemName: "person.circle")
-                    .resizable()
+            if let urlStr = item.imageURL,
+               let url = URL(string: urlStr) {
+                KFImage(url)
                     .frame(width: 30, height: 30)
             }
             VStack(alignment: .leading) {

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SelectGroupView: View {
     private let communities = Community.dummy
@@ -65,11 +66,14 @@ func customScrollView() -> some View {
                             // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                                 .padding(20)
                                 .foregroundColor(.white)
-                            Image(community.imageURL ?? "")
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .scaledToFit()
-                                .clipShape(Circle())
+                            if let urlStr = community.imageURL,
+                               let url = URL(string: urlStr) {
+                                KFImage(url)
+                                    .resizable()
+                                    .frame(width: 100, height: 100)
+                                    .scaledToFit()
+                                    .clipShape(Circle())
+                            }
                         }
                     }
 //                    .onTapGesture {

@@ -9,6 +9,7 @@
 // TODO: 리스를 눌렀을 때 위치를,, 어 그니까 게산해서 위치를 옮겨라!!
 
 import SwiftUI
+import Kingfisher
 
 struct CardViewVer3: View {
     @State var currentIndex: Int
@@ -24,17 +25,20 @@ struct CardViewVer3: View {
         GeometryReader { geometry in
             HStack(alignment: .center, spacing: peekAmount) {
                 ForEach(communities.indices, id: \.self) { index in
-                    Image(communities[index].imageURL ?? "")
-                        .resizable()
-                        .frame(width: itemWidth, height: 200)
-                        .scaledToFit()
-                        .overlay(alignment: .bottomLeading) {
-                            Text(communities[index].name)
-                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
-                                .offset(y: 70)
-                                .opacity(self.opacityForText(at: index, in: geometry))
-                        }
-                        .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
+                    if let urlStr = communities[index].imageURL,
+                       let url = URL(string: urlStr) {
+                        KFImage(url)
+                            .resizable()
+                            .frame(width: itemWidth, height: 200)
+                            .scaledToFit()
+                            .overlay(alignment: .bottomLeading) {
+                                Text(communities[index].name)
+                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
+                                    .offset(y: 70)
+                                    .opacity(self.opacityForText(at: index, in: geometry))
+                            }
+                            .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
+                    }
                 }
             }
             .offset(x: calculateOffset() + dragOffset + 60)
