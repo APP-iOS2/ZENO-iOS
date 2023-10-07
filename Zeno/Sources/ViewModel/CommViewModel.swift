@@ -10,74 +10,86 @@ import SwiftUI
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
-    /// 현재 보고 있는 커뮤니티의 인덱스
-    @AppStorage("selectedCommunity") private var selectedCommunity: Int = 0
-	/// 서버의 전체 커뮤니티 목록
-    @Published private var allCommunities: [Community] = []
-	/// 현재 유저가 가입한 커뮤니티 목록
-    @Published var joinedCommunities: [Community] = []
-	/// 현재 보고 있는 커뮤니티
-    var currentCommunity: Community? {
-        guard joinedCommunities.count - 1 >= selectedCommunity else { return nil }
-        return joinedCommunities[selectedCommunity]
+    /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
+    private var currentUser: User?
+    /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
+    @AppStorage("selectedCommunity") private var selectedComm: Int = 0
+    /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
+    @Published var allComm: [Community] = []
+    /// currentUser가 가입한 모든 커뮤니티
+    @Published var joinedComm: [Community] = []
+    /// currentUser가 마지막으로 선택한 커뮤니티, 가입된 커뮤니티가 없으면 nil을 반환
+    var currentComm: Community? {
+        guard joinedComm.count - 1 >= selectedComm else { return nil }
+        return joinedComm[selectedComm]
     }
-    /// 현재 커뮤니티의 구성원
-    @Published var currentCommUsers: [User] = []
-	/// 현재 커뮤니티에 가입 승인 대기중인 유저
+    /// 선택된 커뮤니티의 모든 유저(본인 포함)
+    @Published var currentCommMembers: [User] = []
+    /// 선택된 커뮤니티의 가입 대기중인 유저
     @Published var currentWaitApprovalMembers: [User] = []
-	/// 현재 커뮤니티에 최근 등록된 구성원
-    var recentlyJoinedUsers: [User] {
-        guard let currentCommunity else { return [] }
-        let filterID = currentCommunity.joinMembers.filter {
-            $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
-        }.map { $0.id }
-        return currentCommUsers.filter { filterID.contains($0.id) }
+    /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
+    var recentlyJoinedMembers: [User] {
+        filterMembers(condition: .recentlyJoined)
     }
-	/// 현재 커뮤니티에 구성원(최근 등록되지 않은)
-    var normalUsers: [User] {
-        guard let currentCommunity else { return [] }
-        let filterID = currentCommunity.joinMembers.filter {
-            $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
-        }.map { $0.id }
-        return currentCommUsers.filter { filterID.contains($0.id) }
+    /// 선택된 커뮤니티의 가입한지 3일이 지난 유저
+    var generalMembers: [User] {
+        filterMembers(condition: .general)
     }
-    
+    /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
+    /// 모든 커뮤니티를 검색하기 위한 String
     @Published var communitySearchTerm: String = ""
+    /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
-            return normalUsers
+            return generalMembers
         } else {
-            return normalUsers.filter { $0.name.contains(userSearchTerm) }
+            return generalMembers.filter { $0.name.contains(userSearchTerm) }
         }
     }
+    /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
     var searchedCommunity: [Community] {
         if communitySearchTerm.isEmpty {
-            return joinedCommunities
+            return joinedComm
         } else {
-            return allCommunities.filter { $0.name.contains(communitySearchTerm) }
+            return allComm
+                .filter { $0.name.contains(communitySearchTerm) }
+                .filter { allComm in
+                    joinedComm.contains { $0.id != allComm.id }
+                }
         }
     }
     
     init() {
         Task {
-            await fetchAllCommunity()
+            await fetchAllComm()
         }
     }
     
-    func changeCommunity(index: Int) {
-        selectedCommunity = index
+    private enum MemberCondition {
+        case recentlyJoined, general
     }
     
-    func filterJoinedCommunity(user: User?) {
-        guard let user else { return }
-        let commIDs = user.commInfoList.map { $0.id }
-        let communities = allCommunities.filter { commIDs.contains($0.id) }
-        self.joinedCommunities = communities
+    func updateCurrentUser(user: User?) {
+        self.currentUser = user
+        Task {
+            await fetchAllComm()
+        }
+    }
+    
+    func changeSelectedComm(index: Int) {
+        selectedComm = index
+    }
+    
+    func filterJoinedComm() {
+        guard let currentUser else { return }
+        let commIDs = currentUser.commInfoList.map { $0.id }
+        let communities = allComm.filter { commIDs.contains($0.id) }
+        self.joinedComm = communities
     }
     
     @MainActor
-    func fetchAllCommunity() async {
+    func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)
         let communities = results.compactMap {
             switch $0 {
@@ -87,48 +99,43 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.allCommunities = communities
+        self.allComm = communities
     }
     
     @MainActor
     func updateComm(comm: Community) async {
-        try? await firebaseManager.create(data: comm)
-        let result = await firebaseManager.read(type: Community.self, id: comm.id)
-        switch result {
-        case .success(let success):
-            guard let index = joinedCommunities.firstIndex(of: success) else { return }
-            joinedCommunities[index] = success
-        case .failure:
-            print(#function + "Community 읽어오기 실패")
+        do {
+            try await firebaseManager.create(data: comm)
+            guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
+                print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                return
+            }
+            joinedComm[index] = comm
+        } catch {
+            print(#function + "Community Collection에 업데이트 실패")
         }
     }
     
     @MainActor
-    func newComm(comm: Community,
-                 user: User) async {
+    func createComm(comm: Community) async {
+        guard let currentUser else { return }
+        let createAt = Date().timeIntervalSince1970
         var newComm = comm
-        newComm.manager = user.id
-        newComm.createdAt = Date().timeIntervalSince1970
-        newComm.joinMembers = [
-            .init(
-                id: user.id,
-                joinedAt: Date().timeIntervalSince1970
-            )
-        ]
-        try? await firebaseManager.create(data: newComm)
-        let result = await firebaseManager.read(type: Community.self, id: newComm.id)
-        switch result {
-        case .success(let success):
-            allCommunities.append(success)
-        case .failure:
-            print(#function + "Community 읽어오기 실패")
+        newComm.manager = currentUser.id
+        newComm.createdAt = createAt
+        newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
+        do {
+            try await firebaseManager.create(data: newComm)
+            allComm.append(newComm)
+        } catch {
+            print(#function + "새 Community Collection에 추가 실패")
         }
     }
     
     @MainActor
-    func fetchCurrentUser() async {
-        guard let currentUserIDs = currentCommunity?.joinMembers.map({ $0.id }) else { return }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentUserIDs)
+    func fetchCurrentCommMembers() async {
+        guard let currentCommMemberIDs = currentComm?.joinMembers.map({ $0.id }) else { return }
+        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentCommMemberIDs)
         let currentUsers = results.compactMap {
             switch $0 {
             case .success(let success):
@@ -137,14 +144,14 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.currentCommUsers = currentUsers
-        await fetchCurrentWaitUser()
+        self.currentCommMembers = exceptCurrentUser(users: currentUsers)
+        await fetchCurrentWaitMembers()
     }
     
     @MainActor
-    private func fetchCurrentWaitUser() async {
-        guard let currentUserIDs = currentCommunity?.waitApprovalMembers.map({ $0.id }) else { return }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentUserIDs)
+    private func fetchCurrentWaitMembers() async {
+        guard let currentWaitMemberIDs = currentComm?.waitApprovalMembers.map({ $0.id }) else { return }
+        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentWaitMemberIDs)
         let currentWaitUsers = results.compactMap {
             switch $0 {
             case .success(let success):
@@ -153,6 +160,48 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.currentWaitApprovalMembers = currentWaitUsers
+        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers) 
+    }
+    
+    @MainActor
+    func leaveComm() async {
+        guard var currentComm,
+              let currentUser
+        else { return }
+        currentComm.joinMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
+        do {
+            try await firebaseManager.create(data: currentComm)
+            guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+            joinedComm.remove(at: index)
+            selectedComm = 0
+        } catch {
+            print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
+        }
+    }
+    
+    private func filterMembers(condition: MemberCondition) -> [User] {
+        guard let currentComm else { return [] }
+        let filterMember: [Community.Member]
+        switch condition {
+        case .recentlyJoined:
+            filterMember = currentComm.joinMembers.filter {
+                $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
+            }
+        case .general:
+            filterMember = currentComm.joinMembers.filter {
+                $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
+            }
+        }
+        let users = currentCommMembers.filter {
+            filterMember
+                .map { $0.id }
+                .contains($0.id)
+        }
+        return exceptCurrentUser(users: users)
+    }
+    
+    private func exceptCurrentUser(users: [User]) -> [User] {
+        guard let currentUser else { return users }
+        return users.filter { $0.id != currentUser.id }
     }
 }

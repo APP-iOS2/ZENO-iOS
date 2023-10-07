@@ -35,18 +35,18 @@ struct CommUserMgmtView: View {
                         HStack {
                             Text("새로 신청한 유저")
                             Spacer()
-                            Text("\(commViewModel.currentCommUsers.count) 명")
+                            Text("\(commViewModel.currentCommMembers.count) 명")
                         }
                     }
                     Section {
-                        ForEach($commViewModel.currentCommUsers) { $user in
+                        ForEach($commViewModel.currentCommMembers) { $user in
                             CommUserMgmtCellView(user: $user, actionType: .deport)
                         }
                     } header: {
                         HStack {
                             Text("그룹에 가입된 유저")
                             Spacer()
-                            Text("\(commViewModel.currentCommUsers.count) 명")
+                            Text("\(commViewModel.currentCommMembers.count) 명")
                         }
                         .padding(.top)
                     }

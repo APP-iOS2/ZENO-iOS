@@ -26,6 +26,9 @@ struct ZenoApp: App {
             InitialView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
+                .onChange(of: userViewModel.currentUser) { newValue in
+                    commViewModel.updateCurrentUser(user: newValue)
+                }
         }
     }
 }
