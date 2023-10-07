@@ -30,7 +30,7 @@ struct CommListView: View {
 				
 				ScrollView {
 					// 가입된 그룹이 없을때/있을때
-					if commViewModel.joinedCommunities.isEmpty {
+					if commViewModel.joinedComm.isEmpty {
 						VStack(alignment: .center) {
 							Text("현재 가입된 그룹이 없습니다🥲")
 								.font(.title2)
@@ -41,10 +41,10 @@ struct CommListView: View {
 						.padding(.vertical)
 						.padding(.bottom, 25)
 					} else {
-						ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
+						ForEach(Array(zip(commViewModel.searchedComm, commViewModel.searchedComm.indices)), id: \.1) { community, index in
 							Button {
-								if commViewModel.joinedCommunities.contains(community) {
-									commViewModel.changeCommunity(index: index)
+								if commViewModel.joinedComm.contains(community) {
+                                    commViewModel.changeSelectedComm(index: index)
 									isPresented = false
 								} else {
 									// TODO: 새로운 그룹 가입 뷰
@@ -64,7 +64,7 @@ struct CommListView: View {
 					
 					// 새로운 그룹 만들기
 					NavigationLink {
-            CommSettingView(community: .emptyComm, editMode: .addNew)
+            CommSettingView(comm: .emptyComm, editMode: .addNew)
 					} label: {
 						HStack {
 							Image(systemName: "plus.circle")

@@ -45,7 +45,7 @@ struct CommMainView: View {
         .overlay(
             SideMenuView(
                 isPresented: $isShowingHamburgerView,
-                community: commViewModel.currentComm ?? Community.dummy[0]
+                comm: commViewModel.currentComm ?? Community.dummy[0]
             )
         )
         .onChange(of: commViewModel.allComm) { _ in

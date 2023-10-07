@@ -16,7 +16,7 @@ struct ImageUploader {
 		guard let imageData = image.jpegData(compressionQuality: 0.25) else { return nil }
 		
 		let filename = UUID().uuidString
-		let ref = Storage.storage().reference(withPath: "/profile_images/\(filename)")
+		let ref = Storage.storage().reference(withPath: "/images/\(filename)")
 		
 		do {
 			let metadata = try await ref.putDataAsync(imageData)

@@ -89,7 +89,7 @@ struct CommSideBarView: View {
         }
         .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
-            CommSettingView(community: commViewModel.currentComm ?? .emptyComm, editMode: .edit)
+            CommSettingView(comm: commViewModel.currentComm ?? .emptyComm, editMode: .edit)
         }
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()

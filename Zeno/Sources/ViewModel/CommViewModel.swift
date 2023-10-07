@@ -13,7 +13,7 @@ class CommViewModel: ObservableObject {
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     private var currentUser: User?
     /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
-    @AppStorage("selectedCommunity") private var selectedComm: Int = 0
+    @AppStorage("selectedComm") private var selectedComm: Int = 0
     /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
     @Published var allComm: [Community] = []
     /// currentUser가 가입한 모든 커뮤니티
@@ -31,29 +31,29 @@ class CommViewModel: ObservableObject {
     var recentlyJoinedMembers: [User] {
         filterMembers(condition: .recentlyJoined)
     }
-    /// 선택된 커뮤니티의 가입한지 3일이 지난 유저
+    /// [미사용중, 추후 판별 후 삭제] 선택된 커뮤니티의 가입한지 3일이 지난 유저
     var generalMembers: [User] {
         filterMembers(condition: .general)
     }
     /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String
-    @Published var communitySearchTerm: String = ""
+    @Published var commSearchTerm: String = ""
     /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
-            return generalMembers
+            return currentCommMembers
         } else {
-            return generalMembers.filter { $0.name.contains(userSearchTerm) }
+            return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
         }
     }
     /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
-    var searchedCommunity: [Community] {
-        if communitySearchTerm.isEmpty {
+    var searchedComm: [Community] {
+        if commSearchTerm.isEmpty {
             return joinedComm
         } else {
             return allComm
-                .filter { $0.name.contains(communitySearchTerm) }
+                .filter { $0.name.contains(commSearchTerm) }
                 .filter { allComm in
                     joinedComm.contains { $0.id != allComm.id }
                 }

@@ -9,14 +9,14 @@
 import SwiftUI
 
 struct CommSettingView: View {
-    let community: Community
+    let comm: Community
     let editMode: EditMode
     
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @Environment(\.dismiss) private var dismiss
     
-    @State private var emptyCommunity: Community = .emptyComm
+    @State private var emptyComm: Community = .emptyComm
     @State private var isSelectItem: [Bool] = .init(repeating: false, count: 4)
     @State private var isValueChanged: Bool = false
     @State private var backActionWarning: Bool = false
@@ -44,15 +44,15 @@ struct CommSettingView: View {
                         Task {
                             switch editMode {
                             case .addNew:
-                                await commViewModel.createComm(comm: emptyCommunity)
-                                await userViewModel.joinNewGroup(newID: emptyCommunity.id)
+                                await commViewModel.createComm(comm: emptyComm)
+                                await userViewModel.joinNewGroup(newID: emptyComm.id)
                             case .edit:
-                                await commViewModel.updateComm(comm: emptyCommunity)
+                                await commViewModel.updateComm(comm: emptyComm)
                             }
                             dismiss()
                         }
                     }
-                    .disabled(!(!emptyCommunity.name.isEmpty &&
+                    .disabled(!(!emptyComm.name.isEmpty &&
                                 isValueChanged))
                 }
                 .padding()
@@ -94,20 +94,20 @@ struct CommSettingView: View {
             ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
         )
         .fullScreenCover(isPresented: $isGroupName) {
-            SettingTextFieldView(title: "그룹 이름", value: $emptyCommunity.name)
+            SettingTextFieldView(title: "그룹 이름", value: $emptyComm.name)
         }
         .fullScreenCover(isPresented: $isGroupDescription) {
-            SettingTextFieldView(title: "그룹 소개", value: $emptyCommunity.description)
+            SettingTextFieldView(title: "그룹 소개", value: $emptyComm.description)
         }
-        .onChange(of: emptyCommunity) { newValue in
-            isValueChanged = community != newValue
+        .onChange(of: emptyComm) { newValue in
+            isValueChanged = comm != newValue
         }
         .onAppear {
             switch editMode {
             case .addNew:
                 break
             case .edit:
-                emptyCommunity = community
+                emptyComm = comm
             }
         }
         .alert("저장되지 않은 변경사항이 있습니다.", isPresented: $backActionWarning) {
@@ -124,31 +124,31 @@ struct CommSettingView: View {
         case 0:
             VStack(alignment: .leading, spacing: 10) {
                 Text("그룹 이름")
-                if emptyCommunity.name.isEmpty {
+                if emptyComm.name.isEmpty {
                     Text("그룹 이름을 입력하세요")
                         .font(.callout)
                         .foregroundStyle(.gray)
                 } else {
-                    Text(emptyCommunity.name)
+                    Text(emptyComm.name)
                         .font(.callout)
                         .foregroundStyle(.gray)
                 }
             }
         case 1:
             VStack(alignment: .leading, spacing: 0) {
-                Toggle("검색 허용", isOn: $emptyCommunity.isSearchable)
+                Toggle("검색 허용", isOn: $emptyComm.isSearchable)
                 Text("그룹 이름과 소개를 검색할 수 있게 합니다.")
                     .font(.caption)
             }
         case 2:
             VStack(alignment: .leading, spacing: 10) {
                 Text("그룹 소개")
-                if emptyCommunity.description.isEmpty {
+                if emptyComm.description.isEmpty {
                     Text("그룹 소개를 입력하세요")
                         .font(.callout)
                         .foregroundStyle(.gray)
                 } else {
-                    Text(emptyCommunity.description)
+                    Text(emptyComm.description)
                         .font(.callout)
                         .foregroundStyle(.gray)
                 }
@@ -157,7 +157,7 @@ struct CommSettingView: View {
             HStack {
                 Text("그룹 정원")
                 Spacer()
-                Picker("groupNum", selection: $emptyCommunity.personnel) {
+                Picker("groupNum", selection: $emptyComm.personnel) {
                     // 최소 6명 최대 50명
                     ForEach(0..<51) { number in
                         if number > 5 {
@@ -177,7 +177,7 @@ struct CommSettingView: View {
         case 0:
             return { isGroupName.toggle() }
         case 1:
-            return { emptyCommunity.isSearchable.toggle() }
+            return { emptyComm.isSearchable.toggle() }
         case 2:
             return { isGroupDescription.toggle() }
         default:
@@ -203,14 +203,14 @@ struct CommSettingView: View {
             return Image(uiImage: img)
         } else {
             // 추후 어떤식으로 이미지 처리할지 미정.
-            return Image("\(community.imageURL)")
+            return Image("\(comm.imageURL)")
         }
     }
 }
 
 struct GroupSettingView_Prieviews: PreviewProvider {
     static var previews: some View {
-        CommSettingView(community: Community.dummy[0], editMode: .addNew)
+        CommSettingView(comm: Community.dummy[0], editMode: .addNew)
         SettingTextFieldView(title: "그룹 설정", value: .constant("ddd"))
             .previewDisplayName("텍스트변경")
     }

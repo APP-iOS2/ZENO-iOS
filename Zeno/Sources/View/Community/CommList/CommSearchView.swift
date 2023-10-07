@@ -26,7 +26,7 @@ struct CommSearchView: View {
 						recentSearch
 					} else {
 						ScrollView {
-							ForEach(commViewModel.searchedCommunity) { item in
+							ForEach(commViewModel.searchedComm) { item in
 								ZenoSeachableCellView(item: item) {
 								}
 							}
