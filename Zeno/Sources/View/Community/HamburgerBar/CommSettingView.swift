@@ -44,10 +44,10 @@ struct CommSettingView: View {
                         Task {
                             switch editMode {
                             case .addNew:
-                                await commViewModel.createComm(comm: emptyComm)
+                                await commViewModel.createComm(comm: emptyComm, image: selectedImage)
                                 await userViewModel.joinNewGroup(newID: emptyComm.id)
                             case .edit:
-                                await commViewModel.updateComm(comm: emptyComm)
+                                await commViewModel.updateComm(comm: emptyComm, image: selectedImage)
                             }
                             dismiss()
                         }

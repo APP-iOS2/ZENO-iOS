@@ -103,9 +103,13 @@ class CommViewModel: ObservableObject {
     }
     
     @MainActor
-    func updateComm(comm: Community) async {
+    func updateComm(comm: Community, image: UIImage?) async {
         do {
-            try await firebaseManager.create(data: comm)
+            if let image {
+                try await firebaseManager.createWithImage(data: newComm, image: image)
+            } else {
+                try await firebaseManager.create(data: comm)
+            }
             guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
                 print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
                 return
@@ -117,7 +121,7 @@ class CommViewModel: ObservableObject {
     }
     
     @MainActor
-    func createComm(comm: Community) async {
+    func createComm(comm: Community, image: UIImage?) async {
         guard let currentUser else { return }
         let createAt = Date().timeIntervalSince1970
         var newComm = comm
@@ -125,7 +129,11 @@ class CommViewModel: ObservableObject {
         newComm.createdAt = createAt
         newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
         do {
-            try await firebaseManager.create(data: newComm)
+            if let image {
+                try await firebaseManager.createWithImage(data: newComm, image: image)
+            } else {
+                try await firebaseManager.create(data: newComm)
+            }
             allComm.append(newComm)
         } catch {
             print(#function + "새 Community Collection에 추가 실패")
