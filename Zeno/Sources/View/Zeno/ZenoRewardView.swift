@@ -20,6 +20,7 @@ struct ZenoRewardView: View {
                         Text("")
                     }
                     .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
+                    
                     Group {
                         Text("다음 문제 꾸러미는 ")
                         Text("15분 후에 풀 수 있어요")
@@ -27,7 +28,9 @@ struct ZenoRewardView: View {
                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 16))
                 }
                 .offset(y: -.screenHeight * 0.2)
+                
                 Spacer()
+                
                 NavigationLink {
                     FinishZenoView()
                 } label: {

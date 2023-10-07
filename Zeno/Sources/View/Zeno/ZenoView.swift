@@ -25,32 +25,36 @@ struct ZenoView: View {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
+                
                 VStack(alignment: .center) {
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
                         Text("\(selected+1) / \(zenoList.count)")
                     }
                     .opacityAndWhite()
                     .bold()
+                    
                     Text(zenoList[selected].question)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
+                    
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.4)
                         .padding([.top, .bottom], 10)
+                    
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
                                 if selected == zenoList.count-1 {
                                     Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
-                                    await userViewModel.updateZenoTimer()
+                                        await userViewModel.updateZenoTimer()
                                     }
                                 }
                                 selected += 1
                                 resetUsers()
                             } label: {
-                                HStack{
+                                HStack {
                                     Image(user.imageURL ?? "person")
                                         .resizable()
                                         .frame(width: 40, height: 40)
@@ -69,6 +73,7 @@ struct ZenoView: View {
                             }
                         }
                     }
+                    
                     Button {
                         resetUsers()
                     } label: {
@@ -77,9 +82,10 @@ struct ZenoView: View {
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                     }
-                    .padding(.top,15)
+                    .padding(.top, 15)
                 }
                 .padding()
+                
                 .onAppear {
                     resetUsers()
                 }
@@ -89,7 +95,7 @@ struct ZenoView: View {
             ZenoRewardView()
         }
     }
-
+    
     func resetUsers() {
         users = Array(allMyFriends.shuffled().prefix(upTo: 4))
     }

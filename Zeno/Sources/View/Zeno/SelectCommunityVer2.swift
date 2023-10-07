@@ -79,10 +79,13 @@ struct SelectCommunityVer2: View {
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
                         .padding(.trailing, 10)
+                    
                     Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.black.opacity(0.7))
+                    
                     Spacer()
+                    
                     Image(systemName: "checkmark")
                         .opacity(selected == communities[index].id ? 1 : 0)
                         .offset(x: 31)

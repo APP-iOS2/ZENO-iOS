@@ -18,6 +18,7 @@ struct FinishZenoView: View {
         ZStack {
             VStack {
                 LottieView(lottieFile: "beforeZenoFirst")
+                
                 if timerViewModel.timesUp == false {
                     Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
                         .blueAndBMfont()
