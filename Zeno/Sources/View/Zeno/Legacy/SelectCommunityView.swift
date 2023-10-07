@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SelectCommunityView: View {
     private let communities = Community.dummy
@@ -93,10 +94,13 @@ struct SelectCommunityView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .opacity(0.7)
                             VStack {
-                                Image(community.imageURL ?? "")
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .scaledToFit()
+                                if let urlStr = community.imageURL,
+                                   let url = URL(string: urlStr) {
+                                    KFImage(url)
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .scaledToFit()
+                                }
                                 Text(community.name)
                                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular
                                         .swiftUIFont(size: 17))

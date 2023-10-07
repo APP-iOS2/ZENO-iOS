@@ -120,25 +120,44 @@ extension User {
 }
 
 extension User {
-    static let fakeCurrentUser: User = User(name: "페이커", gender: "남자", kakaoToken: "", coin: 140, megaphone: 0, showInitial:10,
-                                            commInfoList:[joinedCommInfo(id: "FFA9DF69-074D-47A1-9AF4-92D59C0ED66E",
-                                                                         buddyList: ["NllVob4bhGOvw5egfTgLuQM1f152",
-                                                                                     "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
-                                                                                     "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
-                                                                                     "viQRItRLLzMFIl8dvRGGH4WbMVt1"
-                                                                                    ],
-                                                                         alert: true),
-                                                          joinedCommInfo(id: "FFA36B67-F94D-414C-A89A-7F70DDF641E4",
-                                                                         buddyList: ["NllVob4bhGOvw5egfTgLuQM1f152",
-                                                                                     "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
-                                                                                     "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
-                                                                                     "viQRItRLLzMFIl8dvRGGH4WbMVt1"],
-                                                                         alert: false),
-                                                          joinedCommInfo(id: "F789A570-5DF0-4CE1-9CA4-278CF98CE025",
-                                                                         buddyList: ["NllVob4bhGOvw5egfTgLuQM1f152",
-                                                                                     "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
-                                                                                     "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
-                                                                                     "viQRItRLLzMFIl8dvRGGH4WbMVt1"],
-                                                                         alert: false)])
+    static let fakeCurrentUser: User = User(
+        name: "페이커",
+        gender: "남자",
+        kakaoToken: "",
+        coin: 140,
+        megaphone: 0,
+        showInitial: 10,
+        commInfoList: [
+            joinedCommInfo(
+                id: "FFA9DF69-074D-47A1-9AF4-92D59C0ED66E",
+                buddyList: [
+                    "NllVob4bhGOvw5egfTgLuQM1f152",
+                    "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
+                    "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
+                    "viQRItRLLzMFIl8dvRGGH4WbMVt1"
+                ],
+                alert: true),
+            joinedCommInfo(
+                id: "FFA36B67-F94D-414C-A89A-7F70DDF641E4",
+                buddyList: [
+                    "NllVob4bhGOvw5egfTgLuQM1f152",
+                    "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
+                    "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
+                    "viQRItRLLzMFIl8dvRGGH4WbMVt1"]
+                ,
+                alert: false
+            ),
+            joinedCommInfo(
+                id: "F789A570-5DF0-4CE1-9CA4-278CF98CE025",
+                buddyList: [
+                    "NllVob4bhGOvw5egfTgLuQM1f152",
+                    "Y2A3j6rCL4MBS7ug2HzouTGeuyF3",
+                    "Rlg7enYks5bNvCMvjXKA5yKPYJS2",
+                    "viQRItRLLzMFIl8dvRGGH4WbMVt1"
+                ],
+                alert: false
+            )
+        ]
+    )
 }
 #endif

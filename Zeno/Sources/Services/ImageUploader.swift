@@ -6,8 +6,7 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-import Foundation
-import Firebase
+import UIKit
 import FirebaseStorage
 
 struct ImageUploader {
@@ -19,9 +18,9 @@ struct ImageUploader {
 		let ref = Storage.storage().reference(withPath: "/images/\(filename)")
 		
 		do {
-			let metadata = try await ref.putDataAsync(imageData)
+			try await ref.putDataAsync(imageData)
 			let url = try await ref.downloadURL()
-			
+
 			return url.absoluteString
 		} catch {
 			print("🔴이미지 업로드 실패: \(error.localizedDescription)")

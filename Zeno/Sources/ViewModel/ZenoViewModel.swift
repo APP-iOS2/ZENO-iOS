@@ -12,12 +12,10 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 
 class ZenoViewModel: ObservableObject {
-    
     @Published private var selected: Int = 0
 
     private let coolTime: Int = 15
     
     init() {
-        
     }
 }

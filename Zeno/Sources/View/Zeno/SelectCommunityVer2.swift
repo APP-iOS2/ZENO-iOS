@@ -8,6 +8,7 @@
 
 import SwiftUI
 import ConfettiSwiftUI
+import Kingfisher
 
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -74,12 +75,14 @@ struct SelectCommunityVer2: View {
                 }
             } label: {
                 HStack {
-                    Image(asset: ZenoImages(name: communities[index].imageURL ?? ""))
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                        .padding(.trailing, 10)
-                    
+                    if let urlStr = communities[index].imageURL,
+                       let url = URL(string: urlStr) {
+                        KFImage(url)
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                            .padding(.trailing, 10)
+                    }
                     Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.black.opacity(0.7))

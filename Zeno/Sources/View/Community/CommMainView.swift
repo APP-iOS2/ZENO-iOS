@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
@@ -146,13 +147,9 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if user.imageURL != nil {
-                // 사용자 프로필이미지 들어가야함
-                Image(systemName: "person.circle")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            } else {
-                Image(systemName: "person.circle")
+            if let urlStr = user.imageURL,
+               let url = URL(string: urlStr) {
+                KFImage(url)
                     .resizable()
                     .frame(width: 30, height: 30)
             }

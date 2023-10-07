@@ -16,6 +16,7 @@ enum FirebaseError: Error {
     case failToUpdate
     case failToDelete
     case failToGetDocuments
+    case failToUploadImg
     case documentToData
 }
 
@@ -34,6 +35,17 @@ final class FirebaseManager {
             try documentRef.setData(from: data)
         } catch {
             throw FirebaseError.failToCreate
+        }
+    }
+    
+    func createWithImage<T: FirebaseAvailable>(data: T, image: UIImage) async throws where T: Encodable, T: ZenoSearchable {
+        var changableData = data
+        do {
+            let imageURL = try await ImageUploader.uploadImage(image: image)
+            changableData.imageURL = imageURL
+            try await create(data: changableData)
+        } catch {
+            throw FirebaseError.failToUploadImg
         }
     }
     
