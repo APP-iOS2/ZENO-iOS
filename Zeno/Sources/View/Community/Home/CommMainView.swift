@@ -27,9 +27,9 @@ struct CommMainView: View {
                 }
             }
             .toolbar {
-				// 커뮤니티 선택 버튼
-                groupNameToolbarItem
-				// 햄버거 바
+				        // 커뮤니티 선택 버튼
+				        groupNameToolbarItem
+				        // 햄버거 바
                 if commViewModel.currentComm != nil {
                     hamburgerToolbarItem
                 }
@@ -37,9 +37,9 @@ struct CommMainView: View {
             .sheet(isPresented: $isShowingCommListSheet) {
                 CommListView(isPresented: $isShowingCommListSheet)
             }
-			.onTapGesture {
-				isShowingHamburgerView = false
-			}
+			      .onTapGesture {
+				        isShowingHamburgerView = false
+			      }
         }
         .tint(.black)
         .overlay(
@@ -211,10 +211,10 @@ extension CommMainView {
 }
 
 struct HomeMainView_Previews: PreviewProvider {
-    static var previews: some View {
-        /*HomeMainView()*/
-        TabBarView()
-            .environmentObject(UserViewModel(currentUser: .dummy[0]))
-            .environmentObject(CommViewModel())
-    }
+	static var previews: some View {
+		/*HomeMainView()*/
+		TabBarView()
+			.environmentObject(UserViewModel(currentUser: .dummy[0]))
+			.environmentObject(CommViewModel())
+	}
 }
