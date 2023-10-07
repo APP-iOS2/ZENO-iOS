@@ -17,7 +17,6 @@ struct CommListView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				
 				// 서치 바
 				Button {
 					isShowingSearchCommSheet = true
@@ -77,7 +76,6 @@ struct CommListView: View {
 				}
 				.padding()
 			}
-			
 		}
 		.presentationDetents([.fraction(0.8)])
 	}

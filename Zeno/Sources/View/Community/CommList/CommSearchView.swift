@@ -55,7 +55,6 @@ extension CommSearchView {
 	var searchBar: some View {
 		HStack {
 			HStack(spacing: 10) {
-				
 				Image(systemName: "magnifyingglass")
 					.foregroundColor(Color(uiColor: .gray))
 				TextField(text: $commViewModel.userSearchTerm) {

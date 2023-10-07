@@ -203,7 +203,7 @@ struct CommSettingView: View {
             return Image(uiImage: img)
         } else {
             // 추후 어떤식으로 이미지 처리할지 미정.
-            return Image("\(comm.imageURL)")
+            return Image(comm.imageURL ?? "")
         }
     }
 }
