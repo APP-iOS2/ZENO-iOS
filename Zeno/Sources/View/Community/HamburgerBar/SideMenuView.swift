@@ -13,7 +13,7 @@ import SwiftUI
 struct SideMenuView: View {
     /// 사이드메뉴 표현 여부
     @Binding var isPresented: Bool
-    let community: Community
+    let comm: Community
     private let widthSizeRate: CGFloat = 0.8  // 지정 너비비율 최대 1
     @State private var dragOffset: CGFloat = 0   // 초기값 0 = 여기서는 x 좌표값을 의미.
     
@@ -91,7 +91,7 @@ struct SideMenuView: View {
             }
             .padding()
         }
-        .overlay(SideMenuView(isPresented: $isPresented, community: Community.dummy[0]))
+        .overlay(SideMenuView(isPresented: $isPresented, comm: Community.dummy[0]))
     }
 }
 

@@ -21,11 +21,11 @@ struct CommSideBarView: View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다.")
+                    Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다.")
                         .font(.headline)
-                    Text("\(commViewModel.currentCommunity?.joinMembers.count ?? 0)명 참여중")
+                    Text("\(commViewModel.currentComm?.joinMembers.count ?? 0)명 참여중")
                         .font(.caption)
-                    Text("생성일 \(commViewModel.currentCommunity?.createdAt.convertDate ?? "가입된 커뮤니티가 없습니다.")")
+                    Text("생성일 \(commViewModel.currentComm?.createdAt.convertDate ?? "가입된 커뮤니티가 없습니다.")")
                         .font(.caption)
                         .foregroundStyle(.gray)
                 }
@@ -64,7 +64,7 @@ struct CommSideBarView: View {
                             isGroupOutAlert.toggle()
                         case .alert:
                             Task {
-                                await userViewModel.commAlertToggle(id: commViewModel.currentCommunity?.id ?? "")
+                                await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
                             }
                         case .setting:
                             isPresented = false
@@ -73,7 +73,7 @@ struct CommSideBarView: View {
                     } label: {
                         Image(
                             systemName: btn.getImageStr(isOn: userViewModel.currentUser?.commInfoList
-                                .filter({ commViewModel.currentCommunity?.id == $0.id })
+                                .filter({ commViewModel.currentComm?.id == $0.id })
                                 .first?.alert ?? false)
                         )
                     }
@@ -89,14 +89,21 @@ struct CommSideBarView: View {
         }
         .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
-            CommSettingView(community: commViewModel.currentCommunity ?? .dummy[0], editMode: .edit)
+            CommSettingView(comm: commViewModel.currentComm ?? .emptyComm, editMode: .edit)
         }
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()
         }
         .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
-            Button("예", role: .destructive) { groupOut() }
-            Button("취소", role: .cancel) { print("취소") }
+            Button("예", role: .destructive) {
+                // TODO: 그룹장일경우 manager 권한을 반드시 넘겨야만 탈퇴할 수 있는 로직으로 변경, 그룹넘기기뷰 구현
+                Task {
+                    guard let currntID = commViewModel.currentComm?.id else { return }
+                    await commViewModel.leaveComm()
+                    await userViewModel.leaveComm(commID: currntID)
+                }
+            }
+            Button("취소", role: .cancel) { }
         } message: {
             Text("해당 그룹으로 진행되던 모든 알림 및 정보들이 삭제됩니다.")
         }
@@ -135,19 +142,12 @@ struct CommSideBarView: View {
         
         var id: Self { self }
     }
-    // MARK: Methods
-    ///  그룹 탈퇴
-    private func groupOut() {
-        // 유저의 해당그룹을 서버에서 지우는 로직 구현해야함.
-        // 해당그룹의 정보로 사이드바를 구성하였기때문에 사이드바의 Parent뷰가 refresh되어야 함.
-        isPresented = false
-    }
     
     /// 공유 시트
     private func shareText() {
         guard let url = URL(string: "https://www.naver.com") else { return }
         let activityVC = UIActivityViewController(
-            activityItems: ["\(commViewModel.currentCommunity?.name ?? "커뮤니티 nil")", url],
+            activityItems: ["\(commViewModel.currentComm?.name ?? "커뮤니티 nil")", url],
             applicationActivities: [KakaoActivity(), IGActivity()]
         )
         

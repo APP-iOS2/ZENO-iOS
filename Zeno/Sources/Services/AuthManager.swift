@@ -44,7 +44,7 @@ final class AuthManager: ObservableObject {
             
             let docData = target.data()
             
-            let tmpName: String = docData?["name"] as? String ?? ""
+            let tmpName: String = 	 docData?["name"] as? String ?? ""
             
             return tmpName
         } catch {
