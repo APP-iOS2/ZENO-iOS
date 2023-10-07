@@ -35,7 +35,7 @@ struct CommMainView: View {
 				// 커뮤니티 선택 버튼
 				groupNameToolbarItem
 				// 햄버거 바
-				if commViewModel.joinedCommunities != nil {
+				if !commViewModel.joinedCommunities.isEmpty {
 					hamburgerToolbarItem
 				}
 			}

@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-
+/// 전체 커뮤니티 리스트 뷰
 struct CommListView: View {
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
@@ -16,73 +16,67 @@ struct CommListView: View {
 	
 	var body: some View {
 		NavigationStack {
-			ScrollView {
+			VStack {
 				
 				// 서치 바
-				searchBar
-					.onTapGesture {
-						isShowingSearchCommSheet = true
-					}
-					.fullScreenCover(isPresented: $isShowingSearchCommSheet) {
-						CommJoinView(isShowingSearchCommSheet: $isShowingSearchCommSheet)
-					}
+				Button {
+					isShowingSearchCommSheet = true
+				} label: {
+					searchBar
+				}
+				.fullScreenCover(isPresented: $isShowingSearchCommSheet) {
+					CommSearchView(isShowingSearchCommSheet: $isShowingSearchCommSheet)
+				}
 				
-				// 가입된 그룹이 없을때
-				if commViewModel.joinedCommunities.isEmpty {
-					VStack(alignment: .center) {
-						Text("현재 가입된 그룹이 없습니다🥲")
-							.font(.title2)
-						Text("새로운 그룹을 탐색해 그룹에 가입하거나")
-						Text("새로운 그룹을 만들어 보세요!")
-					}
-					.frame(maxWidth: .infinity)
-					.groupCell()
-				} else {
-					ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
-						Button {
-							if commViewModel.joinedCommunities.contains(community) {
-								commViewModel.changeCommunity(index: index)
-								isPresented = false
-							} else {
-								// TODO: 새로운 그룹 가입 뷰
-							}
-						} label: {
-							HStack {
-								VStack(alignment: .leading, spacing: 10) {
-									Text("\(community.name)")
-									//                                HStack {
-									//                                    // TODO: 새로운 알림으로 조건 변경
-									//                                    if index == 2 || index == 4 {
-									//                                        Circle()
-									//                                            .frame(width: 5, height: 5)
-									//                                            .foregroundColor(.red)
-									//                                    }
-									//                                    Text("새로운 알림\(index)")
-									//                                        .font(.caption)
-									//                                        .foregroundColor(.secondary)
-									//                                }
+				ScrollView {
+					// 가입된 그룹이 없을때/있을때
+					if commViewModel.joinedCommunities.isEmpty {
+						VStack(alignment: .center) {
+							Text("현재 가입된 그룹이 없습니다🥲")
+								.font(.title2)
+							Text("새로운 그룹을 탐색해 그룹에 가입하거나")
+							Text("새로운 그룹을 만들어 보세요!")
+						}
+						.frame(maxWidth: .infinity)
+						.padding(.vertical)
+						.padding(.bottom, 25)
+					} else {
+						ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
+							Button {
+								if commViewModel.joinedCommunities.contains(community) {
+									commViewModel.changeCommunity(index: index)
+									isPresented = false
+								} else {
+									// TODO: 새로운 그룹 가입 뷰
 								}
-								Spacer()
-								Image(systemName: "chevron.forward")
+							} label: {
+								HStack {
+									VStack(alignment: .leading, spacing: 10) {
+										Text("\(community.name)")
+									}
+									Spacer()
+									Image(systemName: "chevron.forward")
+								}
+								.groupCell()
 							}
-							.groupCell()
 						}
 					}
-				}
-				
-				// 새로운 그룹 만들기
-				NavigationLink {
-				} label: {
-					HStack {
-						Image(systemName: "plus.circle")
-						Text("새로운 그룹 만들기")
-						Spacer()
-					}
 					
-					.groupCell()
+					// 새로운 그룹 만들기
+					NavigationLink {
+					} label: {
+						HStack {
+							Image(systemName: "plus.circle")
+							Text("새로운 그룹 만들기")
+							Spacer()
+						}
+						
+						.groupCell()
+					}
 				}
+				.padding()
 			}
-			.padding()
+			
 		}
 		.presentationDetents([.fraction(0.8)])
 	}
@@ -90,18 +84,19 @@ struct CommListView: View {
 
 extension CommListView {
 	var searchBar: some View {
-		HStack(spacing: 5) {
+		HStack(spacing: 10) {
 			Image(systemName: "magnifyingglass")
-				.foregroundColor(.white)
+				.foregroundColor(Color(uiColor: .systemGray))
 			Text("새로운 그룹 탐색하기")
-				.foregroundColor(Color(uiColor: .systemGray5))
+				.foregroundColor(Color(uiColor: .systemGray))
 			Spacer()
 		}
 		.frame(maxWidth: .infinity)
 		.padding(.horizontal)
-		.padding(.vertical, 10)
-		.background(Color(uiColor: .systemGray))
-		.cornerRadius(5)
+		.padding(.vertical, 11)
+		.background(Color(uiColor: .systemGray6))
+		.cornerRadius(10)
+		.padding()
 	}
 }
 
