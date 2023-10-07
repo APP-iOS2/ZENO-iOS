@@ -50,7 +50,7 @@ struct ZenoView: View {
                                 selected += 1
                                 resetUsers()
                             } label: {
-                                HStack {
+                                HStack{
                                     Image(user.imageURL ?? "person")
                                         .resizable()
                                         .frame(width: 40, height: 40)

@@ -11,7 +11,7 @@ import ConfettiSwiftUI
 
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-
+    
     @State private var stack = NavigationPath()
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""
@@ -58,6 +58,7 @@ struct SelectCommunityVer2: View {
                 .disabled(isPlay == false)
             }
         }
+        .navigationBarBackButtonHidden()
     }
     
     func commuityListView() -> some View {
