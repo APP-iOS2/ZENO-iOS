@@ -18,8 +18,8 @@ struct CommListView: View {
             ScrollView {
                 ForEach(Array(zip(commViewModel.searchedCommunity, commViewModel.searchedCommunity.indices)), id: \.1) { community, index in
                     Button {
-                        if commViewModel.joinedCommunities.contains(community) {
-                            commViewModel.changeCommunity(index: index)
+                        if commViewModel.joinedComm.contains(community) {
+                            commViewModel.changeSelectedComm(index: index)
                             isPresented = false
                         } else {
                             // TODO: 새로운 그룹 가입 뷰
@@ -47,6 +47,7 @@ struct CommListView: View {
                     }
                 }
                 NavigationLink {
+                    CommSettingView(community: .emptyComm, editMode: .addNew)
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle")

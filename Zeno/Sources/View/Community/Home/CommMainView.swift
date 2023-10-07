@@ -21,7 +21,7 @@ struct CommMainView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if commViewModel.currentCommunity != nil {
+                if commViewModel.currentComm != nil {
                     newUserView
                     userListView
                 }
@@ -30,7 +30,7 @@ struct CommMainView: View {
 				// 커뮤니티 선택 버튼
                 groupNameToolbarItem
 				// 햄버거 바
-                if commViewModel.currentCommunity != nil {
+                if commViewModel.currentComm != nil {
                     hamburgerToolbarItem
                 }
             }
@@ -45,18 +45,15 @@ struct CommMainView: View {
         .overlay(
             SideMenuView(
                 isPresented: $isShowingHamburgerView,
-                community: commViewModel.currentCommunity ?? Community.dummy[0]
+                community: commViewModel.currentComm ?? Community.dummy[0]
             )
         )
-        .onChange(of: commViewModel.allCommunities) { _ in
-            commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
+        .onChange(of: commViewModel.allComm) { _ in
+            commViewModel.filterJoinedComm()
         }
-        .onChange(of: userViewModel.currentUser?.commInfoList) { _ in
-            commViewModel.filterJoinedCommunity(user: userViewModel.currentUser)
-        }
-        .onChange(of: commViewModel.currentCommunity) { _ in
+        .onChange(of: commViewModel.currentComm) { _ in
             Task {
-                await commViewModel.fetchCurrentUser()
+                await commViewModel.fetchCurrentCommMembers()
             }
         }
     }// body
@@ -69,7 +66,7 @@ extension CommMainView {
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(commViewModel.normalUsers.count)")
+                Text("새로 들어온 친구 \(commViewModel.generalMembers.count)")
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -82,7 +79,7 @@ extension CommMainView {
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
-                        ForEach(commViewModel.recentlyJoinedUsers) { user in
+                        ForEach(commViewModel.recentlyJoinedMembers) { user in
                             VStack(spacing: 5) {
                                 Image(systemName: "person.circle")
                                     .resizable()
@@ -124,7 +121,7 @@ extension CommMainView {
                 }
             } else {
                 HStack {
-                    Text("친구 \(commViewModel.normalUsers.count)")
+                    Text("친구 \(commViewModel.generalMembers.count)")
                         .font(.footnote)
                     Spacer()
                     Button {
@@ -136,7 +133,7 @@ extension CommMainView {
                     }
                 }
                 VStack {
-                    ForEach(commViewModel.normalUsers) { user in
+                    ForEach(commViewModel.generalMembers) { user in
                         userCell(user: user)
                     }
                 }
@@ -191,7 +188,7 @@ extension CommMainView {
                 isShowingCommListSheet.toggle()
             } label: {
                 HStack {
-                    Text(commViewModel.currentCommunity?.name ?? "가입된 커뮤니티가 없습니다")
+                    Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
                     Image(systemName: "chevron.down")
                         .font(.caption)
                 }

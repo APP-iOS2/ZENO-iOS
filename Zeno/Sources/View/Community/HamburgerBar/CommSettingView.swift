@@ -44,8 +44,7 @@ struct CommSettingView: View {
                         Task {
                             switch editMode {
                             case .addNew:
-                                guard let user = userViewModel.currentUser else { return }
-                                await commViewModel.newComm(comm: emptyCommunity, user: user)
+                                await commViewModel.createComm(comm: emptyCommunity)
                                 await userViewModel.joinNewGroup(newID: emptyCommunity.id)
                             case .edit:
                                 await commViewModel.updateComm(comm: emptyCommunity)
@@ -54,8 +53,7 @@ struct CommSettingView: View {
                         }
                     }
                     .disabled(!(!emptyCommunity.name.isEmpty &&
-                                isValueChanged)
-                    )
+                                isValueChanged))
                 }
                 .padding()
                 Button {

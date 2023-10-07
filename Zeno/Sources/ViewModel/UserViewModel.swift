@@ -32,6 +32,19 @@ class UserViewModel: ObservableObject {
         self.currentUser = currentUser
     }
     
+    @MainActor
+    func leaveComm(commID: String) async {
+        guard var currentUser else { return }
+        currentUser.commInfoList = currentUser.commInfoList.filter { $0.id != commID }
+        do {
+            try await firebaseManager.create(data: currentUser)
+            self.currentUser = currentUser
+        } catch {
+            print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
+        }
+    }
+    
+    @MainActor
     func commAlertToggle(id: String) async {
         guard var currentUser else { return }
         guard var currentCommInfo = currentUser.commInfoList
@@ -41,11 +54,12 @@ class UserViewModel: ObservableObject {
         guard let index = currentUser.commInfoList
             .firstIndex(where: { $0.id == currentCommInfo.id }) else { return }
         currentUser.commInfoList[index] = currentCommInfo
-        try? await firebaseManager.update(data: currentUser,
-                                          value: \.commInfoList,
-                                          to: currentUser.commInfoList)
-        guard let fetchedUser = try? await fetchUser(withUid: currentUser.id) else { return }
-        self.currentUser = fetchedUser
+        do {
+            try await firebaseManager.create(data: currentUser)
+            self.currentUser = currentUser
+        } catch {
+            print(#function + "User Collection에 알람 업데이트 실패")
+        }
     }
     /// 이메일 로그인
     @MainActor
@@ -168,13 +182,11 @@ class UserViewModel: ObservableObject {
     func joinNewGroup(newID: String) async {
         guard var currentUser else { return }
         currentUser.commInfoList.append(.init(id: newID, buddyList: [], alert: true))
-        try? await firebaseManager.create(data: currentUser)
-        let result = await firebaseManager.read(type: User.self, id: currentUser.id)
-        switch result {
-        case .success(let success):
-            self.currentUser = success
-        case .failure:
-            print(#function + "Community 읽어오기 실패")
+        do {
+            try await firebaseManager.create(data: currentUser)
+            self.currentUser = currentUser
+        } catch {
+            print(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
         }
     }
     
