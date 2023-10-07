@@ -26,69 +26,72 @@ struct CommSettingView: View {
     @State private var selectedImage: UIImage?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                ZenoNavigationBackBtn {
-                    if isValueChanged {
-                        backActionWarning = true
-                    } else {
-                        dismiss()
-                    }
-                }
-                .tint(.black)
-                Text("\(editMode.title)")
-                    .padding(.leading, 30)
-                Spacer()
-                Button("완료") {
-                    Task {
-                        switch editMode {
-                        case .addNew:
-                            guard let user = userViewModel.currentUser else { return }
-                            await commViewModel.newComm(comm: emptyCommunity, user: user)
-                            await userViewModel.joinNewGroup(newID: emptyCommunity.id)
-                        case .edit:
-                            await commViewModel.updateComm(comm: emptyCommunity)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    ZenoNavigationBackBtn {
+                        if isValueChanged {
+                            backActionWarning = true
+                        } else {
+                            dismiss()
                         }
-                        dismiss()
                     }
+                    .tint(.black)
+                    Text("\(editMode.title)")
+                        .padding(.leading, 30)
+                    Spacer()
+                    Button("완료") {
+                        Task {
+                            switch editMode {
+                            case .addNew:
+                                guard let user = userViewModel.currentUser else { return }
+                                await commViewModel.newComm(comm: emptyCommunity, user: user)
+                                await userViewModel.joinNewGroup(newID: emptyCommunity.id)
+                            case .edit:
+                                await commViewModel.updateComm(comm: emptyCommunity)
+                            }
+                            dismiss()
+                        }
+                    }
+                    .disabled(!(!emptyCommunity.name.isEmpty &&
+                                isValueChanged)
+                    )
                 }
-                .disabled(!(!emptyCommunity.name.isEmpty &&
-                          isValueChanged)
-                )
+                .padding()
+                Button {
+                    isImagePicker.toggle()
+                } label: {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 150, alignment: .center)
+                        .clipShape(Circle())
+                        .background {
+                            Circle()
+                                .stroke(.gray.opacity(5.0))
+                        }
+                        .overlay(alignment: .bottomTrailing) {
+                            Image(systemName: "camera.circle.fill")
+                                .font(.title)
+                                .tint(.gray)
+                        }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                Spacer()
+                    .frame(height: 30)
+                ForEach(Array(
+                    zip($isSelectItem, isSelectItem.indices)
+                ), id: \.1) { $item, index in
+                    commSettingItem(index: index)
+                        .customTappedViewDesign(isTapped: $item) {
+                            commSettingItemAction(index: index)()
+                        }
+                }
+                Spacer()
             }
-            .padding()
-            Button {
-                isImagePicker.toggle()
-            } label: {
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 150, alignment: .center)
-                    .clipShape(Circle())
-                    .background {
-                        Circle()
-                            .stroke(.gray.opacity(5.0))
-                    }
-                    .overlay(alignment: .bottomTrailing) {
-                        Image(systemName: "camera.circle.fill")
-                            .font(.title)
-                            .tint(.gray)
-                    }
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            Spacer()
-                .frame(height: 30)
-            ForEach(Array(
-                zip($isSelectItem, isSelectItem.indices)
-            ), id: \.1) { $item, index in
-                commSettingItem(index: index)
-                    .customTappedViewDesign(isTapped: $item) {
-                        commSettingItemAction(index: index)()
-                    }
-            }
-            Spacer()
         }
+        .navigationBarBackButtonHidden()
         .overlay(
             ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
         )
