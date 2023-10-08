@@ -109,7 +109,8 @@ class KakaoSignInManager: NormalSignInManager {
             }
         }
     }
-    // MARK: - 카카오톡 로그인 함수
+    
+    /// 카카오톡 로그인 함수
     func kakaoTalkLogIn() async {
         UserApi.shared.loginWithKakaoTalk { _, error in
             if error != nil {
@@ -127,12 +128,12 @@ class KakaoSignInManager: NormalSignInManager {
                                 _ = "user" + UUID().uuidString
 //                                let kakaoNickName = "user" + UUID().uuidString
 
+
                                 // firestore에 등록된 유저인지 확인 -> 등록된 유저면 로그인/신규유저면 회원가입하고 uid 획득
                                 let isNewby = try await self.isRegistered(email: kakaoEmail, pw: kakaoId, method: "kakao")
 
                                 // 신규 유저인 경우
-                                if isNewby.isEmpty {
-                                    // 새로운 User 객체 생성
+                                if isNewby.isEmpty {       // 새로운 User 객체 생성
 //                                    let newby = User(id: isNewby, name: kakaoNickName, email: kakaoEmail, pw: kakaoId, proImage: "bearWhite", badge: [], friends: [], loginMethod: "kakao", fcmToken: "")
 
                                     // firestore에 문서 등록
@@ -156,6 +157,7 @@ class KakaoSignInManager: NormalSignInManager {
             }
         }
     }
+    
     // MARK: - 카카오계정 로그인 함수
     func kakaoAccountLogIn() async {
         UserApi.shared.loginWithKakaoAccount { _, error in

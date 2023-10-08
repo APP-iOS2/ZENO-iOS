@@ -21,6 +21,7 @@ enum FirebaseError: Error {
     case documentToData
 }
 
+/// Firebase Manager 커스텀
 final class FirebaseManager {
     static let shared = FirebaseManager()
     

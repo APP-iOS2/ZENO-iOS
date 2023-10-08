@@ -16,6 +16,7 @@ let infoPlist: [String: InfoPlist.Value] = [
             "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
         ]
     ],
+    "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)"
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
@@ -54,10 +55,10 @@ let project = Project(
                 .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
                 .package(product: "FirebaseFirestoreSwift"),
-				.package(product: "FirebaseAuth"),
-				.package(product: "FirebaseStorage"),
-				.package(product: "FirebaseDatabase"),
-				.package(product: "FirebaseDatabaseSwift"),
+                .package(product: "FirebaseAuth"),
+                .package(product: "FirebaseStorage"),
+                .package(product: "FirebaseDatabase"),
+                .package(product: "FirebaseDatabaseSwift"),
                 .package(product: "KakaoSDKUser"),
                 .package(product: "KakaoSDKAuth"),
                 .package(product: "KakaoSDKCommon"),
