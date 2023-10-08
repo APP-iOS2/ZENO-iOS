@@ -38,12 +38,13 @@ final class FirebaseManager {
         }
     }
     
-    func createWithImage<T: FirebaseAvailable>(data: T, image: UIImage) async throws where T: Encodable, T: ZenoSearchable {
+    func createWithImage<T: FirebaseAvailable>(data: T, image: UIImage) async throws -> T where T: Encodable, T: ZenoSearchable {
         var changableData = data
         do {
             let imageURL = try await ImageUploader.uploadImage(image: image)
             changableData.imageURL = imageURL
             try await create(data: changableData)
+            return changableData
         } catch {
             throw FirebaseError.failToUploadImg
         }
