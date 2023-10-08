@@ -122,12 +122,21 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.create(data: comm)
                 return
             }
-            let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
-            guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
-                print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
-                return
+            if let url = comm.imageURL {
+                try await firebaseManager.updateWithImage(url: url, data: comm, image: image)
+                guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
+                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                    return
+                }
+                joinedComm[index] = comm
+            } else {
+                let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
+                guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
+                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                    return
+                }
+                joinedComm[index] = changedComm
             }
-            joinedComm[index] = changedComm
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
         }
