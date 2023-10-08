@@ -148,6 +148,31 @@ class UserViewModel: ObservableObject {
         try? await loadUserData()
     }
     
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 친구 id로  친구 이름 받아오는 함수
+    func UserIDtoName(id: String) async -> String? {
+        do {
+           let result = try await fetchUser(withUid: id)
+            return result.name
+        } catch {
+            print("fetch유저 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
+    func CommIDtoName(id: String) async -> String? {
+        do {
+           let result = try await fetchCommunity(withUid: id)
+            return result.name
+        } catch {
+            print("fetchName 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
     @MainActor
     func updateZenoTimer() async {
@@ -165,6 +190,7 @@ class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: 제노 뷰 모델로 옮길 예정
     // MARK: 이 함수가 자원 갉아먹고 있음
     /// 사용자한테 몇초 남았다고 초를 보여주는 함수
     func comparingTime() -> Double {
@@ -187,6 +213,17 @@ class UserViewModel: ObservableObject {
             self.currentUser = currentUser
         } catch {
             print(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    func fetchCommunity (withUid uid: String) async throws -> Community {
+        let result = await firebaseManager.read(type: Community.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
         }
     }
     
