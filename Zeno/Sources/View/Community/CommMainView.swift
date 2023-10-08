@@ -27,6 +27,11 @@ struct CommMainView: View {
                     userListView
                 }
             }
+            .refreshable {
+                Task {
+                    await commViewModel.fetchAllComm()
+                }
+            }
             .toolbar {
 				        // 커뮤니티 선택 버튼
 				        groupNameToolbarItem
@@ -38,9 +43,9 @@ struct CommMainView: View {
             .sheet(isPresented: $isShowingCommListSheet) {
                 CommListView(isPresented: $isShowingCommListSheet)
             }
-			      .onTapGesture {
-				        isShowingHamburgerView = false
-			      }
+            .onTapGesture {
+                isShowingHamburgerView = false
+            }
         }
         .tint(.black)
         .overlay(
