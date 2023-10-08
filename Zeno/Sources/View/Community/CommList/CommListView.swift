@@ -63,7 +63,7 @@ struct CommListView: View {
 					
 					// 새로운 그룹 만들기
 					NavigationLink {
-            CommSettingView(comm: .emptyComm, editMode: .addNew)
+                        CommSettingView(editMode: .addNew)
 					} label: {
 						HStack {
 							Image(systemName: "plus.circle")

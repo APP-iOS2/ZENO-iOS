@@ -35,6 +35,19 @@ class CommViewModel: ObservableObject {
     var generalMembers: [User] {
         filterMembers(condition: .general)
     }
+    /// 선택된 커뮤니티의 매니저인지 확인해 햄버거바의 세팅을 보여주기 위한 Bool
+    var isCurrentCommManager: Bool {
+        guard let currentUser,
+              let currentComm
+        else { return false }
+        return currentComm.manager == currentUser.id
+    }
+    /// 유저가 선택된 커뮤니티의 알람을 켰는지에 대한 Bool
+    var isAlertOn: Bool {
+        currentUser?.commInfoList
+            .filter({ currentComm?.id == $0.id })
+            .first?.alert ?? false
+    }
     /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String
@@ -105,16 +118,25 @@ class CommViewModel: ObservableObject {
     @MainActor
     func updateComm(comm: Community, image: UIImage?) async {
         do {
-            if let image {
-                try await firebaseManager.createWithImage(data: comm, image: image)
-            } else {
+            guard let image else {
                 try await firebaseManager.create(data: comm)
-            }
-            guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
-                print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
                 return
             }
-            joinedComm[index] = comm
+            if let url = comm.imageURL {
+                try await firebaseManager.updateWithImage(url: url, data: comm, image: image)
+                guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
+                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                    return
+                }
+                joinedComm[index] = comm
+            } else {
+                let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
+                guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
+                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                    return
+                }
+                joinedComm[index] = changedComm
+            }
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
         }
