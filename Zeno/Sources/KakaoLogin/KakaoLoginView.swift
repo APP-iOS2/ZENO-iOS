@@ -15,9 +15,8 @@ struct KakaoLoginView: View {
         VStack {
             Button {
                 Task {
-                    await userModel.kakaoLogin()
+                    await userModel.loginWithKakao()
                 }
-                //            KakaoAuthService.shared.addAuthinKakao()
             } label: {
                 Text("카카오톡으로 시작하기")
                     .padding()
@@ -30,7 +29,6 @@ struct KakaoLoginView: View {
                 Task {
                     await userModel.logoutWithKakao()
                 }
-    //            KakaoAuthService.shared.addAuthinKakao()
             } label: {
                 Text("로그아웃")
                     .padding()

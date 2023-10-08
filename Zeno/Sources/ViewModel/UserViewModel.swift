@@ -20,9 +20,9 @@ final class UserViewModel: ObservableObject {
     @Published var kakaoStatus: KakaoSignStatus = .none     // 로그인 여부판단
     
     init() {
-        Task {
-            await loadUserData()
-        }
+//        Task {
+//            await loadUserData()
+//        }
     }
         
     /// 이메일 로그인
@@ -33,11 +33,12 @@ final class UserViewModel: ObservableObject {
             self.userSession = result.user
             
             await loadUserData()
-
+            self.kakaoStatus = .signIn
             print("🔵 로그인 성공")
             
         } catch {
             print("🔴 로그인 실패. 에러메세지: \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -60,10 +61,10 @@ final class UserViewModel: ObservableObject {
                             buddyList: [:])
             
             await uploadUserData(user: user)
+            self.kakaoStatus = .signIn
             
             print("🔵 회원가입 성공")
         } catch {
-            print("\(error)")
             print("🔴 회원가입 실패. 에러메세지: \(error.localizedDescription)")
             throw error
         }
@@ -87,14 +88,16 @@ final class UserViewModel: ObservableObject {
         } catch {
             print("유저데이터로드중 오류 : \(error.localizedDescription)")
         }
-        print("현재 로그인된 유저: \(currentUser ?? User.dummy[0])")
+//        print("현재 로그인된 유저: \(currentUser ?? User.dummy[0])")
     }
     
     /// 로그아웃
-    func logout() {
+    func logout() async {
         try? Auth.auth().signOut()
-        self.userSession = nil
-        self.currentUser = nil
+        await MainActor.run {
+            self.userSession = nil
+            self.currentUser = nil
+        }
     }
 }
 
@@ -114,15 +117,18 @@ extension UserViewModel {
 
 extension UserViewModel {
     
+    /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
-        self.logout()
-        await KakaoAuthService.shared.logoutUserKakao()
+        await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+        await self.logout()
     }
     
-    func kakaoLogin() async {
+    /// 카카오 로그인 && Firebase 로그인
+    func loginWithKakao() async {
         let (user, isTokened) = await KakaoAuthService.shared.loginUserKakao()
         
         if let user {
+            // 이메일이 있으면 회원가입, 로그인은 진행이 됨.
             if user.kakaoAccount?.email != nil {
                 // 토큰정보가 없을 경우 신규가입 진행
                 print("토큰여부 \(isTokened)")
@@ -130,23 +136,28 @@ extension UserViewModel {
                     do {
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
-                                                  name: user.kakaoAccount?.name ?? "",
+                                                  name: user.kakaoAccount?.name ?? "none",
                                                   gender: user.kakaoAccount?.gender?.rawValue ?? "none",
                                                   description: user.kakaoAccount?.legalName ?? "")
-                        
-                    } catch {
-                        //                        if error == AuthCreateError.FIRAuthErrorCodeEmailAlreadyInUse.rawValue {
-                        //
-                        //                        } else {
-                        print(error.localizedDescription)
-                        //                    }
-                        print("ERROR: \(error)")
+
+                    } catch let error as NSError {
+                        switch AuthErrorCode.Code(rawValue: error.code) {
+                        case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
+                            do {
+                                try await self.login(email: user.kakaoAccount?.email ?? "", password: String(describing: user.id))
+                            } catch {
+                                print("로그인 실패")
+                            }
+                        case .wrongPassword:     // 비밀번호 오류
+                            print("비밀번호 오류\n관리자 문의 바랍니다.")
+                        default:
+                            break
+                        }
                     }
                 } else {
                     // 토큰정보가 있을 경우 로그인 진행
                     do {
                         try await self.login(email: user.kakaoAccount?.email ?? "", password: String(describing: user.id))
-                        
                     } catch {
                         print(error)
                     }
@@ -154,6 +165,7 @@ extension UserViewModel {
             }
             
         } else {
+            // 유저정보를 못받아오면 애초에 할수있는게 없음.
             print("ERROR: 카카오톡 유저정보 못가져옴")
         }
         
