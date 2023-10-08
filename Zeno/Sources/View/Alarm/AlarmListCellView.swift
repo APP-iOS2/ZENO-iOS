@@ -7,33 +7,48 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct AlarmListCellView: View {
     @Binding var selectAlarm: Alarm?
     @EnvironmentObject var communityViewModel: CommViewModel
     let alarm: Alarm
     
-    var getCommunity: (name: String, imageUrl: String) {
+    var getCommunity: (name: String, imageURL: String?) {
         if let community = communityViewModel.getCommunityByID(alarm.communityID) {
-            return (community.name, community.imageURL ?? "")
+            return (community.name, community.imageURL)
         }
-        return ("error", "error")
+        return ("error", nil)
     }
         
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 16) {
-//                getCommunity.imageUrl
-                Circle()
-                    .frame(width: 50)
-                    .foregroundStyle(.gray)
-                    .overlay(
-                        Circle()
-                            .strokeBorder(
-                                Color.hex("EB0FFE"), lineWidth: 2
-//                                    Color.hex("0F62FE")
-                            )
-                    )
+                if let urlStr = getCommunity.imageURL,
+                    let url = URL(string: urlStr) {
+                    KFImage(url)
+                        .resizable()
+                        .frame(width: 60)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    Color.hex("EB0FFE"), lineWidth: 2   // 여자
+                                    //                                   남자  Color.hex("0F62FE")
+                                )
+                        )
+                } else {
+                    Circle()
+                        .frame(width: 50)
+                        .foregroundStyle(.gray)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(
+                                    Color.hex("EB0FFE"), lineWidth: 2
+                                    //                                    Color.hex("0F62FE")
+                                )
+                        )
+                }
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name) . 여자")
                         .padding(.bottom, 4)

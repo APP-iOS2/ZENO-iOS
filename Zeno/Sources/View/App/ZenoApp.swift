@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         // 원격 알림 등록
         UNUserNotificationCenter.current().delegate = self
         
+        // 앱에서 사용 가능한 알림 옵션 세팅
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
             options: authOptions,
@@ -26,22 +27,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         application.registerForRemoteNotifications()
         
         FirebaseMessaging.Messaging.messaging().delegate = self
-        
-        Messaging.messaging().token { token, error in
-            if let error = error {
-                print("Error fetching FCM registration token: \(error)")
-            } else if let token = token {
-                print("FCM registration token: \(token)")
-            }
-        }
+
         return true
     }
     
-    // fcm 토큰이 등록 되었을 때
+    /// fcm 토큰이 등록 되었을 때
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
     }
     
+    /// fcm server 에서 받는 토큰 appStorage 에 저장
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         print("AppDelegate - Firebase registration token: \(String(describing: fcmToken))")
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
@@ -51,14 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
             userInfo: dataDict
         )
         self.fcmToken = fcmToken ?? ""
-        // TODO: If necessary send token to application server.
-        // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
 }
 
 extension AppDelegate : UNUserNotificationCenterDelegate {
     
-    // 푸시메세지가 앱이 켜져 있을때 나올때
+    /// 푸시메세지가 앱이 켜져 있을 상태에서 push 메세지 받을 때 처리
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -70,7 +63,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound, .badge])
     }
     
-    // 푸시메세지를 받았을 때
+    /// 백그라운드 동작 중 psuh 메세지를 받았을 때
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {

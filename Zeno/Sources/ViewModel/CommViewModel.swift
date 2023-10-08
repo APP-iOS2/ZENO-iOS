@@ -89,7 +89,7 @@ class CommViewModel: ObservableObject {
     }
     
     func getCommunityByID(_ id: String) -> Community? {
-        return allCommunities.first { community in
+        return allComm.first { community in
             community.id == id
         }
     }

@@ -23,7 +23,7 @@ struct AlarmSelectCommunityView: View {
             
             ScrollView(.horizontal) {
                 HStack(spacing: 4) {
-                    ForEach(communityViewModel.joinedCommunities) { community in
+                    ForEach(communityViewModel.joinedComm) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
                     }
                 }
