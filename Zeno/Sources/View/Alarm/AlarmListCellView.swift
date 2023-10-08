@@ -10,11 +10,20 @@ import SwiftUI
 
 struct AlarmListCellView: View {
     @Binding var selectAlarm: Alarm?
+    @EnvironmentObject var communityViewModel: CommViewModel
     let alarm: Alarm
+    
+    var getCommunity: (name: String, imageUrl: String) {
+        if let community = communityViewModel.getCommunityByID(alarm.communityID) {
+            return (community.name, community.imageURL ?? "")
+        }
+        return ("error", "error")
+    }
         
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 16) {
+//                getCommunity.imageUrl
                 Circle()
                     .frame(width: 50)
                     .foregroundStyle(.gray)
@@ -26,7 +35,7 @@ struct AlarmListCellView: View {
                             )
                     )
                 VStack(alignment: .leading) {
-                    Text("멋쟁이 사자처럼 . 여자")
+                    Text("\(getCommunity.name) . 여자")
                         .padding(.bottom, 4)
                         .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
                     Text("3시간 전")
@@ -75,5 +84,6 @@ struct AlarmListCellView: View {
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
         AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+            .environmentObject(CommViewModel())
     }
 }

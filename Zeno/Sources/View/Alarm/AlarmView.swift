@@ -12,8 +12,6 @@ struct AlarmView: View {
     @EnvironmentObject var alarmViewModel: AlarmViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @StateObject var iAPVM: IAPStore = IAPStore()
-    @EnvironmentObject var userViewModel: UserViewModel
-    @State var communityArray: [Community] = Community.dummy
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false
@@ -32,7 +30,7 @@ struct AlarmView: View {
                     .ignoresSafeArea()
                 
                 VStack {
-                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
+                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                     
                     ScrollView {
                         ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
@@ -104,5 +102,6 @@ struct AlarmView_Preview: PreviewProvider {
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
             .environmentObject(IAPStore())
+            .environmentObject(CommViewModel())
     }
 }

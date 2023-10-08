@@ -88,6 +88,12 @@ class CommViewModel: ObservableObject {
         self.joinedComm = communities
     }
     
+    func getCommunityByID(_ id: String) -> Community? {
+        return allCommunities.first { community in
+            community.id == id
+        }
+    }
+    
     @MainActor
     func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)

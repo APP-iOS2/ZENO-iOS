@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AlarmSelectCommunityView: View {
     @Binding var selectedCommunityId: String
-    let communityArray: [Community]
+    @EnvironmentObject var communityViewModel: CommViewModel
     
     var body: some View {
         HStack {
@@ -23,7 +23,7 @@ struct AlarmSelectCommunityView: View {
             
             ScrollView(.horizontal) {
                 HStack(spacing: 4) {
-                    ForEach(communityArray) { community in
+                    ForEach(communityViewModel.joinedCommunities) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
                     }
                 }
@@ -35,6 +35,7 @@ struct AlarmSelectCommunityView: View {
 
 struct AlarmSelectCommunityView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmSelectCommunityView(selectedCommunityId: .constant("aaa"), communityArray: [])
+        AlarmSelectCommunityView(selectedCommunityId: .constant("aaa"))
+            .environmentObject(CommViewModel())
     }
 }
