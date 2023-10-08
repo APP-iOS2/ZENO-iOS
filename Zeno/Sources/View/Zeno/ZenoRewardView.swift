@@ -33,6 +33,7 @@ struct ZenoRewardView: View {
                 
                 NavigationLink {
                     FinishZenoView()
+                        .environmentObject(Router<Path>(root: .A))
                 } label: {
                     WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
                 }

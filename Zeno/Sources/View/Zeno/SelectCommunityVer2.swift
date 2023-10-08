@@ -12,7 +12,8 @@ import Kingfisher
 
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-    
+    @EnvironmentObject var router: Router<Path>
+
     @State private var stack = NavigationPath()
     @State private var isPlay: Bool = false
     @State private var communityName: String = ""

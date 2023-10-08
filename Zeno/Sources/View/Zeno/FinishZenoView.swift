@@ -13,6 +13,7 @@ struct FinishZenoView: View {
     @State private var stack = NavigationPath()
     @StateObject private var timerViewModel = TimerViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject var router: Router<Path>
     
     var body: some View {
         ZStack {
@@ -27,7 +28,7 @@ struct FinishZenoView: View {
                         .blueAndBMfont()
                         .offset(y: 15)
                     Button {
-                        navigationSwitch = true
+                        router.push(.A)
                     } label: {
                         WideButton(buttonName: "제노하러가기", isplay: true)
                     }

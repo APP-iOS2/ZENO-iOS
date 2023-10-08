@@ -21,11 +21,13 @@ struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var userViewModel = UserViewModel()
     @StateObject private var commViewModel = CommViewModel()
+   // @StateObject var router = Router<Path>(root: .A)
     var body: some Scene {
         WindowGroup {
             InitialView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
+                .environmentObject(Router<Path>(root: .A))
                 .onChange(of: userViewModel.currentUser) { newValue in
                     commViewModel.updateCurrentUser(user: newValue)
                 }
