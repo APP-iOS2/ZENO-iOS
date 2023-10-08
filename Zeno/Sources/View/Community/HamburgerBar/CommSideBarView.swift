@@ -56,7 +56,7 @@ struct CommSideBarView: View {
             }
             Spacer()
             // MARK: 하단 버튼 뷰
-            HStack(spacing: 30) {
+            HStack {
                 ForEach(SideBarBtn.allCases) { btn in
                     Button {
                         switch btn {
@@ -71,11 +71,18 @@ struct CommSideBarView: View {
                             isSettingPresented.toggle()
                         }
                     } label: {
-                        Image(
-                            systemName: btn.getImageStr(isOn: userViewModel.currentUser?.commInfoList
-                                .filter({ commViewModel.currentComm?.id == $0.id })
-                                .first?.alert ?? false)
-                        )
+                        if btn == .setting {
+                            if commViewModel.isCurrentCommManager {
+                                Image(
+                                    systemName: btn.getImageStr(isOn: commViewModel.isAlertOn)
+                                )
+                                .padding(.leading, 30)
+                            }
+                        } else {
+                            Image(
+                                systemName: btn.getImageStr(isOn: commViewModel.isAlertOn)
+                            )
+                        }
                     }
                     if btn == .out {
                         Spacer()

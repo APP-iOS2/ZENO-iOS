@@ -35,6 +35,19 @@ class CommViewModel: ObservableObject {
     var generalMembers: [User] {
         filterMembers(condition: .general)
     }
+    /// 선택된 커뮤니티의 매니저인지 확인해 햄버거바의 세팅을 보여주기 위한 Bool
+    var isCurrentCommManager: Bool {
+        guard let currentUser,
+              let currentComm
+        else { return false }
+        return currentComm.manager == currentUser.id
+    }
+    /// 유저가 선택된 커뮤니티의 알람을 켰는지에 대한 Bool
+    var isAlertOn: Bool {
+        currentUser?.commInfoList
+            .filter({ currentComm?.id == $0.id })
+            .first?.alert ?? false
+    }
     /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String

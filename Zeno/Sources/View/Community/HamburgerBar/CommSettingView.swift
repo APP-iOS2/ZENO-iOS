@@ -193,7 +193,7 @@ struct CommSettingView: View {
             case .addNew:
                 return "그룹 만들기"
             case .edit:
-                return "그룹 설정"
+                return "그룹 수정"
             }
         }
     }
