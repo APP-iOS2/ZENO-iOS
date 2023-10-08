@@ -102,6 +102,41 @@ class CommViewModel: ObservableObject {
     }
     
     @MainActor
+    func acceptMember(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm,
+                  let index = currentComm.waitApprovalMembers.firstIndex(where: { $0.id == user.id })
+            else { return }
+            let acceptMember = currentComm.waitApprovalMembers.remove(at: index)
+            currentComm.joinMembers.append(acceptMember)
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "그룹가입 수락 실패")
+            }
+        }
+    }
+    
+    @MainActor
+    func deportMember(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm,
+                  let index = currentComm.joinMembers.firstIndex(where: { $0.id == user.id })
+            else { return }
+            currentComm.joinMembers.remove(at: index)
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "그룹에서 내보내기 실패")
+            }
+        }
+    }
+    
+    @MainActor
     func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)
         let communities = results.compactMap {
@@ -175,7 +210,9 @@ class CommViewModel: ObservableObject {
             }
         }
         self.currentCommMembers = exceptCurrentUser(users: currentUsers)
-        await fetchCurrentWaitMembers()
+        if isCurrentCommManager {
+            await fetchCurrentWaitMembers()
+        }
     }
     
     @MainActor

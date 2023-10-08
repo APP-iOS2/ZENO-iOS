@@ -100,7 +100,7 @@ final class FirebaseManager {
                                                data: T,
                                                image: UIImage
     ) async throws where T: Encodable, T: ZenoSearchable {
-        var changableData = data
+        let changableData = data
         do {
             try await updateImageURL(url: url, image: image)
             try await create(data: changableData)
