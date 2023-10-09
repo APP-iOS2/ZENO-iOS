@@ -40,7 +40,7 @@ class CommViewModel: ObservableObject {
         guard let currentUser,
               let currentComm
         else { return false }
-        return currentComm.manager == currentUser.id
+        return currentComm.managerID == currentUser.id
     }
     /// 유저가 선택된 커뮤니티의 알람을 켰는지에 대한 Bool
     var isAlertOn: Bool {
@@ -99,6 +99,21 @@ class CommViewModel: ObservableObject {
         let commIDs = currentUser.commInfoList.map { $0.id }
         let communities = allComm.filter { commIDs.contains($0.id) }
         self.joinedComm = communities
+    }
+    
+    @MainActor
+    func delegateManager(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm else { return }
+            currentComm.managerID = user.id
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "매니저 권한 위임 실패")
+            }
+        }
     }
     
     @MainActor
@@ -173,12 +188,12 @@ class CommViewModel: ObservableObject {
         guard let currentUser else { return }
         let createAt = Date().timeIntervalSince1970
         var newComm = comm
-        newComm.manager = currentUser.id
+        newComm.managerID = currentUser.id
         newComm.createdAt = createAt
         newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
         do {
             if let image {
-                try await firebaseManager.createWithImage(data: newComm, image: image)
+                _ = try await firebaseManager.createWithImage(data: newComm, image: image)
             } else {
                 try await firebaseManager.create(data: newComm)
             }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ZenoSearchableCellView<T: ZenoSearchable>: View {
     let item: T
+    let actionTitle: String
     let action: () -> Void
     
     var body: some View {
@@ -32,7 +33,7 @@ struct ZenoSearchableCellView<T: ZenoSearchable>: View {
             Button {
                 action()
             } label: {
-                Text("친구추가")
+                Text(actionTitle)
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }

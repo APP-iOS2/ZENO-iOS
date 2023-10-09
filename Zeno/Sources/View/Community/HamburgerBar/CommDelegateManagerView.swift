@@ -14,10 +14,11 @@ struct CommDelegateManagerView: View {
         ScrollView {
             ForEach(commViewModel.currentCommMembers) { user in
                 HStack {
-                    ZenoSearchableCellView(item: user) {
-                        
+                    ZenoSearchableCellView(item: user, actionTitle: "매니저 권한 위임") {
+                        Task {
+                            await commViewModel.delegateManager(user: user)
+                        }
                     }
-//                    ZenoKFImageView(user)
                 }
             }
         }
@@ -25,8 +26,19 @@ struct CommDelegateManagerView: View {
 }
 
 struct CommDelegateManagerView_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject private var commViewModel: CommViewModel = .init()
+        
+        var body: some View {
+            CommDelegateManagerView()
+                .environmentObject(commViewModel)
+                .onAppear {
+                    commViewModel.currentCommMembers = [.fakeCurrentUser]
+                }
+        }
+    }
+    
     static var previews: some View {
-        CommDelegateManagerView()
-            .environmentObject(CommViewModel())
+        Preview()
     }
 }

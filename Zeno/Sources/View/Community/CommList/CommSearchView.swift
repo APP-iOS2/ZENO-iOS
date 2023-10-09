@@ -27,7 +27,7 @@ struct CommSearchView: View {
 					} else {
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-                                ZenoSearchableCellView(item: item) {
+                                ZenoSearchableCellView(item: item, actionTitle: "친구추가") {
 								}
 							}
 						}
