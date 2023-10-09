@@ -13,7 +13,12 @@ struct CommDelegateManagerView: View {
     var body: some View {
         ScrollView {
             ForEach(commViewModel.currentCommMembers) { user in
-                ZenoKFImageView(user)
+                HStack {
+                    ZenoSearchableCellView(item: user) {
+                        
+                    }
+//                    ZenoKFImageView(user)
+                }
             }
         }
     }

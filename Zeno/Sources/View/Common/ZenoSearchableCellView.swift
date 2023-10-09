@@ -1,5 +1,5 @@
 //
-//  ZenoSeachableCellView.swift
+//  ZenoSearchableCellView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/05.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ZenoSeachableCellView<T: ZenoSearchable>: View {
+struct ZenoSearchableCellView<T: ZenoSearchable>: View {
     let item: T
     let action: () -> Void
     
