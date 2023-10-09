@@ -23,10 +23,8 @@ struct CommDelegateManagerView: View {
                 ZenoNavigationBackBtn {
                     dismiss()
                 }
-                if commViewModel.currentCommMembers.isEmpty {
-                    Text("가입된 유저가 없습니다")
-                        .padding(.leading, 30)
-                }
+                titleView
+                    .padding(.leading, 30)
                 Spacer()
             }
             .padding()
@@ -57,6 +55,15 @@ struct CommDelegateManagerView: View {
             Button("취소", role: .cancel) {
                 selectedUser = nil
             }
+        }
+    }
+    
+    @ViewBuilder
+    var titleView: some View {
+        if commViewModel.currentCommMembers.isEmpty {
+            Text("가입된 유저가 없습니다")
+        } else {
+            Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
         }
     }
 }
