@@ -39,7 +39,6 @@ struct CommUserMgmtCellView: View {
             }
             .padding(.horizontal)
         }
-        .frame(width: .infinity)
         .padding(.vertical)
     }
     

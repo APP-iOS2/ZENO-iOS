@@ -180,6 +180,41 @@ final class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 친구 id로  친구 이름 받아오는 함수
+    func userIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchUser(withUid: id)
+            return result.name
+        } catch {
+            print("fetch유저 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
+    func commIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchCommunity(withUid: id)
+            return result.name
+        } catch {
+            print("fetchName 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    func fetchCommunity (withUid uid: String) async throws -> Community {
+        let result = await firebaseManager.read(type: Community.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
+        }
+    }
+    
     @MainActor
     func joinNewGroup(newID: String) async {
         guard var currentUser else { return }

@@ -50,20 +50,11 @@ struct CommSideBarView: View {
                                 }
                             }
                         } label: {
-                            switch item {
-                            case .memberMGMT, .inviteComm:
+                            if commViewModel.isCurrentCommManager {
                                 HStack {
                                     Text(item.title)
                                     Spacer()
                                     Image(systemName: "chevron.right")
-                                }
-                            default:
-                                if commViewModel.isCurrentCommManager {
-                                    HStack {
-                                        Text(item.title)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
                                 }
                             }
                         }
@@ -135,6 +126,7 @@ struct CommSideBarView: View {
                     guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
                     await userViewModel.leaveComm(commID: currntID)
+                    isPresented = false
                 }
             }
             Button("취소", role: .cancel) { }
@@ -154,6 +146,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
+                    isPresented = false
                 }
             }
             Button("취소", role: .cancel) { }
@@ -200,9 +193,10 @@ struct CommSideBarView: View {
     
     /// 공유 시트
     private func shareText() {
-        guard let url = URL(string: "https://www.naver.com") else { return }
+        guard let commID = commViewModel.currentComm?.id else { return }
+        let deepLink = "ZenoApp://invite?commID=\(commID)"
         let activityVC = UIActivityViewController(
-            activityItems: ["\(commViewModel.currentComm?.name ?? "커뮤니티 nil")", url],
+            activityItems: [deepLink],
             applicationActivities: [KakaoActivity(), IGActivity()]
         )
         

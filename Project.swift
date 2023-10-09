@@ -9,11 +9,20 @@ let infoPlist: [String: InfoPlist.Value] = [
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
     "UIBackgroundModes": ["remote-notification"],
-    "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
+    "LSApplicationQueriesSchemes": [
+        "kakaokompassauth",
+        "kakaolink",
+        "kakao$(KAKAO_APP_KEY)"
+    ],
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
             "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+        ],
+        [
+            "CFBundleTypeRole": "Viewer",
+            "CFBundleURLName": "education.techit.zeno.dev",
+            "CFBundleURLSchemes": ["ZenoApp"]
         ]
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)"

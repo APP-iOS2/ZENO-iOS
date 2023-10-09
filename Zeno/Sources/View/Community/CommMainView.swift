@@ -28,19 +28,22 @@ struct CommMainView: View {
             }
             .refreshable {
                 Task {
-                    await commViewModel.fetchAllComm()
+                    try? await userViewModel.loadUserData()
                 }
             }
             .toolbar {
-				        // 커뮤니티 선택 버튼
-				        groupNameToolbarItem
-				        // 햄버거 바
+                // 커뮤니티 선택 버튼
+                groupNameToolbarItem
+                // 햄버거 바
                 if commViewModel.currentComm != nil {
                     hamburgerToolbarItem
                 }
             }
             .sheet(isPresented: $isShowingCommListSheet) {
                 CommListView(isPresented: $isShowingCommListSheet)
+            }
+            .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
+                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
             }
             .onTapGesture {
                 isShowingHamburgerView = false
@@ -60,6 +63,9 @@ struct CommMainView: View {
             Task {
                 await commViewModel.fetchCurrentCommMembers()
             }
+        }
+        .onOpenURL { url in
+            commViewModel.handleInviteURL(url)
         }
     }// body
 }

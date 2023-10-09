@@ -51,7 +51,7 @@ struct CommSettingView: View {
                             dismiss()
                         }
                     }
-                    .disabled(!(!emptyComm.name.isEmpty &&
+                    .disabled(!(!emptyComm.name.isEmpty ||
                                 isValueChanged))
                 }
                 .padding()
