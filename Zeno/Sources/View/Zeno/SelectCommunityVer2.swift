@@ -62,7 +62,7 @@ struct SelectCommunityVer2: View {
     }
     
     func commuityListView() -> some View {
-        List(communities.indices) { index in
+        List(Array(communities.indices), id: \.self) { index in
             Button {
                 isPlay = true
                 selected = communities[index].id
