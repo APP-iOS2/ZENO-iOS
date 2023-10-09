@@ -67,6 +67,7 @@ struct TabBarView: View {
                     }
                     .tag(tab.rawValue)
             }
+            .toolbarBackground(.visible, for: .tabBar)
 		}
 	}
 }

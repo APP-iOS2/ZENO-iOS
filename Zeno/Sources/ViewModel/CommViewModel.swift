@@ -111,7 +111,6 @@ class CommViewModel: ObservableObject {
         if isCurrentCommManager {
             guard let currentComm else { return }
             let joinedIDs = currentComm.joinMembers.map { $0.id }
-            let waitIDs = currentComm.waitApprovalMembers.map { $0.id }
             do {
                 _ = try await firebaseManager.delete(data: currentComm)
                 let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
@@ -129,7 +128,7 @@ class CommViewModel: ObservableObject {
                         print(#function + "삭제 된 커뮤니티의 joinMembers의 id가 User Collection에서 Document 찾기 실패함")
                     }
                 }
-                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: waitIDs)
+                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentComm.waitApprovalMemberIDs)
                 await waitResults.asyncForEach { [weak self] result in
                     switch result {
                     case .success(var user):
@@ -171,9 +170,10 @@ class CommViewModel: ObservableObject {
     func acceptMember(user: User) async {
         if isCurrentCommManager {
             guard var currentComm,
-                  let index = currentComm.waitApprovalMembers.firstIndex(where: { $0.id == user.id })
+                  let index = currentComm.waitApprovalMemberIDs.firstIndex(where: { $0 == user.id })
             else { return }
-            let acceptMember = currentComm.waitApprovalMembers.remove(at: index)
+            let tempMemberID = currentComm.waitApprovalMemberIDs.remove(at: index)
+            let acceptMember = Community.Member.init(id: tempMemberID, joinedAt: Date().timeIntervalSince1970)
             currentComm.joinMembers.append(acceptMember)
             do {
                 _ = try await firebaseManager.create(data: currentComm)
@@ -274,7 +274,7 @@ class CommViewModel: ObservableObject {
     
     @MainActor
     private func fetchCurrentWaitMembers() async {
-        guard let currentWaitMemberIDs = currentComm?.waitApprovalMembers.map({ $0.id }) else { return }
+        guard let currentWaitMemberIDs = currentComm?.waitApprovalMemberIDs else { return }
         let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentWaitMemberIDs)
         let currentWaitUsers = results.compactMap {
             switch $0 {
