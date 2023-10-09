@@ -27,7 +27,7 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 	/// 커뮤니티에 가입된 유저
 	var joinMembers: [Member]
 	/// 커뮤니티 가입 신청 후 승인 대기중인 유저
-	var waitApprovalMembers: [Member] = []
+    var waitApprovalMemberIDs: [User.ID] = []
 	/// 커뮤니티에 가입된 유저 구조체
 	struct Member: Codable, Identifiable, Hashable {
 		/// 유저 ID
@@ -38,7 +38,7 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 }
 
 extension Community {
-    static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMembers: [])
+    static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
 }
 #if DEBUG
 extension Community {
