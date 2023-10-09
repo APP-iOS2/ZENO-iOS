@@ -44,7 +44,7 @@ final class FirebaseManager {
     ) async throws -> T where T: Encodable, T: ZenoSearchable {
         var changableData = data
         do {
-            let imageURL = try await createImageURL(image: image)
+            let imageURL = try await createImageURL(id: data.id, image: image)
             changableData.imageURL = imageURL
             try await create(data: changableData)
             return changableData
@@ -53,11 +53,10 @@ final class FirebaseManager {
         }
     }
     
-    private func createImageURL(image: UIImage) async throws -> String? {
+    private func createImageURL(id: String, image: UIImage) async throws -> String? {
         guard let imageData = image.jpegData(compressionQuality: 0.25) else { return nil }
         
-        let filename = UUID().uuidString
-        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
+        let ref = Storage.storage().reference(withPath: "/images/\(id)")
         
         do {
             _ = try await ref.putDataAsync(imageData)
@@ -93,32 +92,6 @@ final class FirebaseManager {
             try await documentRef.updateData([data.getPropertyName(keyPath): to])
         } catch {
             throw FirebaseError.failToUpdate
-        }
-    }
-    
-    func updateWithImage<T: FirebaseAvailable>(url: String,
-                                               data: T,
-                                               image: UIImage
-    ) async throws where T: Encodable, T: ZenoSearchable {
-        let changableData = data
-        do {
-            try await updateImageURL(url: url, image: image)
-            try await create(data: changableData)
-        } catch {
-            throw FirebaseError.failToUploadImg
-        }
-    }
-    
-    private func updateImageURL(url: String, image: UIImage) async throws {
-        guard let imageData = image.jpegData(compressionQuality: 0.25) else { return }
-        
-        let ref = Storage.storage().reference(withPath: "/images/\(url)")
-        
-        do {
-            _ = try await ref.putDataAsync(imageData)
-        } catch {
-            print("🔴이미지 업로드 실패: \(error.localizedDescription)")
-            return
         }
     }
     
