@@ -75,14 +75,10 @@ struct SelectCommunityVer2: View {
                 }
             } label: {
                 HStack {
-                    if let urlStr = communities[index].imageURL,
-                       let url = URL(string: urlStr) {
-                        KFImage(url)
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
-                            .padding(.trailing, 10)
-                    }
+                    ZenoKFImageView(communities[index])
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .padding(.trailing, 10)
                     Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.black.opacity(0.7))

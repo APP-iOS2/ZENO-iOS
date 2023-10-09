@@ -56,13 +56,9 @@ struct ZenoView: View {
                                 resetUsers()
                             } label: {
                                 HStack {
-                                    if let urlStr = user.imageURL,
-                                       let url = URL(string: urlStr) {
-                                        KFImage(url)
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                            .foregroundColor(.black)
-                                    }
+                                    ZenoKFImageView(user)
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.black)
                                     Text(user.name)
                                         .foregroundColor(.black)
                                 }

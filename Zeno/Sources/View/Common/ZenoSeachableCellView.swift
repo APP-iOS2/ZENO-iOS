@@ -15,11 +15,8 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
     
     var body: some View {
         HStack {
-            if let urlStr = item.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
+            ZenoKFImageView(item)
                     .frame(width: 30, height: 30)
-            }
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(item.name)")

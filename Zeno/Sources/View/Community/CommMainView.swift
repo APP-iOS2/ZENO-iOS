@@ -152,12 +152,8 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if let urlStr = user.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            }
+            ZenoKFImageView(user)
+                .frame(width: 30, height: 30)
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(user.name)")

@@ -213,11 +213,7 @@ struct CommSettingView: View {
             Image(uiImage: img)
                 .resizable()
         } else {
-            if let urlStr = emptyComm.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-            }
+            ZenoKFImageView(emptyComm)
         }
     }
 }

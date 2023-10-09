@@ -25,20 +25,15 @@ struct CardViewVer3: View {
         GeometryReader { geometry in
             HStack(alignment: .center, spacing: peekAmount) {
                 ForEach(communities.indices, id: \.self) { index in
-                    if let urlStr = communities[index].imageURL,
-                       let url = URL(string: urlStr) {
-                        KFImage(url)
-                            .resizable()
-                            .frame(width: itemWidth, height: 200)
-                            .scaledToFit()
-                            .overlay(alignment: .bottomLeading) {
-                                Text(communities[index].name)
-                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
-                                    .offset(y: 70)
-                                    .opacity(self.opacityForText(at: index, in: geometry))
-                            }
-                            .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
-                    }
+                    ZenoKFImageView(communities[index], ratio: .fit)
+                        .frame(width: itemWidth, height: 200)
+                        .overlay(alignment: .bottomLeading) {
+                            Text(communities[index].name)
+                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 26))
+                                .offset(y: 70)
+                                .opacity(self.opacityForText(at: index, in: geometry))
+                        }
+                        .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
                 }
             }
             .offset(x: calculateOffset() + dragOffset + 60)

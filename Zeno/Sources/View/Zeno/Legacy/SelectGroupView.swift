@@ -66,14 +66,9 @@ func customScrollView() -> some View {
                             // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                                 .padding(20)
                                 .foregroundColor(.white)
-                            if let urlStr = community.imageURL,
-                               let url = URL(string: urlStr) {
-                                KFImage(url)
-                                    .resizable()
-                                    .frame(width: 100, height: 100)
-                                    .scaledToFit()
-                                    .clipShape(Circle())
-                            }
+                            ZenoKFImageView(community, ratio: .fit)
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
                         }
                     }
 //                    .onTapGesture {
