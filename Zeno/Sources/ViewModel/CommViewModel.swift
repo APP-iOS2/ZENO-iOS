@@ -79,6 +79,13 @@ class CommViewModel: ObservableObject {
                 }
         }
     }
+    @Published var commIDInDeepLink: String = ""
+    @Published var isJoinWithDeeplinkView: Bool = false
+    
+    var filterDeeplinkComm: Community {
+        guard let index = allComm.firstIndex(where: { $0.id == commIDInDeepLink }) else { return .emptyComm }
+        return allComm[index]
+    }
     
     init() {
         Task {
@@ -104,6 +111,52 @@ class CommViewModel: ObservableObject {
         let commIDs = currentUser.commInfoList.map { $0.id }
         let communities = allComm.filter { commIDs.contains($0.id) }
         self.joinedComm = communities
+    }
+    
+    func handleInviteURL(_ url: URL) {
+        guard url.scheme == "ZenoApp" else {
+            return
+        }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            print("Invalid URL")
+            return
+        }
+
+        guard let action = components.host, action == "invite" else {
+            print("Unknown URL, we can't handle this one!")
+            return
+        }
+        
+        guard let queryItem = components.queryItems else {
+            return
+        }
+        
+        if let commID = queryItem.first(where: { $0.name == "commID" })?.value {
+            commIDInDeepLink = commID
+            isJoinWithDeeplinkView = true
+        }
+    }
+    
+    @MainActor
+    func joinCommWithDeeplink(commID: String) async {
+        guard var currentUser,
+              let index = allComm.firstIndex(where: { $0.id == commID })
+        else { return }
+        let joinedAt = Date().timeIntervalSince1970
+        var invitedComm = allComm[index]
+        invitedComm.joinMembers.append(.init(id: currentUser.id, joinedAt: joinedAt))
+        currentUser.commInfoList.append(.init(id: commID, buddyList: [], alert: true))
+        do {
+            _ = try await firebaseManager.create(data: invitedComm)
+            do {
+                _ = try await firebaseManager.create(data: currentUser)
+                allComm.append(invitedComm)
+            } catch {
+                print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
+            }
+        } catch {
+            print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
+        }
     }
     
     @MainActor
@@ -189,11 +242,15 @@ class CommViewModel: ObservableObject {
     func deportMember(user: User) async {
         if isCurrentCommManager {
             guard var currentComm,
-                  let index = currentComm.joinMembers.firstIndex(where: { $0.id == user.id })
+                  let memberIndex = currentComm.joinMembers.firstIndex(where: { $0.id == user.id }),
+                  let commIndex = user.commInfoList.firstIndex(where: { $0.id == currentComm.id })
             else { return }
-            currentComm.joinMembers.remove(at: index)
+            currentComm.joinMembers.remove(at: memberIndex)
+            var deportedUser = user
+            deportedUser.commInfoList = deportedUser.commInfoList.filter({ $0.id == currentComm.id })
             do {
                 _ = try await firebaseManager.create(data: currentComm)
+                _ = try await firebaseManager.create(data: deportedUser)
                 guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
                 allComm[commIndex] = currentComm
             } catch {
@@ -228,7 +285,7 @@ class CommViewModel: ObservableObject {
                 print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
                 return
             }
-            joinedComm[index] = changedComm
+            allComm[index] = changedComm
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
         }
@@ -295,8 +352,8 @@ class CommViewModel: ObservableObject {
         currentComm.joinMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         do {
             try await firebaseManager.create(data: currentComm)
-            guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-            joinedComm.remove(at: index)
+            guard let index = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+            allComm.remove(at: index)
             selectedComm = 0
         } catch {
             print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
