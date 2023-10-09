@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommSettingView: View {
     let editMode: EditMode
@@ -65,7 +64,6 @@ struct CommSettingView: View {
                         .background(
                             commImage
                                 .frame(width: 150)
-                                .aspectRatio(contentMode: .fit)
                                 .clipShape(Circle())
                         )
                         .background {
@@ -212,12 +210,9 @@ struct CommSettingView: View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
+                .aspectRatio(contentMode: .fill)
         } else {
-            if let urlStr = emptyComm.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-            }
+            ZenoKFImageView(emptyComm)
         }
     }
 }

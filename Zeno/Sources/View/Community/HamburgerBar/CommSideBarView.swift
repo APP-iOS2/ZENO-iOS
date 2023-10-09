@@ -16,6 +16,7 @@ struct CommSideBarView: View {
     @State private var isSelectContent: Bool = false
     @State private var isSettingPresented: Bool = false
     @State private var isGroupOutAlert: Bool = false
+    @State private var isDelegateManagerView: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -41,12 +42,27 @@ struct CommSideBarView: View {
                                 isSelectContent.toggle()
                             case .inviteComm:
                                 shareText()
+                            case .delegateManager:
+                                if commViewModel.isCurrentCommManager {
+                                    isDelegateManagerView = true
+                                }
                             }
                         } label: {
-                            HStack {
-                                Text(item.title)
-                                Spacer()
-                                Image(systemName: "chevron.right")
+                            switch item {
+                            case .memberMGMT, .inviteComm:
+                                HStack {
+                                    Text(item.title)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                            default:
+                                if commViewModel.isCurrentCommManager {
+                                    HStack {
+                                        Text(item.title)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                }
                             }
                         }
                     }
@@ -101,6 +117,9 @@ struct CommSideBarView: View {
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()
         }
+        .fullScreenCover(isPresented: $isDelegateManagerView) {
+            CommDelegateManagerView(isPresented: $isDelegateManagerView)
+        }
         .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
             Button("예", role: .destructive) {
                 // TODO: 그룹장일경우 manager 권한을 반드시 넘겨야만 탈퇴할 수 있는 로직으로 변경, 그룹넘기기뷰 구현
@@ -116,8 +135,8 @@ struct CommSideBarView: View {
         }
     }
     
-    enum SideMenu: CaseIterable, Identifiable {
-        case memberMGMT, inviteComm
+    private enum SideMenu: CaseIterable, Identifiable {
+        case memberMGMT, inviteComm, delegateManager
         
         var title: String {
             switch self {
@@ -125,13 +144,15 @@ struct CommSideBarView: View {
                 return "구성원 관리"
             case .inviteComm:
                 return "그룹 초대"
+            case .delegateManager:
+                return "매니저 위임"
             }
         }
         
         var id: Self { self }
     }
     
-    enum SideBarBtn: CaseIterable, Identifiable {
+    private enum SideBarBtn: CaseIterable, Identifiable {
         case out
         case alert
         case setting
@@ -185,11 +206,25 @@ struct CommSideBarView: View {
 }
 
 struct GroupSideBarView_Preview: PreviewProvider {
-    static var previews: some View {
-        Group {
-            CommSideBarView(isPresented: .constant(true))
+    struct Preview: View {
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @State private var isPresented = false
+        
+        var body: some View {
+            CommSideBarView(isPresented: $isPresented)
+                .environmentObject(commViewModel)
                 .environmentObject(UserViewModel())
-                .environmentObject(CommViewModel())
+                .onAppear {
+                    commViewModel.currentCommMembers = [
+                        .fakeCurrentUser,
+                        .fakeCurrentUser,
+                        .fakeCurrentUser,
+                    ]
+                }
         }
+    }
+    
+    static var previews: some View {
+        Preview()
     }
 }

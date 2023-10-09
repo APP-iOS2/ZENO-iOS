@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
@@ -27,6 +26,11 @@ struct CommMainView: View {
                     userListView
                 }
             }
+            .refreshable {
+                Task {
+                    await commViewModel.fetchAllComm()
+                }
+            }
             .toolbar {
 				        // 커뮤니티 선택 버튼
 				        groupNameToolbarItem
@@ -38,9 +42,9 @@ struct CommMainView: View {
             .sheet(isPresented: $isShowingCommListSheet) {
                 CommListView(isPresented: $isShowingCommListSheet)
             }
-			      .onTapGesture {
-				        isShowingHamburgerView = false
-			      }
+            .onTapGesture {
+                isShowingHamburgerView = false
+            }
         }
         .tint(.black)
         .overlay(
@@ -147,12 +151,8 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if let urlStr = user.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            }
+            ZenoKFImageView(user)
+                .frame(width: 30, height: 30)
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(user.name)")

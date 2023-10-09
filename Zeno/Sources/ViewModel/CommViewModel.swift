@@ -40,7 +40,7 @@ class CommViewModel: ObservableObject {
         guard let currentUser,
               let currentComm
         else { return false }
-        return currentComm.manager == currentUser.id
+        return currentComm.managerID == currentUser.id
     }
     /// 유저가 선택된 커뮤니티의 알람을 켰는지에 대한 Bool
     var isAlertOn: Bool {
@@ -102,6 +102,56 @@ class CommViewModel: ObservableObject {
     }
     
     @MainActor
+    func delegateManager(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm else { return }
+            currentComm.managerID = user.id
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "매니저 권한 위임 실패")
+            }
+        }
+    }
+    
+    @MainActor
+    func acceptMember(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm,
+                  let index = currentComm.waitApprovalMembers.firstIndex(where: { $0.id == user.id })
+            else { return }
+            let acceptMember = currentComm.waitApprovalMembers.remove(at: index)
+            currentComm.joinMembers.append(acceptMember)
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "그룹가입 수락 실패")
+            }
+        }
+    }
+    
+    @MainActor
+    func deportMember(user: User) async {
+        if isCurrentCommManager {
+            guard var currentComm,
+                  let index = currentComm.joinMembers.firstIndex(where: { $0.id == user.id })
+            else { return }
+            currentComm.joinMembers.remove(at: index)
+            do {
+                _ = try await firebaseManager.create(data: currentComm)
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm[commIndex] = currentComm
+            } catch {
+                print(#function + "그룹에서 내보내기 실패")
+            }
+        }
+    }
+    
+    @MainActor
     func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)
         let communities = results.compactMap {
@@ -122,21 +172,12 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.create(data: comm)
                 return
             }
-            if let url = comm.imageURL {
-                try await firebaseManager.updateWithImage(url: url, data: comm, image: image)
-                guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else {
-                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
-                    return
-                }
-                joinedComm[index] = comm
-            } else {
-                let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
-                guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
-                    print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
-                    return
-                }
-                joinedComm[index] = changedComm
+            let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
+            guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
+                print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
+                return
             }
+            joinedComm[index] = changedComm
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
         }
@@ -147,12 +188,12 @@ class CommViewModel: ObservableObject {
         guard let currentUser else { return }
         let createAt = Date().timeIntervalSince1970
         var newComm = comm
-        newComm.manager = currentUser.id
+        newComm.managerID = currentUser.id
         newComm.createdAt = createAt
         newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
         do {
             if let image {
-                try await firebaseManager.createWithImage(data: newComm, image: image)
+                _ = try await firebaseManager.createWithImage(data: newComm, image: image)
             } else {
                 try await firebaseManager.create(data: newComm)
             }
@@ -175,7 +216,9 @@ class CommViewModel: ObservableObject {
             }
         }
         self.currentCommMembers = exceptCurrentUser(users: currentUsers)
-        await fetchCurrentWaitMembers()
+        if isCurrentCommManager {
+            await fetchCurrentWaitMembers()
+        }
     }
     
     @MainActor
