@@ -13,6 +13,8 @@ struct CommSearchView: View {
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
 	@Binding var isShowingSearchCommSheet: Bool
+	@State private var currentViewSerachTerm = ""
+	@FocusState private var isFocusedKeyboard: Bool
 	
 	var body: some View {
 		NavigationStack {
@@ -20,17 +22,21 @@ struct CommSearchView: View {
 				VStack {
 					// 서치바
 					searchBar
+						.focused($isFocusedKeyboard)
 					
-					// 서치 리스트
-					if commViewModel.userSearchTerm.isEmpty {
+					if commViewModel.commSearchTerm.isEmpty {
+						// 최근 검색
 						recentSearch
+							.onAppear {
+								commViewModel.commSearchTerm = ""
+							}
 					} else {
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-								ZenoSeachableCellView(item: item) {
-								}
+								CommListCell(comm: item)
 							}
 						}
+						.scrollDismissesKeyboard(.immediately)
 					}
 					Spacer()
 				}
@@ -47,6 +53,9 @@ struct CommSearchView: View {
 				}
 			}
 		}
+		.onAppear {
+			isFocusedKeyboard = true
+		}
 	}
 }
 
@@ -55,19 +64,23 @@ extension CommSearchView {
 	var searchBar: some View {
 		HStack {
 			HStack(spacing: 10) {
-				
-				Image(systemName: "magnifyingglass")
-					.foregroundColor(Color(uiColor: .gray))
-				TextField(text: $commViewModel.userSearchTerm) {
+				TextField(text: $currentViewSerachTerm) {
 					Text("커뮤니티 이름 검색")
 				}
+				.submitLabel(.search)
 				.foregroundColor(Color(uiColor: .gray))
 				.textInputAutocapitalization(.never)
+				.autocorrectionDisabled()
+				.onSubmit {
+					commViewModel.commSearchTerm = currentViewSerachTerm
+				}
 				
 				// 텍스트필드 초기화 버튼
-				if !commViewModel.userSearchTerm.isEmpty {
+				if !commViewModel.commSearchTerm.isEmpty {
 					Button {
-						commViewModel.userSearchTerm = ""
+						commViewModel.commSearchTerm = ""
+						currentViewSerachTerm = ""
+						isFocusedKeyboard = true
 					} label: {
 						Image(systemName: "x.circle")
 							.foregroundColor(Color(uiColor: .gray))
@@ -87,8 +100,39 @@ extension CommSearchView {
 	var recentSearch: some View {
 		HStack {
 			VStack(alignment: .leading) {
-				Text("최근 검색")
-					.foregroundColor(.gray)
+				HStack {
+					Text("최근 검색")
+						.font(.footnote)
+					Spacer()
+					Text("전체 삭제")
+						.font(.footnote)
+						.foregroundColor(.gray)
+						.onTapGesture {
+							print("전체 삭제")
+						}
+				}
+				.padding(.trailing)
+				.padding(.bottom)
+				ScrollView {
+					ForEach(1..<6) { i in
+						VStack {
+							HStack(spacing: 10) {
+								Image(systemName: "magnifyingglass")
+									.foregroundColor(Color(uiColor: .gray))
+								Text("검색한 커뮤니티 \(i)")
+									.font(.callout)
+								Spacer()
+							}
+							.padding([.top], 2)
+							.frame(maxWidth: .infinity)
+							.onTapGesture {
+								commViewModel.commSearchTerm = "검색한 커뮤니티 \(i)"
+							}
+							Divider()
+						}
+					}
+				}
+				.scrollDismissesKeyboard(.immediately)
 			}
 			Spacer()
 		}
@@ -96,10 +140,10 @@ extension CommSearchView {
 	}
 }
 
-struct CommJoinView_Previews: PreviewProvider {
-	static var previews: some View {
-		CommSearchView(isShowingSearchCommSheet: .constant(true))
-			.environmentObject(UserViewModel())
-			.environmentObject(CommViewModel())
-	}
-}
+//struct CommJoinView_Previews: PreviewProvider {
+//	static var previews: some View {
+//		CommSearchView(isShowingSearchCommSheet: .constant(true))
+//			.environmentObject(UserViewModel())
+//			.environmentObject(CommViewModel())
+//	}
+//}
