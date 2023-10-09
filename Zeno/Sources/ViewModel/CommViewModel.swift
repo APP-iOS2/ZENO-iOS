@@ -48,6 +48,13 @@ class CommViewModel: ObservableObject {
             .filter({ currentComm?.id == $0.id })
             .first?.alert ?? false
     }
+    var isCurrentCommMembersEmpty: Bool {
+        guard let currentComm,
+              let currentUser
+        else { return true }
+        let exceptManagerList = currentComm.joinMembers.filter({ $0.id != currentUser.id })
+        return exceptManagerList.isEmpty
+    }
     /// 선택된 커뮤니티의 친구를 검색하기 위한 String
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String
@@ -85,9 +92,7 @@ class CommViewModel: ObservableObject {
     
     func updateCurrentUser(user: User?) {
         self.currentUser = user
-        Task {
-            await fetchAllComm()
-        }
+        filterJoinedComm()
     }
     
     func changeSelectedComm(index: Int) {
@@ -99,6 +104,52 @@ class CommViewModel: ObservableObject {
         let commIDs = currentUser.commInfoList.map { $0.id }
         let communities = allComm.filter { commIDs.contains($0.id) }
         self.joinedComm = communities
+    }
+    
+    @MainActor
+    func deleteComm() async {
+        if isCurrentCommManager {
+            guard let currentComm else { return }
+            let joinedIDs = currentComm.joinMembers.map { $0.id }
+            let waitIDs = currentComm.waitApprovalMembers.map { $0.id }
+            do {
+                _ = try await firebaseManager.delete(data: currentComm)
+                let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
+                await joinedResults.asyncForEach { [weak self] result in
+                    switch result {
+                    case .success(var user):
+                        guard let index = user.commInfoList.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                        user.commInfoList.remove(at: index)
+                        do {
+                            try await self?.firebaseManager.create(data: user)
+                        } catch {
+                            print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
+                        }
+                    case .failure:
+                        print(#function + "삭제 된 커뮤니티의 joinMembers의 id가 User Collection에서 Document 찾기 실패함")
+                    }
+                }
+                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: waitIDs)
+                await waitResults.asyncForEach { [weak self] result in
+                    switch result {
+                    case .success(var user):
+                        guard let index = user.commInfoList.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                        user.commInfoList.remove(at: index)
+                        do {
+                            try await self?.firebaseManager.create(data: user)
+                        } catch {
+                            print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
+                        }
+                    case .failure:
+                        print(#function + "삭제 된 커뮤니티의 waitApprovalMembers의 id가 User Collection에서 Document 찾기 실패함")
+                    }
+                }
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                allComm.remove(at: commIndex)
+            } catch {
+                print(#function + "그룹 삭제 실패")
+            }
+        }
     }
     
     @MainActor

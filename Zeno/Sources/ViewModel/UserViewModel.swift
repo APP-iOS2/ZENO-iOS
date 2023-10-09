@@ -204,7 +204,6 @@ final class UserViewModel: ObservableObject {
 }
 
 extension UserViewModel {
-    
     /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
         await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
@@ -227,7 +226,6 @@ extension UserViewModel {
                                                   name: user.kakaoAccount?.name ?? "none",
                                                   gender: user.kakaoAccount?.gender?.rawValue ?? "none",
                                                   description: user.kakaoAccount?.legalName ?? "")
-                        
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
                         case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
@@ -251,11 +249,9 @@ extension UserViewModel {
                     }
                 }
             }
-            
         } else {
             // 유저정보를 못받아오면 애초에 할수있는게 없음.
             print("ERROR: 카카오톡 유저정보 못가져옴")
         }
     }
-
 }

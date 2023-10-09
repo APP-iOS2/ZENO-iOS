@@ -15,7 +15,9 @@ struct CommSideBarView: View {
     
     @State private var isSelectContent: Bool = false
     @State private var isSettingPresented: Bool = false
-    @State private var isGroupOutAlert: Bool = false
+    @State private var isLeaveCommAlert: Bool = false
+    @State private var isNeedDelegateAlert: Bool = false
+    @State private var isDeleteCommAlert: Bool = false
     @State private var isDelegateManagerView: Bool = false
     
     var body: some View {
@@ -71,13 +73,20 @@ struct CommSideBarView: View {
                 .padding(.horizontal)
             }
             Spacer()
-            // MARK: 하단 버튼 뷰
             HStack {
                 ForEach(SideBarBtn.allCases) { btn in
                     Button {
                         switch btn {
                         case .out:
-                            isGroupOutAlert.toggle()
+                            if commViewModel.isCurrentCommManager {
+                                if commViewModel.isCurrentCommMembersEmpty {
+                                    isDeleteCommAlert = true
+                                } else {
+                                    isNeedDelegateAlert = true
+                                }
+                            } else {
+                                isLeaveCommAlert.toggle()
+                            }
                         case .alert:
                             Task {
                                 await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
@@ -120,9 +129,8 @@ struct CommSideBarView: View {
         .fullScreenCover(isPresented: $isDelegateManagerView) {
             CommDelegateManagerView(isPresented: $isDelegateManagerView)
         }
-        .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
+        .alert("그룹에서 나가시겠습니까?", isPresented: $isLeaveCommAlert) {
             Button("예", role: .destructive) {
-                // TODO: 그룹장일경우 manager 권한을 반드시 넘겨야만 탈퇴할 수 있는 로직으로 변경, 그룹넘기기뷰 구현
                 Task {
                     guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
@@ -132,6 +140,25 @@ struct CommSideBarView: View {
             Button("취소", role: .cancel) { }
         } message: {
             Text("해당 그룹으로 진행되던 모든 알림 및 정보들이 삭제됩니다.")
+        }
+        .alert("그룹을 나가려면 매니저 권한을 위임하세요", isPresented: $isNeedDelegateAlert) {
+            Button("유저 선택") {
+                isDelegateManagerView = true
+            }
+            Button("그룹 제거", role: .destructive) {
+                isDeleteCommAlert = true
+            }
+            Button("취소", role: .cancel) { }
+        }
+        .alert("그룹이 제거됩니다.", isPresented: $isDeleteCommAlert) {
+            Button("제거하기", role: .destructive) {
+                Task {
+                    await commViewModel.deleteComm()
+                }
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("해당 그룹의 모든 유저의 알림 및 정보들이 삭제됩니다.")
         }
     }
     

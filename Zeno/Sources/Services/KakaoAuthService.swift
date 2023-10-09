@@ -50,13 +50,11 @@ final class KakaoAuthService {
             } else {
                 return (await loginChkAndFetchUserInfo(), false)
             }
-               
         } catch {
             print(error.localizedDescription)
         }
         
-        return (nil, false)
-        
+        return (nil, false)        
     }
     
     /// 카카오 유저 로그아웃
