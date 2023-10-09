@@ -359,6 +359,23 @@ class CommViewModel: ObservableObject {
             print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
         }
     }
+  
+      /// 그룹에 가입신청 보내는 함수
+    @MainActor
+    func requestJoinComm(comm: Community) async throws {
+        guard let currentUser else { return }
+        guard !comm.waitApprovalMemberIDs.contains(currentUser.id) else { return }
+        
+        try await firebaseManager.update(data: comm.self,
+                                         value: \.waitApprovalMemberIDs,
+                                         to: comm.waitApprovalMemberIDs + [currentUser.id])
+        await fetchCurrentCommMembers()
+    }
+  
+  func checkApplied(comm: Community) -> Bool {
+        guard let currentUser else { return false }
+        return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false
+    }
     
     private func filterMembers(condition: MemberCondition) -> [User] {
         guard let currentComm else { return [] }
