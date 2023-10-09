@@ -23,6 +23,7 @@ struct SideMenuView: View {
                 // 뒷배경
                 // opacity는 해당 View를 숨김처리할때도 많이 사용한다. (뷰의 자리를 보존해야할 경우) 공식문서에 나와있음.
                 Color.black.opacity(isPresented ? 0.3 : 0)
+                    .edgesIgnoringSafeArea(.top)
                     .onTapGesture {
                         isPresented = false
                     }

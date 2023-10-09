@@ -58,7 +58,7 @@ struct TabBarView: View {
     @State private var selectedTabIndex = 0
     
     var body: some View {
-		TabView(selection: $selectedTabIndex) {
+        TabView(selection: $selectedTabIndex) {
             ForEach(MainTab.allCases) { tab in
                 tab.view
                     .tabItem {
@@ -67,12 +67,14 @@ struct TabBarView: View {
                     }
                     .tag(tab.rawValue)
             }
-		}
-	}
+        }
+    }
 }
 
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
         TabBarView()
+            .environmentObject(UserViewModel(currentUser: .dummy[0]))
+            .environmentObject(CommViewModel())
     }
 }

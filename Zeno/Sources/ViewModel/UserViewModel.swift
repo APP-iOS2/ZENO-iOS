@@ -16,15 +16,19 @@ final class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    private let firebaseManager = FirebaseManager.shared
     /// ZenoViewSheet닫는용
     @Published var isShowingSheet: Bool = false
-    @Published var kakaoStatus: KakaoSignStatus = .none
+    /// 로그인여부(상태)
+    @Published var signStatus: SignStatus = .none
+    
+    private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
     init() {
+        self.signStatus = SignStatus.getStatus() // signStatus 값 가져오기.
+        print("🦕signStatus = \(self.signStatus.rawValue)")
         Task {
-            try await loadUserData()
+            try? await loadUserData()
         }
     }
     
@@ -61,16 +65,32 @@ final class UserViewModel: ObservableObject {
             print(#function + "User Collection에 알람 업데이트 실패")
         }
     }
+    
     /// 이메일 로그인
     @MainActor
-    func login(email: String, password: String) async throws {
+    func login(email: String, password: String) async {
         do {
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
             self.userSession = result.user
-            try await loadUserData()
-            self.kakaoStatus = .signIn
+            try? await loadUserData()
+            self.signStatus = .signIn
+            self.signStatus.saveStatus()
             print("🔵 로그인 성공")
-        } catch {
+        } catch let error as NSError {
+            switch AuthErrorCode.Code(rawValue: error.code) {
+            case .wrongPassword:  // 잘못된 비밀번호
+                break
+            case .userTokenExpired: // 사용자 토큰 만료 -> 사용자가 다른 기기에서 계정 비밀번호를 변경했을수도 있음. -> 재로그인 해야함.
+                break
+            case .tooManyRequests: // Firebase 인증 서버로 비정상적인 횟수만큼 요청이 이루어져 요청을 차단함.
+                break
+            case .userNotFound: // 사용자 계정을 찾을 수 없음.
+                break
+            case .networkError: // 작업 중 네트워크 오류 발생
+                break
+            default:
+                break
+            }
             print("🔴 로그인 실패. 에러메세지: \(error.localizedDescription)")
         }
     }
@@ -102,20 +122,30 @@ final class UserViewModel: ObservableObject {
         self.currentUser = user
         try? await firebaseManager.create(data: user)
     }
+    
     /// 유저 데이터 가져오기
     @MainActor
     func loadUserData() async throws {
         self.userSession = Auth.auth().currentUser
         guard let currentUid = userSession?.uid else { return print("로그인된 유저 없음")}
         print("\(currentUid)")
-        self.currentUser = try await fetchUser(withUid: currentUid)
+        self.currentUser = try? await fetchUser(withUid: currentUid)
         print("현재 로그인된 유저: \(currentUser ?? User.dummy[0])")
     }
+    
     /// 로그아웃
-    func logout() {
+    func logout() async {
         try? Auth.auth().signOut()
-        self.userSession = nil
-        self.currentUser = nil
+        
+        // 메서드 자체를 MainActor로 적용할때와 필요한부분에만 MainActor를 적용하는것이 좀 다른거 같다. 확인중.. GCD와 관련이 있을듯싶다.
+        // 일단 예상은 -> MainActor래퍼를 적용한다 => 메인스레드에서 동작하게 하기위해 UserViewModel 클래스가 초기화됨과 동시에 미리 queue에 넣어둔다. ( 그래서 호출하지 않아도 실행이 된다. )
+        // 이 logout 메서드에 래퍼로 적용하였을 경우 호출하지 않았는데도 실행이 되었다. 그래서 메서드 내부에서 MainActor로 호출하는걸로 변경하니 잘 반영이 되었음.
+        await MainActor.run {
+            self.userSession = nil
+            self.currentUser = nil
+            self.signStatus = .signOut
+            self.signStatus.saveStatus()
+        }
     }
     
     /// 코인 사용 업데이트 함수
@@ -139,6 +169,7 @@ final class UserViewModel: ObservableObject {
                                           to: initialCheck)
         try? await loadUserData()
     }
+    
     /// 메가폰 사용 업데이트 함수
     func updateUserMegaphone(to: Int) async {
         guard let currentUser else { return }
@@ -204,15 +235,46 @@ final class UserViewModel: ObservableObject {
 }
 
 extension UserViewModel {
+    /// 회원탈퇴
+    func deleteUser() async {
+        await logoutWithKakao()
+        // DB User정보 delete, Auth 정보 Delete 부분 추가하기.  // 현재 작동안됨. 23.10.10
+        do {
+//            print("🦕\(currentUser)")
+            try await firebaseManager.delete(data: currentUser ?? .fakeCurrentUser)
+        } catch {
+            print("🦕로그아웃 오류 : \(error.localizedDescription)")
+            return
+        }
+        
+        await MainActor.run {
+            self.signStatus = .none
+            self.signStatus.saveStatus()
+        }
+        print("🦕\(self.signStatus.rawValue)")
+    }
+    
+    /// 카카오로 시작하기
+    func startWithKakao() async {
+        switch self.signStatus {
+        case .signIn:
+            break
+        case .signOut:
+            await loginWithKakaoNoRegist()
+        case .none:
+            await loginWithKakao()
+        }
+        try? await loadUserData()
+    }
     
     /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
         await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
-        self.logout()
+        await self.logout()
     }
     
     /// 카카오 로그인 && Firebase 로그인
-    func loginWithKakao() async {
+    private func loginWithKakao() async {
         let (user, isTokened) = await KakaoAuthService.shared.loginUserKakao()
         
         if let user {
@@ -222,40 +284,54 @@ extension UserViewModel {
                 print("토큰여부 \(isTokened)")
                 if !isTokened {
                     do {
+                        // 회원가입 후 바로 로그인.
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
                                                   name: user.kakaoAccount?.name ?? "none",
                                                   gender: user.kakaoAccount?.gender?.rawValue ?? "none",
                                                   description: user.kakaoAccount?.legalName ?? "")
                         
+                        await self.login(email: user.kakaoAccount?.email ?? "",
+                                         password: String(describing: user.id))
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
                         case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
-                            do {
-                                try await self.login(email: user.kakaoAccount?.email ?? "", password: String(describing: user.id))
-                            } catch {
-                                print("로그인 실패")
-                            }
-                        case .wrongPassword:     // 비밀번호 오류
-                            print("비밀번호 오류\n관리자 문의 바랍니다.")
+                            await self.login(email: user.kakaoAccount?.email ?? "",
+                                             password: String(describing: user.id))
+                            
+                        case .invalidEmail: // 이메일 형식이 잘못됨.
+                            print("\(user.kakaoAccount?.email ?? "") 이메일 형식이 잘못되었습니다.")
+                            
                         default:
                             break
                         }
                     }
                 } else {
                     // 토큰정보가 있을 경우 로그인 진행
-                    do {
-                        try await self.login(email: user.kakaoAccount?.email ?? "", password: String(describing: user.id))
-                    } catch {
-                        print(error)
-                    }
+                    await self.login(email: user.kakaoAccount?.email ?? "",
+                                     password: String(describing: user.id))
                 }
             }
-            
         } else {
             // 유저정보를 못받아오면 애초에 할수있는게 없음.
             print("ERROR: 카카오톡 유저정보 못가져옴")
         }
     }
-
+    
+    /// 카카오 로그인 && Firebase 로그인 ( 회원가입 없음 )
+    private func loginWithKakaoNoRegist() async {
+        let (user, _) = await KakaoAuthService.shared.loginUserKakao()
+        
+        if let user {
+            // 이메일이 있으면 회원가입, 로그인은 진행이 됨.
+            if user.kakaoAccount?.email != nil {
+                // 토큰정보가 있을 경우 로그인 진행
+                await self.login(email: user.kakaoAccount?.email ?? "",
+                                 password: String(describing: user.id))
+            }
+        } else {
+            // 유저정보를 못받아오면 애초에 할수있는게 없음.
+            print("ERROR: 카카오톡 유저정보 못가져옴")
+        }
+    }
 }
