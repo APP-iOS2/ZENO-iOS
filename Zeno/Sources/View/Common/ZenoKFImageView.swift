@@ -18,6 +18,10 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
            let url = URL(string: urlStr) {
             KFImage(url)
                 .resizable()
+                .placeholder {
+                    Image("Image1")
+                        .resizable()
+                }
                 .aspectRatio(contentMode: ratio)
         }
     }

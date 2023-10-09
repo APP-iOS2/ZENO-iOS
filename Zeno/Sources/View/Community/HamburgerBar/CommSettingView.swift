@@ -64,7 +64,6 @@ struct CommSettingView: View {
                         .background(
                             commImage
                                 .frame(width: 150)
-                                .aspectRatio(contentMode: .fit)
                                 .clipShape(Circle())
                         )
                         .background {
@@ -211,6 +210,7 @@ struct CommSettingView: View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
+                .aspectRatio(contentMode: .fill)
         } else {
             ZenoKFImageView(emptyComm)
         }

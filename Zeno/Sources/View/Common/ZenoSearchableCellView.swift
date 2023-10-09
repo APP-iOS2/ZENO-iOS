@@ -14,9 +14,14 @@ struct ZenoSearchableCellView<T: ZenoSearchable>: View {
     let action: () -> Void
     
     var body: some View {
-        HStack {
-            ZenoKFImageView(item)
-                    .frame(width: 30, height: 30)
+        HStack(alignment: .center) {
+            Circle()
+                .stroke()
+                .frame(width: 30, height: 30)
+                .background(
+                    ZenoKFImageView(item)
+                        .clipShape(Circle())
+                )
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(item.name)")
