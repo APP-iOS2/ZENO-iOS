@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ZenoKFImageView<T>: View where T: ZenoSearchable {
+struct ZenoKFImageView<T: ZenoSearchable>: View {
     let item: T
     let ratio: SwiftUI.ContentMode
     
@@ -21,7 +21,8 @@ struct ZenoKFImageView<T>: View where T: ZenoSearchable {
                 .aspectRatio(contentMode: ratio)
         }
     }
-    
+    /// 기본 인자로 ZenoSearchable 프로토콜을 채택한 값을 받으며
+    /// 추가로 ratio 인자에 .fit으로 aspectRatio를 설정할 수 있고 기본값은 .fill
     init(_ item: T, ratio: SwiftUI.ContentMode = .fill) {
         self.item = item
         self.ratio = ratio

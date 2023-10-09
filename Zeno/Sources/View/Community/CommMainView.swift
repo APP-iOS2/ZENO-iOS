@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel

@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommDelegateManagerView: View {
     @EnvironmentObject private var commViewModel: CommViewModel

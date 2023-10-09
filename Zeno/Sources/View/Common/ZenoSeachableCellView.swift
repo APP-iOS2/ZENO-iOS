@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct ZenoSeachableCellView<T: ZenoSearchable>: View {
     let item: T

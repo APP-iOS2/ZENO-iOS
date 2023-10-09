@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct SelectCommunityView: View {
     private let communities = Community.dummy

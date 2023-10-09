@@ -8,7 +8,6 @@
 
 import SwiftUI
 import ConfettiSwiftUI
-import Kingfisher
 
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel

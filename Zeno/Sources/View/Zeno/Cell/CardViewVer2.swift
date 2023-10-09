@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CardViewVer2: View {
     var currentIndex: Int
