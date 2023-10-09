@@ -5,7 +5,7 @@
 //  Created by gnksbm on 2023/09/26.
 //  Copyright © 2023 https://github.com/gnksbm/Zeno. All rights reserved.
 //
-// TODO: 애니메이션 1초 -> 버튼 나누기 (친구 클릭하면 애니메이션 추가하는 방향) 
+
 import SwiftUI
 
 struct ZenoView: View {
@@ -55,8 +55,7 @@ struct ZenoView: View {
                                 resetUsers()
                             } label: {
                                 HStack {
-                                    Image(user.imageURL ?? "person")
-                                        .resizable()
+                                    ZenoKFImageView(user)
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(.black)
                                     Text(user.name)
@@ -72,6 +71,9 @@ struct ZenoView: View {
                                 )
                             }
                         }
+                    }
+                    .transaction { view in
+                        view.disablesAnimations = true
                     }
                     
                     Button {

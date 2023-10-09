@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommSettingView: View {
-    let comm: Community
     let editMode: EditMode
     
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -44,26 +43,29 @@ struct CommSettingView: View {
                         Task {
                             switch editMode {
                             case .addNew:
-                                await commViewModel.createComm(comm: emptyComm)
+                                await commViewModel.createComm(comm: emptyComm, image: selectedImage)
                                 await userViewModel.joinNewGroup(newID: emptyComm.id)
                             case .edit:
-                                await commViewModel.updateComm(comm: emptyComm)
+                                await commViewModel.updateComm(comm: emptyComm, image: selectedImage)
                             }
                             dismiss()
                         }
                     }
-                    .disabled(!(!emptyComm.name.isEmpty &&
+                    .disabled(!(!emptyComm.name.isEmpty ||
                                 isValueChanged))
                 }
                 .padding()
                 Button {
                     isImagePicker.toggle()
                 } label: {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    Circle()
                         .frame(width: 150, alignment: .center)
-                        .clipShape(Circle())
+                        .foregroundColor(.clear)
+                        .background(
+                            commImage
+                                .frame(width: 150)
+                                .clipShape(Circle())
+                        )
                         .background {
                             Circle()
                                 .stroke(.gray.opacity(5.0))
@@ -100,14 +102,19 @@ struct CommSettingView: View {
             SettingTextFieldView(title: "그룹 소개", value: $emptyComm.description)
         }
         .onChange(of: emptyComm) { newValue in
-            isValueChanged = comm != newValue
+            guard let currentComm = commViewModel.currentComm else { return }
+            isValueChanged = currentComm != newValue
+        }
+        .onChange(of: selectedImage) { _ in
+            isValueChanged = true
         }
         .onAppear {
             switch editMode {
             case .addNew:
                 break
             case .edit:
-                emptyComm = comm
+                guard let currentComm = commViewModel.currentComm else { return }
+                emptyComm = currentComm
             }
         }
         .alert("저장되지 않은 변경사항이 있습니다.", isPresented: $backActionWarning) {
@@ -193,24 +200,26 @@ struct CommSettingView: View {
             case .addNew:
                 return "그룹 만들기"
             case .edit:
-                return "그룹 설정"
+                return "그룹 수정"
             }
         }
     }
     
-    var image: Image {
+    @ViewBuilder
+    var commImage: some View {
         if let img = selectedImage {
-            return Image(uiImage: img)
+            Image(uiImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
         } else {
-            // 추후 어떤식으로 이미지 처리할지 미정.
-            return Image("\(comm.imageURL)")
+            ZenoKFImageView(emptyComm)
         }
     }
 }
 
 struct GroupSettingView_Prieviews: PreviewProvider {
     static var previews: some View {
-        CommSettingView(comm: Community.dummy[0], editMode: .addNew)
+        CommSettingView(editMode: .addNew)
         SettingTextFieldView(title: "그룹 설정", value: .constant("ddd"))
             .previewDisplayName("텍스트변경")
     }

@@ -12,6 +12,8 @@ struct CommUserMgmtCellView: View {
     @Binding var user: User
     let actionType: ActionType
     
+    @EnvironmentObject private var commViewModel: CommViewModel
+    
     var body: some View {
         HStack(alignment: .center) {
             Image(systemName: "person.fill")
@@ -25,18 +27,18 @@ struct CommUserMgmtCellView: View {
             }
             Spacer()
             Button(actionType.title) {
-                switch actionType {
-                case .accept:
-                    break
-                    // TODO: 그룹에 추가 메서드
-                case .deport:
-                    break
-                    // TODO: 그룹에서 내보내기 메서드
+                Task {
+                    switch actionType {
+                    case .accept:
+                        await commViewModel.acceptMember(user: user)
+                    case .deport:
+                        // TODO: 내보낸 유저에게 알람을 보냄
+                        await commViewModel.deportMember(user: user)
+                    }
                 }
             }
             .padding(.horizontal)
         }
-        .frame(width: .infinity)
         .padding(.vertical)
     }
     
@@ -57,5 +59,6 @@ struct CommUserMgmtCellView: View {
 struct UserManagementCellView_Previews: PreviewProvider {
     static var previews: some View {
         CommUserMgmtCellView(user: .constant(.dummy[0]), actionType: .accept)
+            .environmentObject(CommViewModel())
     }
 }

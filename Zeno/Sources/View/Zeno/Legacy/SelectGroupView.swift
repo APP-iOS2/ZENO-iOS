@@ -65,10 +65,8 @@ func customScrollView() -> some View {
                             // .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
                                 .padding(20)
                                 .foregroundColor(.white)
-                            Image(community.imageURL ?? "")
-                                .resizable()
+                            ZenoKFImageView(community, ratio: .fit)
                                 .frame(width: 100, height: 100)
-                                .scaledToFit()
                                 .clipShape(Circle())
                         }
                     }

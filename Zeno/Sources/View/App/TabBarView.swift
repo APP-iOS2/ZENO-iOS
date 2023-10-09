@@ -67,6 +67,7 @@ struct TabBarView: View {
                     }
                     .tag(tab.rawValue)
             }
+            .toolbarBackground(.visible, for: .tabBar)
 		}
 	}
 }
@@ -74,5 +75,7 @@ struct TabBarView: View {
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
         TabBarView()
+            .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
     }
 }

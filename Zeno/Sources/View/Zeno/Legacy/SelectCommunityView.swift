@@ -93,10 +93,8 @@ struct SelectCommunityView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .opacity(0.7)
                             VStack {
-                                Image(community.imageURL ?? "")
-                                    .resizable()
+                                ZenoKFImageView(community, ratio: .fit)
                                     .frame(width: 50, height: 50)
-                                    .scaledToFit()
                                 Text(community.name)
                                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular
                                         .swiftUIFont(size: 17))

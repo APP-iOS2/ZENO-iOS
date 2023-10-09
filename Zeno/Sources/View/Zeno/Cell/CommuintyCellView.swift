@@ -14,8 +14,7 @@ struct CommuintyCellView: View {
     
     var body: some View {
         HStack {
-            Image(asset: ZenoImages(name: community.imageURL ?? ""))
-                .resizable()
+            ZenoKFImageView(community)
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
                 .padding(.trailing, 10)

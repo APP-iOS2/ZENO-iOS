@@ -102,7 +102,7 @@ final class IAPStore: ObservableObject {
         case let .verified(transaction):
             guard let product = self.products.first(where: { $0.id == transaction.productID }) else { return transaction }
             guard !transaction.isUpgraded else { return nil }
-            try? await self.purchase(product)
+            _ = try? await self.purchase(product)
             await transaction.finish()
             
             return transaction

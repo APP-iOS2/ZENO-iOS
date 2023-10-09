@@ -22,10 +22,8 @@ struct CardViewVer2: View {
             GeometryReader { geometry in
                 HStack(alignment: .center, spacing: peekAmount) {
                     ForEach(communities.indices, id: \.self) { index in
-                        Image(communities[index].imageURL ?? "")
-                            .resizable()
+                        ZenoKFImageView(communities[index])
                             .frame(width: itemWidth, height: 160)
-                            .scaledToFill()
                             .overlay(alignment: .bottomLeading) {
                                 Text(communities[index].name)
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))

@@ -1,5 +1,5 @@
 //
-//  ZenoSeachableCellView.swift
+//  ZenoSearchableCellView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/05.
@@ -8,22 +8,20 @@
 
 import SwiftUI
 
-struct ZenoSeachableCellView<T: ZenoSearchable>: View {
+struct ZenoSearchableCellView<T: ZenoSearchable>: View {
     let item: T
+    let actionTitle: String
     let action: () -> Void
     
     var body: some View {
-        HStack {
-            if item.imageURL != nil {
-                // 사용자 프로필이미지 들어가야함
-                Image(systemName: "person.circle")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            } else {
-                Image(systemName: "person.circle")
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            }
+        HStack(alignment: .center) {
+            Circle()
+                .stroke()
+                .frame(width: 30, height: 30)
+                .background(
+                    ZenoKFImageView(item)
+                        .clipShape(Circle())
+                )
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(item.name)")
@@ -40,7 +38,7 @@ struct ZenoSeachableCellView<T: ZenoSearchable>: View {
             Button {
                 action()
             } label: {
-                Text("친구추가")
+                Text(actionTitle)
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }

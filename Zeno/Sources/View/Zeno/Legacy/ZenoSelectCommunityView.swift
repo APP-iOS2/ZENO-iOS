@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct ZenoSelectCommunityView: View {
     private let communities = Community.dummy
@@ -89,10 +90,8 @@ struct ZenoSelectCommunityView: View {
                                 Text(community.name)
                                     .padding(20)
                                     .foregroundColor(.white)
-                                Image(community.imageURL ?? "")
-                                    .resizable()
+                                ZenoKFImageView(community, ratio: .fit)
                                     .frame(width: 50, height: 50)
-                                    .scaledToFit()
                             }
                         }
                         .frame(width: 180, height: 150)
