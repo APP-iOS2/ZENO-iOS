@@ -295,10 +295,11 @@ final class UserViewModel: ObservableObject {
     @MainActor
     func addRequestComm(comm: Community) async throws {
         guard var currentUser else { return }
+		let requestComm = currentUser.requestComm + [comm.id]
         try await firebaseManager.update(data: currentUser.self,
                                          value: \.requestComm,
-                                         to: currentUser.requestComm + [comm.id])
-        self.currentUser?.requestComm += [comm.id]
+                                         to: requestComm)
+        self.currentUser?.requestComm = requestComm
     }
    
     @MainActor
