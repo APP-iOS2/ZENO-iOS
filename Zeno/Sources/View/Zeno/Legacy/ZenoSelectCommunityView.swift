@@ -90,13 +90,8 @@ struct ZenoSelectCommunityView: View {
                                 Text(community.name)
                                     .padding(20)
                                     .foregroundColor(.white)
-                                if let urlStr = community.imageURL,
-                                   let url = URL(string: urlStr) {
-                                    KFImage(url)
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .scaledToFit()
-                                }
+                                ZenoKFImageView(community, ratio: .fit)
+                                    .frame(width: 50, height: 50)
                             }
                         }
                         .frame(width: 180, height: 150)

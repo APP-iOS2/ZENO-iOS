@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CardViewVer2: View {
     var currentIndex: Int
@@ -22,22 +21,15 @@ struct CardViewVer2: View {
             GeometryReader { geometry in
                 HStack(alignment: .center, spacing: peekAmount) {
                     ForEach(communities.indices, id: \.self) { index in
-                        if let urlStr = communities[index].imageURL,
-                           let url = URL(string: urlStr) {
-                            KFImage(url)
-                                .resizable()
-                                .frame(width: itemWidth, height: 160)
-                                .scaledToFill()
-                                .overlay(alignment: .bottomLeading) {
-                                    VStack {
-                                        Text(communities[index].name)
-                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                            .offset(y: 70)
-                                            .opacity(currentIndex == index ? 1.0 : 0.3)
-                                    }
-                                }
-                                .scaleEffect(currentIndex == index ? 0.98 : 0.8)
-                        }
+                        ZenoKFImageView(communities[index])
+                            .frame(width: itemWidth, height: 160)
+                            .overlay(alignment: .bottomLeading) {
+                                Text(communities[index].name)
+                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                    .offset(y: 70)
+                                    .opacity(currentIndex == index ? 1.0 : 0.3)
+                            }
+                            .scaleEffect(currentIndex == index ? 0.98 : 0.8)
                     }
                 }
             }

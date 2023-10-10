@@ -87,7 +87,8 @@ final class UserViewModel: ObservableObject {
                             kakaoToken: "카카오토큰",
                             coin: 0,
                             megaphone: 0,
-                            showInitial: 0
+                            showInitial: 0,
+                            requestComm: []
             )
             await uploadUserData(user: user)
             print("🔵 회원가입 성공")
@@ -180,6 +181,41 @@ final class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 친구 id로  친구 이름 받아오는 함수
+    func userIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchUser(withUid: id)
+            return result.name
+        } catch {
+            print("fetch유저 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
+    func commIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchCommunity(withUid: id)
+            return result.name
+        } catch {
+            print("fetchName 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    func fetchCommunity (withUid uid: String) async throws -> Community {
+        let result = await firebaseManager.read(type: Community.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
+        }
+    }
+    
     @MainActor
     func joinNewGroup(newID: String) async {
         guard var currentUser else { return }
@@ -201,10 +237,19 @@ final class UserViewModel: ObservableObject {
             throw error
         }
     }
+    
+    /// 가입신청 보낸 그룹 등록
+    @MainActor
+    func addRequestComm(comm: Community) async throws {
+        guard var currentUser else { return }
+        try await firebaseManager.update(data: currentUser.self,
+                                         value: \.requestComm,
+                                         to: currentUser.requestComm + [comm.id])
+        self.currentUser?.requestComm += [comm.id]
+    }
 }
 
 extension UserViewModel {
-    
     /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
         await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
@@ -227,7 +272,6 @@ extension UserViewModel {
                                                   name: user.kakaoAccount?.name ?? "none",
                                                   gender: user.kakaoAccount?.gender?.rawValue ?? "none",
                                                   description: user.kakaoAccount?.legalName ?? "")
-                        
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
                         case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
@@ -251,11 +295,9 @@ extension UserViewModel {
                     }
                 }
             }
-            
         } else {
             // 유저정보를 못받아오면 애초에 할수있는게 없음.
             print("ERROR: 카카오톡 유저정보 못가져옴")
         }
     }
-
 }

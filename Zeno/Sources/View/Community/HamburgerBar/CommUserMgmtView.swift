@@ -25,30 +25,32 @@ struct CommUserMgmtView: View {
             .padding()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading) {
-                    Section {
-                        ForEach($commViewModel.currentWaitApprovalMembers) { $user in
-                            HStack(alignment: .center) {
-                                CommUserMgmtCellView(user: $user, actionType: .accept)
+                    ForEach(MGMTSection.allCases) { section in
+                        Section {
+                            switch section {
+                            case .wait:
+                                ForEach($commViewModel.currentWaitApprovalMembers) { $user in
+                                        CommUserMgmtCellView(user: $user, actionType: .accept)
+                                }
+                            case .general:
+                                ForEach($commViewModel.currentCommMembers) { $user in
+                                    CommUserMgmtCellView(user: $user, actionType: .deport)
+                                }
                             }
+                        } header: {
+                            HStack {
+                                Text(section.header)
+                                    .font(.headline)
+                                Spacer()
+                                switch section {
+                                case .wait:
+                                    Text("\(commViewModel.currentWaitApprovalMembers.count) 명")
+                                case .general:
+                                    Text("\(commViewModel.currentCommMembers.count) 명")
+                                }
+                            }
+                            .font(.footnote)
                         }
-                    } header: {
-                        HStack {
-                            Text("새로 신청한 유저")
-                            Spacer()
-                            Text("\(commViewModel.currentCommMembers.count) 명")
-                        }
-                    }
-                    Section {
-                        ForEach($commViewModel.currentCommMembers) { $user in
-                            CommUserMgmtCellView(user: $user, actionType: .deport)
-                        }
-                    } header: {
-                        HStack {
-                            Text("그룹에 가입된 유저")
-                            Spacer()
-                            Text("\(commViewModel.currentCommMembers.count) 명")
-                        }
-                        .padding(.top)
                     }
                 }
                 .gmTitle()
@@ -58,11 +60,26 @@ struct CommUserMgmtView: View {
         }
         .tint(.black)
     }
+    
+    private enum MGMTSection: CaseIterable, Identifiable {
+        case wait, general
+        
+        var header: String {
+            switch self {
+            case .wait:
+                return "새로 신청한 유저"
+            case .general:
+                return "그룹에 가입된 유저"
+            }
+        }
+        
+        var id: Self { self }
+    }
 }
 
 struct UserManagementView_Previews: PreviewProvider {
     static var previews: some View {
         CommUserMgmtView()
-        .environmentObject(CommViewModel())
+            .environmentObject(CommViewModel())
     }
 }

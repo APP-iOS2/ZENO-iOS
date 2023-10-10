@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct AlarmView: View {
-    @StateObject var alarmVM: AlarmViewModel = AlarmViewModel()
-    @StateObject var iAPVM: IAPStore = IAPStore()
-    @State var communityArray: [Community] = Community.dummy
+    @EnvironmentObject var alarmViewModel: AlarmViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
+    @EnvironmentObject var commViewModel: CommViewModel
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false
@@ -23,69 +23,74 @@ struct AlarmView: View {
     @State private var isPurchaseSheet: Bool = false
     @State private var selectAlarm: Alarm?
     
-    init() {
-        UITableView.appearance().sectionFooterHeight = 0
-    }
-    
     var body: some View {
         NavigationStack {
             ZStack {
-                VStack {
-                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId, communityArray: communityArray)
-                    
-                    List {
-                        ForEach(alarmVM.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
-                            AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                        }
-                        .navigationDestination(isPresented: $isShowInitialView) {
-                            if let selectAlarm {
-                                AlarmInitialView(selectAlarm: selectAlarm)
+                Color("MainPink3")
+                    .ignoresSafeArea()
+                if commViewModel.joinedComm.isEmpty {
+                    AlarmEmptyView()
+                } else {
+                    VStack {
+                        AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
+                        
+                        ScrollView {
+                            ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
+                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                            }
+                            .navigationDestination(isPresented: $isShowInitialView) {
+                                if let selectAlarm {
+                                    AlarmInitialView(selectAlarm: selectAlarm)
+                                }
                             }
                         }
+                        .padding()
+                        .refreshable {
+                            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+                        }
+                        .sheet(isPresented: $isShowPaymentSheet, content: {
+                            AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
+                                isShowInitialView = true
+                            }
+                            .presentationDetents([.fraction(0.75)])
+                        })
                     }
-                    .sheet(isPresented: $isShowPaymentSheet, content: {
-                        AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
-                            isShowInitialView = true
-                        }
-                        .presentationDetents([.fraction(0.75)])
+                    .blur(radius: isShowPaymentSheet ? 1.5 : 0)
+                    .cashAlert(
+                        isPresented: $isLackingCoin,
+                        title: "코인이 부족합니다.",
+                        content: "투표를 통해 코인을 모아보세요.",
+                        primaryButtonTitle: "확인",
+                        primaryAction: { /* 송금 로직 */ }
+                    )
+                    .cashAlert(
+                        isPresented: $isLackingInitialTicket,
+                        title: "초성확인권이 부족합니다.",
+                        content: "초성확인권을 구매하세요.",
+                        primaryButtonTitle: "확인",
+                        primaryAction: { isPurchaseSheet.toggle() }
+                    )
+                    .sheet(isPresented: $isPurchaseSheet, content: {
+                        PurchaseView()
                     })
-                }
-                .blur(radius: isShowPaymentSheet ? 1.5 : 0)
-                .cashAlert(
-                  isPresented: $isLackingCoin,
-                  title: "코인이 부족합니다.",
-                  content: "투표를 통해 코인을 모아보세요.",
-                  primaryButtonTitle: "확인",
-                  primaryAction: { /* 송금 로직 */ }
-                )
-                .cashAlert(
-                  isPresented: $isLackingInitialTicket,
-                  title: "초성확인권이 부족합니다.",
-                  content: "초성확인권을 구매하세요.",
-                  primaryButtonTitle: "확인",
-                  primaryAction: { isPurchaseSheet.toggle() }
-                )
-                .sheet(isPresented: $isPurchaseSheet, content: {
-                    PurchaseView()
-                        .environmentObject(iAPVM)
-                })
-                
-                VStack {
-                    Spacer()
                     
-                    Button(action: {
-                        if selectAlarm != nil {
-                            isShowPaymentSheet = true
-                        }
-                    }, label: {
-                        Text("선택하기")
-                            .font(.title3)
-                            .frame(maxWidth: .infinity)
-                    })
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color("MainPurple1"))
-                    .disabled(selectAlarm == nil ? true : false)
-                    .padding(.horizontal)
+                    VStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            if selectAlarm != nil {
+                                isShowPaymentSheet = true
+                            }
+                        }, label: {
+                            Text("선택하기")
+                                .font(.title3)
+                                .frame(maxWidth: .infinity)
+                        })
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color("MainPurple1"))
+                        .disabled(selectAlarm == nil ? true : false)
+                        .padding(.horizontal)
+                    }
                 }
             }
         }
@@ -99,5 +104,6 @@ struct AlarmView_Preview: PreviewProvider {
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
             .environmentObject(IAPStore())
+            .environmentObject(CommViewModel())
     }
 }
