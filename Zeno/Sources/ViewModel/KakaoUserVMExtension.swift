@@ -25,8 +25,11 @@ extension UserViewModel {
     
     /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
+        print("🦁")
         await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+        print("🦁🦁")
         await self.logout()
+        print("🦁🦁🦁")
     }
     
     /// 카카오 로그인 && Firebase 로그인

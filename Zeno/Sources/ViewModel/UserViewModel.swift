@@ -80,6 +80,7 @@ final class UserViewModel: ObservableObject {
                 self.setSignStatus(.signIn)
             }
             print("🔵 로그인 성공")
+            
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
             case .wrongPassword:  // 잘못된 비밀번호
@@ -278,11 +279,11 @@ final class UserViewModel: ObservableObject {
 
     /// 회원탈퇴
     func deleteUser() async {
-        // DB User정보 delete, Auth 정보 Delete 부분 추가하기.  // 현재 작동안됨. 23.10.10
         do {
             if let currentUser {
                 try await firebaseManager.delete(data: currentUser)
                 try await Auth.auth().currentUser?.delete()
+                await self.logoutWithKakao()
             }
         } catch {
             print("🦕로그아웃 오류 : \(error.localizedDescription)")
