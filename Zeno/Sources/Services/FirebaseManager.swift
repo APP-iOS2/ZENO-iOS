@@ -18,6 +18,7 @@ enum FirebaseError: Error {
     case failToDelete
     case failToGetDocuments
     case failToUploadImg
+    case failToEncode
     case documentToData
 }
 
@@ -32,7 +33,6 @@ final class FirebaseManager {
     // MARK: async
     func create<T: FirebaseAvailable>(data: T) async throws where T: Encodable {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
         do {
             try documentRef.setData(from: data)
         } catch {
@@ -70,6 +70,13 @@ final class FirebaseManager {
         }
     }
     
+    func createDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
+        datas.forEach { data in
+            let collectionRef = db.collection("\(type(of: data))")
+            try? collectionRef.document(data.id).setData(from: data)
+        }
+    }
+    
     func read<T: FirebaseAvailable>(type: T.Type, id: String) async -> Result<T, Error> where T: Decodable {
         guard !id.isEmpty else {
             return .failure(FirebaseError.emptyID)
@@ -81,33 +88,6 @@ final class FirebaseManager {
             return .success(try await documentRef.getDocument(as: T.self))
         } catch {
             return .failure(FirebaseError.failToRead)
-        }
-    }
-    
-    func update<T: FirebaseAvailable, U: Decodable>(data: T,
-                                                    value keyPath: WritableKeyPath<T, U>,
-                                                    to: U) async throws {
-        let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
-        do {
-            try await documentRef.updateData([data.getPropertyName(keyPath): to])
-        } catch {
-            throw FirebaseError.failToUpdate
-        }
-    }
-    
-    func delete<T: FirebaseAvailable>(data: T) async throws {
-        let documentID = data.id
-        guard !documentID.isEmpty else {
-            throw FirebaseError.emptyID
-        }
-        
-        let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
-        do {
-            try await documentRef.delete()
-        } catch {
-            throw FirebaseError.failToDelete
         }
     }
     
@@ -149,10 +129,44 @@ final class FirebaseManager {
         return results
     }
     
-    func uploadDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
-        datas.forEach { data in
-            let collectionRef = db.collection("\(type(of: data))")
-            try? collectionRef.document(data.id).setData(from: data)
+    func update<T: FirebaseAvailable, U: Encodable>(data: T,
+                                                    value keyPath: WritableKeyPath<T, U>,
+                                                    to: U) async throws {
+        let documentRef = db.collection("\(type(of: data))").document(data.id)
+        
+        do {
+            let dataType = try JSONEncoder().encode(to)
+            do {
+                let any = try JSONSerialization.jsonObject(with: dataType)
+                do {
+                    try await documentRef.updateData([data.getPropertyName(keyPath): any])
+                } catch {
+                    throw FirebaseError.failToUpdate
+                }
+            } catch {
+                do {
+                    try await documentRef.updateData([data.getPropertyName(keyPath): to])
+                } catch {
+                    throw FirebaseError.failToUpdate
+                }
+            }
+        } catch {
+            throw FirebaseError.failToEncode
+        }
+    }
+    
+    func delete<T: FirebaseAvailable>(data: T) async throws {
+        let documentID = data.id
+        guard !documentID.isEmpty else {
+            throw FirebaseError.emptyID
+        }
+        
+        let documentRef = db.collection("\(type(of: data))").document(data.id)
+        
+        do {
+            try await documentRef.delete()
+        } catch {
+            throw FirebaseError.failToDelete
         }
     }
 }
