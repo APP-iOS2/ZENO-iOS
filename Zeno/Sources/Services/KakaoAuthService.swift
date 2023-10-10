@@ -13,7 +13,7 @@ import KakaoSDKUser
 
 /// 로그인 여부 UserDefault에 저장
 enum SignStatus: String {
-    case signIn, signOut, none
+    case signIn, none
     
     /// 로그인상태 저장.
     func saveStatus() {
@@ -110,9 +110,11 @@ final class KakaoAuthService {
                     }
                 case .failure(let err):
                     print(err.localizedDescription)
+                    return nil
                 }
             }
         } catch {
+            // 카카오 로그인 재시도 하는 로직 추가예정
             print(error.localizedDescription)
         }
         
@@ -168,21 +170,6 @@ extension KakaoAuthService {
         }
     }
     
-    /// 기존 로그인 무시하고 재로그인
-//    private func ignoreLoginInKakao() async -> (OAuthToken?, Error?) {
-//        return await withCheckedContinuation { continuation in
-//            kakao.loginWithKakaoAccount(prompts: [.Login]) {(oauthToken, error) in
-//                if let error {
-//                    print("🐹Failed to ignore existing login \(error.localizedDescription)")
-//                    continuation.resume(returning: (nil, error))
-//                } else {
-//                    print("🐹Re-login successful after ignoring previous login")
-//                    continuation.resume(returning: (oauthToken, nil))
-//                }
-//            }
-//        }
-//    }
-    
     // MARK: 카카오 계정이 없으신가요??
     /// 카카오계정을 만들고 (가입후) 로그인하기
     private func registAccountAndLoginInKakao() async -> (OAuthToken?, Error?) {
@@ -211,7 +198,6 @@ extension KakaoAuthService {
                         continuation.resume(throwing: error)
                     } else {
                         print("🐹토큰 조회 성공")
-//                        _ = KakaoSignStatus.setStatus(.signIn) // 상태 변경 (로그인됨)
                         continuation.resume(returning: accessToken)
                     }
                 }
