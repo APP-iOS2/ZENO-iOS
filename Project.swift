@@ -29,7 +29,8 @@ let infoPlist: [String: InfoPlist.Value] = [
             "CFBundleURLSchemes": ["ZenoApp"]
         ]
     ],
-    "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)"
+    "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)",
+	"FIREBASE_PUSH_API_KEY" : "$(FIREBASE_PUSH_API_KEY)",
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
