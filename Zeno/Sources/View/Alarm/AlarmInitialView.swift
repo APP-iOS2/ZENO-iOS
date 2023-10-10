@@ -34,7 +34,7 @@ struct AlarmInitialView: View {
                     .confettiCannon(counter: $counter, num: 50, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 235)
                 
                 VStack(spacing: 4) {
-                    Text("\(selectAlarm.recieveUserName)님을")
+                    Text("\(selectAlarm.receiveUserName)님을")
                     Text("\(selectAlarm.zenoString)")
                     Text("으로 선택한 사람")
                 }
@@ -128,7 +128,7 @@ struct AlarmInitialView: View {
 
 struct AlarmInitialView_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", recieveUserID: "bb", recieveUserName: "bb", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "token", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
     }

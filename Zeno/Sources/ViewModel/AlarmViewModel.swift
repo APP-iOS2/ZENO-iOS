@@ -15,11 +15,11 @@ class AlarmViewModel: ObservableObject {
     
     // Init 처음 불러주는게 왜 불편한ㄱㅏ ? -> 객체 생성시 처음 만들어줌 -> 네트워킹 문제라던가 fetch가 안된다면, 생성이 미뤄짐.
     // 그럼 대기 -> 그럼 앱이 죽은 것 처럼 보임.
-    init() {
-        Task {
-            await fetchAlarm(showUserID: "1234")
-        }
-    }
+//    init(userID: String) {
+//        Task {
+//            await fetchAlarm(showUserID: userID)
+//        }
+//    }
     
     // CRUD
     // C => 완전 다 생성

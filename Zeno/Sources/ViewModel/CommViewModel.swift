@@ -113,6 +113,10 @@ class CommViewModel: ObservableObject {
         self.joinedComm = communities
     }
     
+    func getCommunityByID(_ id: String) -> Community? {
+        return allComm.first { community in
+            community.id == id
+
     func handleInviteURL(_ url: URL) {
         guard url.scheme == "ZenoApp" else {
             return
