@@ -87,8 +87,8 @@ final class UserViewModel: ObservableObject {
                             kakaoToken: "카카오토큰",
                             coin: 0,
                             megaphone: 0,
-							showInitial: 0,
-							requestComm: []
+                            showInitial: 0,
+                            requestComm: []
             )
             await uploadUserData(user: user)
             print("🔵 회원가입 성공")
@@ -237,16 +237,16 @@ final class UserViewModel: ObservableObject {
             throw error
         }
     }
-	
-	/// 가입신청 보낸 그룹 등록
-	@MainActor
-	func addRequestComm(comm: Community) async throws {
-		guard var currentUser else { return }
-		try await firebaseManager.update(data: currentUser.self,
-										 value: \.requestComm,
-										 to: currentUser.requestComm + [comm.id])
-		self.currentUser?.requestComm += [comm.id]
-	}
+    
+    /// 가입신청 보낸 그룹 등록
+    @MainActor
+    func addRequestComm(comm: Community) async throws {
+        guard var currentUser else { return }
+        try await firebaseManager.update(data: currentUser.self,
+                                         value: \.requestComm,
+                                         to: currentUser.requestComm + [comm.id])
+        self.currentUser?.requestComm += [comm.id]
+    }
 }
 
 extension UserViewModel {

@@ -61,24 +61,24 @@ class CommViewModel: ObservableObject {
     /// 모든 커뮤니티를 검색하기 위한 String
     @Published var commSearchTerm: String = ""
     /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
-	var searchedUsers: [User] {
-		if userSearchTerm.isEmpty {
-			return currentCommMembers
-		} else {
-			return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
-		}
-	}
-	/// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
-	var searchedComm: [Community] {
-		var searchCom = allComm
-			.filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
-		if !joinedComm.isEmpty {
-			searchCom = searchCom.filter { searched in
-				joinedComm.contains { $0.id != searched.id }
-			}
-		}
-		return searchCom
-	}
+    var searchedUsers: [User] {
+        if userSearchTerm.isEmpty {
+            return currentCommMembers
+        } else {
+            return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
+        }
+    }
+    /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
+    var searchedComm: [Community] {
+        var searchCom = allComm
+            .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
+        if !joinedComm.isEmpty {
+            searchCom = searchCom.filter { searched in
+                joinedComm.contains { $0.id != searched.id }
+            }
+        }
+        return searchCom
+    }
     @Published var commIDInDeepLink: String = ""
     @Published var isJoinWithDeeplinkView: Bool = false
     
@@ -120,7 +120,7 @@ class CommViewModel: ObservableObject {
     }
     
     func handleInviteURL(_ url: URL) async {
-        await commViewModel.fetchAllComm()
+        await fetchAllComm()
         guard url.scheme == "ZenoApp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
@@ -131,7 +131,7 @@ class CommViewModel: ObservableObject {
             return
         }
         
-        guard let value = components.queryItems.first(where: { $0.name == "commID" })?.value else {
+        guard let value = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
             print("유효하지 않은 URL value")
             return
         }
@@ -368,8 +368,8 @@ class CommViewModel: ObservableObject {
             print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
         }
     }
-  
-      /// 그룹에 가입신청 보내는 함수
+    
+    /// 그룹에 가입신청 보내는 함수
     @MainActor
     func requestJoinComm(comm: Community) async {
         guard let currentUser else { return }
@@ -384,8 +384,8 @@ class CommViewModel: ObservableObject {
         }
         await fetchCurrentCommMembers()
     }
-  
-  func checkApplied(comm: Community) -> Bool {
+    
+    func checkApplied(comm: Community) -> Bool {
         guard let currentUser else { return false }
         return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false
     }
