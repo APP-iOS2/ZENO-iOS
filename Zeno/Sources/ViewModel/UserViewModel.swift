@@ -33,12 +33,24 @@ final class UserViewModel: ObservableObject {
     }
     
     @MainActor
-    func leaveComm(commID: String) async {
-        guard var currentUser else { return }
-        currentUser.commInfoList = currentUser.commInfoList.filter { $0.id != commID }
+    func joinCommWithDeeplink(comm: Community) async {
+        guard let currentUser else { return }
+        let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
         do {
-            try await firebaseManager.create(data: currentUser)
-            self.currentUser = currentUser
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newCommList)
+        } catch {
+            print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
+            self.currentUser?.commInfoList = newCommList
+        }
+    }
+    
+    @MainActor
+    func leaveComm(commID: String) async {
+        guard let currentUser else { return }
+        let changedList = currentUser.commInfoList.filter { $0.id != commID }
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedList)
+            self.currentUser?.commInfoList = changedList
         } catch {
             print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
         }

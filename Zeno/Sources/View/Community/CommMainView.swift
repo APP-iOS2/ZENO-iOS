@@ -80,7 +80,7 @@ extension CommMainView {
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(commViewModel.generalMembers.count)")
+                Text("새로 들어온 친구 \(commViewModel.recentlyJoinedMembers.count)")
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -135,7 +135,7 @@ extension CommMainView {
                 }
             } else {
                 HStack {
-                    Text("친구 \(commViewModel.generalMembers.count)")
+                    Text("친구 \(commViewModel.currentCommMembers.count)")
                         .font(.footnote)
                     Spacer()
                     Button {
@@ -147,7 +147,7 @@ extension CommMainView {
                     }
                 }
                 VStack {
-                    ForEach(commViewModel.generalMembers) { user in
+                    ForEach(commViewModel.currentCommMembers) { user in
                         userCell(user: user)
                     }
                 }

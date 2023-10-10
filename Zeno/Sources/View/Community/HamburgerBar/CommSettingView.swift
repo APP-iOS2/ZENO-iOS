@@ -46,7 +46,7 @@ struct CommSettingView: View {
                                 await commViewModel.createComm(comm: emptyComm, image: selectedImage)
                                 await userViewModel.joinNewGroup(newID: emptyComm.id)
                             case .edit:
-                                await commViewModel.updateComm(comm: emptyComm, image: selectedImage)
+                                await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
                             }
                             dismiss()
                         }

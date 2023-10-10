@@ -29,11 +29,16 @@ class CommViewModel: ObservableObject {
     @Published var currentWaitApprovalMembers: [User] = []
     /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
     var recentlyJoinedMembers: [User] {
-        filterMembers(condition: .recentlyJoined)
-    }
-    /// [미사용중, 추후 판별 후 삭제] 선택된 커뮤니티의 가입한지 3일이 지난 유저
-    var generalMembers: [User] {
-        filterMembers(condition: .general)
+        guard let currentComm else { return [] }
+        let users = currentCommMembers.filter {
+            currentComm.joinMembers
+                .filter {
+                    $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
+                }
+                .map { $0.id }
+                .contains($0.id)
+        }
+        return exceptCurrentUser(users: users)
     }
     /// 선택된 커뮤니티의 매니저인지 확인해 햄버거바의 세팅을 보여주기 위한 Bool
     var isCurrentCommManager: Bool {
@@ -119,6 +124,17 @@ class CommViewModel: ObservableObject {
         }
     }
     
+    func checkApplied(comm: Community) -> Bool {
+        guard let currentUser else { return false }
+        return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false
+    }
+    
+    private func exceptCurrentUser(users: [User]) -> [User] {
+        guard let currentUser else { return users }
+        return users.filter { $0.id != currentUser.id }
+    }
+    
+    @MainActor
     func handleInviteURL(_ url: URL) async {
         await fetchAllComm()
         guard url.scheme == "ZenoApp" else { return }
@@ -131,31 +147,31 @@ class CommViewModel: ObservableObject {
             return
         }
         
-        guard let value = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
+        guard let commID = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
             print("유효하지 않은 URL value")
             return
         }
-        commIDInDeepLink = value
-        isJoinWithDeeplinkView = true
+        guard let currentUser else { return }
+        if currentUser.commInfoList.contains(where: { $0.id == commID }) {
+            guard let index = joinedComm.firstIndex(where: { $0.id == commID }) else { return }
+            selectedComm = index
+        } else {
+            commIDInDeepLink = commID
+            isJoinWithDeeplinkView = true
+        }
     }
     
     @MainActor
     func joinCommWithDeeplink(commID: String) async {
-        guard var currentUser,
-              let index = allComm.firstIndex(where: { $0.id == commID })
+        guard let currentUser,
+              let willJoinComm = allComm.first(where: { $0.id == commID })
         else { return }
-        let joinedAt = Date().timeIntervalSince1970
-        var invitedComm = allComm[index]
-        invitedComm.joinMembers.append(.init(id: currentUser.id, joinedAt: joinedAt))
-        currentUser.commInfoList.append(.init(id: commID, buddyList: [], alert: true))
+        let newMember = Community.Member(id: currentUser.id, joinedAt: Date().timeIntervalSince1970)
+        let newCommMembers = willJoinComm.joinMembers + [newMember]
         do {
-            _ = try await firebaseManager.create(data: invitedComm)
-            do {
-                _ = try await firebaseManager.create(data: currentUser)
-                allComm.append(invitedComm)
-            } catch {
-                print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
-            }
+            try await firebaseManager.update(data: willJoinComm, value: \.joinMembers, to: newCommMembers)
+            guard let index = allComm.firstIndex(where: { $0.id == willJoinComm.id }) else { return }
+            allComm[index].joinMembers = newCommMembers
         } catch {
             print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
         }
@@ -165,17 +181,16 @@ class CommViewModel: ObservableObject {
     func deleteComm() async {
         if isCurrentCommManager {
             guard let currentComm else { return }
-            let joinedIDs = currentComm.joinMembers.map { $0.id }
             do {
-                _ = try await firebaseManager.delete(data: currentComm)
+                try await firebaseManager.delete(data: currentComm)
+                let joinedIDs = currentComm.joinMembers.map { $0.id }
                 let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
                 await joinedResults.asyncForEach { [weak self] result in
                     switch result {
                     case .success(var user):
-                        guard let index = user.commInfoList.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                        user.commInfoList.remove(at: index)
+                        let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
                         do {
-                            try await self?.firebaseManager.create(data: user)
+                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
                         } catch {
                             print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
                         }
@@ -183,14 +198,14 @@ class CommViewModel: ObservableObject {
                         print(#function + "삭제 된 커뮤니티의 joinMembers의 id가 User Collection에서 Document 찾기 실패함")
                     }
                 }
-                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentComm.waitApprovalMemberIDs)
+                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                             ids: currentComm.waitApprovalMemberIDs)
                 await waitResults.asyncForEach { [weak self] result in
                     switch result {
                     case .success(var user):
-                        guard let index = user.commInfoList.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                        user.commInfoList.remove(at: index)
+                        let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
                         do {
-                            try await self?.firebaseManager.create(data: user)
+                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
                         } catch {
                             print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
                         }
@@ -209,14 +224,13 @@ class CommViewModel: ObservableObject {
     @MainActor
     func delegateManager(user: User) async {
         if isCurrentCommManager {
-            guard var currentComm else { return }
-            currentComm.managerID = user.id
+            guard let currentComm else { return }
             do {
-                _ = try await firebaseManager.create(data: currentComm)
+                try await firebaseManager.update(data: currentComm, value: \.managerID, to: user.id)
                 guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
                 allComm[commIndex] = currentComm
             } catch {
-                print(#function + "매니저 권한 위임 실패")
+                print(#function + "매니저 권한 위임 업데이트 실패")
             }
         }
     }
@@ -224,25 +238,22 @@ class CommViewModel: ObservableObject {
     @MainActor
     func acceptMember(user: User) async {
         if isCurrentCommManager {
-            guard var currentComm,
-                  let index = currentComm.waitApprovalMemberIDs.firstIndex(where: { $0 == user.id })
-            else { return }
-            let tempMemberID = currentComm.waitApprovalMemberIDs.remove(at: index)
-            let acceptMember = Community.Member.init(id: tempMemberID, joinedAt: Date().timeIntervalSince1970)
-            currentComm.joinMembers.append(acceptMember)
-            var willUpdateUser = user
-            willUpdateUser.commInfoList.append(.init(id: currentComm.id, buddyList: [], alert: true))
+            guard let currentComm else { return }
+            let acceptedMember = Community.Member.init(id: user.id, joinedAt: Date().timeIntervalSince1970)
+            let updatedWaitList = currentComm.waitApprovalMemberIDs.filter { $0 != acceptedMember.id }
+            let updatedCurrentMembers = currentComm.joinMembers + [acceptedMember]
             do {
-                try await firebaseManager.create(data: currentComm)
+                try await firebaseManager.update(data: currentComm, value: \.waitApprovalMemberIDs, to: updatedWaitList)
                 do {
-                    try await firebaseManager.create(data: willUpdateUser)
+                    try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: updatedCurrentMembers)
                     guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                    allComm[commIndex] = currentComm
+                    allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
+                    allComm[commIndex].joinMembers = updatedCurrentMembers
                 } catch {
-                    print(#function + "유저 commInfoList 수정 실패")
+                    print(#function + "커뮤니티 Document에 waitApprovalMemberIDs 업데이트 실패")
                 }
             } catch {
-                print(#function + "그룹가입 수락 실패")
+                print(#function + "커뮤니티 Document에 joinMembers 업데이트 실패")
             }
         }
     }
@@ -250,20 +261,20 @@ class CommViewModel: ObservableObject {
     @MainActor
     func deportMember(user: User) async {
         if isCurrentCommManager {
-            guard var currentComm,
-                  let memberIndex = currentComm.joinMembers.firstIndex(where: { $0.id == user.id }),
-                  let commIndex = user.commInfoList.firstIndex(where: { $0.id == currentComm.id })
-            else { return }
-            currentComm.joinMembers.remove(at: memberIndex)
-            var deportedUser = user
-            deportedUser.commInfoList = deportedUser.commInfoList.filter({ $0.id != currentComm.id })
+            guard let currentComm else { return }
+            let updatedJoinMembers = currentComm.joinMembers.filter { $0.id != user.id }
+            let deportedMembersComm = user.commInfoList.filter({ $0.id != currentComm.id })
             do {
-                _ = try await firebaseManager.create(data: currentComm)
-                _ = try await firebaseManager.create(data: deportedUser)
+                try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: updatedJoinMembers)
                 guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                allComm[commIndex] = currentComm
+                allComm[commIndex].joinMembers = updatedJoinMembers
+                do {
+                    try await firebaseManager.update(data: user, value: \.commInfoList, to: deportedMembersComm)
+                } catch {
+                    print(#function + "내보낸 유저 Document에 commInfoList 업데이트 실패")
+                }
             } catch {
-                print(#function + "그룹에서 내보내기 실패")
+                print(#function + "커뮤니티 Document에 joinMembers 업데이트 실패")
             }
         }
     }
@@ -283,18 +294,17 @@ class CommViewModel: ObservableObject {
     }
     
     @MainActor
-    func updateComm(comm: Community, image: UIImage?) async {
+    func updateCommInfo(comm: Community, image: UIImage?) async {
         do {
-            guard let image else {
+            if let image {
+                let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
+                guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else { return }
+                allComm[index] = changedComm
+            } else {
                 try await firebaseManager.create(data: comm)
-                return
+                guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else { return }
+                allComm[index] = comm
             }
-            let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
-            guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else {
-                print(#function + "업데이트된 Community의 ID joinedCommunities에서 찾을 수 없음")
-                return
-            }
-            allComm[index] = changedComm
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
         }
@@ -310,7 +320,7 @@ class CommViewModel: ObservableObject {
         newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
         do {
             if let image {
-                _ = try await firebaseManager.createWithImage(data: newComm, image: image)
+                newComm = try await firebaseManager.createWithImage(data: newComm, image: image)
             } else {
                 try await firebaseManager.create(data: newComm)
             }
@@ -322,8 +332,11 @@ class CommViewModel: ObservableObject {
     
     @MainActor
     func fetchCurrentCommMembers() async {
-        guard let currentCommMemberIDs = currentComm?.joinMembers.map({ $0.id }) else { return }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentCommMemberIDs)
+        guard let currentCommMemberIDs = currentComm?.joinMembers.map({ $0.id }),
+              let currentWaitMemberIDs = currentComm?.waitApprovalMemberIDs
+        else { return }
+        let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                 ids: currentCommMemberIDs + currentWaitMemberIDs)
         let currentUsers = results.compactMap {
             switch $0 {
             case .success(let success):
@@ -333,36 +346,23 @@ class CommViewModel: ObservableObject {
             }
         }
         self.currentCommMembers = exceptCurrentUser(users: currentUsers)
+            .filter { currentCommMemberIDs.contains($0.id) }
         if isCurrentCommManager {
-            await fetchCurrentWaitMembers()
+            self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
+                .filter { currentWaitMemberIDs.contains($0.id) }
         }
-    }
-    
-    @MainActor
-    private func fetchCurrentWaitMembers() async {
-        guard let currentWaitMemberIDs = currentComm?.waitApprovalMemberIDs else { return }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: currentWaitMemberIDs)
-        let currentWaitUsers = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
-        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers)
     }
     
     @MainActor
     func leaveComm() async {
-        guard var currentComm,
+        guard let currentComm,
               let currentUser
         else { return }
-        currentComm.joinMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
+        let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         do {
-            try await firebaseManager.create(data: currentComm)
-            guard let index = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-            allComm.remove(at: index)
+            try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
+            guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+            joinedComm.remove(at: index)
             selectedComm = 0
         } catch {
             print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
@@ -383,36 +383,5 @@ class CommViewModel: ObservableObject {
             print(#function + "그룹에 가입신청 실패")
         }
         await fetchCurrentCommMembers()
-    }
-    
-    func checkApplied(comm: Community) -> Bool {
-        guard let currentUser else { return false }
-        return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false
-    }
-    
-    private func filterMembers(condition: MemberCondition) -> [User] {
-        guard let currentComm else { return [] }
-        let filterMember: [Community.Member]
-        switch condition {
-        case .recentlyJoined:
-            filterMember = currentComm.joinMembers.filter {
-                $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
-            }
-        case .general:
-            filterMember = currentComm.joinMembers.filter {
-                $0.joinedAt - Date().timeIntervalSince1970 >= -86400 * 3
-            }
-        }
-        let users = currentCommMembers.filter {
-            filterMember
-                .map { $0.id }
-                .contains($0.id)
-        }
-        return exceptCurrentUser(users: users)
-    }
-    
-    private func exceptCurrentUser(users: [User]) -> [User] {
-        guard let currentUser else { return users }
-        return users.filter { $0.id != currentUser.id }
     }
 }
