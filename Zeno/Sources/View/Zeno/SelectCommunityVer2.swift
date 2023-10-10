@@ -28,6 +28,7 @@ struct SelectCommunityVer2: View {
         NavigationStack {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
+                    
                     CardViewVer2(currentIndex: currentIndex)
                         .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                         .onChange(of: currentIndex) { _ in
@@ -36,9 +37,8 @@ struct SelectCommunityVer2: View {
                             }
                         }
                         .offset(y: .screenHeight * 0.04)
-                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
-                        .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
                 }
+                
                 commuityListView()
                     .background(.clear)
                 
