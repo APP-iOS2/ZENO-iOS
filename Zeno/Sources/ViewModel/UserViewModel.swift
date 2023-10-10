@@ -209,12 +209,8 @@ final class UserViewModel: ObservableObject {
             let zenoStartTime = Date().timeIntervalSince1970
             try await firebaseManager.update(data: currentUser, value: \.zenoEndAt, to: zenoStartTime + Double(coolTime))
             try await loadUserData()
-            print("------------------------")
-            print("\(zenoStartTime)")
-            print("\(zenoStartTime + Double(coolTime))")
-            print("updateZenoTimer !! ")
         } catch {
-            print("Error updating zeno timer: \(error)")
+            print(#function + "Error updating zeno timer: \(error)")
         }
     }
     
@@ -233,7 +229,7 @@ final class UserViewModel: ObservableObject {
     
     // MARK: 제노 뷰 모델로 옮길 예정
     /// 친구 id 배열로  친구 이름 배열 받아오는 함수
-    func userIDtoName(idArray: [String]) async -> [String] {
+    func IDArrayToNameArray(idArray: [String]) async -> [String] {
         var resultArray: [String] = []
         do {
             for index in 0..<idArray.count {
@@ -241,33 +237,33 @@ final class UserViewModel: ObservableObject {
                 resultArray.append(result.name)
             }
         } catch {
-            print("fetch 유저 실패")
+            print(#function + "fetch 유저 실패")
             return []
         }
         return resultArray
     }
     
-    // MARK: 제노 뷰 모델로 옮길 예정
-    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
-    func commIDtoName(id: String) async -> String? {
+    /// 친구 id로  친구 이름 받아오는 함수
+    func IDToName(id: String) async -> String {
         do {
-            let result = try await fetchCommunity(withUid: id)
+            let result = try await fetchUser(withUid: id)
             return result.name
         } catch {
-            print("fetchName 실패")
-            return nil
+            print(#function + "fetch 유저 실패")
         }
+        return "fetch실패"
     }
-    
+
     // MARK: 제노 뷰 모델로 옮길 예정
-    func fetchCommunity (withUid uid: String) async throws -> Community {
-        let result = await firebaseManager.read(type: Community.self, id: uid)
-        switch result {
-        case .success(let success):
-            return success
-        case .failure(let error):
-            throw error
+    /// 커뮤니티 id로 친구 배열을 받아오는 함수.
+    func getFriendsInComm(comm: Community) -> [String] {
+        if let currentUser {
+            return currentUser.commInfoList.first(where: { $0.id == comm.id})?.buddyList ?? []
+        } else {
+           print(#function + "commid로 해당하는 community를 찾을 수 없음")
         }
+        print(#function + "currentUser가 없음")
+        return []
     }
     
     @MainActor

@@ -39,8 +39,8 @@ struct SelectCommunityVer2: View {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
                                 }
                             }
+                        }
                     }
-                }
                 
                 commuityListView()
                     .background(.clear)
