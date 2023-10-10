@@ -39,6 +39,20 @@ final class UserViewModel: ObservableObject {
     }
     
     @MainActor
+    func addFriend(user: User, comm: Community) async {
+        guard let currentUser,
+              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+        var newInfo = currentUser.commInfoList
+        newInfo[index].buddyList.append(user.id)
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+            self.currentUser?.commInfoList = newInfo
+        } catch {
+            print(#function + "User Document에 commInfoList 업데이트 실패")
+        }
+    }
+    
+    @MainActor
     func joinCommWithDeeplink(comm: Community) async {
         guard let currentUser else { return }
         let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]

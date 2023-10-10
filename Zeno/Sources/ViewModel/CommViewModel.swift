@@ -111,6 +111,15 @@ class CommViewModel: ObservableObject {
         case recentlyJoined, general
     }
     
+    func isFriend(user: User) -> Bool {
+        guard let currentComm,
+              let currentUser,
+              let buddyList = currentUser.commInfoList
+            .first(where: { $0.id == currentComm.id })?.buddyList
+        else { return false }
+        return buddyList.contains(user.id)
+    }
+    
     func updateCurrentUser(user: User?) {
         self.currentUser = user
         filterJoinedComm()
