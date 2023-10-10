@@ -221,7 +221,7 @@ class CommViewModel: ObservableObject {
                                                                              ids: currentComm.waitApprovalMemberIDs)
                 await waitResults.asyncForEach { [weak self] result in
                     switch result {
-                    case .success(var user):
+                    case .success(let user):
                         let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
                         do {
                             try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
