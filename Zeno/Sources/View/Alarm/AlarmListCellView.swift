@@ -28,7 +28,7 @@ struct AlarmListCellView: View {
                     let url = URL(string: urlStr) {
                     KFImage(url)
                         .resizable()
-                        .frame(width: 60)
+                        .frame(width: 60, height: 60)
                         .clipShape(Circle())
                         .overlay(
                             Circle()
