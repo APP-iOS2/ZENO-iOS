@@ -48,6 +48,7 @@ class CommViewModel: ObservableObject {
             .filter({ currentComm?.id == $0.id })
             .first?.alert ?? false
     }
+    
     var isCurrentCommMembersEmpty: Bool {
         guard let currentComm,
               let currentUser
@@ -60,25 +61,24 @@ class CommViewModel: ObservableObject {
     /// 모든 커뮤니티를 검색하기 위한 String
     @Published var commSearchTerm: String = ""
     /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
-    var searchedUsers: [User] {
-        if userSearchTerm.isEmpty {
-            return currentCommMembers
-        } else {
-            return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
-        }
-    }
-    /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
-    var searchedComm: [Community] {
-        if commSearchTerm.isEmpty {
-            return joinedComm
-        } else {
-            return allComm
-                .filter { $0.name.contains(commSearchTerm) }
-                .filter { allComm in
-                    joinedComm.contains { $0.id != allComm.id }
-                }
-        }
-    }
+	var searchedUsers: [User] {
+		if userSearchTerm.isEmpty {
+			return currentCommMembers
+		} else {
+			return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
+		}
+	}
+	/// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
+	var searchedComm: [Community] {
+		var searchCom = allComm
+			.filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
+		if !joinedComm.isEmpty {
+			searchCom = searchCom.filter { searched in
+				joinedComm.contains { $0.id != searched.id }
+			}
+		}
+		return searchCom
+	}
     @Published var commIDInDeepLink: String = ""
     @Published var isJoinWithDeeplinkView: Bool = false
     
@@ -111,6 +111,12 @@ class CommViewModel: ObservableObject {
         let commIDs = currentUser.commInfoList.map { $0.id }
         let communities = allComm.filter { commIDs.contains($0.id) }
         self.joinedComm = communities
+    }
+    
+    func getCommunityByID(_ id: String) -> Community? {
+        return allComm.first { community in
+            community.id == id
+        }
     }
     
     func handleInviteURL(_ url: URL) async {
@@ -344,7 +350,7 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers) 
+        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers)
     }
     
     @MainActor

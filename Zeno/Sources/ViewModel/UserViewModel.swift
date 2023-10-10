@@ -245,8 +245,7 @@ final class UserViewModel: ObservableObject {
 		try await firebaseManager.update(data: currentUser.self,
 										 value: \.requestComm,
 										 to: currentUser.requestComm + [comm.id])
-		
-		try await self.currentUser = fetchUser(withUid: currentUser.id)
+		self.currentUser?.requestComm += [comm.id]
 	}
 }
 
