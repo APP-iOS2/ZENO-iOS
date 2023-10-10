@@ -18,6 +18,7 @@ struct ZenoView: View {
     @State private var answer: [Alarm] = []
     
     @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @StateObject private var zenoViewModel: ZenoViewModel = ZenoViewModel()
     
     var body: some View {
@@ -51,7 +52,10 @@ struct ZenoView: View {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
-                                PushNotificationManager.shared.sendPushNotification(toFCMToken: user.fcmToken, title: "Zeno", body: "\(zenoList[selected].question)")
+                                // TODO: sendUser 는 로그인 된 현재 유저, receiveUser 는 퀴즈에서 선택한 유저, 현재 선택된 Community, 지금 풀고있는 zeno 를 입력해주시면 감사하겠습니다.
+//                                Task {
+//                                    await alarmViewModel.pushAlarm(sendUser: <#T##User#>, receiveUser: user, community: <#T##Community#>, zeno: <#T##Zeno#>)
+//                                }
                                 selected += 1
                                 resetUsers()
                             } label: {
@@ -110,5 +114,6 @@ struct ZenoView_pro: PreviewProvider {
     static var previews: some View {
         ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
             .environmentObject(UserViewModel())
+            .environmentObject(AlarmViewModel())
     }
 }

@@ -75,10 +75,11 @@ struct TabBarView: View {
         .environmentObject(alarmViewModel)
         .environmentObject(iAPStore)
         .task {
-            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+            if let loginUser = userViewModel.currentUser {
+                await alarmViewModel.fetchAlarm(showUserID: loginUser.id)
+            }
         }
 	}
-
 }
 
 struct TabBarView_Previews: PreviewProvider {
