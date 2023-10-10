@@ -33,7 +33,8 @@ class CommViewModel: ObservableObject {
         let users = currentCommMembers.filter {
             currentComm.joinMembers
                 .filter {
-                    $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
+                    let distanceSeconds = Date(timeIntervalSince1970: $0.joinedAt).toSeconds() - Date().toSeconds()
+                    return distanceSeconds >= -86400 * 3
                 }
                 .map { $0.id }
                 .contains($0.id)
@@ -102,11 +103,21 @@ class CommViewModel: ObservableObject {
     init() {
         Task {
             await fetchAllComm()
+            await fetchCurrentCommMembers()
         }
     }
     
     private enum MemberCondition {
         case recentlyJoined, general
+    }
+    
+    func isFriend(user: User) -> Bool {
+        guard let currentComm,
+              let currentUser,
+              let buddyList = currentUser.commInfoList
+            .first(where: { $0.id == currentComm.id })?.buddyList
+        else { return false }
+        return buddyList.contains(user.id)
     }
     
     func updateCurrentUser(user: User?) {
@@ -145,7 +156,7 @@ class CommViewModel: ObservableObject {
     @MainActor
     func handleInviteURL(_ url: URL) async {
         await fetchAllComm()
-        guard url.scheme == "ZenoApp" else { return }
+        guard url.scheme == "zenoapp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
             return
@@ -299,6 +310,7 @@ class CommViewModel: ObservableObject {
             }
         }
         self.allComm = communities
+        filterJoinedComm()
     }
     
     @MainActor

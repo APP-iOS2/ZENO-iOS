@@ -39,6 +39,20 @@ final class UserViewModel: ObservableObject {
     }
     
     @MainActor
+    func addFriend(user: User, comm: Community) async {
+        guard let currentUser,
+              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+        var newInfo = currentUser.commInfoList
+        newInfo[index].buddyList.append(user.id)
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+            self.currentUser?.commInfoList = newInfo
+        } catch {
+            print(#function + "User Document에 commInfoList 업데이트 실패")
+        }
+    }
+    
+    @MainActor
     func joinCommWithDeeplink(comm: Community) async {
         guard let currentUser else { return }
         let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
@@ -92,7 +106,6 @@ final class UserViewModel: ObservableObject {
                 self.setSignStatus(.signIn)
             }
             print("🔵 로그인 성공")
-            
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
             case .wrongPassword:  // 잘못된 비밀번호
@@ -156,7 +169,7 @@ final class UserViewModel: ObservableObject {
         guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
         print("UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
-        print("🦕현재 로그인된 유저: \(currentUser)")
+        print("🦕현재 로그인된 유저: \(currentUser!)")
     }
     
     /// 로그아웃
@@ -306,7 +319,7 @@ final class UserViewModel: ObservableObject {
     /// 가입신청 보낸 그룹 등록
     @MainActor
     func addRequestComm(comm: Community) async throws {
-        guard var currentUser else { return }
+        guard let currentUser else { return }
 		let requestComm = currentUser.requestComm + [comm.id]
         try await firebaseManager.update(data: currentUser.self,
                                          value: \.requestComm,

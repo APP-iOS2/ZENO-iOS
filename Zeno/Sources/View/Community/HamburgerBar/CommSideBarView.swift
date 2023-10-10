@@ -202,7 +202,7 @@ struct CommSideBarView: View {
     /// 공유 시트
     private func shareText() {
         guard let commID = commViewModel.currentComm?.id else { return }
-        let deepLink = "ZenoApp://invite?commID=\(commID)"
+        let deepLink = "zenoapp://invite?commID=\(commID)"
         let activityVC = UIActivityViewController(
             activityItems: [deepLink],
             applicationActivities: [KakaoActivity(), IGActivity()]

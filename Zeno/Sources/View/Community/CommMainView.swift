@@ -175,11 +175,16 @@ extension CommMainView {
             }
             .padding(.leading, 4)
             Spacer()
-            Button {
-                print("친구추가 버튼")
-            } label: {
-                Text("친구추가")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+            if !commViewModel.isFriend(user: user) {
+                Button {
+                    Task {
+                        guard let comm = commViewModel.currentComm else { return }
+                        await userViewModel.addFriend(user: user, comm: comm)
+                    }
+                } label: {
+                    Text("친구추가")
+                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                }
             }
         }
         .homeListCell()

@@ -26,6 +26,7 @@ struct CommJoinWithDeeplinkView: View {
                 Button("가입하기", role: ButtonRole.destructive) {
                     Task {
                         await commViewModel.joinCommWithDeeplink(commID: comm.id)
+                        await userViewModel.joinCommWithDeeplink(comm: comm)
                         try? await userViewModel.loadUserData()
                     }
                     isPresented = false
