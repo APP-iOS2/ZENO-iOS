@@ -15,7 +15,7 @@ struct SelectCommunity: ViewModifier {
             .foregroundColor(.white)
         // .font(ZenoFontFamily.NanumBarunGothicOTF.light.swiftUIFont(size: 16))
             .frame(width: .screenWidth * 0.9)
-            .background(Color.black.opacity(0.2))
+            .background(Color.primary.opacity(0.2))
             .cornerRadius(10)
             .padding(.top, 60)        
     }

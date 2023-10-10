@@ -20,7 +20,7 @@ struct CommuintyCellView: View {
                 .padding(.trailing, 10)
             Text(community.name)
                 .font(isBold ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 15) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
-                .foregroundColor(.black.opacity(0.7))
+                .foregroundColor(.primary.opacity(0.7))
                 .bold()
             Spacer()
         }
