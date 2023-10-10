@@ -167,7 +167,8 @@ extension User {
                 ],
                 alert: false
             )
-		], requestComm: []
+		],
+		requestComm: []
     )
 }
 #endif
