@@ -232,15 +232,19 @@ final class UserViewModel: ObservableObject {
     }
     
     // MARK: 제노 뷰 모델로 옮길 예정
-    /// 친구 id로  친구 이름 받아오는 함수
-    func userIDtoName(id: String) async -> String? {
+    /// 친구 id 배열로  친구 이름 배열 받아오는 함수
+    func userIDtoName(idArray: [String]) async -> [String] {
+        var resultArray: [String] = []
         do {
-            let result = try await fetchUser(withUid: id)
-            return result.name
+            for index in 0..<idArray.count {
+                let result = try await fetchUser(withUid: idArray[index])
+                resultArray.append(result.name)
+            }
         } catch {
-            print("fetch유저 실패")
-            return nil
+            print("fetch 유저 실패")
+            return []
         }
+        return resultArray
     }
     
     // MARK: 제노 뷰 모델로 옮길 예정
@@ -325,5 +329,4 @@ final class UserViewModel: ObservableObject {
         self.signStatus = status
         self.signStatus.saveStatus()
     }
-          
 }

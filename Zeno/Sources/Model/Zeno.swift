@@ -29,7 +29,7 @@ extension Zeno {
         Zeno(question: "주머니에 항상 현금 3천원씩 가지고 다닐 것 같은 사람", zenoImage: "Image6"),
         Zeno(question: "같이 떡볶이 먹으러 가고 싶은 사람", zenoImage: "ddeokbbokki"),
         Zeno(question: "자신감이 매력적인 사람", zenoImage: "confidence"),
-        Zeno(question: "하루동안 옷장을 바꿔보고 싶은 사람", zenoImage: "Style"),
+        Zeno(question: "하루동안 옷장을 바꿔보고 싶은 사람", zenoImage: "style"),
         Zeno(question: "나이를 도무지 가늠 할 수 없는 사람", zenoImage: "questionary"),
         Zeno(question: "외적으로 닮고 싶은 사람", zenoImage: "Image11"),
         Zeno(question: "놀이공원에서 같이 교복입고 돌아다니면 재밌을 거 같은 사람", zenoImage: "Image12"),
