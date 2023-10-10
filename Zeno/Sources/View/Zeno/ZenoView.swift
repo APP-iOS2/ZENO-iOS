@@ -51,6 +51,8 @@ struct ZenoView: View {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
+                                
+                                PushNotificationManager.shared.sendPushNotification(toFCMToken: user.fcmToken, title: "Zeno", body: "\(zenoList[selected].question)")
                                 selected += 1
                                 resetUsers()
                             } label: {
