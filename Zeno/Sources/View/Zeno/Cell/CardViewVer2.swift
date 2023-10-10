@@ -11,7 +11,6 @@ import SwiftUI
 struct CardViewVer2: View {
     var currentIndex: Int
 
-    private let numberOfItems: Int = 5
     private let itemWidth: CGFloat = 200
     private let peekAmount: CGFloat = 10
     private let dragThreshold: CGFloat = 70
@@ -28,18 +27,20 @@ struct CardViewVer2: View {
                                 Text(communities[index].name)
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                                     .offset(y: 70)
-                                    .opacity(self.opacityForText(at: index, in: geometry))
+                                    .opacity(currentIndex == index ? 1.0 : 0.3)
                             }
-                            .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
+                            .scaleEffect(currentIndex == index ? 0.98 : 0.8)
                     }
                 }
             }
-            .frame(width: CGFloat(numberOfItems) * itemWidth, height: 300)
+            .frame(width: CGFloat(Community.dummy.count) * itemWidth, height: 300)
             .padding(.leading)
         }
+        .offset(x: currentIndex == 0 ? .screenWidth * 0.2 : 0 )
+        .offset(x: currentIndex == Community.dummy.count-1 ? -.screenWidth * 0.25 : 0 )
         .disabled(true)
     }
-
+    
     func calculateOffset() -> CGFloat {
         let totalItemWidth = itemWidth + peekAmount
         let baseOffset = -CGFloat(currentIndex-2) * totalItemWidth

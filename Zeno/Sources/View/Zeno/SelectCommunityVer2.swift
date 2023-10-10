@@ -35,9 +35,8 @@ struct SelectCommunityVer2: View {
                             }
                         }
                         .offset(y: .screenHeight * 0.04)
-                        .offset(x: currentIndex == 0 ? .screenWidth * 0.18 : 0 )
-                        .offset(x: currentIndex == 5 ? -.screenWidth * 0.25 : 0 )
                 }
+                
                 commuityListView()
                     .background(.clear)
                 
