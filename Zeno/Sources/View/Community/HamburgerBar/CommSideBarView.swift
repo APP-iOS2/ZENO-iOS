@@ -15,7 +15,10 @@ struct CommSideBarView: View {
     
     @State private var isSelectContent: Bool = false
     @State private var isSettingPresented: Bool = false
-    @State private var isGroupOutAlert: Bool = false
+    @State private var isLeaveCommAlert: Bool = false
+    @State private var isNeedDelegateAlert: Bool = false
+    @State private var isDeleteCommAlert: Bool = false
+    @State private var isDelegateManagerView: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -41,12 +44,18 @@ struct CommSideBarView: View {
                                 isSelectContent.toggle()
                             case .inviteComm:
                                 shareText()
+                            case .delegateManager:
+                                if commViewModel.isCurrentCommManager {
+                                    isDelegateManagerView = true
+                                }
                             }
                         } label: {
-                            HStack {
-                                Text(item.title)
-                                Spacer()
-                                Image(systemName: "chevron.right")
+                            if commViewModel.isCurrentCommManager {
+                                HStack {
+                                    Text(item.title)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
                             }
                         }
                     }
@@ -55,13 +64,20 @@ struct CommSideBarView: View {
                 .padding(.horizontal)
             }
             Spacer()
-            // MARK: 하단 버튼 뷰
-            HStack(spacing: 30) {
+            HStack {
                 ForEach(SideBarBtn.allCases) { btn in
                     Button {
                         switch btn {
                         case .out:
-                            isGroupOutAlert.toggle()
+                            if commViewModel.isCurrentCommManager {
+                                if commViewModel.isCurrentCommMembersEmpty {
+                                    isDeleteCommAlert = true
+                                } else {
+                                    isNeedDelegateAlert = true
+                                }
+                            } else {
+                                isLeaveCommAlert.toggle()
+                            }
                         case .alert:
                             Task {
                                 await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
@@ -71,11 +87,18 @@ struct CommSideBarView: View {
                             isSettingPresented.toggle()
                         }
                     } label: {
-                        Image(
-                            systemName: btn.getImageStr(isOn: userViewModel.currentUser?.commInfoList
-                                .filter({ commViewModel.currentComm?.id == $0.id })
-                                .first?.alert ?? false)
-                        )
+                        if btn == .setting {
+                            if commViewModel.isCurrentCommManager {
+                                Image(
+                                    systemName: btn.getImageStr(isOn: commViewModel.isAlertOn)
+                                )
+                                .padding(.leading, 30)
+                            }
+                        } else {
+                            Image(
+                                systemName: btn.getImageStr(isOn: commViewModel.isAlertOn)
+                            )
+                        }
                     }
                     if btn == .out {
                         Spacer()
@@ -89,28 +112,51 @@ struct CommSideBarView: View {
         }
         .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
-            CommSettingView(comm: commViewModel.currentComm ?? .emptyComm, editMode: .edit)
+            CommSettingView(editMode: .edit)
         }
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()
         }
-        .alert("그룹에서 나가시겠습니까?", isPresented: $isGroupOutAlert) {
+        .fullScreenCover(isPresented: $isDelegateManagerView) {
+            CommDelegateManagerView(isPresented: $isDelegateManagerView)
+        }
+        .alert("그룹에서 나가시겠습니까?", isPresented: $isLeaveCommAlert) {
             Button("예", role: .destructive) {
-                // TODO: 그룹장일경우 manager 권한을 반드시 넘겨야만 탈퇴할 수 있는 로직으로 변경, 그룹넘기기뷰 구현
                 Task {
                     guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
                     await userViewModel.leaveComm(commID: currntID)
+                    isPresented = false
                 }
             }
             Button("취소", role: .cancel) { }
         } message: {
             Text("해당 그룹으로 진행되던 모든 알림 및 정보들이 삭제됩니다.")
         }
+        .alert("그룹을 나가려면 매니저 권한을 위임하세요", isPresented: $isNeedDelegateAlert) {
+            Button("유저 선택") {
+                isDelegateManagerView = true
+            }
+            Button("그룹 제거", role: .destructive) {
+                isDeleteCommAlert = true
+            }
+            Button("취소", role: .cancel) { }
+        }
+        .alert("그룹이 제거됩니다.", isPresented: $isDeleteCommAlert) {
+            Button("제거하기", role: .destructive) {
+                Task {
+                    await commViewModel.deleteComm()
+                    isPresented = false
+                }
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("해당 그룹의 모든 유저의 알림 및 정보들이 삭제됩니다.")
+        }
     }
     
-    enum SideMenu: CaseIterable, Identifiable {
-        case memberMGMT, inviteComm
+    private enum SideMenu: CaseIterable, Identifiable {
+        case memberMGMT, inviteComm, delegateManager
         
         var title: String {
             switch self {
@@ -118,13 +164,15 @@ struct CommSideBarView: View {
                 return "구성원 관리"
             case .inviteComm:
                 return "그룹 초대"
+            case .delegateManager:
+                return "매니저 위임"
             }
         }
         
         var id: Self { self }
     }
     
-    enum SideBarBtn: CaseIterable, Identifiable {
+    private enum SideBarBtn: CaseIterable, Identifiable {
         case out
         case alert
         case setting
@@ -145,9 +193,10 @@ struct CommSideBarView: View {
     
     /// 공유 시트
     private func shareText() {
-        guard let url = URL(string: "https://www.naver.com") else { return }
+        guard let commID = commViewModel.currentComm?.id else { return }
+        let deepLink = "ZenoApp://invite?commID=\(commID)"
         let activityVC = UIActivityViewController(
-            activityItems: ["\(commViewModel.currentComm?.name ?? "커뮤니티 nil")", url],
+            activityItems: [deepLink],
             applicationActivities: [KakaoActivity(), IGActivity()]
         )
         
@@ -178,11 +227,25 @@ struct CommSideBarView: View {
 }
 
 struct GroupSideBarView_Preview: PreviewProvider {
-    static var previews: some View {
-        Group {
-            CommSideBarView(isPresented: .constant(true))
+    struct Preview: View {
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @State private var isPresented = false
+        
+        var body: some View {
+            CommSideBarView(isPresented: $isPresented)
+                .environmentObject(commViewModel)
                 .environmentObject(UserViewModel())
-                .environmentObject(CommViewModel())
+                .onAppear {
+                    commViewModel.currentCommMembers = [
+                        .fakeCurrentUser,
+                        .fakeCurrentUser,
+                        .fakeCurrentUser,
+                    ]
+                }
         }
+    }
+    
+    static var previews: some View {
+        Preview()
     }
 }

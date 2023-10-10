@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommuintyCellView: View {
     let community: Community
@@ -15,14 +14,10 @@ struct CommuintyCellView: View {
     
     var body: some View {
         HStack {
-            if let urlStr = community.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    .padding(.trailing, 10)
-            }
+            ZenoKFImageView(community)
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+                .padding(.trailing, 10)
             Text(community.name)
                 .font(isBold ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 15) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                 .foregroundColor(.black.opacity(0.7))

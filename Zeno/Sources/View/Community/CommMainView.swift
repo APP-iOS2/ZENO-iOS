@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
@@ -27,10 +26,15 @@ struct CommMainView: View {
                     userListView
                 }
             }
+            .refreshable {
+                Task {
+                    try? await userViewModel.loadUserData()
+                }
+            }
             .toolbar {
-				        // 커뮤니티 선택 버튼
-				        groupNameToolbarItem
-				        // 햄버거 바
+                // 커뮤니티 선택 버튼
+                groupNameToolbarItem
+                // 햄버거 바
                 if commViewModel.currentComm != nil {
                     hamburgerToolbarItem
                 }
@@ -38,9 +42,12 @@ struct CommMainView: View {
             .sheet(isPresented: $isShowingCommListSheet) {
                 CommListView(isPresented: $isShowingCommListSheet)
             }
-			      .onTapGesture {
-				        isShowingHamburgerView = false
-			      }
+            .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
+                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
+            }
+            .onTapGesture {
+                isShowingHamburgerView = false
+            }
         }
         .tint(.black)
         .overlay(
@@ -56,6 +63,9 @@ struct CommMainView: View {
             Task {
                 await commViewModel.fetchCurrentCommMembers()
             }
+        }
+        .onOpenURL { url in
+            commViewModel.handleInviteURL(url)
         }
     }// body
 }
@@ -147,12 +157,8 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            if let urlStr = user.imageURL,
-               let url = URL(string: urlStr) {
-                KFImage(url)
-                    .resizable()
-                    .frame(width: 30, height: 30)
-            }
+            ZenoKFImageView(user)
+                .frame(width: 30, height: 30)
             VStack(alignment: .leading) {
                 // 유저 이름
                 Text("\(user.name)")

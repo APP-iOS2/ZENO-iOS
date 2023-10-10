@@ -20,6 +20,7 @@ struct CommListView: View {
 				// 서치 바
 				Button {
 					isShowingSearchCommSheet = true
+					commViewModel.commSearchTerm = .init()
 				} label: {
 					searchBar
 				}
@@ -40,7 +41,7 @@ struct CommListView: View {
 						.padding(.vertical)
 						.padding(.bottom, 25)
 					} else {
-						ForEach(Array(zip(commViewModel.searchedComm, commViewModel.searchedComm.indices)), id: \.1) { community, index in
+						ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
 							Button {
 								if commViewModel.joinedComm.contains(community) {
                                     commViewModel.changeSelectedComm(index: index)
@@ -63,7 +64,7 @@ struct CommListView: View {
 					
 					// 새로운 그룹 만들기
 					NavigationLink {
-            CommSettingView(comm: .emptyComm, editMode: .addNew)
+                        CommSettingView(editMode: .addNew)
 					} label: {
 						HStack {
 							Image(systemName: "plus.circle")
@@ -95,7 +96,8 @@ extension CommListView {
 		.padding(.vertical, 11)
 		.background(Color(uiColor: .systemGray6))
 		.cornerRadius(10)
-		.padding()
+		.padding(.horizontal)
+		.padding(.top)
 	}
 }
 

@@ -10,45 +10,45 @@ import SwiftUI
 
 struct EmailRegistrationView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
-	@EnvironmentObject var userViewModel: UserViewModel
-	
+    @EnvironmentObject var userViewModel: UserViewModel
+    
     var body: some View {
-		VStack {
-			TextField("이메일을 입력해주세요.", text: $emailLoginViewModel.registrationEmail)
-				.modifier(LoginTextFieldModifier())
-			// 6자리 이상 입력해야 함
-			SecureField("비밀번호를 입력해주세요.", text: $emailLoginViewModel.registrationPassword)
-				.modifier(LoginTextFieldModifier())
-			TextField("이름을 입력해주세요.", text: $emailLoginViewModel.registrationName)
-				.modifier(LoginTextFieldModifier())
-			TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
-				.modifier(LoginTextFieldModifier())
-			TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
-				.modifier(LoginTextFieldModifier())
-			Button {
-				Task {
-					do {
+        VStack {
+            TextField("이메일을 입력해주세요.", text: $emailLoginViewModel.registrationEmail)
+                .modifier(LoginTextFieldModifier())
+            // 6자리 이상 입력해야 함
+            SecureField("비밀번호를 입력해주세요.", text: $emailLoginViewModel.registrationPassword)
+                .modifier(LoginTextFieldModifier())
+            TextField("이름을 입력해주세요.", text: $emailLoginViewModel.registrationName)
+                .modifier(LoginTextFieldModifier())
+            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
+                .modifier(LoginTextFieldModifier())
+            TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
+                .modifier(LoginTextFieldModifier())
+            Button {
+                Task {
+                    do {
                         try await userViewModel.createUser(
-							email: emailLoginViewModel.registrationEmail,
-							passwrod: emailLoginViewModel.registrationPassword,
-							name: emailLoginViewModel.registrationName,
-							gender: emailLoginViewModel.registrationGender,
-							description: emailLoginViewModel.registrationDescription)
-					} catch {
-						print("회원가입 실패 \(error.localizedDescription)")
-					}
-				}
-			} label: {
-				loginButtonLabel(title: "회원가입",
-								 tintColor: .white,
-								 backgroundColor: ZenoAsset.Assets.mainPurple1.swiftUIColor)
-			}
-		}
+                            email: emailLoginViewModel.registrationEmail,
+                            passwrod: emailLoginViewModel.registrationPassword,
+                            name: emailLoginViewModel.registrationName,
+                            gender: emailLoginViewModel.registrationGender,
+                            description: emailLoginViewModel.registrationDescription)
+                    } catch {
+                        print("회원가입 실패 \(error.localizedDescription)")
+                    }
+                }
+            } label: {
+                loginButtonLabel(title: "회원가입",
+                                 tintColor: .white,
+                                 backgroundColor: ZenoAsset.Assets.mainPurple1.swiftUIColor)
+            }
+        }
     }
 }
 
 struct EmailRegistrationView_Previews: PreviewProvider {
     static var previews: some View {
-		EmailRegistrationView().environmentObject(EmailLoginViewModel())
+        EmailRegistrationView().environmentObject(EmailLoginViewModel())
     }
 }

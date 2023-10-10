@@ -27,7 +27,11 @@ disabled_rules: # 사용하지 않는 룰
     - todo
     # 파일 줄번호 제한
     - file_length
-
+#    # 닫는 중괄호 앞에 세로 공백(빈 줄)을 포함하지 마세요.
+#    - vertical_whitespace_closing_braces
+#    # 여는 중괄호 뒤에 세로 공백(빈 줄)을 포함하지 마세요
+#    - vertical_whitespace_opening_braces
+    
 analyzer_rules:
     # 모든 선언은 한 번 이상 사용되어야 함
     - unused_declaration

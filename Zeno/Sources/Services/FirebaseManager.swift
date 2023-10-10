@@ -6,6 +6,7 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 
 import Foundation
+import FirebaseStorage
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
@@ -20,6 +21,7 @@ enum FirebaseError: Error {
     case documentToData
 }
 
+/// Firebase Manager 커스텀
 final class FirebaseManager {
     static let shared = FirebaseManager()
     
@@ -38,14 +40,33 @@ final class FirebaseManager {
         }
     }
     
-    func createWithImage<T: FirebaseAvailable>(data: T, image: UIImage) async throws where T: Encodable, T: ZenoSearchable {
+    func createWithImage<T: FirebaseAvailable>(data: T,
+                                               image: UIImage
+    ) async throws -> T where T: Encodable, T: ZenoSearchable {
         var changableData = data
         do {
-            let imageURL = try await ImageUploader.uploadImage(image: image)
+            let imageURL = try await createImageURL(id: data.id, image: image)
             changableData.imageURL = imageURL
             try await create(data: changableData)
+            return changableData
         } catch {
             throw FirebaseError.failToUploadImg
+        }
+    }
+    
+    private func createImageURL(id: String, image: UIImage) async throws -> String? {
+        guard let imageData = image.jpegData(compressionQuality: 0.25) else { return nil }
+        
+        let ref = Storage.storage().reference(withPath: "/images/\(id)")
+        
+        do {
+            _ = try await ref.putDataAsync(imageData)
+            let url = try await ref.downloadURL()
+
+            return url.absoluteString
+        } catch {
+            print("🔴이미지 업로드 실패: \(error.localizedDescription)")
+            return nil
         }
     }
     
