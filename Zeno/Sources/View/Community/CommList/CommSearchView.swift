@@ -141,11 +141,3 @@ extension CommSearchView {
 		.padding(.leading, 25)
 	}
 }
-
-//struct CommJoinView_Previews: PreviewProvider {
-//	static var previews: some View {
-//		CommSearchView(isShowingSearchCommSheet: .constant(true))
-//			.environmentObject(UserViewModel())
-//			.environmentObject(CommViewModel())
-//	}
-//}

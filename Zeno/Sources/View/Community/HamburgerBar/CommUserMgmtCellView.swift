@@ -13,6 +13,7 @@ struct CommUserMgmtCellView: View {
     let actionType: ActionType
     
     @EnvironmentObject private var commViewModel: CommViewModel
+    @State private var isDeportAlert = false
     
     var body: some View {
         HStack(alignment: .center) {
@@ -32,12 +33,20 @@ struct CommUserMgmtCellView: View {
                     case .accept:
                         await commViewModel.acceptMember(user: user)
                     case .deport:
-                        // TODO: 내보낸 유저에게 알람을 보냄
-                        await commViewModel.deportMember(user: user)
+                        // TODO: 내보낸 유저에게 푸시알람 or 알림메세지를 보냄
+                        isDeportAlert = true
                     }
                 }
             }
             .padding(.horizontal)
+        }
+        .alert("\(user.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
+            Button("내보내기", role: .destructive) {
+                Task {
+                    await commViewModel.deportMember(user: user)
+                }
+            }
+            Button("취소", role: .cancel) { }
         }
         .padding(.vertical)
     }
@@ -48,9 +57,9 @@ struct CommUserMgmtCellView: View {
         var title: String {
             switch self {
             case .accept:
-                return "수락"
+                return "가입수락"
             case .deport:
-                return "추방"
+                return "추방하기"
             }
         }
     }
@@ -58,7 +67,7 @@ struct CommUserMgmtCellView: View {
 
 struct UserManagementCellView_Previews: PreviewProvider {
     static var previews: some View {
-        CommUserMgmtCellView(user: .constant(.dummy[0]), actionType: .accept)
+        CommUserMgmtCellView(user: .constant(.dummy[0]), actionType: .deport)
             .environmentObject(CommViewModel())
     }
 }
