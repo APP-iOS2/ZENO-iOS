@@ -369,20 +369,42 @@ class CommViewModel: ObservableObject {
                 .filter { currentWaitMemberIDs.contains($0.id) }
         }
     }
-    /// 일반 멤버가 그룹을 나가는 함수
+    /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수
     @MainActor
     func leaveComm() async {
         guard let currentComm,
               let currentUser
         else { return }
+        let memberIDs = currentComm.joinMembers.map { $0.id }
         let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         do {
             try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
+            let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: memberIDs)
+            await results.asyncForEach { [weak self] result in
+                switch result {
+                case .success(var user):
+                    guard var updatedCommInfo = user.commInfoList
+                        .first(where: { $0.id == currentComm.id }) else { return }
+                    if updatedCommInfo.buddyList.contains(currentUser.id) {
+                        do {
+                            updatedCommInfo.buddyList = updatedCommInfo.buddyList.filter({ $0 != currentUser.id })
+                            guard let index = user.commInfoList.firstIndex(where: { $0.id == updatedCommInfo.id }) else { return }
+                            var updatedCommInfolist = user.commInfoList
+                            updatedCommInfolist[index] = updatedCommInfo
+                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: updatedCommInfolist)
+                        } catch {
+                            print(#function + "탈퇴한 유저를 buddyList에 가진 User의 commInfoList 업데이트 실패")
+                        }
+                    }
+                case .failure:
+                    break
+                }
+            }
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
             joinedComm.remove(at: index)
             selectedComm = 0
         } catch {
-            print(#function + "Community의 Members에서 탈퇴할 유저정보 삭제 실패")
+            print(#function + "Community의 Members 업데이트 실패")
         }
     }
     /// [가입신청] 그룹에 가입신청 보내는 함수
