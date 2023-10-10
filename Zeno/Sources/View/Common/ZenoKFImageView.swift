@@ -17,9 +17,10 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
         if let urlStr = item.imageURL,
            let url = URL(string: urlStr) {
             KFImage(url)
+                .cacheOriginalImage()
                 .resizable()
                 .placeholder {
-                    Image("Image1")
+                    Image("ZenoIcon")
                         .resizable()
                 }
                 .aspectRatio(contentMode: ratio)
@@ -30,6 +31,22 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
     init(_ item: T, ratio: SwiftUI.ContentMode = .fill) {
         self.item = item
         self.ratio = ratio
+    }
+}
+
+class ZenoCacheManager<T: AnyObject> {
+    let shared = NSCache<NSString, T>()
+    
+    func saveImage(url: URL?, image: T) {
+        guard let url else { return }
+        shared.setObject(image, forKey: url.absoluteString as NSString)
+    }
+    
+    func loadImage(url: URL?) -> T? {
+        guard let url,
+              let object = shared.object(forKey: url.absoluteString as NSString) as? T
+        else { return nil }
+        return object
     }
 }
 
