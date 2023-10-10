@@ -20,6 +20,8 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 	var description: String = ""
 	/// 카카오 로그인 시 생성된 토큰 저장 용도
 	var kakaoToken: String
+    /// 푸쉬 알람을 위해 현재 유저에게 발급된 token
+    var fcmToken: String?
 	/// 잔여 코인 횟수
 	var coin: Int
 	/// 메가폰 잔여 횟수
