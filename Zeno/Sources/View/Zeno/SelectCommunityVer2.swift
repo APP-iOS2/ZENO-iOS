@@ -28,13 +28,13 @@ struct SelectCommunityVer2: View {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
                     CardViewVer2(currentIndex: currentIndex)
+                        .offset(y: -.screenHeight * 0.03)
                         .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                         .onChange(of: currentIndex) { _ in
                             withAnimation {
                                 ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                            }
                         }
-                        .offset(y: .screenHeight * 0.04)
+                    }
                 }
                 
                 commuityListView()
