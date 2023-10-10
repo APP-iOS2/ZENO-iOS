@@ -48,6 +48,7 @@ class CommViewModel: ObservableObject {
             .filter({ currentComm?.id == $0.id })
             .first?.alert ?? false
     }
+    
     var isCurrentCommMembersEmpty: Bool {
         guard let currentComm,
               let currentUser
@@ -116,7 +117,9 @@ class CommViewModel: ObservableObject {
     func getCommunityByID(_ id: String) -> Community? {
         return allComm.first { community in
             community.id == id
-
+        }
+    }
+    
     func handleInviteURL(_ url: URL) {
         guard url.scheme == "ZenoApp" else {
             return
@@ -345,7 +348,7 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers) 
+        self.currentWaitApprovalMembers = exceptCurrentUser(users: currentWaitUsers)
     }
     
     @MainActor
