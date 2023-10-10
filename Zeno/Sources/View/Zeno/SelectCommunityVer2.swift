@@ -27,13 +27,18 @@ struct SelectCommunityVer2: View {
         NavigationStack {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
-                    CardViewVer2(currentIndex: currentIndex)
-                        .offset(y: -.screenHeight * 0.03)
-                        .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
-                        .onChange(of: currentIndex) { _ in
-                            withAnimation {
-                                ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                        }
+                    ZStack {
+                        LottieView(lottieFile: "wave")
+                            .offset(y: -20)
+                        
+                        CardViewVer2(currentIndex: currentIndex)
+                            .offset(y: -.screenHeight * 0.03)
+                            .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                            .onChange(of: currentIndex) { _ in
+                                withAnimation {
+                                    ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+                                }
+                            }
                     }
                 }
                 
@@ -43,7 +48,7 @@ struct SelectCommunityVer2: View {
                 VStack {
                     if isPlay == false {
                         Text("그룹을 선택해주세요")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
                             .offset(y: -20)
                         WideButton(buttonName: "START", isplay: isPlay)
                     } else {
@@ -79,7 +84,7 @@ struct SelectCommunityVer2: View {
                         .padding(.trailing, 10)
                     Text(communities[index].name)
                         .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(.primary.opacity(0.7))
                     
                     Spacer()
                     
