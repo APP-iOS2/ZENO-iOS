@@ -33,7 +33,8 @@ struct EmailRegistrationView: View {
                             passwrod: emailLoginViewModel.registrationPassword,
                             name: emailLoginViewModel.registrationName,
                             gender: emailLoginViewModel.registrationGender,
-                            description: emailLoginViewModel.registrationDescription)
+                            description: emailLoginViewModel.registrationDescription,
+                            imageURL: "")
                     } catch {
                         print("회원가입 실패 \(error.localizedDescription)")
                     }

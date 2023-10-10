@@ -73,6 +73,8 @@ extension CommSearchView {
 				.autocorrectionDisabled()
 				.onSubmit {
 					commViewModel.commSearchTerm = currentViewSerachTerm
+					print(commViewModel.joinedComm)
+					print(commViewModel.searchedComm)
 				}
 				
 				// 텍스트필드 초기화 버튼

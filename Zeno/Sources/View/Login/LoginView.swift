@@ -10,6 +10,7 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject private var userViewModel: UserViewModel
     
     var body: some View {
         NavigationStack {
@@ -27,7 +28,7 @@ struct LoginView: View {
                 
                 Button {
                     Task {
-                        await KakaoAuthService.shared.loginUserKakao()
+                        await userViewModel.startWithKakao()
                     }
                 } label: {
                     loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)

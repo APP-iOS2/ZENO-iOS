@@ -10,57 +10,32 @@ import SwiftUI
 
 struct CardViewVer2: View {
     var currentIndex: Int
-
-    private let numberOfItems: Int = 5
-    private let itemWidth: CGFloat = 200
-    private let peekAmount: CGFloat = 10
-    private let dragThreshold: CGFloat = 70
+    
+    private let itemWidth: CGFloat = .screenWidth * 0.51
     private let communities = Community.dummy
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            GeometryReader { geometry in
-                HStack(alignment: .center, spacing: peekAmount) {
-                    ForEach(communities.indices, id: \.self) { index in
-                        ZenoKFImageView(communities[index])
-                            .frame(width: itemWidth, height: 160)
-                            .overlay(alignment: .bottomLeading) {
-                                Text(communities[index].name)
-                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                    .offset(y: 70)
-                                    .opacity(self.opacityForText(at: index, in: geometry))
-                            }
-                            .scaleEffect(self.scaleValueForItem(at: index, in: geometry))
-                    }
+            HStack(alignment: .center, spacing: 10) {
+                Rectangle()
+                    .frame(width: itemWidth / 8, height: 160)
+                    .foregroundColor(.clear)
+                
+                ForEach(communities.indices, id: \.self) { index in
+                    ZenoKFImageView(communities[index])
+                        .frame(width: itemWidth, height: .screenHeight * 0.2)
+                        .overlay(alignment: .bottomLeading) {
+                            Text(communities[index].name)
+                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                .offset(y: 70)
+                                .opacity(currentIndex == index ? 1.0 : 0.3)
+                        }
+                        .scaleEffect(currentIndex == index ? 0.98 : 0.8)
                 }
             }
-            .frame(width: CGFloat(numberOfItems) * itemWidth, height: 300)
-            .padding(.leading)
+            .frame(width: CGFloat(Community.dummy.count+1) * itemWidth, height: .screenHeight * 0.38)
         }
         .disabled(true)
-    }
-
-    func calculateOffset() -> CGFloat {
-        let totalItemWidth = itemWidth + peekAmount
-        let baseOffset = -CGFloat(currentIndex-2) * totalItemWidth
-        return baseOffset
-    }
-    
-    func scaleValueForItem(at index: Int, in geometry: GeometryProxy) -> CGFloat {
-        let currentItemOffset = calculateOffset()
-        let itemPosition = CGFloat(index) * (itemWidth + peekAmount) + currentItemOffset
-        let distanceFromCenter = abs(geometry.size.width / 2 - itemPosition - itemWidth / 2)
-        let scale: CGFloat = 0.8 + (0.2 * (1 - min(1, distanceFromCenter / (itemWidth + peekAmount))))
-        return scale
-    }
-    
-    func opacityForText(at index: Int, in geometry: GeometryProxy) -> Double {
-        let currentItemOffset = calculateOffset()
-        let itemPosition = CGFloat(index) * (itemWidth + peekAmount) + currentItemOffset + itemWidth / 2
-        let distanceFromCenter = abs(geometry.size.width / 2 - itemPosition)
-        let threshold: CGFloat = itemWidth / 2
-        let opacity = min(1, max(0, (threshold - distanceFromCenter) / threshold)+0.3)
-        return Double(opacity)
     }
 }
 

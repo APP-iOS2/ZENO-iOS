@@ -61,7 +61,7 @@ struct TabBarView: View {
     @StateObject var iAPStore: IAPStore = IAPStore()
     
     var body: some View {
-		TabView(selection: $selectedTabIndex) {
+        TabView(selection: $selectedTabIndex) {
             ForEach(MainTab.allCases) { tab in
                 tab.view
                     .tabItem {
@@ -78,6 +78,7 @@ struct TabBarView: View {
             await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
         }
 	}
+
 }
 
 struct TabBarView_Previews: PreviewProvider {

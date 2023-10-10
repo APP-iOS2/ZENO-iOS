@@ -23,7 +23,7 @@ struct CoinView: View {
                 }
 //                .frame(width: geometry.size.width, height: 120)
                 .frame(width: UIScreen.main.bounds.width, height: 80)
-                .background(.black)
+                .background(.primary)
 //            }
         }
     }

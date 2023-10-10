@@ -51,15 +51,16 @@ struct ZenoView: View {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
+                                PushNotificationManager.shared.sendPushNotification(toFCMToken: user.fcmToken, title: "Zeno", body: "\(zenoList[selected].question)")
                                 selected += 1
                                 resetUsers()
                             } label: {
                                 HStack {
                                     ZenoKFImageView(user)
                                         .frame(width: 40, height: 40)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                     Text(user.name)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                 }
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
