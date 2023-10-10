@@ -9,12 +9,12 @@ struct InitialView: View {
         ZStack {
             Group {
                 // 로그인 분기 처리
-                if userViewModel.currentUser == nil {
+                if userViewModel.signStatus == .signIn {
+                    TabBarView()
+                } else {
                     LoginView()
                         .environmentObject(EmailLoginViewModel())
                         .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
-                } else {
-                    TabBarView()
                 }
             }
             // 런치스크린

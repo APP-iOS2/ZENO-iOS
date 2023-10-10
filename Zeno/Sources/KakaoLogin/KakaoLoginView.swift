@@ -15,7 +15,7 @@ struct KakaoLoginView: View {
         VStack {
             Button {
                 Task {
-                    await userModel.loginWithKakao()
+                    await userModel.startWithKakao()
                 }
             } label: {
                 Text("카카오톡으로 시작하기")
@@ -35,7 +35,7 @@ struct KakaoLoginView: View {
                     .foregroundColor(.black)
                     .background(.yellow)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
-            }            
+            }
         }
     }
 }

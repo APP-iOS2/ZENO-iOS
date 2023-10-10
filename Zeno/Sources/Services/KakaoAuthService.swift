@@ -12,19 +12,49 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 /// 로그인 여부 UserDefault에 저장
-enum KakaoSignStatus: String {
-    case signIn, signOut, none
+enum SignStatus: String {
+    case signIn, none
     
-//    /// 로그인상태 저장.
-//    func setStatus() {
-//        UserDefaults.standard.set(self.rawValue, forKey: "KakaoSignStatus")
-//    }
-//
-//    /// 상태 가져오기
-//    static func getStatus() -> String {
-//        return UserDefaults.standard.string(forKey: "KakaoSignStatus") ?? ""
-//    }
+    /// 로그인상태 저장.
+    func saveStatus() {
+        UserDefaults.standard.set(self.rawValue, forKey: "KakaoSignStatus")
+    }
+
+    /// 상태 가져오기
+    static func getStatus() -> Self {
+        if let statusString = UserDefaults.standard.string(forKey: "KakaoSignStatus"),
+           let status = SignStatus(rawValue: statusString) {
+            return status
+        } else {
+            return .none
+        }
+    }
 }
+
+/*
+    1. 앱을 새로 다운받고 실행.
+        = Status.none상태확인 -> 카카오로그인 -> 토큰 발행 -> 파베회원가입 -> 파베로그인인증 -> User정보FireStore에 저장 -> Status.signIn -> 메인탭전환 -> Status.signIn상태 UserDefault저장
+    2. (이미 다운하고 로그인까지 한)앱을 종료 후 다시 실행
+        로그아웃안함. = Status.signIn상태 -> 메인탭전환
+        로그아웃함.  = Status.signOut상태 -> 1번 방법 재실행인데 파베회원가입, User정보저장을 생략한다. -> Status.signIn -> 메인탭전환
+    3. 회원탈퇴 후 재 가입 (회원탈퇴시 Status.none으로 변경 후 UserDefault에 저장.)
+        = 회원탈퇴시 Status.none으로 상태변경되어 있어야함.  -> 1번 방법을 재실행함.
+    4. 로그아웃, 회원탈퇴 안하고 앱 삭제 후 다시 깔아서 실행. => ( Status값이 none인 상태, DB User에 정보가 남아있는 상태, 카카오토큰이 있는 상태, 파베Auth가 남아있는 상태 )
+        = Status.none인 경우확인 -> 1번 재실행
+ 
+    정리하면...
+     - Status상태를 먼저 확인 후 그 다음 로직 진행.
+     - Status.none인 상태면 1번 방법을 실행하면 됨. -> 이때 파베회원가입을 하게 될때 이메일 중복이 뜨면 바로 로그인을 해주면 되고, 나머지 경우는 그대로 진행.
+     - Status.signIn 상태면 토큰확인만 다시 해주고 바로 메인탭 전환시키면 됨.
+     - Status.signOut 상태면 1번방법 실행하되 파베회원가입, User정보저장만 생략. 파베관련해서는 UserViewModel.login만 실행.
+     - UserViewmodel의 login메서드에서 로그인되었을 때 Status.signIn상태로 변경 후 UserDefault에 저장.
+     - UserViewmodel의 logout메서드에서 Status.signOut상태로 변경 후 저장.
+     - 회원탈퇴 메서드에서는 Status.none상태로 변경 후 저장.
+ 
+    서연님이랑 테스트 할거 23.10.10
+    1. User에 정보 안들어가는거 확인
+    2. 실기기에서 카톡앱으로 해보기. ( 로그인부터 로그아웃 전부다 )
+ */
 
 /// 카카오인증 서비스 싱글톤
 final class KakaoAuthService {
@@ -32,7 +62,7 @@ final class KakaoAuthService {
     
     private init() { }
     
-    private let kakao = KakaoSDKUser.UserApi.shared
+    private let kakao = UserApi.shared
     
     /*----------------------------------------------
              로그아웃 버튼을 안 누르면 토큰이 지워지지가 않음.
@@ -53,8 +83,7 @@ final class KakaoAuthService {
         } catch {
             print(error.localizedDescription)
         }
-        
-        return (nil, false)        
+        return (nil, false)
     }
     
     /// 카카오 유저 로그아웃
@@ -81,9 +110,11 @@ final class KakaoAuthService {
                     }
                 case .failure(let err):
                     print(err.localizedDescription)
+                    return nil
                 }
             }
         } catch {
+            // 카카오 로그인 재시도 하는 로직 추가예정
             print(error.localizedDescription)
         }
         
@@ -113,7 +144,7 @@ extension KakaoAuthService {
             // 카카오톡 계정으로 로그인 (카톡앱실행 X)
             return try await withCheckedThrowingContinuation { continuation in
                 // 로그인 힌트부분에 내가 로그인 했었던 이메일 세팅하기 -> UserDefault값 활용.
-                kakao.loginWithKakaoAccount(loginHint: "zeno@zeno.com") {(oauthToken, error) in
+                kakao.loginWithKakaoAccount(prompts: [.SelectAccount], loginHint: "swjtwin@nate.com") {(oauthToken, error) in
                     if let error {
                         print("🐹카톡계정로그인 에러 \(error.localizedDescription)")
                         continuation.resume(throwing: error)
@@ -134,21 +165,6 @@ extension KakaoAuthService {
                     continuation.resume(returning: .failure(error))
                 } else {
                     continuation.resume(returning: .success((user, nil)))
-                }
-            }
-        }
-    }
-    
-    /// 기존 로그인 무시하고 재로그인
-    private func ignoreLoginAtInKakao() async -> (OAuthToken?, Error?) {
-        return await withCheckedContinuation { continuation in
-            kakao.loginWithKakaoAccount(prompts: [.Login]) {(oauthToken, error) in
-                if let error {
-                    print("🐹Failed to ignore existing login \(error.localizedDescription)")
-                    continuation.resume(returning: (nil, error))
-                } else {
-                    print("🐹Re-login successful after ignoring previous login")
-                    continuation.resume(returning: (oauthToken, nil))
                 }
             }
         }
@@ -182,7 +198,6 @@ extension KakaoAuthService {
                         continuation.resume(throwing: error)
                     } else {
                         print("🐹토큰 조회 성공")
-//                        _ = KakaoSignStatus.setStatus(.signIn) // 상태 변경 (로그인됨)
                         continuation.resume(returning: accessToken)
                     }
                 }
@@ -195,7 +210,7 @@ extension KakaoAuthService {
     /// 카카오 로그아웃
     private func kakaoLogOut() async -> Error? {
         return await withCheckedContinuation { continuation in
-            kakao.logout {(error) in
+            kakao.logout { error in
                 if let error {
                     print("🐹로그아웃 : \(error)")
                     continuation.resume(returning: error)
