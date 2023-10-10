@@ -71,11 +71,6 @@ struct CommMainView: View {
             }
         }
     }
-}
-
-extension CommMainView {
-    // MARK: - 메인 뷰
-    
     /// 새로들어온 유저 뷰
     var newUserView: some View {
         VStack {
@@ -111,41 +106,38 @@ extension CommMainView {
         .animation(.default, value: isShowingDetailNewBuddyToggle)
         .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
     }
-    
     /// 그룹 내 유저 목록 뷰
     var userListView: some View {
         VStack {
-            if isShowingUserSearchView {
-                HStack {
+            HStack {
+                if isShowingUserSearchView {
                     TextField(text: $commViewModel.userSearchTerm) {
                         Text("친구 찾기...")
                             .font(.footnote)
                     }
-                    Spacer()
-                    Button {
-                        isShowingUserSearchView = false
-                        commViewModel.userSearchTerm = ""
-                    } label: {
-                        Text("취소")
-                            .font(.caption)
-                    }
-                }
-                ForEach(commViewModel.searchedUsers) { user in
-                    userCell(user: user)
-                }
-            } else {
-                HStack {
+                } else {
                     Text("친구 \(commViewModel.currentCommMembers.count)")
                         .font(.footnote)
-                    Spacer()
-                    Button {
-                        isShowingUserSearchView = true
-                        print("유저 리스트 뷰 보이기")
-                    } label: {
+                }
+                Spacer()
+                Button {
+                    isShowingUserSearchView.toggle()
+                    commViewModel.userSearchTerm = ""
+                } label: {
+                    if isShowingUserSearchView {
+                        Text("취소")
+                            .font(.caption)
+                    } else {
                         Image(systemName: "magnifyingglass")
                             .font(.caption)
                     }
                 }
+            }
+            if isShowingUserSearchView {
+                ForEach(commViewModel.searchedUsers) { user in
+                    userCell(user: user)
+                }
+            } else {
                 VStack {
                     ForEach(commViewModel.currentCommMembers) { user in
                         userCell(user: user)

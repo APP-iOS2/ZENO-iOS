@@ -169,7 +169,11 @@ final class UserViewModel: ObservableObject {
         guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
         print("UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
-        print("🦕현재 로그인된 유저: \(currentUser!)")
+        if let currentUser {
+            print("🦕현재 로그인된 유저: \(currentUser)")
+        } else {
+            print("🦕현재 로그인된 유저 없음")
+        }
     }
     
     /// 로그아웃
