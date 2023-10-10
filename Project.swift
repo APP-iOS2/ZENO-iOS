@@ -4,11 +4,15 @@ let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
 let bundleID = "education.techit.zeno.dev"
 let infoPlist: [String: InfoPlist.Value] = [
-    "BundleDisplayName": "ZenoAppTest",
+    "BundleDisplayName": "Zeno",
     "BundleShortVersionString": "1.0",
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
-    "UIBackgroundModes": ["remote-notification"],
+    "UIBackgroundModes": [
+        "fetch",
+        "processing",
+        "remote-notification"
+    ],
     "LSApplicationQueriesSchemes": [
         "kakaokompassauth",
         "kakaolink",
@@ -65,7 +69,8 @@ let project = Project(
                 .package(product: "FirebaseFirestore"),
                 .package(product: "FirebaseFirestoreSwift"),
 				.package(product: "FirebaseAuth"),
-				.package(product: "FirebaseStorage"),
+                .package(product: "FirebaseStorage"),
+				.package(product: "FirebaseDynamicLinks"),
 //				.package(product: "FirebaseDatabase"),
 //				.package(product: "FirebaseDatabaseSwift"),
                 .package(product: "KakaoSDKUser"),
