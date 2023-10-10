@@ -60,7 +60,8 @@ class CommViewModel: ObservableObject {
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String
     @Published var commSearchTerm: String = ""
-    /// 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
+	
+    /// [커뮤니티 검색] 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
             return currentCommMembers
@@ -68,17 +69,23 @@ class CommViewModel: ObservableObject {
             return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
         }
     }
-    /// 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
+	
+    /// [커뮤니티 검색] 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
     var searchedComm: [Community] {
         var searchCom = allComm
             .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
         if !joinedComm.isEmpty {
+			guard let currentUser else { return [] }
+			
             searchCom = searchCom.filter { searched in
-                joinedComm.contains { $0.id != searched.id }
+				!currentUser.commInfoList.contains { userComm in
+					userComm.id == searched.id
+				}
             }
         }
         return searchCom
     }
+	
     @Published var commIDInDeepLink: String = ""
     @Published var isJoinWithDeeplinkView: Bool = false
     
@@ -369,22 +376,24 @@ class CommViewModel: ObservableObject {
         }
     }
     
-    /// 그룹에 가입신청 보내는 함수
+    /// [가입신청] 그룹에 가입신청 보내는 함수
     @MainActor
     func requestJoinComm(comm: Community) async {
         guard let currentUser else { return }
         guard !comm.waitApprovalMemberIDs.contains(currentUser.id) else { return }
-        
+		let newComm = comm.waitApprovalMemberIDs + [currentUser.id]
         do {
             try await firebaseManager.update(data: comm.self,
                                              value: \.waitApprovalMemberIDs,
-                                             to: comm.waitApprovalMemberIDs + [currentUser.id])
+                                             to: newComm)
+			guard let index = allComm.firstIndex(where: { $0.id == comm.id }) else { return }
+			allComm[index].waitApprovalMemberIDs = newComm
         } catch {
             print(#function + "그룹에 가입신청 실패")
         }
-        await fetchCurrentCommMembers()
     }
     
+	/// [가입신청] 그룹에 가입신청을 보냈었는지 확인하는 함수
     func checkApplied(comm: Community) -> Bool {
         guard let currentUser else { return false }
         return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false

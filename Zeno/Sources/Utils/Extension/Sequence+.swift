@@ -20,4 +20,18 @@ extension Sequence {
             }
         }
     }
+	// 사용안함
+//	func filterElementsInArray(arr: Self) -> [Self.Element] where Self.Element: Equatable {
+//		let resultArr = filter {
+//			var result = true
+//			for i in arr {
+//				if i != $0 {
+//					result = false
+//					break
+//				}
+//			}
+//			return result
+//		}
+//		return resultArr
+//	}
 }
