@@ -27,17 +27,35 @@ class AlarmViewModel: ObservableObject {
     // U => update 일부분 수정 덮어씌움 -> 덮어씌울게 잇나 -> 속성 추가 도 가능 - > ? ?
     // D => Delete -> test 용.
     
+    /// Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
+    @MainActor
+    func pushAlarm(sendUser: User, receiveUser: User, community: Community, zeno: Zeno) async {
+        let alarm = Alarm(sendUserID: sendUser.id, sendUserName: sendUser.name, sendUserFcmToken: sendUser.fcmToken ?? "empty", sendUserGender: sendUser.gender, receiveUserID: receiveUser.id, receiveUserName: receiveUser.name, receiveUserFcmToken: receiveUser.fcmToken ?? "empty", communityID: community.id, showUserID: receiveUser.id, zenoID: zeno.id, zenoString: zeno.question, createdAt: Date().timeIntervalSince1970)
+        
+        do {
+            try await FirebaseManager.shared.create(data: alarm)
+        } catch {
+            print("firebase Alarm collection add error : \(error)")
+        }
+        
+        self.alarmArray.append(alarm)
+        
+        if let token = receiveUser.fcmToken, let alert = receiveUser.commInfoList.first(where: { $0.id == community.id })?.alert {
+            if alert == true {
+                PushNotificationManager.shared.sendPushNotification(toFCMToken: token, title: "Zeno", body: zeno.question)
+            }
+        }
+    }
+    
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
-    func createAlarm(alarm: Alarm) async {
+    /// 테스트용, Firebase Alarm Collection 에 데이터 추가
+    private func createAlarm(alarm: Alarm) async {
         try? await FirebaseManager.shared.create(data: alarm)
     }
-    
-    // 한개짜리 ? -> 필요한가 ?
-    func readAlarm(alarm: Alarm) async {
-    }
-    
+
     // fetch 함수 -> 항상 불러오는 X ->
     // 페이징 ? -> 너무 많아진다면 페이징처리 !
+    /// 해당 유저의 모든 알람을 firebase store 에서 가져옴
     @MainActor
     func fetchAlarm(showUserID: String) async {
         // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는

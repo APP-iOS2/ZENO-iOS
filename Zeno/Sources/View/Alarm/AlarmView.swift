@@ -46,7 +46,11 @@ struct AlarmView: View {
                         }
                         .padding()
                         .refreshable {
-                            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+                            if let currentUser = userViewModel.currentUser {
+                                Task {
+                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+                                }
+                            }
                         }
                         .sheet(isPresented: $isShowPaymentSheet, content: {
                             AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
