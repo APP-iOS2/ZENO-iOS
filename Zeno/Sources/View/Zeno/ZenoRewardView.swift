@@ -9,35 +9,43 @@
 import SwiftUI
 
 struct ZenoRewardView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+
     var body: some View {
-        VStack(alignment: .center) {
-            Spacer()
-            Group {
-                Text("주어진 퀴즈를")
-                Text("다푸셨군요!")
+        ZStack {
+            VStack(alignment: .center) {
+                LottieView(lottieFile: "Coin")
+                
+                Group {
+                    Group {
+                        Text("60 코인 획득")
+                        Text("")
+                    }
+                    .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
+                    
+                    Group {
+                        Text("다음 문제 꾸러미는 ")
+                        Text("10분 후에 풀 수 있어요")
+                    }
+                    .font(ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 16))
+                }
+                .offset(y: -.screenHeight * 0.2)
+                
+                Spacer()
+                
+                NavigationLink {
+                    FinishZenoView()
+                } label: {
+                    WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
+                }
+                .onTapGesture {
+                    Task {
+                        await userViewModel.updateUserCoin(to: 60)
+                    }
+                }
             }
-            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 30))
-            ZenoAsset.Assets.coin.swiftUIImage
-            Group {
-                Text("20코인을 획득하셨습니다")
-                Text("다음 문제 꾸러미는 20분 후에")
-                Text("풀 수 있어요")
-            }
-            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 15))
-            Spacer()
-            Button {
-                // TODO: 코인 관련 메서드 추가
-            } label: {
-                Text("코인 받고 끝내기")
-                    .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
-            }
-            .padding(.vertical, 15)
-            .frame(width: .screenWidth * 0.8)
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke()
-            )
         }
+        .navigationBarBackButtonHidden()
     }
 }
 

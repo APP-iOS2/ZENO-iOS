@@ -26,7 +26,8 @@ class NormalSignInManager: SignInManager {
     func register(email: String, pw: String, name: String) async throws {
         do {
             // Auth에 유저등록
-            let target = try await firebaseAuth.createUser(withEmail: email, password: pw).user
+            _ = try await firebaseAuth.createUser(withEmail: email, password: pw).user
+//            let target = try await firebaseAuth.createUser(withEmail: email, password: pw).user
 
             // 신규회원 객체 생성
             // let newby = User

@@ -8,37 +8,48 @@
 
 import Foundation
 
-struct Community: Identifiable, Codable, CanUseFirebase {
+struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearchable {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
-	var communityName: String
+	var name: String
 	/// 커뮤니티 소개
 	var description: String
-	/// var communityUserId: [String] // 소속된 유저 아이디, 변수명 변경 필요 ⭐️
-	var communityImage: String
+	/// 커뮤니티 이미지 URL
+	var imageURL: String?
 	/// 커뮤니티 생성일
 	var createdAt: Double
 	/// 커뮤니티 인원
 	var personnel: Int
 	/// 검색 가능 여부
 	var isSearchable: Bool = true
+	/// 커뮤니티 그룹장
+	var managerID: User.ID
 	/// 커뮤니티에 가입된 유저
 	var joinMembers: [Member]
+	/// 커뮤니티 가입 신청 후 승인 대기중인 유저
+	var waitApprovalMemberIDs: [User.ID] = []
 	/// 커뮤니티에 가입된 유저 구조체
-	struct Member: Codable { // 이 구조체는 앞으로 유저id값을 검색해서 사용자 정보를 얻어낼 예정 User의 minUserdata와 뭐가 편한지 비교 해봅시다.
+	struct Member: Codable, Identifiable, Hashable {
+		/// 유저 ID
 		var id: String
-		var joinedAt: Double
+		/// 커뮤니티에 가입된 날짜
+		let joinedAt: Double
 	}
+}
+
+extension Community {
+	static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
 }
 
 #if DEBUG
 extension Community {
 	static let dummy: [Community] = [
-		.init(communityName: "멋쟁이 사자처럼 iOS앱스쿨 2기",
-              description: "멋쟁이 iOS개발자 되기위해 Deep Diving", communityImage: "LLLogo",
+		.init(name: "멋쟁이 사자처럼 iOS앱스쿨 2기",
+			  description: "멋쟁이 iOS개발자 되기위해 Deep Diving", imageURL: "LLLogo",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
+			  managerID: "매니저",
 			  joinMembers: [
 				.init(id: "유저1", joinedAt: Date().timeIntervalSince1970),
 				.init(id: "유저2", joinedAt: Date().timeIntervalSince1970),
@@ -46,30 +57,27 @@ extension Community {
 				.init(id: "유저4", joinedAt: Date().timeIntervalSince1970),
 				.init(id: "유저5", joinedAt: Date().timeIntervalSince1970),
 			  ]),
-		.init(communityName: "새싹 영등포 iOS 3기",
-              description: "푸릇푸릇 자라나는 우리는 새싹", communityImage: "sesac",
+		.init(name: "새싹 영등포 iOS 3기",
+			  description: "푸릇푸릇 자라나는 우리는 새싹", imageURL: "sesac",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 30,
 			  isSearchable: true,
+			  managerID: "매니저",
 			  joinMembers: []),
-		.init(communityName: "앨런 스쿨 12기",
-              description: "서로서로 의지하며 공부하기", communityImage: "image2",
+		.init(name: "앨런 스쿨 12기",
+			  description: "서로서로 의지하며 공부하기", imageURL: "allon",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 20,
 			  isSearchable: true,
+			  managerID: "매니저",
 			  joinMembers: []),
-		.init(communityName: "야곰 아카데미 iOS챌린지 5기",
-              description: "야~~~곰", communityImage: "yagom",
+		.init(name: "야곰 아카데미 iOS챌린지 5기",
+			  description: "야~~~곰", imageURL: "yagom",
 			  createdAt: Date().timeIntervalSince1970,
 			  personnel: 100,
 			  isSearchable: true,
-			  joinMembers: []),
-		.init(communityName: "할맥 모임 88기",
-              description: "마셔마셔 먹고 죽어", communityImage: "halmak",
-			  createdAt: Date().timeIntervalSince1970,
-			  personnel: 10,
-			  isSearchable: true,
-			  joinMembers: []),
+			  managerID: "매니저",
+			  joinMembers: [])
 	]
 }
 #endif

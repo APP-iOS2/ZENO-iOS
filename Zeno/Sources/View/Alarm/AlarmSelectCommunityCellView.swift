@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct AlarmSelectCommunityCellView: View {
     @Binding var selectedCommunityId: String
@@ -14,17 +15,38 @@ struct AlarmSelectCommunityCellView: View {
     
     var body: some View {
         VStack {
-            Circle()
-                .frame(width: 60)
-                .overlay(
-                    Circle()
-                        .stroke(Color.red, style: StrokeStyle(lineWidth: 2))
-                        .opacity(community.id == selectedCommunityId ? 1 : 0)
-                )
-                .onTapGesture {
-                    selectedCommunityId = community.id
-                }
-            Text("\(community.communityName)")
+            if let urlStr = community.imageURL,
+                let url = URL(string: urlStr) {
+                KFImage(url)
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .strokeBorder(
+                                AngularGradient(gradient: Gradient(colors: [.red, .yellow, .purple, .red]), center: .center), lineWidth: 3
+                            )
+                            .opacity(community.id == selectedCommunityId ? 1 : 0)
+                    )
+                    .onTapGesture {
+                        selectedCommunityId = community.id
+                    }
+            } else {
+                Circle()
+                    .frame(width: 60)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(
+                                AngularGradient(gradient: Gradient(colors: [.red, .yellow, .purple, .red]), center: .center), lineWidth: 3
+                            )
+                            .opacity(community.id == selectedCommunityId ? 1 : 0)
+                    )
+                    .onTapGesture {
+                        selectedCommunityId = community.id
+                    }
+            }
+            
+            Text("\(community.name)")
                 .font(.footnote)
                 .lineLimit(1)
                 .truncationMode(.tail)

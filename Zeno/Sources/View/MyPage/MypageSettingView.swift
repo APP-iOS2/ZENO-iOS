@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct MypageSettingView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             NavigationLink(destination: UserProfileEdit()) {
@@ -29,9 +31,26 @@ struct MypageSettingView: View {
                 linkView("알림 설정", UIApplication.openSettingsURLString)
                 Divider()
             }
+            
+            Button {
+                Task {
+                    await userViewModel.logoutWithKakao()
+                }
+            } label: {
+                Text("로그아웃")
+            }
+            .padding()
+            
+            Button {
+                Task {
+                    await userViewModel.deleteUser()
+                }
+            } label: {
+                Text("회원탈퇴")
+            }
+            .padding()
         }
         .foregroundColor(.black)
-        Spacer()
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -44,9 +63,12 @@ struct MypageSettingView: View {
         .padding()
     }
     
+    @ViewBuilder
     private func linkView(_ label: String, _ url: String) -> some View {
-        Link(destination: URL(string: url)!) {
-            rowView(label)
+        if let url = URL(string: url) {
+            Link(destination: url) {
+                rowView(label)
+            }
         }
     }
 }

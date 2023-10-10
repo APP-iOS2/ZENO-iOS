@@ -9,7 +9,6 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
-import Firebase
 import FirebaseCore
 import FirebaseStorage
 import SwiftUI
@@ -43,7 +42,7 @@ class SignInManager: UIViewController, ObservableObject {
                 .setData([
                     "ud": userInfo.id,
                     "name": userInfo.name,
-                    "proImage": userInfo.profileImgUrlPath ?? "default value",
+                    "proImage": userInfo.imageURL ?? "default value",
                     // TODO: 업로드 할 유저 정보 더 적어야 함
                 ])
         } catch {

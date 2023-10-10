@@ -30,9 +30,44 @@ struct GroupTFModifier: ViewModifier {
 struct GroupManagementTitleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .bold()
-            .font(.title)
+            .font(.title3)
     }
+}
+
+struct GroupItemDesign: ViewModifier {
+    @Binding var isTapped: Bool
+    var moreTapAction: () -> Void = {}
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 100)
+            .padding(.horizontal)
+            .background {
+                LinearGradient(
+                    gradient: isTapped ? originalGradient : Gradient(colors: [.clear]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isTapped = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    isTapped = false
+                }
+                moreTapAction()
+            }
+    }
+    
+    let originalGradient = Gradient(colors: [
+        .gray.opacity(0.3),
+        .gray.opacity(0.25),
+        .gray.opacity(0.23),
+        .gray.opacity(0.2)
+    ])
 }
 
 extension View {
@@ -46,5 +81,11 @@ extension View {
     
     func gmTitle() -> some View {
         modifier(GroupManagementTitleModifier())
+    }
+    
+    func customTappedViewDesign(isTapped: Binding<Bool>, tapAfterAction: @escaping () -> Void = { }) -> some View {
+        modifier(GroupItemDesign(isTapped: isTapped) {
+            tapAfterAction()
+        })
     }
 }

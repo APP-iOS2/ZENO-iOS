@@ -15,9 +15,9 @@ enum MainTab: Int, CaseIterable, Identifiable {
     var view: some View {
         switch self {
         case .home:
-            HomeMainView()
+            CommMainView()
         case .zeno:
-            SelectCommunityView()
+            SelectCommunityVer2()
         case .alert:
             AlarmView()
         case .myPage:
@@ -56,9 +56,12 @@ enum MainTab: Int, CaseIterable, Identifiable {
 
 struct TabBarView: View {
     @State private var selectedTabIndex = 0
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject var alarmViewModel: AlarmViewModel = AlarmViewModel()
+    @StateObject var iAPStore: IAPStore = IAPStore()
     
     var body: some View {
-		TabView(selection: $selectedTabIndex) {
+        TabView(selection: $selectedTabIndex) {
             ForEach(MainTab.allCases) { tab in
                 tab.view
                     .tabItem {
@@ -67,12 +70,21 @@ struct TabBarView: View {
                     }
                     .tag(tab.rawValue)
             }
+            .toolbarBackground(.visible, for: .tabBar)
 		}
+        .environmentObject(alarmViewModel)
+        .environmentObject(iAPStore)
+        .task {
+            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+        }
 	}
+
 }
 
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
         TabBarView()
+            .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
     }
 }

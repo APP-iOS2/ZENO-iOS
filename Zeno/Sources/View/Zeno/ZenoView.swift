@@ -17,34 +17,50 @@ struct ZenoView: View {
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject private var zenoViewModel: ZenoViewModel = ZenoViewModel()
+    
     var body: some View {
         if selected < zenoList.count {
             ZStack {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
+                
                 VStack(alignment: .center) {
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
                         Text("\(selected+1) / \(zenoList.count)")
                     }
                     .opacityAndWhite()
                     .bold()
+                    
                     Text(zenoList[selected].question)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
-                    Spacer()
+                    
+                    Image(zenoList[selected].zenoImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.4)
+                        .padding([.top, .bottom], 10)
+                    
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
+                                if selected == zenoList.count-1 {
+                                    Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
+                                        await userViewModel.updateZenoTimer()
+                                    }
+                                }
+                                PushNotificationManager.shared.sendPushNotification(toFCMToken: user.fcmToken, title: "Zeno", body: "\(zenoList[selected].question)")
                                 selected += 1
                                 resetUsers()
                             } label: {
                                 HStack {
-                                    Image(user.profileImgUrlPath ?? "person")
-                                        .resizable()
+                                    ZenoKFImageView(user)
                                         .frame(width: 40, height: 40)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                     Text(user.name)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                 }
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
@@ -57,6 +73,10 @@ struct ZenoView: View {
                             }
                         }
                     }
+                    .transaction { view in
+                        view.disablesAnimations = true
+                    }
+                    
                     Button {
                         resetUsers()
                     } label: {
@@ -65,27 +85,30 @@ struct ZenoView: View {
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                     }
+                    .padding(.top, 15)
                 }
                 .padding()
+                
                 .onAppear {
                     resetUsers()
                 }
             }
             .navigationBarBackButtonHidden(true)
         } else {
-            FinishZenoView()
+            ZenoRewardView()
         }
     }
-
+    
     func resetUsers() {
         users = Array(allMyFriends.shuffled().prefix(upTo: 4))
     }
 }
 
-//     answer.append(.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
+//   (.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
 
 struct ZenoView_pro: PreviewProvider {
     static var previews: some View {
         ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+            .environmentObject(UserViewModel())
     }
 }
