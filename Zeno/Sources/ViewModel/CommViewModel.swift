@@ -33,7 +33,8 @@ class CommViewModel: ObservableObject {
         let users = currentCommMembers.filter {
             currentComm.joinMembers
                 .filter {
-                    $0.joinedAt - Date().timeIntervalSince1970 < -86400 * 3
+                    let distanceSeconds = Date(timeIntervalSince1970: $0.joinedAt).toSeconds() - Date().toSeconds()
+                    return distanceSeconds >= -86400 * 3
                 }
                 .map { $0.id }
                 .contains($0.id)
@@ -102,6 +103,7 @@ class CommViewModel: ObservableObject {
     init() {
         Task {
             await fetchAllComm()
+            await fetchCurrentCommMembers()
         }
     }
     
