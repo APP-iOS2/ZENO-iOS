@@ -26,7 +26,7 @@ let infoPlist: [String: InfoPlist.Value] = [
         [
             "CFBundleTypeRole": "Viewer",
             "CFBundleURLName": "education.techit.zeno.dev",
-            "CFBundleURLSchemes": ["ZenoApp"]
+            "CFBundleURLSchemes": ["zenoapp"]
         ]
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)",

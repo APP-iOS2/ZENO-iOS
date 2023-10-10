@@ -145,7 +145,7 @@ class CommViewModel: ObservableObject {
     @MainActor
     func handleInviteURL(_ url: URL) async {
         await fetchAllComm()
-        guard url.scheme == "ZenoApp" else { return }
+        guard url.scheme == "zenoapp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
             return
@@ -299,6 +299,7 @@ class CommViewModel: ObservableObject {
             }
         }
         self.allComm = communities
+        filterJoinedComm()
     }
     
     @MainActor

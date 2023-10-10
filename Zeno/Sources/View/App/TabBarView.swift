@@ -78,7 +78,6 @@ struct TabBarView: View {
             await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
         }
 	}
-
 }
 
 struct TabBarView_Previews: PreviewProvider {
