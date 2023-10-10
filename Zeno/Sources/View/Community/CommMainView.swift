@@ -29,6 +29,7 @@ struct CommMainView: View {
             .refreshable {
                 Task {
                     try? await userViewModel.loadUserData()
+                    await commViewModel.fetchAllComm()
                 }
             }
             .toolbar {
@@ -65,9 +66,11 @@ struct CommMainView: View {
             }
         }
         .onOpenURL { url in
-            commViewModel.handleInviteURL(url)
+            Task {
+                await commViewModel.handleInviteURL(url)
+            }
         }
-    }// body
+    }
 }
 
 extension CommMainView {

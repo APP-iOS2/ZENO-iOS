@@ -50,11 +50,19 @@ struct CommSideBarView: View {
                                 }
                             }
                         } label: {
-                            if commViewModel.isCurrentCommManager {
+                            if item == .inviteComm {
                                 HStack {
                                     Text(item.title)
                                     Spacer()
                                     Image(systemName: "chevron.right")
+                                }
+                            } else {
+                                if commViewModel.isCurrentCommManager {
+                                    HStack {
+                                        Text(item.title)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
                                 }
                             }
                         }
@@ -156,14 +164,14 @@ struct CommSideBarView: View {
     }
     
     private enum SideMenu: CaseIterable, Identifiable {
-        case memberMGMT, inviteComm, delegateManager
+        case inviteComm, memberMGMT, delegateManager
         
         var title: String {
             switch self {
-            case .memberMGMT:
-                return "구성원 관리"
             case .inviteComm:
                 return "그룹 초대"
+            case .memberMGMT:
+                return "구성원 관리"
             case .delegateManager:
                 return "매니저 위임"
             }

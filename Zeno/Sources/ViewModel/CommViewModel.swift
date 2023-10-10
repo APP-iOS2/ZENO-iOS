@@ -119,28 +119,24 @@ class CommViewModel: ObservableObject {
         }
     }
     
-    func handleInviteURL(_ url: URL) {
-        guard url.scheme == "ZenoApp" else {
-            return
-        }
+    func handleInviteURL(_ url: URL) async {
+        await commViewModel.fetchAllComm()
+        guard url.scheme == "ZenoApp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            print("Invalid URL")
+            print("유효하지 않은 URL")
             return
         }
-
         guard let action = components.host, action == "invite" else {
-            print("Unknown URL, we can't handle this one!")
+            print("유효하지 않은 URL action")
             return
         }
         
-        guard let queryItem = components.queryItems else {
+        guard let value = components.queryItems.first(where: { $0.name == "commID" })?.value else {
+            print("유효하지 않은 URL value")
             return
         }
-        
-        if let commID = queryItem.first(where: { $0.name == "commID" })?.value {
-            commIDInDeepLink = commID
-            isJoinWithDeeplinkView = true
-        }
+        commIDInDeepLink = value
+        isJoinWithDeeplinkView = true
     }
     
     @MainActor
@@ -234,10 +230,17 @@ class CommViewModel: ObservableObject {
             let tempMemberID = currentComm.waitApprovalMemberIDs.remove(at: index)
             let acceptMember = Community.Member.init(id: tempMemberID, joinedAt: Date().timeIntervalSince1970)
             currentComm.joinMembers.append(acceptMember)
+            var willUpdateUser = user
+            willUpdateUser.commInfoList.append(.init(id: currentComm.id, buddyList: [], alert: true))
             do {
-                _ = try await firebaseManager.create(data: currentComm)
-                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                allComm[commIndex] = currentComm
+                try await firebaseManager.create(data: currentComm)
+                do {
+                    try await firebaseManager.create(data: willUpdateUser)
+                    guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                    allComm[commIndex] = currentComm
+                } catch {
+                    print(#function + "유저 commInfoList 수정 실패")
+                }
             } catch {
                 print(#function + "그룹가입 수락 실패")
             }
@@ -253,7 +256,7 @@ class CommViewModel: ObservableObject {
             else { return }
             currentComm.joinMembers.remove(at: memberIndex)
             var deportedUser = user
-            deportedUser.commInfoList = deportedUser.commInfoList.filter({ $0.id == currentComm.id })
+            deportedUser.commInfoList = deportedUser.commInfoList.filter({ $0.id != currentComm.id })
             do {
                 _ = try await firebaseManager.create(data: currentComm)
                 _ = try await firebaseManager.create(data: deportedUser)
@@ -368,13 +371,17 @@ class CommViewModel: ObservableObject {
   
       /// 그룹에 가입신청 보내는 함수
     @MainActor
-    func requestJoinComm(comm: Community) async throws {
+    func requestJoinComm(comm: Community) async {
         guard let currentUser else { return }
         guard !comm.waitApprovalMemberIDs.contains(currentUser.id) else { return }
         
-        try await firebaseManager.update(data: comm.self,
-                                         value: \.waitApprovalMemberIDs,
-                                         to: comm.waitApprovalMemberIDs + [currentUser.id])
+        do {
+            try await firebaseManager.update(data: comm.self,
+                                             value: \.waitApprovalMemberIDs,
+                                             to: comm.waitApprovalMemberIDs + [currentUser.id])
+        } catch {
+            print(#function + "그룹에 가입신청 실패")
+        }
         await fetchCurrentCommMembers()
     }
   
