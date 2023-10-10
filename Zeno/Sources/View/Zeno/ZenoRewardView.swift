@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ZenoRewardView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
@@ -23,7 +25,7 @@ struct ZenoRewardView: View {
                     
                     Group {
                         Text("다음 문제 꾸러미는 ")
-                        Text("15분 후에 풀 수 있어요")
+                        Text("10분 후에 풀 수 있어요")
                     }
                     .font(ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 16))
                 }
@@ -35,6 +37,11 @@ struct ZenoRewardView: View {
                     FinishZenoView()
                 } label: {
                     WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
+                }
+                .onTapGesture {
+                    Task {
+                        await userViewModel.updateUserCoin(to: 60)
+                    }
                 }
             }
         }
