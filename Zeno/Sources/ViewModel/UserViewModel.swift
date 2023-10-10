@@ -119,7 +119,8 @@ final class UserViewModel: ObservableObject {
                             kakaoToken: "카카오토큰",
                             coin: 0,
                             megaphone: 0,
-                            showInitial: 0
+                            showInitial: 0,
+                            requestComm: []
             )
             await uploadUserData(user: user)
             print("🔵 회원가입 성공")
@@ -217,6 +218,41 @@ final class UserViewModel: ObservableObject {
         }
     }
     
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 친구 id로  친구 이름 받아오는 함수
+    func userIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchUser(withUid: id)
+            return result.name
+        } catch {
+            print("fetch유저 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
+    func commIDtoName(id: String) async -> String? {
+        do {
+            let result = try await fetchCommunity(withUid: id)
+            return result.name
+        } catch {
+            print("fetchName 실패")
+            return nil
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    func fetchCommunity (withUid uid: String) async throws -> Community {
+        let result = await firebaseManager.read(type: Community.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
+        }
+    }
+    
     @MainActor
     func joinNewGroup(newID: String) async {
         guard var currentUser else { return }
@@ -239,7 +275,7 @@ final class UserViewModel: ObservableObject {
             throw error
         }
     }
-    
+
     /// 회원탈퇴
     func deleteUser() async {
         // DB User정보 delete, Auth 정보 Delete 부분 추가하기.  // 현재 작동안됨. 23.10.10
@@ -252,12 +288,18 @@ final class UserViewModel: ObservableObject {
             print("🦕로그아웃 오류 : \(error.localizedDescription)")
             return
         }
-        
-        await logoutWithKakao()  // 카카오 토큰 제거
-        await self.setSignStatus(.none) // 상태 .none 변경
-        print("🦕\(self.signStatus.rawValue)")
     }
     
+    /// 가입신청 보낸 그룹 등록
+    @MainActor
+    func addRequestComm(comm: Community) async throws {
+        guard var currentUser else { return }
+        try await firebaseManager.update(data: currentUser.self,
+                                         value: \.requestComm,
+                                         to: currentUser.requestComm + [comm.id])
+        self.currentUser?.requestComm += [comm.id]
+    }
+   
     @MainActor
     private func getSignStatus() {
         self.signStatus = SignStatus.getStatus() // signStatus 값 가져오기. User정보를 받았을때
@@ -269,5 +311,5 @@ final class UserViewModel: ObservableObject {
         self.signStatus = status
         self.signStatus.saveStatus()
     }
-    
+          
 }

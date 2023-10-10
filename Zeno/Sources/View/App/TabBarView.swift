@@ -56,6 +56,9 @@ enum MainTab: Int, CaseIterable, Identifiable {
 
 struct TabBarView: View {
     @State private var selectedTabIndex = 0
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject var alarmViewModel: AlarmViewModel = AlarmViewModel()
+    @StateObject var iAPStore: IAPStore = IAPStore()
     
     var body: some View {
         TabView(selection: $selectedTabIndex) {
@@ -67,14 +70,21 @@ struct TabBarView: View {
                     }
                     .tag(tab.rawValue)
             }
+            .toolbarBackground(.visible, for: .tabBar)
+		}
+        .environmentObject(alarmViewModel)
+        .environmentObject(iAPStore)
+        .task {
+            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
         }
-    }
+	}
+
 }
 
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
         TabBarView()
-            .environmentObject(UserViewModel(currentUser: .dummy[0]))
+            .environmentObject(UserViewModel())
             .environmentObject(CommViewModel())
     }
 }

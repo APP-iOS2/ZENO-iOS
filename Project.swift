@@ -4,16 +4,29 @@ let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
 let bundleID = "education.techit.zeno.dev"
 let infoPlist: [String: InfoPlist.Value] = [
-    "BundleDisplayName": "ZenoAppTest",
+    "BundleDisplayName": "Zeno",
     "BundleShortVersionString": "1.0",
     "BundleVersion": "1.0.0",
     "UILaunchStoryboardName": "LaunchScreen",
-    "UIBackgroundModes": ["remote-notification"],
-    "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "kakao$(KAKAO_APP_KEY)"],
+    "UIBackgroundModes": [
+        "fetch",
+        "processing",
+        "remote-notification"
+    ],
+    "LSApplicationQueriesSchemes": [
+        "kakaokompassauth",
+        "kakaolink",
+        "kakao$(KAKAO_APP_KEY)"
+    ],
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
             "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+        ],
+        [
+            "CFBundleTypeRole": "Viewer",
+            "CFBundleURLName": "education.techit.zeno.dev",
+            "CFBundleURLSchemes": ["ZenoApp"]
         ]
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)"
@@ -31,7 +44,7 @@ let project = Project(
         .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "10.0.0")),
         .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMajor(from: "2.0.0")),
         .remote(url: "https://github.com/airbnb/lottie-ios", requirement: .upToNextMajor(from: "4.0.0")),
-        .remote(url: "https://github.com/apple/swift-protobuf.git", requirement: .upToNextMajor(from: "1.0.0")),
+//        .remote(url: "https://github.com/apple/swift-protobuf.git", requirement: .upToNextMajor(from: "1.0.0")),
         .remote(url: "https://github.com/onevcat/Kingfisher", requirement: .upToNextMajor(from: "7.0.0")),
     ],
     targets: [
@@ -50,15 +63,16 @@ let project = Project(
             ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
-                .package(product: "SwiftProtobuf"),
+//                .package(product: "SwiftProtobuf"),
                 .package(product: "FirebaseAnalytics"),
                 .package(product: "FirebaseMessaging"),
                 .package(product: "FirebaseFirestore"),
                 .package(product: "FirebaseFirestoreSwift"),
-                .package(product: "FirebaseAuth"),
+				.package(product: "FirebaseAuth"),
                 .package(product: "FirebaseStorage"),
-                .package(product: "FirebaseDatabase"),
-                .package(product: "FirebaseDatabaseSwift"),
+				.package(product: "FirebaseDynamicLinks"),
+//				.package(product: "FirebaseDatabase"),
+//				.package(product: "FirebaseDatabaseSwift"),
                 .package(product: "KakaoSDKUser"),
                 .package(product: "KakaoSDKAuth"),
                 .package(product: "KakaoSDKCommon"),

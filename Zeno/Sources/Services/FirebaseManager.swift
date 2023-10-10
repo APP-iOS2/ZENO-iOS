@@ -18,6 +18,7 @@ enum FirebaseError: Error {
     case failToDelete
     case failToGetDocuments
     case failToUploadImg
+    case failToEncode
     case documentToData
 }
 
@@ -32,7 +33,6 @@ final class FirebaseManager {
     // MARK: async
     func create<T: FirebaseAvailable>(data: T) async throws where T: Encodable {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
         do {
             try documentRef.setData(from: data)
         } catch {
@@ -45,7 +45,7 @@ final class FirebaseManager {
     ) async throws -> T where T: Encodable, T: ZenoSearchable {
         var changableData = data
         do {
-            let imageURL = try await createImageURL(image: image)
+            let imageURL = try await createImageURL(id: data.id, image: image)
             changableData.imageURL = imageURL
             try await create(data: changableData)
             return changableData
@@ -54,11 +54,10 @@ final class FirebaseManager {
         }
     }
     
-    private func createImageURL(image: UIImage) async throws -> String? {
+    private func createImageURL(id: String, image: UIImage) async throws -> String? {
         guard let imageData = image.jpegData(compressionQuality: 0.25) else { return nil }
         
-        let filename = UUID().uuidString
-        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
+        let ref = Storage.storage().reference(withPath: "/images/\(id)")
         
         do {
             _ = try await ref.putDataAsync(imageData)
@@ -68,6 +67,13 @@ final class FirebaseManager {
         } catch {
             print("🔴이미지 업로드 실패: \(error.localizedDescription)")
             return nil
+        }
+    }
+    
+    func createDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
+        datas.forEach { data in
+            let collectionRef = db.collection("\(type(of: data))")
+            try? collectionRef.document(data.id).setData(from: data)
         }
     }
     
@@ -82,59 +88,6 @@ final class FirebaseManager {
             return .success(try await documentRef.getDocument(as: T.self))
         } catch {
             return .failure(FirebaseError.failToRead)
-        }
-    }
-    
-    func update<T: FirebaseAvailable, U: Decodable>(data: T,
-                                                    value keyPath: WritableKeyPath<T, U>,
-                                                    to: U) async throws {
-        let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
-        do {
-            try await documentRef.updateData([data.getPropertyName(keyPath): to])
-        } catch {
-            throw FirebaseError.failToUpdate
-        }
-    }
-    
-    func updateWithImage<T: FirebaseAvailable>(url: String,
-                                               data: T,
-                                               image: UIImage
-    ) async throws where T: Encodable, T: ZenoSearchable {
-        var changableData = data
-        do {
-            try await updateImageURL(url: url, image: image)
-            try await create(data: changableData)
-        } catch {
-            throw FirebaseError.failToUploadImg
-        }
-    }
-    
-    private func updateImageURL(url: String, image: UIImage) async throws {
-        guard let imageData = image.jpegData(compressionQuality: 0.25) else { return }
-        
-        let ref = Storage.storage().reference(withPath: "/images/\(url)")
-        
-        do {
-            _ = try await ref.putDataAsync(imageData)
-        } catch {
-            print("🔴이미지 업로드 실패: \(error.localizedDescription)")
-            return
-        }
-    }
-    
-    func delete<T: FirebaseAvailable>(data: T) async throws {
-        let documentID = data.id
-        guard !documentID.isEmpty else {
-            throw FirebaseError.emptyID
-        }
-        
-        let documentRef = db.collection("\(type(of: data))").document(data.id)
-        
-        do {
-            try await documentRef.delete()
-        } catch {
-            throw FirebaseError.failToDelete
         }
     }
     
@@ -176,10 +129,44 @@ final class FirebaseManager {
         return results
     }
     
-    func uploadDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
-        datas.forEach { data in
-            let collectionRef = db.collection("\(type(of: data))")
-            try? collectionRef.document(data.id).setData(from: data)
+    func update<T: FirebaseAvailable, U: Encodable>(data: T,
+                                                    value keyPath: WritableKeyPath<T, U>,
+                                                    to: U) async throws {
+        let documentRef = db.collection("\(type(of: data))").document(data.id)
+        
+        do {
+            let dataType = try JSONEncoder().encode(to)
+            do {
+                let any = try JSONSerialization.jsonObject(with: dataType)
+                do {
+                    try await documentRef.updateData([data.getPropertyName(keyPath): any])
+                } catch {
+                    throw FirebaseError.failToUpdate
+                }
+            } catch {
+                do {
+                    try await documentRef.updateData([data.getPropertyName(keyPath): to])
+                } catch {
+                    throw FirebaseError.failToUpdate
+                }
+            }
+        } catch {
+            throw FirebaseError.failToEncode
+        }
+    }
+    
+    func delete<T: FirebaseAvailable>(data: T) async throws {
+        let documentID = data.id
+        guard !documentID.isEmpty else {
+            throw FirebaseError.emptyID
+        }
+        
+        let documentRef = db.collection("\(type(of: data))").document(data.id)
+        
+        do {
+            try await documentRef.delete()
+        } catch {
+            throw FirebaseError.failToDelete
         }
     }
 }
