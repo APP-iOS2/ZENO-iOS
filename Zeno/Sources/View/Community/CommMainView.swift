@@ -67,8 +67,7 @@ struct CommMainView: View {
         }
         .onOpenURL { url in
             Task {
-                await commViewModel.fetchAllComm()
-                commViewModel.handleInviteURL(url)
+                await commViewModel.handleInviteURL(url)
             }
         }
     }

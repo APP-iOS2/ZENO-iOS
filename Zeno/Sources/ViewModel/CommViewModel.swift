@@ -113,28 +113,24 @@ class CommViewModel: ObservableObject {
         self.joinedComm = communities
     }
     
-    func handleInviteURL(_ url: URL) {
-        guard url.scheme == "ZenoApp" else {
-            return
-        }
+    func handleInviteURL(_ url: URL) async {
+        await commViewModel.fetchAllComm()
+        guard url.scheme == "ZenoApp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            print("Invalid URL")
+            print("유효하지 않은 URL")
             return
         }
-
         guard let action = components.host, action == "invite" else {
-            print("Unknown URL, we can't handle this one!")
+            print("유효하지 않은 URL action")
             return
         }
         
-        guard let queryItem = components.queryItems else {
+        guard let value = components.queryItems.first(where: { $0.name == "commID" })?.value else {
+            print("유효하지 않은 URL value")
             return
         }
-        
-        if let commID = queryItem.first(where: { $0.name == "commID" })?.value {
-            commIDInDeepLink = commID
-            isJoinWithDeeplinkView = true
-        }
+        commIDInDeepLink = value
+        isJoinWithDeeplinkView = true
     }
     
     @MainActor
