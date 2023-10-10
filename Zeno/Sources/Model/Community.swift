@@ -38,8 +38,9 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 }
 
 extension Community {
-	static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, manager: "", joinMembers: [], waitApprovalMemberIDs: [])
+	static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
 }
+
 #if DEBUG
 extension Community {
 	static let dummy: [Community] = [
