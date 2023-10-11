@@ -33,8 +33,7 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    Color.hex("EB0FFE"), lineWidth: 2   // 여자
-                                    //                                   남자  Color.hex("0F62FE")
+                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 } else {
@@ -44,15 +43,14 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    Color.hex("EB0FFE"), lineWidth: 2
-                                    //                                    Color.hex("0F62FE")
+                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . 여자")
+                    Text("\(getCommunity.name) . \(alarm.sendUserGender)")
                         .padding(.bottom, 4)
-                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
+//                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
                     Text("3시간 전")
                         .font(.caption)
                         .foregroundStyle(.gray)
@@ -86,11 +84,11 @@ struct AlarmListCellView: View {
                 
                 Spacer()
             }
-            .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
             .padding(.bottom)
         }
+        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray)
         .padding()
-        .background(alarm.id == selectAlarm?.id ? Color("MainPurple1") : .white)
+        .background(alarm.id == selectAlarm?.id ? .purple2.opacity(0.5) : Color(uiColor: .systemGray6))
         .clipped()
         .cornerRadius(20)
     }
