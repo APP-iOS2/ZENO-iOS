@@ -35,6 +35,7 @@ struct AlarmView: View {
                         ScrollView {
                             ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                    .padding(.bottom, 4)
                             }
                             .navigationDestination(isPresented: $isShowInitialView) {
                                 if let selectAlarm {
@@ -44,7 +45,6 @@ struct AlarmView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
-//                        .modifier(HomeListModifier())
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {

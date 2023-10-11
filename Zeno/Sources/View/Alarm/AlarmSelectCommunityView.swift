@@ -30,9 +30,8 @@ struct AlarmSelectCommunityView: View {
                     }
                 }
             }
-            .padding(.bottom, -10)
+            .padding(.vertical, -10)
         }
-        .modifier(HomeListModifier())
     }
 }
 
