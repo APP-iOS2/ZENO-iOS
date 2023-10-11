@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ZenoKFImageView<T: ZenoSearchable>: View {
+struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     let item: T
     let ratio: SwiftUI.ContentMode
     
@@ -20,27 +20,29 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
                 .cacheOriginalImage()
                 .resizable()
                 .placeholder {
-                    if (item as? User) != nil,
-                       let asset = UserAsset.allCases.randomElement()?.rawValue {
-                        Image(asset)
-                            .resizable()
-                    } else if (item as? Community) != nil,
-                              let asset = CommAsset.allCases.randomElement()?.rawValue {
-                        Image(asset)
-                            .resizable()
-                    } else {
-                        Image("ZenoIcon")
-                            .resizable()
-                    }
+                    placeholderImg
+                        .resizable()
                 }
+                .aspectRatio(contentMode: ratio)
+        } else {
+            placeholderImg
+                .resizable()
                 .aspectRatio(contentMode: ratio)
         }
     }
     
     var placeholderImg: Image {
-        if (item as? User) != nil,
-           let asset = UserAsset.allCases.randomElement()?.rawValue {
-            return Image(asset)
+        if let user = item as? User,
+           let manAsset = ["man1", "man2"].randomElement(),
+           let womanAsset = ["woman1", "woman2"].randomElement() {
+            switch user.gender {
+            case "Male":
+                return Image(manAsset)
+            case "Female":
+                return Image(womanAsset)
+            default:
+                return Image("ZenoIcon")
+            }
         } else if (item as? Community) != nil {
             return Image(CommAsset.team1.rawValue)
         } else {
