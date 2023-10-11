@@ -28,9 +28,9 @@ struct AlarmView: View {
             ZStack {
                 Color("MainPink3")
                     .ignoresSafeArea()
-                if commViewModel.joinedComm.isEmpty {
-                    AlarmEmptyView()
-                } else {
+//                if commViewModel.joinedComm.isEmpty {
+//                    AlarmEmptyView()
+//                } else {
                     VStack {
                         AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                         
@@ -86,17 +86,12 @@ struct AlarmView: View {
                                 isShowPaymentSheet = true
                             }
                         }, label: {
-                            Text("선택하기")
-                                .font(.title3)
-                                .frame(maxWidth: .infinity)
+                            WideButton(buttonName: "선택하기", isplay: selectAlarm == nil ? false : true)
                         })
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color("MainPurple1"))
                         .disabled(selectAlarm == nil ? true : false)
-                        .padding(.horizontal)
                     }
                 }
-            }
+//            }
         }
     }
 }
