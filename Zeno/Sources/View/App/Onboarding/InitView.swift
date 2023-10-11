@@ -51,6 +51,7 @@ struct InitView: View {
             }
             .offset(y: 150)
         }
+        .ignoresSafeArea()
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 withAnimation(.easeIn(duration: 1)) {
@@ -63,7 +64,6 @@ struct InitView: View {
                 }
             }
         }
-        .ignoresSafeArea()
     }
 }
 

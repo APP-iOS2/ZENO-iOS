@@ -22,6 +22,7 @@ struct InitialView: View {
                 launchScreenView.transition(.opacity).zIndex(1)
             }
         }
+        .ignoresSafeArea()
         .onAppear {
             // 런치스크린 타이머
             DispatchQueue.main.asyncAfter(deadline: .now() + 4.5, execute: {
