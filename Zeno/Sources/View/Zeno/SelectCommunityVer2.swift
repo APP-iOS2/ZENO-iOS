@@ -45,11 +45,15 @@ struct SelectCommunityVer2: View {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
                                 }
                             }
-                        }
                     }
+                    .frame(height: .screenHeight * 0.35)
+                }
                 
                 commuityListView()
+                    .frame(height: .screenHeight * 0.3)
                     .background(.clear)
+                
+                Spacer()
                 
                 VStack {
                     switch isPlay {

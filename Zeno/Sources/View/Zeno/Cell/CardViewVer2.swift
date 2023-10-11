@@ -9,34 +9,29 @@
 import SwiftUI
 
 struct CardViewVer2: View {
-    var currentIndex: Int
-    
-    private let itemWidth: CGFloat = .screenWidth * 0.51
-    
+    let currentIndex: Int
+    private let itemSize: CGFloat = 200
+
     @EnvironmentObject var commViewModel: CommViewModel
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
-                Rectangle()
-                    .frame(width: itemWidth / 8, height: 160)
-                    .foregroundColor(.clear)
-                
                 ForEach(commViewModel.joinedComm.indices, id: \.self) { index in
                     ZenoKFImageView(commViewModel.joinedComm[index])
                         .clipShape(Circle())
-                        .frame(width: itemWidth, height: .screenHeight * 0.2)
-                        // .aspectRatio(contentMode: .fill)
-                        .overlay(alignment: .bottomLeading) {
+                        .frame(width: itemSize, height: itemSize)
+                        .overlay(alignment: .centerFirstTextBaseline) {
                             Text(commViewModel.joinedComm[index].name)
-                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                .offset(y: 70)
+                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 21))
+                                .offset(y: 30)
+                                .frame(width: 200)
                                 .opacity(currentIndex == index ? 1.0 : 0.3)
                         }
-                        .scaleEffect(currentIndex == index ? 0.98 : 0.8)
+                        .scaleEffect(currentIndex == index ? 0.98 : 0.73)
                 }
             }
-            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemWidth, height: .screenHeight * 0.38)
+            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.4)
         }
         .disabled(true)
     }
@@ -44,6 +39,6 @@ struct CardViewVer2: View {
 
 struct CardViewVer2_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewVer2(currentIndex: 1)
+        CardViewVer2(currentIndex: 0)
     }
 }
