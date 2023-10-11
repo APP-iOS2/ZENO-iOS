@@ -78,6 +78,11 @@ struct SelectCommunityVer2: View {
                     }
                 }
             }
+            .onAppear {
+                currentIndex = 0
+                selected = ""
+                isPlay = .notSelected
+            }
         }
         .navigationBarBackButtonHidden()
     }
