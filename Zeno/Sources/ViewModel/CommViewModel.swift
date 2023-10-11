@@ -10,6 +10,7 @@ import SwiftUI
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
+    private let commRepo = CommRepository.shared
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     private var currentUser: User?
     /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
