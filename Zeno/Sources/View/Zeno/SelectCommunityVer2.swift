@@ -28,7 +28,7 @@ struct SelectCommunityVer2: View {
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
-        
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -125,8 +125,14 @@ struct SelectCommunityVer2: View {
 }
 
 struct SelectCommunityVer2_Previews: PreviewProvider {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     static var previews: some View {
         SelectCommunityVer2()
             .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
+            .onAppear {
+                UserViewModel.init(currentUser: User.fakeCurrentUser)
+            }
     }
 }

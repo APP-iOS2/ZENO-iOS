@@ -121,12 +121,16 @@ struct ZenoView: View {
     }
 }
 
-//   (.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
+struct ZenoView_pro: PreviewProvider {
+    @EnvironmentObject private var userViewModel: UserViewModel
 
-//struct ZenoView_pro: PreviewProvider {
-//    static var previews: some View {
-//        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy, community: Community.emptyComm)
-//            .environmentObject(UserViewModel())
-//            .environmentObject(AlarmViewModel())
-//    }
-//}
+    static var previews: some View {
+        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: Community.emptyComm, allMyFriends: User.dummy)
+            .environmentObject(UserViewModel())
+            .environmentObject(AlarmViewModel())
+            .environmentObject(CommViewModel())
+            .onAppear {
+                UserViewModel.init(currentUser: User.fakeCurrentUser)
+            }
+    }
+}
