@@ -24,10 +24,10 @@ struct CardViewVer2: View {
                 ForEach(communities.indices, id: \.self) { index in
                     ZenoKFImageView(communities[index])
                         .frame(width: itemWidth, height: .screenHeight * 0.2)
-                        .overlay(alignment: .bottomLeading) {
+                        .overlay(alignment: .centerFirstTextBaseline) {
                             Text(communities[index].name)
                                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                .offset(y: 70)
+                                .offset(y: 50)
                                 .opacity(currentIndex == index ? 1.0 : 0.3)
                         }
                         .scaleEffect(currentIndex == index ? 0.98 : 0.8)
@@ -41,6 +41,6 @@ struct CardViewVer2: View {
 
 struct CardViewVer2_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewVer2(currentIndex: 0)
+        CardViewVer2(currentIndex: 2)
     }
 }

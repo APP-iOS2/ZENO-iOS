@@ -37,7 +37,8 @@ struct ZenoView: View {
                     Text(zenoList[selected].question)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
-                    
+                        .fixedSize(horizontal: false, vertical: true)
+
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
