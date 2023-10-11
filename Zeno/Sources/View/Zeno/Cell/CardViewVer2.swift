@@ -26,6 +26,7 @@ struct CardViewVer2: View {
                     ZenoKFImageView(commViewModel.joinedComm[index])
                         .clipShape(Circle())
                         .frame(width: itemWidth, height: .screenHeight * 0.2)
+                        // .aspectRatio(contentMode: .fill)
                         .overlay(alignment: .bottomLeading) {
                             Text(commViewModel.joinedComm[index].name)
                                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))

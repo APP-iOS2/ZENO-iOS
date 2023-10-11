@@ -16,8 +16,6 @@ final class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    /// ZenoViewSheet닫는용
-    @Published var isShowingSheet: Bool = false
     /// 로그인여부(상태)
     @Published var signStatus: SignStatus = .none
     

@@ -20,7 +20,7 @@ struct ZenoView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
-
+    
     var body: some View {
         if selected < zenoList.count {
             ZStack {
@@ -52,9 +52,13 @@ struct ZenoView: View {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
+                                
                                 Task {
-                                    await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected])
+                                    await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    debugPrint(user.name)
+                                    debugPrint(zenoList[selected-1].question)
                                 }
+                                
                                 selected += 1
                                 resetUsers()
                             } label: {
@@ -93,18 +97,11 @@ struct ZenoView: View {
                 .padding()
                 
                 .onAppear {
-                    // 버튼 누를때마다 동작해야 해서 효율이 안좋음. 리팩토링 해야함
+                    // MARK: 제노 뷰
                     Task {
                         await
                         allMyFriends =
                         userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community))
-                        print("-------버디리스트------")
-                        debugPrint(allMyFriends[0].name)
-                        debugPrint(allMyFriends[1].name)
-                        debugPrint(allMyFriends[2].name)
-                        debugPrint(allMyFriends[3].name)
-                        print("--------조인컴-------")
-                        debugPrint(community)
                         resetUsers()
                     }
                 }

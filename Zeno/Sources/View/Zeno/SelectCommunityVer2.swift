@@ -9,19 +9,25 @@
 import SwiftUI
 import ConfettiSwiftUI
 
+// MARK: ZVM에 넣어야함
+enum PlayStatus {
+    case success
+    case lessThanFour
+    case notSelected
+}
+
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
     @State private var stack = NavigationPath()
-    @State private var isPlay: Bool = false
+    @State private var isPlay: PlayStatus = .notSelected
     @State private var community: Community?
     @State private var allMyFriends: [User] = []
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
-    @State var isSheetOn: Bool = false
         
     var body: some View {
         NavigationStack {
@@ -46,20 +52,27 @@ struct SelectCommunityVer2: View {
                     .background(.clear)
                 
                 VStack {
-                    if isPlay == false {
-                        Text("그룹을 선택해주세요")
-                            .foregroundColor(.secondary)
-                            .offset(y: -20)
-                        WideButton(buttonName: "START", isplay: isPlay)
-                    } else {
+                    switch isPlay {
+                    case .success:
                         NavigationLink {
                             ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community!, allMyFriends: allMyFriends)
                         } label: {
-                            WideButton(buttonName: "START", isplay: isPlay)
+                            WideButton(buttonName: "START", isplay: true)
                         }
+                    case .lessThanFour:
+                        Text("그룹 내 친구 수가 4명을 넘지 않습니다")
+                            .foregroundColor(.red)
+                            .offset(y: -20)
+                        WideButton(buttonName: "START", isplay: false)
+                            .disabled(isPlay != .success)
+                    case .notSelected:
+                        Text("그룹을 선택해주세요")
+                            .foregroundColor(.secondary)
+                            .offset(y: -20)
+                        WideButton(buttonName: "START", isplay: false)
+                            .disabled(isPlay != .success)
                     }
                 }
-                .disabled(isPlay == false)
             }
         }
         .navigationBarBackButtonHidden()
@@ -68,10 +81,15 @@ struct SelectCommunityVer2: View {
     func commuityListView() -> some View {
         List(Array(commViewModel.joinedComm.indices), id: \.self) { index in
             Button {
-                isPlay = true
                 selected = commViewModel.joinedComm[index].id
                 community = commViewModel.joinedComm[index]
                 currentIndex = index
+                
+                if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+                    isPlay = .success
+                } else {
+                    isPlay = .lessThanFour
+                }
                 
                 if useConfentti {
                     counter += 1
