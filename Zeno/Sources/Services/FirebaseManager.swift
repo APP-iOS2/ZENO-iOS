@@ -176,7 +176,7 @@ final class FirebaseManager {
                 do {
                     let any = try JSONSerialization.jsonObject(with: dataType)
                     do {
-                        try? await collectionRef.document(id).updateData([propertyName: any])
+                        try await collectionRef.document(id).updateData([propertyName: any])
                     } catch {
                         print(FirebaseError.failToUpdate.localizedDescription)
                     }
