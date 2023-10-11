@@ -44,7 +44,7 @@ struct InitView: View {
                                 .frame(width: .screenWidth - 35, height: 150)
                                 .opacity(0.6)
                                 .cornerRadius(11)
-                            AlarmCellView(sex: "남자", question: "밈을 가장 잘 아는 사람", commName: "한라산 정복까지", imgString: "man1")
+                            AlarmCellView(gender: "남자", question: "밈을 가장 잘 아는 사람", commName: "한라산 정복까지", imgString: "man1")
                         }  .offset(y: -60)
                     }
                 }

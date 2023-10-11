@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AlarmCellView: View {
-    @State var sex: String = "여자"
+    @State var gender: String = "여자"
     @State var question: String = "한강에서 같이 치맥하고 싶은 사람"
     @State var commName: String = "멋쟁이 사자처럼"
     @State var imgString: String = "woman1"
@@ -26,7 +26,7 @@ struct AlarmCellView: View {
                         .bold()
                         .font(.system(size: 14))
                         .foregroundStyle(.black)
-                    Text("\(sex)")
+                    Text("\(gender)")
                         .font(.caption)
                         .padding(.bottom, 1)
                     Text("20초 전")
