@@ -9,31 +9,29 @@
 import SwiftUI
 
 struct CardViewVer2: View {
-    var currentIndex: Int
-    
-    private let itemWidth: CGFloat = .screenWidth * 0.51
-    private let communities = Community.dummy
-    
+    let currentIndex: Int
+    private let itemSize: CGFloat = 200
+
+    @EnvironmentObject var commViewModel: CommViewModel
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
-                Rectangle()
-                    .frame(width: itemWidth / 8, height: 160)
-                    .foregroundColor(.clear)
-                
-                ForEach(communities.indices, id: \.self) { index in
-                    ZenoKFImageView(communities[index])
-                        .frame(width: itemWidth, height: .screenHeight * 0.2)
+                ForEach(commViewModel.joinedComm.indices, id: \.self) { index in
+                    ZenoKFImageView(commViewModel.joinedComm[index])
+                        .clipShape(Circle())
+                        .frame(width: itemSize, height: itemSize)
                         .overlay(alignment: .centerFirstTextBaseline) {
-                            Text(communities[index].name)
-                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                .offset(y: 50)
+                            Text(commViewModel.joinedComm[index].name)
+                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 21))
+                                .offset(y: 30)
+                                .frame(width: 200)
                                 .opacity(currentIndex == index ? 1.0 : 0.3)
                         }
-                        .scaleEffect(currentIndex == index ? 0.98 : 0.8)
+                        .scaleEffect(currentIndex == index ? 0.98 : 0.73)
                 }
             }
-            .frame(width: CGFloat(Community.dummy.count+1) * itemWidth, height: .screenHeight * 0.38)
+            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.4)
         }
         .disabled(true)
     }
