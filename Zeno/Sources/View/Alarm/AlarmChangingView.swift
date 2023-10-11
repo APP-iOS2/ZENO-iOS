@@ -33,9 +33,11 @@ struct AlarmChangingView: View {
             
             // 뒷면 뷰
             AlarmBackCardView(content1: "\(selectAlarm.receiveUserName)님을",
-                                content2: "\(selectAlarm.zenoString)으로 선택한 사람",
-                                content3: "\(chosung)",
-                                isFlipped: $isFlipped) // true
+                              content2: "\"\(selectAlarm.zenoString)\"",
+                              content3: "으로 선택한 사람은 ?",
+                              content4: "\(chosung)",
+                              selectAlarm: selectAlarm,
+                              isFlipped: $isFlipped) // true
             .opacity(isFlipped ? 1 : 0) // 버튼을 누를 때만 보이도록 함
             
             VStack {
@@ -44,7 +46,7 @@ struct AlarmChangingView: View {
                 Button {
                     isNudgingOn = true
                 } label: {
-                    WideButton(buttonName: "찌르기", isplay: true)
+                    WideButton(buttonName: "찌르기", systemImage: "", isplay: true)
                 }
                 .opacity(isFlipped ? 1 : 0)
             }
@@ -91,7 +93,7 @@ struct AlarmChangingView: View {
                 Task {
                     await userVM.updateUserInitialCheck(to: -1)
                 }
-                chosung = ChosungCheck(word: selectAlarm.receiveUserName)
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
             }
             return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
                          message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
@@ -126,7 +128,18 @@ struct AlarmChangingView: View {
 
 struct AlarmChangingView_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmChangingView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "강동원참치", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "함지수", receiveUserFcmToken: "token", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "자꾸 눈이 마주치는 사람", createdAt: 91842031))
+        AlarmChangingView(selectAlarm: Alarm(sendUserID: "aa",
+                                             sendUserName: "강동원참치",
+                                             sendUserFcmToken: "sendToken",
+                                             sendUserGender: "여자",
+                                             receiveUserID: "bb",
+                                             receiveUserName: "함지수",
+                                             receiveUserFcmToken: "token",
+                                             communityID: "cc",
+                                             showUserID: "1234",
+                                             zenoID: "dd",
+                                             zenoString: "에어팟이 없다는 가정 하에, 줄 이어폰 나눠낄 수 있는 사람",
+                                             createdAt: 91842031))
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
     }
