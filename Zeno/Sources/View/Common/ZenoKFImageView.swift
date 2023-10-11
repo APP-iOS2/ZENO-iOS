@@ -37,14 +37,12 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
         }
     }
     
-    @ViewBuilder
     var placeholderImg: Image {
         if (item as? User) != nil,
            let asset = UserAsset.allCases.randomElement()?.rawValue {
             return Image(asset)
-        } else if (item as? Community) != nil,
-                  let asset = CommAsset.allCases.randomElement()?.rawValue {
-            return Image(asset)
+        } else if (item as? Community) != nil {
+            return Image(CommAsset.team1.rawValue)
         } else {
             return Image("ZenoIcon")
         }
@@ -76,11 +74,5 @@ class ZenoCacheManager<T: AnyObject> {
     func loadImage(url: URL?) -> T? {
         guard let url else { return nil }
         return shared.object(forKey: url.absoluteString as NSString) as? T
-    }
-}
-
-struct ZenoKFImageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ZenoKFImageView(User.sampleDataForImageTest)
     }
 }

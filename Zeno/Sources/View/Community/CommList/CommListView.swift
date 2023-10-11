@@ -9,13 +9,14 @@
 import SwiftUI
 /// 전체 커뮤니티 리스트 뷰
 struct CommListView: View {
+    @Binding var isPresented: Bool
+    @Binding var isPresentedAddCommView: Bool
+    
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
-	@Binding var isPresented: Bool
-    @State var isShowingSearchCommSheet: Bool = false
-	@State var isPresentedAddCommView: Bool = false
-    @State var detent = 0.8
-    
+	
+    @State private var isShowingSearchCommSheet: Bool = false
+	
 	var body: some View {
 		NavigationStack {
 			VStack {
@@ -63,9 +64,9 @@ struct CommListView: View {
 							}
 						}
 					}
-					// 새로운 그룹 만들기
 					Button {
                         isPresentedAddCommView = true
+                        isPresented = false
 					} label: {
 						HStack {
 							Image(systemName: "plus.circle")
@@ -77,16 +78,7 @@ struct CommListView: View {
 				}
 				.padding()
 			}
-            .navigationDestination(isPresented: $isPresentedAddCommView) {
-                CommSettingView(editMode: .addNew)
-            }
 		}
-        .presentationDetents([.fraction(detent)])
-        .onChange(of: isPresentedAddCommView) { newValue in
-            withAnimation {
-                newValue ? (detent = 0.8) : (detent = 1)
-            }
-        }
 	}
 }
 
@@ -115,7 +107,7 @@ struct GroupListView_Previews: PreviewProvider {
 	static var previews: some View {
 		CommMainView()
 			.sheet(isPresented: $isPresented) {
-				CommListView(isPresented: $isPresented)
+                CommListView(isPresented: $isPresented, isPresentedAddCommView: .constant(false))
 			}
 			.environmentObject(userViewModel)
 			.environmentObject(CommViewModel())
