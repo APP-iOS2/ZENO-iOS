@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable {
+struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisible {
 	var id: String = UUID().uuidString
 	/// 이름
 	var name: String
