@@ -56,7 +56,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 
 #if DEBUG
 extension User {
-    static let sampleDataForImageTest: User = .init(name: "", gender: "", kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: [])
+    static let sampleDataForImageTest: User = .init(name: "", gender: "", imageURL: "", kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: [])
 	static let dummy: [User] = [
 		.init(name: "원강묵",
 			  gender: "남",
