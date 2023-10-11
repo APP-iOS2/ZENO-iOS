@@ -27,6 +27,8 @@ class CommViewModel: ObservableObject {
     @Published var currentCommMembers: [User] = []
     /// 선택된 커뮤니티의 가입 대기중인 유저
     @Published var currentWaitApprovalMembers: [User] = []
+	/// [커뮤니티최근검색] 최근 검색된 검색어들
+	@Published var recentSearches: [String] = []
     /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
     var recentlyJoinedMembers: [User] {
         guard let currentComm else { return [] }
@@ -103,6 +105,7 @@ class CommViewModel: ObservableObject {
         Task {
             await fetchAllComm()
         }
+		loadRecentSearches() // 최근검색어 불러오기
     }
     
     private enum MemberCondition {
@@ -141,6 +144,28 @@ class CommViewModel: ObservableObject {
         guard let currentUser else { return users }
         return users.filter { $0.id != currentUser.id }
     }
+	
+	/// [커뮤니티최근검색] 최근검색어 저장하기
+	func addSearchTerm(_ term: String) {
+		guard !term.isEmpty else { return }
+		guard !term.allSatisfy({ $0 == " " }) else { return }
+		recentSearches = recentSearches.filter { $0 != term }
+		recentSearches.insert(term, at: 0)
+		saveRecentSearches()
+	}
+	
+	/// [커뮤니티최근검색] 유저디폴트에 최신화
+	func saveRecentSearches() {
+		UserDefaults.standard.set(recentSearches, forKey: "recentSearches")
+		loadRecentSearches()
+	}
+	
+	/// [커뮤니티최근검색] 최신화된 유저디폴트 불러오기
+	private func loadRecentSearches() {
+		if let savedSearches = UserDefaults.standard.array(forKey: "recentSearches") as? [String] {
+			recentSearches = savedSearches
+		}
+	}
     
     @MainActor
     func handleInviteURL(_ url: URL) async {
