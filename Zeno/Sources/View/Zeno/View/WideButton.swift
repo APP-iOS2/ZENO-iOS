@@ -19,7 +19,7 @@ struct WideButton: View {
                 .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
                 .cornerRadius(15)
                 .foregroundColor(isplay ? .purple2 : .gray2)
-                .shadow(radius: 3)
+                .shadow(radius: 1)
             Image(systemName: systemImage)
                 .font(.system(size: 21))
                 .offset(x: -.screenWidth * 0.3)
