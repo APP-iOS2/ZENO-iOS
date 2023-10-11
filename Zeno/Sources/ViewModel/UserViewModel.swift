@@ -285,7 +285,7 @@ final class UserViewModel: ObservableObject {
     /// 커뮤니티 id로 친구 배열을 받아오는 함수.
     func getFriendsInComm(comm: Community) -> [String] {
         if let currentUser {
-            return currentUser.commInfoList.first(where: { $0.id == comm.id})?.buddyList ?? []
+            return currentUser.commInfoList.first(where: { $0.id == comm.id })?.buddyList ?? []
         } else {
            print(#function + "commid로 해당하는 community를 찾을 수 없음")
         }
