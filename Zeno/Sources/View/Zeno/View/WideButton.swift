@@ -18,16 +18,15 @@ struct WideButton: View {
             Rectangle()
                 .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
                 .cornerRadius(15)
-                .foregroundColor(isplay ? .purple2 : .gray)
-                .opacity(0.5)
+                .foregroundColor(isplay ? .purple2 : .gray2)
                 .shadow(radius: 3)
             Image(systemName: systemImage)
                 .font(.system(size: 21))
                 .offset(x: -.screenWidth * 0.3)
-                .foregroundColor(isplay ? .white : .gray)
+                .foregroundColor(isplay ? .white : .gray3)
             Text("\(buttonName)")
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                .foregroundColor(isplay ? .white : .gray)
+                .foregroundColor(isplay ? .white : .gray3)
         }
         .offset(y: -20)
     }
@@ -35,6 +34,6 @@ struct WideButton: View {
 
 struct WideButton_Previews: PreviewProvider {
     static var previews: some View {
-        WideButton(buttonName: "Start", systemImage: "play.fill", isplay: true)
+        WideButton(buttonName: "Start", systemImage: "play.fill", isplay: false)
     }
 }
