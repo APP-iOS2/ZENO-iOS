@@ -13,10 +13,10 @@ struct MypageSettingView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            NavigationLink(destination: UserProfileEdit()) {
-                rowView("프로필 수정")
-            }
-            Divider()
+//            NavigationLink(destination: UserProfileEdit()) {
+//                rowView("프로필 수정")
+//            }
+//            Divider()
             
             Group {
                 linkView("개인정보처리방침", "https://www.pipc.go.kr/np/default/page.do?mCode=H010000000")
@@ -37,16 +37,23 @@ struct MypageSettingView: View {
                     await userViewModel.logoutWithKakao()
                 }
             } label: {
-                Text("로그아웃")
+                HStack {
+                    Text("로그아웃")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "chevron.right")
+                }
             }
             .padding()
             
+            Divider()
             Button {
                 Task {
                     await userViewModel.deleteUser()
                 }
             } label: {
                 Text("회원탈퇴")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.right")
             }
             .padding()
         }
@@ -58,7 +65,7 @@ struct MypageSettingView: View {
         HStack {
             Text(label)
             Spacer()
-            Image(systemName: "greaterthan")
+            Image(systemName: "chevron.right")
         }
         .padding()
     }
