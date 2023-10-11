@@ -94,14 +94,19 @@ struct CommMainView: View {
                     HStack(spacing: 15) {
                         ForEach(commViewModel.recentlyJoinedMembers) { user in
                             VStack(spacing: 5) {
-                                Image(systemName: "person.circle")
-                                    .resizable()
+                                Circle()
+                                    .stroke()
                                     .frame(width: 30, height: 30)
+                                    .background(
+                                        ZenoKFImageView(user)
+                                            .clipShape(Circle())
+                                    )
                                 Text("\(user.name)")
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
                             }
                         }
                     }
+                    .padding(1)
                 }
                 .scrollIndicators(.hidden)
             }
@@ -117,8 +122,8 @@ struct CommMainView: View {
                 if isShowingUserSearchView {
                     TextField(text: $commViewModel.userSearchTerm) {
                         Text("친구 찾기...")
-                            .font(.footnote)
                     }
+                    .font(.footnote)
                 } else {
                     Text("친구 \(commViewModel.currentCommMembers.count)")
                         .font(.footnote)
@@ -130,22 +135,19 @@ struct CommMainView: View {
                 } label: {
                     if isShowingUserSearchView {
                         Text("취소")
-                            .font(.caption)
                     } else {
                         Image(systemName: "magnifyingglass")
-                            .font(.caption)
                     }
                 }
+                .font(.caption)
             }
             if isShowingUserSearchView {
                 ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
                 }
             } else {
-                VStack {
-                    ForEach(commViewModel.currentCommMembers) { user in
-                        userCell(user: user)
-                    }
+                ForEach(commViewModel.currentCommMembers) { user in
+                    userCell(user: user)
                 }
             }
         }
@@ -156,14 +158,17 @@ struct CommMainView: View {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            ZenoKFImageView(user)
+            Circle()
+                .stroke()
                 .frame(width: 30, height: 30)
+                .background(
+                    ZenoKFImageView(user)
+                        .clipShape(Circle())
+                )
             VStack(alignment: .leading) {
-                // 유저 이름
                 Text("\(user.name)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
-                // 유저 한줄 소개
                 Text("\(user.description)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
                     .foregroundColor(Color(uiColor: .systemGray4))
