@@ -46,7 +46,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 		dateFormatter.dateFormat = "MM월dd일 HH:mm"
 		return dateFormatter.string(from: dateOrderedAt)
 	}
-	
+	/// 커뮤니티 아이디랑, 해당 커뮤니티의 친구 아이디, alert ??
 	struct joinedCommInfo: Hashable, Codable {
 		var id: Community.ID
 		var buddyList: [User.ID]

@@ -15,12 +15,12 @@ import FirebaseStorage
 
 struct MyPageMain: View {
     @EnvironmentObject private var userViewModel: UserViewModel
-    
-//    private var mypageViewModel = MypageViewModel()
+    @EnvironmentObject private var commViewModel: CommViewModel
+    private var mypageViewModel = MypageViewModel()
     @State private var isShowingSettingView = false
     @State private var isShowingZenoCoin = true // 첫 번째 뷰부터 시작
     @State private var timer: Timer?
-    
+    @State private var commArray: [Community] = []
     let coinView = CoinView()
     let megaphoneView = MegaphoneView()
     
@@ -79,7 +79,6 @@ struct MyPageMain: View {
                         Spacer()
                     }
                     .foregroundColor(.black)
-//
                     UserMoneyView()
                         .environmentObject(userViewModel)
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -97,8 +96,10 @@ struct MyPageMain: View {
                     .background(Color.black)
                     .onAppear {
                         startTimer()
-                        
-                        print("👁️ 유저 커뮤니티 id 정보\(String(describing: userViewModel.currentUser?.commInfoList))")
+                        /// 여기서 해야할 일 : 유저정보 가져오기
+//                        Task {
+//                            await mypageViewModel.userFriendIDList()
+//                        }
                     }
                     .onDisappear {
                         print("⏰ 타이머 끝")
@@ -131,6 +132,7 @@ struct MyPageMain_Previews: PreviewProvider {
         NavigationStack {
             MyPageMain()
                 .environmentObject(UserViewModel(currentUser: .fakeCurrentUser))
+                .environmentObject(CommViewModel())
         }
     }
 }

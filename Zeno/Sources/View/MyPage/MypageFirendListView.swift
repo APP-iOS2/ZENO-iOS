@@ -7,99 +7,136 @@
 //
 
 import SwiftUI
-
-enum GroupName: String, CaseIterable, Hashable {
-    case all = "전체"
-    case likelion = "멋쟁이 사자처럼"
-    case yagom = "야곰"
-    case codings = "코딩스파르타"
-    case zenoTest = "제노그룹"
-}
-
-struct TestPerson: Hashable, Identifiable {
-    var id: UUID = UUID()
-    var name: String
-    var description: String
-    var image: UIImage
-    var groupinfo: String
-}
+import Firebase
+import FirebaseAuth
+import FirebaseFirestoreSwift
+import Kingfisher
 
 struct MypageFriendListView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
     
-    private var testData = [
-        TestPerson(name: "박서연", description: "안농하세여. 사과 러버에여.", image: UIImage(named: "Sample") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),
-        TestPerson(name: "원강묵", description: "나는야 포비, 원강묵", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),
-        TestPerson(name: "신우진", description: "에디를 닮은 INFP", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.yagom.rawValue),
-        TestPerson(name: "김건섭", description: "하얀 멍뭉이 닮은 건섭", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.zenoTest.rawValue),
-        TestPerson(name: "함지수", description: "라디오 앵커 지수님", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.codings.rawValue),
-        TestPerson(name: "유하은", description: "완전힙 그자체 하은", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.zenoTest.rawValue)
-    ]
+    @State private var selectedGroup = "전체"
+    @State private var selectedGroupID = ""
+    /// user의 가지고 있는 전체 커뮤니의 목록을 담은 배열
+    @State private var commArray: [Community] = []
+    /// user의 그룹별 친구 id 값
+    @State private var groupFirendList: [String] = []
+    /// user의 그룹별 친구 이름값
+    @State private var friendNameList: [String] = []
+    /// 계속 불러올 친구의 user를 잠깐 담을 변수
+    @State private var friendInfo: [User?] = []
+    let db = Firestore.firestore()
     
-    @State private var selectedGroup = GroupName.all.rawValue
+    /// 피커에서 선택한 그룹의 id와 유저가 가지고 있는 commInfo의 id 중 일치하는 그룹을 찾아서 해당 그룹의 buddyList(id)를 반환하는 함수
+    func returnBuddyList() -> [User.ID] {
+        return mypageViewModel.groupList?.first(where: { $0.id == selectedGroupID })?.buddyList ?? []
+    }
+    
+    /// 친구 정보 반환 함수
+    func returnFriendInfo() {
+        // returnBuddyList 이거 활용하기
+        for friend in returnBuddyList() {
+            db.collection("User").document(friend).getDocument { document, error in
+                if let document = document, document.exists {
+                    let data = document.data()
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                        let user = try JSONDecoder().decode(User.self, from: jsonData)
+                        self.friendInfo.append(user)
+                        
+                        print("💙[friendInfo] \(self.friendInfo)")
+                    } catch {
+                        print("json parsing Error \(error.localizedDescription)")
+                    }
+                } else {
+                    print("firebase document 존재 오류")
+                }
+            }
+        }
+    }
     
     var body: some View {
         VStack(alignment: .trailing) {
             Picker("피커테스트", selection: $selectedGroup) {
-                ForEach(GroupName.allCases, id: \.self) { group in
-                    Text(group.rawValue)
-                        .tag(group.rawValue)
+                ForEach(commArray.indices, id: \.self) { group in
+                    Text(commArray[group].name)
+                        .tag(commArray[group].id)
                 }
-            }.tint(.black)
-
+            }
+            .tint(.black)
+            .onChange(of: selectedGroup, perform: { newValue in
+                self.selectedGroupID = newValue
+                self.friendInfo = [] // 기존 데이터를 비워줍니다.
+                Task {
+                    // friendNameList에 선택한 그룹에 해당하는 친구이름을 String array 넣어줌
+                    self.friendNameList = await userViewModel.IDArrayToNameArray(idArray: returnBuddyList())
+                }
+                print("💖[친구 이름 String Array]\(friendNameList)")
+                print("💖💖[그룹별 친구 id값]\(returnBuddyList())")
+                self.returnFriendInfo()
+            })
+            
             VStack(alignment: .leading) {
-                ForEach(testData) { friend in
-                    if friend.groupinfo == selectedGroup {
-                        HStack(spacing: 10) {
-                            Image(uiImage: friend.image)
-                                .resizable()
-                                .frame(width: 60, height: 60)
-                                .scaledToFit()
-//                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .clipShape(Circle())
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text(friend.name)
-                                    .font(.system(size: 20))
-                                    .fontWeight(.semibold)
-                                Text(friend.description)
+                // foreach로 뿌려주어야 하는 값은 == 친구 id값으로 통신타서 id값을 가져와서 뿌려주어야함...
+                // onchage로 더해야 할 것 같음?? returnBuddyList 이거로 firebase 통신태우기
+
+                ForEach(friendInfo, id: \.self) { friend in
+                    if let friendInfo = friend {
+                        HStack {
+                            if let imageURLString = friendInfo.imageURL,
+                               let imageURL = URL(string: imageURLString) {
+                                KFImage(imageURL)
+                                    .placeholder {
+                                        ProgressView()
+                                    }
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .padding()
+                            } else {
+                                KFImage(URL(string: "https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg"))
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .padding()
                             }
-                            Spacer()
-                        }
-                    } else if selectedGroup == GroupName.all.rawValue {
-                        HStack(spacing: 10) {
-                            Image(uiImage: friend.image)
-                                .resizable()
-                                .frame(width: 60, height: 60)
-                                .scaledToFit()
-//                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .clipShape(Circle())
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text(friend.name)
-                                    .font(.system(size: 20))
-                                    .fontWeight(.semibold)
-                                Text(friend.description)
+                            VStack(alignment: .leading) {
+                                //이름
+                                Text(friendInfo.name)
+                                // 한줄소개
+                                Text(friendInfo.description)
                             }
-                            Spacer()
                         }
+                        
                     }
                 }
-//                ForEach(filteredData, id: \.self) { friend in
-//                    HStack(spacing: 10) {
-//                        Image(uiImage: friend.image)
-//                            .resizable()
-//                            .frame(width: 80, height: 80)
-//                            .scaledToFit()
-//                            .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        VStack(alignment: .leading, spacing: 10) {
-//                            Text(friend.name)
-//                                .font(.system(size: 20))
-//                                .fontWeight(.semibold)
-//                            Text(friend.description)
-//                        }
-//                    }
-//                }
             }
             .padding(.horizontal, 20)
+            .onAppear {
+                print("👁️ 유저 커뮤니티 id 정보\(String(describing: userViewModel.currentUser?.commInfoList))")
+                /// 유저가 속한 모든 그룹 정보 가져오기
+                commViewModel.filterJoinedComm()
+                /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
+                mypageViewModel.userGroupIDList()
+                
+                Task {
+                    if await mypageViewModel.userFriendIDList() {
+                        print("🩵🩵🩵[mypageViewModel.friendIDList] \(mypageViewModel.friendIDList)")
+                        guard let groupFriendID = mypageViewModel.friendIDList else { return }
+                        self.groupFirendList = groupFriendID
+                        print("🩵🩵🩵🩵[groupFriendID] \(self.groupFirendList)")
+                    }
+                }
+                /// 유저가 속한 모든 커뮤니티 정보 commArray에 넣어주기
+                commArray = commViewModel.joinedComm
+                print("🩵[그룹 이름] \(commViewModel.joinedComm.first?.name)")
+                print("🩵🩵[CommArray - 커뮤니티 전체 그룹] \(commArray)")
+            }
+            
             Spacer()
         }
     }
@@ -108,5 +145,8 @@ struct MypageFriendListView: View {
 struct MypageFirendListView_Previews: PreviewProvider {
     static var previews: some View {
         MypageFriendListView()
+            .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
+            .environmentObject(MypageViewModel())
     }
 }
