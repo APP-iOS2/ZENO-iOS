@@ -88,7 +88,9 @@ struct SelectCommunityVer2: View {
                 selected = commViewModel.joinedComm[index].id
                 community = commViewModel.joinedComm[index]
                 currentIndex = index
-                
+//                Task {
+//                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
+//                }
                 if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
                     isPlay = .success
                 } else {
