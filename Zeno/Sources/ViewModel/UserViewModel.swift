@@ -216,7 +216,6 @@ final class UserViewModel: ObservableObject {
         try? await loadUserData()
     }
     
-
     func updateUserFCMToken(_ fcmToken: String) async {
         guard let currentUser else { return }
         guard !fcmToken.isEmpty else { return }
