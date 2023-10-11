@@ -25,9 +25,7 @@ extension UserViewModel {
     
     /// 카카오로그아웃 && Firebase 로그아웃
     func logoutWithKakao() async {
-        print("🦁")
         await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
-        print("🦁🦁")
         await self.logout()
         print("🦁🦁🦁")
     }
@@ -47,12 +45,19 @@ extension UserViewModel {
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
                                                   name: user.kakaoAccount?.profile?.nickname ?? "none",
-                                                  gender: user.kakaoAccount?.gender?.rawValue ?? "none",
+                                                  gender: user.kakaoAccount?.gender as? Gender ?? .None,
                                                   description: user.kakaoAccount?.legalName ?? "",
                                                   imageURL: user.kakaoAccount?.profile?.profileImageUrl?.absoluteString ?? "[none]")
                         
                         await self.login(email: user.kakaoAccount?.email ?? "",
                                          password: String(describing: user.id))
+                        
+                        // 로그인 후에 메인탭 진입전 닉네임변경창 열렸었는지 판단.
+                        UserDefaults.standard.set(false, forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단.
+                        
+                        await MainActor.run {
+                            self.isNickNameRegistViewPop = true
+                        }
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
                         case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
@@ -61,7 +66,6 @@ extension UserViewModel {
                             
                         case .invalidEmail: // 이메일 형식이 잘못됨.
                             print("🦕\(user.kakaoAccount?.email ?? "") 이메일 형식이 잘못되었습니다.")
-                            
                         default:
                             break
                         }

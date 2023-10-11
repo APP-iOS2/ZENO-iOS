@@ -21,6 +21,8 @@ final class UserViewModel: ObservableObject {
     /// 로그인여부(상태)
     @Published var signStatus: SignStatus = .none
     
+    @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
+    
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
@@ -92,7 +94,6 @@ final class UserViewModel: ObservableObject {
                 self.setSignStatus(.signIn)
             }
             print("🔵 로그인 성공")
-            
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
             case .wrongPassword:  // 잘못된 비밀번호
@@ -117,7 +118,7 @@ final class UserViewModel: ObservableObject {
     func createUser(email: String,
                     passwrod: String,
                     name: String,
-                    gender: String,
+                    gender: Gender,
                     description: String,
                     imageURL: String
     ) async throws {
@@ -156,7 +157,7 @@ final class UserViewModel: ObservableObject {
         guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
         print("UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
-        print("🦕현재 로그인된 유저: \(currentUser)")
+        print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
     }
     
     /// 로그아웃
@@ -300,6 +301,7 @@ final class UserViewModel: ObservableObject {
                 try await firebaseManager.delete(data: currentUser)
                 try await Auth.auth().currentUser?.delete()
                 await self.logoutWithKakao()
+                UserDefaults.standard.set(false, forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단.
             }
         } catch {
             print("🦕로그아웃 오류 : \(error.localizedDescription)")
