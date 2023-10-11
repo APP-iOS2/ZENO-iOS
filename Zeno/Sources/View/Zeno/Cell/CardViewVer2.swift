@@ -12,7 +12,8 @@ struct CardViewVer2: View {
     var currentIndex: Int
     
     private let itemWidth: CGFloat = .screenWidth * 0.51
-    private let communities = Community.dummy
+    
+    @EnvironmentObject var commViewModel: CommViewModel
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -21,11 +22,12 @@ struct CardViewVer2: View {
                     .frame(width: itemWidth / 8, height: 160)
                     .foregroundColor(.clear)
                 
-                ForEach(communities.indices, id: \.self) { index in
-                    ZenoKFImageView(communities[index])
+                ForEach(commViewModel.joinedComm.indices, id: \.self) { index in
+                    ZenoKFImageView(commViewModel.joinedComm[index])
+                        .clipShape(Circle())
                         .frame(width: itemWidth, height: .screenHeight * 0.2)
                         .overlay(alignment: .bottomLeading) {
-                            Text(communities[index].name)
+                            Text(commViewModel.joinedComm[index].name)
                                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
                                 .offset(y: 70)
                                 .opacity(currentIndex == index ? 1.0 : 0.3)
@@ -33,7 +35,7 @@ struct CardViewVer2: View {
                         .scaleEffect(currentIndex == index ? 0.98 : 0.8)
                 }
             }
-            .frame(width: CGFloat(Community.dummy.count+1) * itemWidth, height: .screenHeight * 0.38)
+            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemWidth, height: .screenHeight * 0.38)
         }
         .disabled(true)
     }
