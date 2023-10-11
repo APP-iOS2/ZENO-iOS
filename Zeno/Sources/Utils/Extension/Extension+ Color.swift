@@ -11,8 +11,11 @@ import SwiftUI
 extension Color {
     static let mainColor = Color(red: 123/255, green: 103/255, blue: 200/255)
     static let ggullungColor = Color(red: 49/255, green: 43/255, blue: 92/255)
-    static let purple2 = hex("593FE1")
+    static let purple2 = hex("ac9ff0")
     static let purple3 = hex("8F62DC")
+    static let gray2 = hex("C6C6C9")
+    static let gray3 = hex("8e8e93")
+    static let gray4 = hex("35363A")
     
 	static func hex(_ hex: String) -> Self {
 		let scanner = Scanner(string: hex)
