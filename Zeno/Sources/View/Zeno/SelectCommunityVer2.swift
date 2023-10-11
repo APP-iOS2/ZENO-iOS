@@ -9,19 +9,25 @@
 import SwiftUI
 import ConfettiSwiftUI
 
+// MARK: ZVM에 넣어야함
+enum PlayStatus {
+    case success
+    case lessThanFour
+    case notSelected
+}
+
 struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
     
     @State private var stack = NavigationPath()
-    @State private var isPlay: Bool = false
-    @State private var communityName: String = ""
+    @State private var isPlay: PlayStatus = .notSelected
+    @State private var community: Community?
+    @State private var allMyFriends: [User] = []
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
-    @State var isSheetOn: Bool = false
-    
-    private let communities = Community.dummy
     
     var body: some View {
         NavigationStack {
@@ -40,56 +46,80 @@ struct SelectCommunityVer2: View {
                                 }
                             }
                     }
+                    .frame(height: .screenHeight * 0.35)
                 }
                 
                 commuityListView()
+                    .frame(height: .screenHeight * 0.3)
                     .background(.clear)
                 
+                Spacer()
+                
                 VStack {
-                    if isPlay == false {
+                    switch isPlay {
+                    case .success:
+                        NavigationLink {
+                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community!, allMyFriends: allMyFriends)
+                        } label: {
+                            WideButton(buttonName: "START", isplay: true)
+                        }
+                    case .lessThanFour:
+                        Text("그룹 내 친구 수가 4명을 넘지 않습니다")
+                            .foregroundColor(.red)
+                            .offset(y: -20)
+                        WideButton(buttonName: "START", isplay: false)
+                            .disabled(isPlay != .success)
+                    case .notSelected:
                         Text("그룹을 선택해주세요")
                             .foregroundColor(.secondary)
                             .offset(y: -20)
-                        WideButton(buttonName: "START", isplay: isPlay)
-                    } else {
-                        NavigationLink {
-                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
-                        } label: {
-                            WideButton(buttonName: "START", isplay: isPlay)
-                        }
+                        WideButton(buttonName: "START", isplay: false)
+                            .disabled(isPlay != .success)
                     }
                 }
-                .disabled(isPlay == false)
+            }
+            .onAppear {
+                currentIndex = 0
+                selected = ""
+                isPlay = .notSelected
             }
         }
         .navigationBarBackButtonHidden()
     }
     
     func commuityListView() -> some View {
-        List(Array(communities.indices), id: \.self) { index in
+        List(Array(commViewModel.joinedComm.indices), id: \.self) { index in
             Button {
-                isPlay = true
-                selected = communities[index].id
-                communityName = communities[index].name
+                selected = commViewModel.joinedComm[index].id
+                community = commViewModel.joinedComm[index]
                 currentIndex = index
+//                Task {
+//                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
+//                }
+                if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+                    isPlay = .success
+                } else {
+                    isPlay = .lessThanFour
+                }
+                
                 if useConfentti {
                     counter += 1
                     useConfentti = false
                 }
             } label: {
                 HStack {
-                    ZenoKFImageView(communities[index])
+                    ZenoKFImageView(commViewModel.joinedComm[index])
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
                         .padding(.trailing, 10)
-                    Text(communities[index].name)
-                        .font(selected == communities[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
+                    Text(commViewModel.joinedComm[index].name)
+                        .font(selected == commViewModel.joinedComm[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
                         .foregroundColor(.primary.opacity(0.7))
                     
                     Spacer()
                     
                     Image(systemName: "checkmark")
-                        .opacity(selected == communities[index].id ? 1 : 0)
+                        .opacity(selected == commViewModel.joinedComm[index].id ? 1 : 0)
                         .offset(x: 31)
                 }
                 .frame(width: .screenWidth * 0.8)
@@ -102,8 +132,14 @@ struct SelectCommunityVer2: View {
 }
 
 struct SelectCommunityVer2_Previews: PreviewProvider {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     static var previews: some View {
         SelectCommunityVer2()
             .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
+            .onAppear {
+                UserViewModel.init(currentUser: User.fakeCurrentUser)
+            }
     }
 }

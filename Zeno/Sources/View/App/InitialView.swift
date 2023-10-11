@@ -24,7 +24,7 @@ struct InitialView: View {
         }
         .onAppear {
             // 런치스크린 타이머
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.5, execute: {
                 withAnimation { isLoading.toggle() }
             })
         }
@@ -34,23 +34,7 @@ struct InitialView: View {
 extension InitialView {
     /// 런치스크린
     var launchScreenView: some View {
-        ZStack(alignment: .center) {
-            LinearGradient(gradient: Gradient(colors: [Color("MainPink2"), Color("MainPink3")]),
-                           startPoint: .top, endPoint: .bottom)
-            .edgesIgnoringSafeArea(.all)
-            VStack {
-                LottieView(lottieFile: "nudgeDevil")
-                    .frame(width: 100, height: 100)
-                Text("Zeno")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
-                    .fontWeight(.black)
-                    .foregroundStyle(LinearGradient(
-                        colors: [Color("MainPurple1"), Color("MainPurple2")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ))
-            }
-        }
+        InitView()
     }
 }
 

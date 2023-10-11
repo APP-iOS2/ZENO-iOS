@@ -9,10 +9,11 @@
 import SwiftUI
 
 struct UserMoneyView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
-        //        GeometryReader { geometry in
         HStack {
-            /// 친구
+            /// 친구가 있어야 하는가 ??
             VStack {
                 Text("10")
                     .font(.system(size: 30))
@@ -24,7 +25,7 @@ struct UserMoneyView: View {
             
             /// 코인
             VStack( spacing: 0) {
-                Text("180")
+                Text("\(userViewModel.currentUser?.coin ?? 0)")
                     .font(.system(size: 30))
                     .fontWeight(.semibold)
                 
@@ -40,16 +41,17 @@ struct UserMoneyView: View {
             
             /// 지목 받은 제노
             VStack {
-                Text("20")
+                Text("\(userViewModel.currentUser?.commInfoList.count ?? 0)")
                     .font(.system(size: 30))
                     .fontWeight(.semibold)
                 Text("득표수")
                     .font(.system(size: 15))
             }
-            .frame(width: UIScreen.main.bounds.width/3)
+//            .frame(width: UIScreen.main.bounds.width/3)
+            .frame(maxWidth: .infinity/3)
         }
         .frame(minHeight: 90)
-        .background(.purple)
+        .background(ZenoAsset.Assets.mainPurple1.swiftUIColor)
         .foregroundColor(.white)   
     }
 }
@@ -57,5 +59,6 @@ struct UserMoneyView: View {
 struct UserMoneyView_Previews: PreviewProvider {
     static var previews: some View {
         UserMoneyView()
+            .environmentObject(UserViewModel())
     }
 }

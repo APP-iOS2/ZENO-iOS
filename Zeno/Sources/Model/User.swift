@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable {
+struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisible {
 	var id: String = UUID().uuidString
 	/// 이름
 	var name: String
@@ -56,6 +56,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 
 #if DEBUG
 extension User {
+    static let sampleDataForImageTest: User = .init(name: "", gender: "", imageURL: "", kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: [])
 	static let dummy: [User] = [
 		.init(name: "원강묵",
 			  gender: "남",
@@ -134,7 +135,7 @@ extension User {
     static let fakeCurrentUser: User = User(
         name: "페이커",
         gender: "남자",
-        imageURL: "https://firebasestorage.googleapis.com/v0/b/zeno-8cf4b.appspot.com/o/images%2F0A608D67-02F8-4A16-B1EF-3144EC945B81?alt=media&token=9a7981f3-2c52-4b75-8e1d-44ca6aaf2179&_gl=1*x8sd1w*_ga*MTM1OTM4NTAwNi4xNjkyMzMxODc2*_ga_CW55HF8NVT*MTY5NjgyNDA5Ny43Mi4xLjE2OTY4MjQxMDcuNTAuMC4w",
+        imageURL: "https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg",
         kakaoToken: "",
         coin: 140,
         megaphone: 0,

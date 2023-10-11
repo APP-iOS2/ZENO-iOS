@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ZenoKFImageView<T: ZenoSearchable>: View {
+struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     let item: T
     let ratio: SwiftUI.ContentMode
     
@@ -17,12 +17,36 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
         if let urlStr = item.imageURL,
            let url = URL(string: urlStr) {
             KFImage(url)
+                .cacheOriginalImage()
                 .resizable()
                 .placeholder {
-                    Image("Image1")
+                    placeholderImg
                         .resizable()
                 }
                 .aspectRatio(contentMode: ratio)
+        } else {
+            placeholderImg
+                .resizable()
+                .aspectRatio(contentMode: ratio)
+        }
+    }
+    
+    var placeholderImg: Image {
+        if let user = item as? User,
+           let manAsset = ["man1", "man2"].randomElement(),
+           let womanAsset = ["woman1", "woman2"].randomElement() {
+            switch user.gender {
+            case "Male":
+                return Image(manAsset)
+            case "Female":
+                return Image(womanAsset)
+            default:
+                return Image("ZenoIcon")
+            }
+        } else if (item as? Community) != nil {
+            return Image(CommAsset.team1.rawValue)
+        } else {
+            return Image("ZenoIcon")
         }
     }
     /// 기본 인자로 ZenoSearchable 프로토콜을 채택한 값을 받으며
@@ -31,10 +55,26 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
         self.item = item
         self.ratio = ratio
     }
+    
+    private enum UserAsset: String, CaseIterable {
+        case man1, man2, woman1, woman2
+    }
+    
+    private enum CommAsset: String, CaseIterable {
+        case team1, team2, team3, team4
+    }
 }
 
-struct ZenoKFImageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ZenoKFImageView(User.fakeCurrentUser)
+class ZenoCacheManager<T: AnyObject> {
+    let shared = NSCache<NSString, T>()
+    
+    func saveImage(url: URL?, image: T) {
+        guard let url else { return }
+        shared.setObject(image, forKey: url.absoluteString as NSString)
+    }
+    
+    func loadImage(url: URL?) -> T? {
+        guard let url else { return nil }
+        return shared.object(forKey: url.absoluteString as NSString) as? T
     }
 }

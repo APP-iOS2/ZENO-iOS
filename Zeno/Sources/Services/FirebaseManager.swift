@@ -42,7 +42,7 @@ final class FirebaseManager {
     
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
-    ) async throws -> T where T: Encodable, T: ZenoSearchable {
+    ) async throws -> T where T: Encodable, T: ZenoProfileVisible {
         var changableData = data
         do {
             let imageURL = try await createImageURL(id: data.id, image: image)
@@ -152,6 +152,44 @@ final class FirebaseManager {
             }
         } catch {
             throw FirebaseError.failToEncode
+        }
+    }
+    
+    func updateModelPropertyAllCollention<T: FirebaseAvailable, U: Encodable>(type: T.Type,
+                                                        propertyPath keyPath: WritableKeyPath<T, U>,
+                                                        defaultValue: U) async where T: Decodable {
+        let collectionRef = db.collection("\(type)")
+        var documentIDs: [String] = []
+        guard let query = try? await collectionRef.getDocuments() else { return }
+        for docSnapshot in query.documents {
+            let result = docSnapshot.data()
+            guard let any = result["id"],
+                  let id = any as? String
+            else { return }
+            documentIDs.append(id)
+        }
+        
+        await documentIDs.asyncForEach { id in
+            do {
+                guard let propertyName = "\(keyPath.debugDescription)".split(separator: ".").last else { return }
+                let dataType = try JSONEncoder().encode(defaultValue)
+                do {
+                    let any = try JSONSerialization.jsonObject(with: dataType)
+                    do {
+                        try? await collectionRef.document(id).updateData([propertyName: any])
+                    } catch {
+                        print(FirebaseError.failToUpdate.localizedDescription)
+                    }
+                } catch {
+                    do {
+                        try await collectionRef.document(id).updateData([propertyName: defaultValue])
+                    } catch {
+                        print(FirebaseError.failToUpdate.localizedDescription)
+                    }
+                }
+            } catch {
+                print(FirebaseError.failToEncode.localizedDescription)
+            }
         }
     }
     

@@ -123,6 +123,7 @@ struct CommSettingView: View {
                 dismiss()
             }
         }
+        .interactiveDismissDisabled()
     }
     
     @ViewBuilder

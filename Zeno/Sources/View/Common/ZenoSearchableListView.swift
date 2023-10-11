@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ZenoSearchableListView<T: ZenoSearchable>: View where T: Hashable {
+struct ZenoSearchableListView<T: ZenoProfileVisible>: View where T: Hashable {
 	var items: [T]
 	@Binding var searchTerm: String
 	let type: ItemType
