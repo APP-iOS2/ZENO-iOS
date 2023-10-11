@@ -55,6 +55,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
 }
 
 struct TabBarView: View {
+    @AppStorage("fcmToken") var fcmToken: String = ""
     @State private var selectedTabIndex = 0
     @EnvironmentObject private var userViewModel: UserViewModel
     @StateObject var alarmViewModel: AlarmViewModel = AlarmViewModel()
@@ -76,7 +77,9 @@ struct TabBarView: View {
         .environmentObject(iAPStore)
         .task {
             if let loginUser = userViewModel.currentUser {
+                print("fetch alarm and update user fcmtoken")
                 await alarmViewModel.fetchAlarm(showUserID: loginUser.id)
+                await userViewModel.updateUserFCMToken(fcmToken)
             }
         }
 	}
