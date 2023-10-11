@@ -181,7 +181,6 @@ struct CommMainView: View {
         }
         .homeListCell()
     }
-    
     // MARK: - 툴바
     
     /// 그룹 이름 툴바아이템

@@ -17,20 +17,21 @@ struct CommJoinWithDeeplinkView: View {
     
     var body: some View {
         VStack(spacing: 5) {
-            VStack(alignment: .trailing) {
-                Text(comm.name)
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 22))
-                Text("\(comm.joinMembers.count)명 참여중")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 14))
-                    .padding(.top, 10)
-            }
+            Text(comm.name)
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 22))
+            Text("\(comm.joinMembers.count)명 참여중")
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 14))
+                .padding(.top, 10)
             Circle()
                 .stroke()
                 .background(
                     ZenoKFImageView(comm)
-                        .clipShape(Circle())
                 )
                 .frame(width: .screenWidth * 0.6, height: .screenHeight / 2)
+                .clipShape(Circle())
+            Text(comm.description)
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 16))
+                .padding(.vertical)
             ForEach(Btn.allCases) { btn in
                 Button {
                     if btn == .join {
@@ -45,11 +46,10 @@ struct CommJoinWithDeeplinkView: View {
                     HStack {
                         Text(btn.title)
                             .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                            .foregroundColor(btn.foreground)
-                            .colorMultiply(.white)
+                            .foregroundColor(.white)
                             .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
                             .background(
-                                Color.purple2
+                                btn.background
                                     .opacity(0.5)
                                     .shadow(radius: 3)
                             )
@@ -74,12 +74,12 @@ struct CommJoinWithDeeplinkView: View {
             }
         }
         
-        var foreground: Color {
+        var background: Color {
             switch self {
             case .join:
-                return .white
+                return .purple2
             case .cancel:
-                return .red
+                return .gray
             }
         }
         

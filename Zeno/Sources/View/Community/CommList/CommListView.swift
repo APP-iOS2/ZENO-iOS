@@ -12,8 +12,10 @@ struct CommListView: View {
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	@Binding var isPresented: Bool
-	@State var isShowingSearchCommSheet: Bool = false
-	
+    @State var isShowingSearchCommSheet: Bool = false
+	@State var isPresentedAddCommView: Bool = false
+    @State var detent = 0.8
+    
 	var body: some View {
 		NavigationStack {
 			VStack {
@@ -61,24 +63,30 @@ struct CommListView: View {
 							}
 						}
 					}
-					
 					// 새로운 그룹 만들기
-					NavigationLink {
-                        CommSettingView(editMode: .addNew)
+					Button {
+                        isPresentedAddCommView = true
 					} label: {
 						HStack {
 							Image(systemName: "plus.circle")
 							Text("새로운 그룹 만들기")
 							Spacer()
 						}
-						
 						.groupCell()
 					}
 				}
 				.padding()
 			}
+            .navigationDestination(isPresented: $isPresentedAddCommView) {
+                CommSettingView(editMode: .addNew)
+            }
 		}
-		.presentationDetents([.fraction(0.8)])
+        .presentationDetents([.fraction(detent)])
+        .onChange(of: isPresentedAddCommView) { newValue in
+            withAnimation {
+                newValue ? (detent = 0.8) : (detent = 1)
+            }
+        }
 	}
 }
 

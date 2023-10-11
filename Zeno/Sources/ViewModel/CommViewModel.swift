@@ -203,7 +203,7 @@ class CommViewModel: ObservableObject {
                 let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
                 await joinedResults.asyncForEach { [weak self] result in
                     switch result {
-                    case .success(var user):
+                    case .success(let user):
                         let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
                         do {
                             try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
@@ -382,7 +382,7 @@ class CommViewModel: ObservableObject {
             let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: memberIDs)
             await results.asyncForEach { [weak self] result in
                 switch result {
-                case .success(var user):
+                case .success(let user):
                     guard var updatedCommInfo = user.commInfoList
                         .first(where: { $0.id == currentComm.id }) else { return }
                     if updatedCommInfo.buddyList.contains(currentUser.id) {
