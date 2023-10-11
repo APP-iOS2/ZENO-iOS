@@ -14,33 +14,36 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Spacer()
-                Text("Zeno")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
-                    .fontWeight(.black)
-                    .foregroundStyle(LinearGradient(
-                        colors: [Color("MainPurple1"), Color("MainPurple2")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ))
-                Spacer()
-                
-                Button {
-                    Task {
-                        await userViewModel.startWithKakao()
+            ZStack {
+                Image("LoginBackground")
+                Image("ZenoPng")
+                    .resizable()
+                    .frame(width: 300, height: 300)
+                    .offset(y: -250)
+                VStack {
+                    ZStack {
+                        Image("ZenoBackground")
                     }
-                } label: {
-                    loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                    Spacer()
+                    
+                    Button {
+                        Task {
+                            await userViewModel.startWithKakao()
+                        }
+                    } label: {
+                        loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                    }
+                    
+                    NavigationLink {
+                        EmailLoginView()
+                    } label: {
+                        loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
+                    }
+                    Spacer().frame(height: 20)
                 }
-                
-                NavigationLink {
-                    EmailLoginView()
-                } label: {
-                    loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
-                }
-                Spacer().frame(height: 20)
+                .offset(y: -30)
             }
+            .ignoresSafeArea()
         }
     }
 }
