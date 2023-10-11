@@ -40,7 +40,7 @@ struct AlarmView: View {
                             }
                             .navigationDestination(isPresented: $isShowInitialView) {
                                 if let selectAlarm {
-                                    AlarmInitialView(selectAlarm: selectAlarm)
+                                    AlarmChangingView(selectAlarm: selectAlarm)
                                 }
                             }
                         }

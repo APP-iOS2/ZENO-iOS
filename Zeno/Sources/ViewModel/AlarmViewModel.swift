@@ -46,6 +46,11 @@ class AlarmViewModel: ObservableObject {
             }
         }
     }
+    /// Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
+    @MainActor
+    func pushNudgeAlarm(nudgeAlarm: Alarm) async {
+        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
+    }
     
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
     /// 테스트용, Firebase Alarm Collection 에 데이터 추가
