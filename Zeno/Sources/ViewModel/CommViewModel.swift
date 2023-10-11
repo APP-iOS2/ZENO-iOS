@@ -10,6 +10,7 @@ import SwiftUI
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
+    private let commRepo = CommRepository.shared
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     private var currentUser: User?
     /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
@@ -203,7 +204,7 @@ class CommViewModel: ObservableObject {
                 let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
                 await joinedResults.asyncForEach { [weak self] result in
                     switch result {
-                    case .success(var user):
+                    case .success(let user):
                         let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
                         do {
                             try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
@@ -382,7 +383,7 @@ class CommViewModel: ObservableObject {
             let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: memberIDs)
             await results.asyncForEach { [weak self] result in
                 switch result {
-                case .success(var user):
+                case .success(let user):
                     guard var updatedCommInfo = user.commInfoList
                         .first(where: { $0.id == currentComm.id }) else { return }
                     if updatedCommInfo.buddyList.contains(currentUser.id) {

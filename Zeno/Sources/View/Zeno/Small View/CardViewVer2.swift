@@ -39,6 +39,6 @@ struct CardViewVer2: View {
 
 struct CardViewVer2_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewVer2(currentIndex: 0)
+        CardViewVer2(currentIndex: 2)
     }
 }

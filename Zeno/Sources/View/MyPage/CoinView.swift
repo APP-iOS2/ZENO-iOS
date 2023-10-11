@@ -9,22 +9,22 @@
 import SwiftUI
 
 struct CoinView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     var body: some View {
         VStack {
-//            GeometryReader{ geometry in
                 HStack {
                     Text("Z")
                         .font(.system(size: 30))
-                        .foregroundColor(.purple)
+                        .foregroundColor(ZenoAsset.Assets.mainPurple1.swiftUIColor)
                         .fontWeight(.bold)
-                    Text("제노 확인권이 7회 남았어요.")
+                    Text("제노 확인권이 \(userViewModel.currentUser?.showInitial ?? 0)회 남았어요.")
                         .foregroundColor(.white)
                         .font(.system(size: 20))
                 }
-//                .frame(width: geometry.size.width, height: 120)
-                .frame(width: UIScreen.main.bounds.width, height: 80)
-                .background(.primary)
-//            }
+                .frame(maxWidth: .infinity)
+                .frame(height: 80)
+                .background(.black)
         }
     }
 }
@@ -32,5 +32,7 @@ struct CoinView: View {
 struct CoinView_Previews: PreviewProvider {
     static var previews: some View {
         CoinView()
+            .environmentObject(UserViewModel())
     }
 }
+ 

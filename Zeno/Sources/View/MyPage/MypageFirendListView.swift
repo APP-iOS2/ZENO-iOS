@@ -25,6 +25,8 @@ struct TestPerson: Hashable, Identifiable {
 }
 
 struct MypageFriendListView: View {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    
     private var testData = [
         TestPerson(name: "박서연", description: "안농하세여. 사과 러버에여.", image: UIImage(named: "Sample") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),
         TestPerson(name: "원강묵", description: "나는야 포비, 원강묵", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),

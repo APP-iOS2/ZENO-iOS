@@ -216,6 +216,17 @@ final class UserViewModel: ObservableObject {
         try? await loadUserData()
     }
     
+
+    func updateUserFCMToken(_ fcmToken: String) async {
+        guard let currentUser else { return }
+        guard !fcmToken.isEmpty else { return }
+        
+        try? await firebaseManager.update(data: currentUser,
+                                          value: \.fcmToken,
+                                          to: fcmToken)
+        try? await loadUserData()
+    }
+    
     // MARK: 제노 뷰
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
     @MainActor

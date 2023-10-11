@@ -38,6 +38,7 @@ struct ZenoView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Image(zenoList[selected].zenoImage)
                         .resizable()

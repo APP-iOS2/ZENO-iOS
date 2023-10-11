@@ -15,6 +15,7 @@ struct CommMainView: View {
     @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
+    @State private var isPresentedAddCommView = false
     
     @AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
     
@@ -41,13 +42,16 @@ struct CommMainView: View {
                 }
             }
             .sheet(isPresented: $isShowingCommListSheet) {
-                CommListView(isPresented: $isShowingCommListSheet)
+                CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
             }
             .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
                 CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
             }
             .onTapGesture {
                 isShowingHamburgerView = false
+            }
+            .navigationDestination(isPresented: $isPresentedAddCommView) {
+                CommSettingView(editMode: .addNew)
             }
         }
         .tint(.black)
@@ -181,7 +185,6 @@ struct CommMainView: View {
         }
         .homeListCell()
     }
-    
     // MARK: - 툴바
     
     /// 그룹 이름 툴바아이템
