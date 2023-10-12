@@ -42,31 +42,6 @@ enum SignStatus: String {
     }
 }
 
-/*
-    1. 앱을 새로 다운받고 실행.
-        = Status.none상태확인 -> 카카오로그인 -> 토큰 발행 -> 파베회원가입 -> 파베로그인인증 -> User정보FireStore에 저장 -> Status.signIn -> 메인탭전환 -> Status.signIn상태 UserDefault저장
-    2. (이미 다운하고 로그인까지 한)앱을 종료 후 다시 실행
-        로그아웃안함. = Status.signIn상태 -> 메인탭전환
-        로그아웃함.  = Status.signOut상태 -> 1번 방법 재실행인데 파베회원가입, User정보저장을 생략한다. -> Status.signIn -> 메인탭전환
-    3. 회원탈퇴 후 재 가입 (회원탈퇴시 Status.none으로 변경 후 UserDefault에 저장.)
-        = 회원탈퇴시 Status.none으로 상태변경되어 있어야함.  -> 1번 방법을 재실행함.
-    4. 로그아웃, 회원탈퇴 안하고 앱 삭제 후 다시 깔아서 실행. => ( Status값이 none인 상태, DB User에 정보가 남아있는 상태, 카카오토큰이 있는 상태, 파베Auth가 남아있는 상태 )
-        = Status.none인 경우확인 -> 1번 재실행
- 
-    정리하면...
-     - Status상태를 먼저 확인 후 그 다음 로직 진행.
-     - Status.none인 상태면 1번 방법을 실행하면 됨. -> 이때 파베회원가입을 하게 될때 이메일 중복이 뜨면 바로 로그인을 해주면 되고, 나머지 경우는 그대로 진행.
-     - Status.signIn 상태면 토큰확인만 다시 해주고 바로 메인탭 전환시키면 됨.
-     - Status.signOut 상태면 1번방법 실행하되 파베회원가입, User정보저장만 생략. 파베관련해서는 UserViewModel.login만 실행.
-     - UserViewmodel의 login메서드에서 로그인되었을 때 Status.signIn상태로 변경 후 UserDefault에 저장.
-     - UserViewmodel의 logout메서드에서 Status.signOut상태로 변경 후 저장.
-     - 회원탈퇴 메서드에서는 Status.none상태로 변경 후 저장.
- 
-    서연님이랑 테스트 할거 23.10.10
-    1. User에 정보 안들어가는거 확인
-    2. 실기기에서 카톡앱으로 해보기. ( 로그인부터 로그아웃 전부다 )
- */
-
 /// 카카오인증 서비스 싱글톤
 final class KakaoAuthService {
     static let shared = KakaoAuthService()
