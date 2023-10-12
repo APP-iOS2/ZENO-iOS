@@ -21,8 +21,8 @@ struct EmailRegistrationView: View {
                 .modifier(LoginTextFieldModifier())
             TextField("이름을 입력해주세요.", text: $emailLoginViewModel.registrationName)
                 .modifier(LoginTextFieldModifier())
-            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
-                .modifier(LoginTextFieldModifier())
+//            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
+//                .modifier(LoginTextFieldModifier())
             TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
                 .modifier(LoginTextFieldModifier())
             Button {

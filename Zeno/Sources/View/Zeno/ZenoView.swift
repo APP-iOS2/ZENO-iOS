@@ -10,16 +10,16 @@ import SwiftUI
 
 struct ZenoView: View {
     let zenoList: [Zeno]
-    let allMyFriends: [User]
-    let loggedUser: User = .dummy[0]
+    let community: Community
     
+    @State var allMyFriends: [User]
     @State private var users: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
-    @StateObject private var zenoViewModel: ZenoViewModel = ZenoViewModel()
+    @EnvironmentObject private var commViewModel: CommViewModel
     
     var body: some View {
         if selected < zenoList.count {
@@ -35,9 +35,11 @@ struct ZenoView: View {
                     .bold()
                     
                     Text(zenoList[selected].question)
+                        .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
-                    
+                        .fixedSize(horizontal: false, vertical: true)
+
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
@@ -48,14 +50,17 @@ struct ZenoView: View {
                         ForEach(users) { user in
                             Button {
                                 if selected == zenoList.count-1 {
-                                    Task { // 뷰에서 사용할때는 Task블럭 안에서 async사용해야함
+                                    Task {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
-                                // TODO: sendUser 는 로그인 된 현재 유저, receiveUser 는 퀴즈에서 선택한 유저, 현재 선택된 Community, 지금 풀고있는 zeno 를 입력해주시면 감사하겠습니다.
-//                                Task {
-//                                    await alarmViewModel.pushAlarm(sendUser: <#T##User#>, receiveUser: user, community: <#T##Community#>, zeno: <#T##Zeno#>)
-//                                }
+                                
+                                Task {
+                                    await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    debugPrint(user.name)
+                                    debugPrint(zenoList[selected-1].question)
+                                }
+                                
                                 selected += 1
                                 resetUsers()
                             } label: {
@@ -94,7 +99,13 @@ struct ZenoView: View {
                 .padding()
                 
                 .onAppear {
-                    resetUsers()
+                    // MARK: 제노 뷰
+                    Task {
+                        await
+                        allMyFriends =
+                        userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community))
+                        resetUsers()
+                    }
                 }
             }
             .navigationBarBackButtonHidden(true)
@@ -104,16 +115,22 @@ struct ZenoView: View {
     }
     
     func resetUsers() {
-        users = Array(allMyFriends.shuffled().prefix(upTo: 4))
+        if allMyFriends.count >= 4 {
+            users = Array(allMyFriends.shuffled().prefix(upTo: 4))
+        }
     }
 }
 
-//   (.init(sendUserID: loggedUser.id, sendUserName: loggedUser.name, recieveUserID: user.id, recieveUserName: user.name, communityID: Community.dummy[0].id, zenoID: zenoList[selected].id, zenoString: zenoList[selected].question, createdAt: Date.timeIntervalSinceReferenceDate))
-
 struct ZenoView_pro: PreviewProvider {
+    @EnvironmentObject private var userViewModel: UserViewModel
+
     static var previews: some View {
-        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), allMyFriends: User.dummy)
+        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: Community.emptyComm, allMyFriends: User.dummy)
             .environmentObject(UserViewModel())
             .environmentObject(AlarmViewModel())
+            .environmentObject(CommViewModel())
+            .onAppear {
+                UserViewModel.init(currentUser: User.fakeCurrentUser)
+            }
     }
 }

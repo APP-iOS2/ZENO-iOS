@@ -9,7 +9,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ZenoKFImageView<T: ZenoSearchable>: View {
+struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     let item: T
     let ratio: SwiftUI.ContentMode
     
@@ -20,10 +20,33 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
                 .cacheOriginalImage()
                 .resizable()
                 .placeholder {
-                    Image("ZenoIcon")
+                    placeholderImg
                         .resizable()
                 }
                 .aspectRatio(contentMode: ratio)
+        } else {
+            placeholderImg
+                .resizable()
+                .aspectRatio(contentMode: ratio)
+        }
+    }
+    
+    var placeholderImg: Image {
+        if let user = item as? User,
+           let manAsset = ["man1", "man2"].randomElement(),
+           let womanAsset = ["woman1", "woman2"].randomElement() {
+            switch user.gender {
+            case .male:
+                return Image(manAsset)
+            case .female:
+                return Image(womanAsset)
+            default:
+                return Image("ZenoIcon")
+            }
+        } else if (item as? Community) != nil {
+            return Image(CommAsset.team1.rawValue)
+        } else {
+            return Image("ZenoIcon")
         }
     }
     /// 기본 인자로 ZenoSearchable 프로토콜을 채택한 값을 받으며
@@ -31,6 +54,14 @@ struct ZenoKFImageView<T: ZenoSearchable>: View {
     init(_ item: T, ratio: SwiftUI.ContentMode = .fill) {
         self.item = item
         self.ratio = ratio
+    }
+    
+    private enum UserAsset: String, CaseIterable {
+        case man1, man2, woman1, woman2
+    }
+    
+    private enum CommAsset: String, CaseIterable {
+        case team1, team2, team3, team4
     }
 }
 
@@ -43,15 +74,7 @@ class ZenoCacheManager<T: AnyObject> {
     }
     
     func loadImage(url: URL?) -> T? {
-        guard let url,
-              let object = shared.object(forKey: url.absoluteString as NSString) as? T
-        else { return nil }
-        return object
-    }
-}
-
-struct ZenoKFImageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ZenoKFImageView(User.fakeCurrentUser)
+        guard let url else { return nil }
+        return shared.object(forKey: url.absoluteString as NSString) as? T
     }
 }

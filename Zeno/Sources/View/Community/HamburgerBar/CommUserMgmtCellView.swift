@@ -16,15 +16,22 @@ struct CommUserMgmtCellView: View {
     @State private var isDeportAlert = false
     
     var body: some View {
-        HStack(alignment: .center) {
-            Image(systemName: "person.fill")
-                .font(.largeTitle)
-                .padding(.horizontal)
+        HStack(alignment: .center, spacing: 20) {
+            Circle()
+                .stroke()
+                .frame(width: 30, height: 30)
+                .background(
+                    ZenoKFImageView(user)
+                        .clipShape(Circle())
+                )
             VStack(alignment: .leading) {
                 Text(user.name)
-                    .font(.headline)
+                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+                    .padding(.bottom, 1)
                 Text(user.description)
-                    .font(.subheadline)
+                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                    .foregroundColor(Color(uiColor: .systemGray4))
+                    .lineLimit(1)
             }
             Spacer()
             Button(actionType.title) {
@@ -38,8 +45,9 @@ struct CommUserMgmtCellView: View {
                     }
                 }
             }
-            .padding(.horizontal)
+            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
         }
+        .homeListCell()
         .alert("\(user.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
             Button("내보내기", role: .destructive) {
                 Task {
@@ -48,7 +56,6 @@ struct CommUserMgmtCellView: View {
             }
             Button("취소", role: .cancel) { }
         }
-        .padding(.vertical)
     }
     
     enum ActionType {

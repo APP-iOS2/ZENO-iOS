@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol ZenoSearchable: Identifiable {
+protocol ZenoProfileVisible: Identifiable {
     var name: String { get set }
     var imageURL: String? { get set }
     var description: String { get set }

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ZenoSearchableCellView<T: ZenoSearchable>: View {
+struct ZenoSearchableCellView<T: ZenoProfileVisible>: View {
     let item: T
     let actionTitle: String
     let action: () -> Void
