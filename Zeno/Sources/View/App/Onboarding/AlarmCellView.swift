@@ -23,10 +23,10 @@ struct AlarmCellView: View {
                 
                 VStack(alignment: .leading) {
                     Text("\(commName)")
-                        .bold()
-                        .font(.system(size: 14))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .foregroundStyle(.black)
                     Text("\(gender)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                         .font(.caption)
                         .padding(.bottom, 1)
                     Text("20초 전")
@@ -49,18 +49,17 @@ struct AlarmCellView: View {
                 VStack(alignment: .leading) {
                     HStack {
                         Text("< \(question) >")
-                            .bold()
                         Text("질문에")
-                            .font(.system(size: 16))
+                            .fontWeight(.regular)
                     }
                     HStack(spacing: 0) {
                         Text("당신")
-                            .bold()
                         Text("을 선택했습니다.")
+                            .fontWeight(.regular)
                     }
                     .offset(y: 2)
-                    .font(.system(size: 16))
                 }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
                 
