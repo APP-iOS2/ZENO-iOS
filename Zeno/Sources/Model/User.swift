@@ -36,17 +36,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
     var requestComm: [Community.ID]
     /// 제노 시작 시간
     var ZenoStartAt: Double = Date().timeIntervalSince1970
-    /// 제노 시작 시간을 자동으로 변환해주는 연산 프로퍼티
-    var ZenoStartDate: String {
-        let dateOrderedAt: Date = Date(timeIntervalSince1970: ZenoStartAt)
-        
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_kr")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        dateFormatter.dateFormat = "MM월dd일 HH:mm"
-        return dateFormatter.string(from: dateOrderedAt)
-    }
-    
+
     struct joinedCommInfo: Hashable, Codable {
         var id: Community.ID
         var buddyList: [User.ID]
@@ -136,7 +126,6 @@ extension User {
               requestComm: []
              )
     ]
-  
 }
 
 extension User {

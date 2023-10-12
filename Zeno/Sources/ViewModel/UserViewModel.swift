@@ -11,7 +11,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
-final class UserViewModel: ObservableObject {
+class UserViewModel: ObservableObject {
     /// 파이어베이스 Auth의 User
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저

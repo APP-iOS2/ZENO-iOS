@@ -12,8 +12,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 
-class MypageViewModel {
-    
+class MypageViewModel {    
     func userGroupList() {
         let db = Firestore.firestore()
         

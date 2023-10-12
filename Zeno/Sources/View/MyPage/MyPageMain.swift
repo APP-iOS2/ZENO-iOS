@@ -152,7 +152,6 @@ extension MyPageMain {
         let test = currentUser.commInfoList
     }
     
-    
     func userGroupList() {
         let db = Firestore.firestore()
         

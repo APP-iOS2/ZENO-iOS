@@ -36,7 +36,6 @@ class ZenoViewModel: ObservableObject {
     }
     
     
-    
     // MARK: 제노 뷰
     /// 커뮤니티 id로 친구 id배열을 받아오는 함수.
     func getFriendsInComm(comm: Community, currentUser: User?) -> [String] {
