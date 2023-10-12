@@ -27,6 +27,10 @@ struct InitialView: View {
                 launchScreenView.transition(.opacity).zIndex(1)
             }
         }
+        .onReceive(userViewModel.$isNickNameRegistViewPop, perform: { chg in
+            print("🦕chg : \(chg.description)")
+            if chg { isNickChangeSheet = true }
+        })
         .onAppear {
             print("🦕sign : \(userViewModel.signStatus.rawValue)")
             print("🦕nick : \(isnickNameChanged.description)")

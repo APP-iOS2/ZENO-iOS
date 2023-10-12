@@ -33,7 +33,7 @@ extension UserViewModel {
     /// 카카오 로그인 && Firebase 로그인
     private func loginWithKakao() async {
         let (user, isTokened) = await KakaoAuthService.shared.loginUserKakao()
-        
+
         if let user {
             // 이메일이 있으면 회원가입, 로그인은 진행이 됨.
             if user.kakaoAccount?.email != nil {
@@ -44,19 +44,20 @@ extension UserViewModel {
                         // 회원가입 후 바로 로그인.
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
-                                                  name: user.kakaoAccount?.profile?.nickname ?? "none",
-                                                  gender: user.kakaoAccount?.gender as? Gender ?? .None,
+                                                  name: user.kakaoAccount?.profile?.nickname ?? "[none]",
+                                                  gender: user.kakaoAccount?.gender?.convertToLocalGender() ?? .none,
                                                   description: user.kakaoAccount?.legalName ?? "",
                                                   imageURL: user.kakaoAccount?.profile?.profileImageUrl?.absoluteString ?? "[none]")
-                        
+                        print("🦕회원가입 완료")
                         await self.login(email: user.kakaoAccount?.email ?? "",
                                          password: String(describing: user.id))
                         
-                        // 로그인 후에 메인탭 진입전 닉네임변경창 열렸었는지 판단.
-                        UserDefaults.standard.set(false, forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단.
+                        // 로그인 후에 메인탭 진입전 닉네임변경창 열렸었는지 판단. false => 닉넴 변경 안함,  true => 닉넴 변경까지 완료함.
+                        UserDefaults.standard.set(false, forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단. 여기서 초기설정해줌.
                         
                         await MainActor.run {
-                            self.isNickNameRegistViewPop = true
+                            print("🦕isNickNameRegistViewPop true")
+                            self.isNickNameRegistViewPop = true // TabBarView에서 Sheet 오픈
                         }
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
@@ -72,6 +73,7 @@ extension UserViewModel {
                     }
                 } else {
                     // 토큰정보가 있을 경우 로그인 진행
+                    print("🦕\(user.kakaoAccount?.email ?? "카카오메일없음")")
                     await self.login(email: user.kakaoAccount?.email ?? "",
                                      password: String(describing: user.id))
                 }

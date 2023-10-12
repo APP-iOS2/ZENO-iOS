@@ -54,21 +54,21 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
     }
 }
 
-/// 성별 정보 열거형(내부)
+/// 성별 정보 열거형(내부용)
 enum Gender: Codable {
     /// 남자
-    case Male
+    case male
     /// 여자
-    case Female
+    case female
     /// 정체불명
-    case None
+    case none
 }
 
 #if DEBUG
 extension User {
     static let dummy: [User] = [
         .init(name: "원강묵",
-              gender: .Male,
+              gender: .male,
               imageURL: "person",
               description: "하이",
               kakaoToken: "카카오토큰",
@@ -78,7 +78,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "김건섭",
-              gender: .Male,
+              gender: .male,
               imageURL: "person",
               description: "안녕하세용 건섭입니다",
               kakaoToken: "카카오토큰",
@@ -88,7 +88,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "유하은",
-              gender: .Female,
+              gender: .female,
               imageURL: "person",
               description: "유하~",
               kakaoToken: "카카오토큰",
@@ -98,7 +98,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "박서연",
-              gender: .Female,
+              gender: .female,
               imageURL: "person",
               description: "반갑습니다아~",
               kakaoToken: "카카오토큰",
@@ -108,7 +108,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "신우진",
-              gender: .Male,
+              gender: .male,
               imageURL: "person",
               description: "내 MBTI는 CUTE",
               kakaoToken: "카카오토큰",
@@ -118,7 +118,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "안효명",
-              gender: .Male,
+              gender: .male,
               imageURL: "person",
               description: "안효명하세용~",
               kakaoToken: "카카오토큰",
@@ -128,7 +128,7 @@ extension User {
               requestComm: []
              ),
         .init(name: "함지수",
-              gender: .Female,
+              gender: .female,
               imageURL: "person",
               description: "둥둥둥~~둥둥둥~~이건 입에서나는 베이스소리가 아니여",
               kakaoToken: "카카오토큰",
@@ -143,7 +143,7 @@ extension User {
 extension User {
     static let fakeCurrentUser: User = User(
         name: "페이커",
-        gender: .Male,
+        gender: .male,
         imageURL: "https://firebasestorage.googleapis.com/v0/b/zeno-8cf4b.appspot.com/o/images%2F0A608D67-02F8-4A16-B1EF-3144EC945B81?alt=media&token=9a7981f3-2c52-4b75-8e1d-44ca6aaf2179&_gl=1*x8sd1w*_ga*MTM1OTM4NTAwNi4xNjkyMzMxODc2*_ga_CW55HF8NVT*MTY5NjgyNDA5Ny43Mi4xLjE2OTY4MjQxMDcuNTAuMC4w",
         kakaoToken: "",
         coin: 140,
