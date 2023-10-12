@@ -26,17 +26,16 @@ struct AlarmView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color("MainPink3")
-                    .ignoresSafeArea()
-//                if commViewModel.joinedComm.isEmpty {
-//                    AlarmEmptyView()
-//                } else {
+                if commViewModel.joinedComm.isEmpty {
+                    AlarmEmptyView()
+                } else {
                     VStack {
                         AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                         
                         ScrollView {
                             ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                    .padding(.bottom, 4)
                             }
                             .navigationDestination(isPresented: $isShowInitialView) {
                                 if let selectAlarm {
@@ -45,6 +44,7 @@ struct AlarmView: View {
                             }
                         }
                         .padding()
+                        .frame(maxWidth: .infinity)
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
@@ -86,12 +86,12 @@ struct AlarmView: View {
                                 isShowPaymentSheet = true
                             }
                         }, label: {
-                            WideButton(buttonName: "선택하기", isplay: selectAlarm == nil ? false : true)
+                            WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm == nil ? false : true)
                         })
                         .disabled(selectAlarm == nil ? true : false)
                     }
                 }
-//            }
+            }
         }
     }
 }

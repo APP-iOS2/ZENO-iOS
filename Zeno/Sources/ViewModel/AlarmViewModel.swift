@@ -12,7 +12,10 @@ import FirebaseFirestoreSwift
 
 class AlarmViewModel: ObservableObject {
     @Published var alarmArray: [Alarm] = []
-    
+    var dummyAlarmArray: [Alarm] = [
+        Alarm(sendUserID: "aa", sendUserName: "보내는유저1", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "받는유저1", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "1234", zenoID: "dd", zenoString: "놀이공원에서 같이 교복입고 돌아다니면 재밌을 거 같은 사람", createdAt: 91842031),
+        Alarm(sendUserID: "aa", sendUserName: "보내는유저2", sendUserFcmToken: "sendToken", sendUserGender: "남자", receiveUserID: "bb", receiveUserName: "받는유저2", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "12342", zenoID: "dd", zenoString: "공포영화 못볼거 같은 사람", createdAt: 91842031)
+    ]
     // Init 처음 불러주는게 왜 불편한ㄱㅏ ? -> 객체 생성시 처음 만들어줌 -> 네트워킹 문제라던가 fetch가 안된다면, 생성이 미뤄짐.
     // 그럼 대기 -> 그럼 앱이 죽은 것 처럼 보임.
 //    init(userID: String) {
@@ -27,18 +30,12 @@ class AlarmViewModel: ObservableObject {
     // U => update 일부분 수정 덮어씌움 -> 덮어씌울게 잇나 -> 속성 추가 도 가능 - > ? ?
     // D => Delete -> test 용.
     
-    /// Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
+    /// 제노 게임에서 사람 선택 시 사용, Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
     @MainActor
     func pushAlarm(sendUser: User, receiveUser: User, community: Community, zeno: Zeno) async {
         let alarm = Alarm(sendUserID: sendUser.id, sendUserName: sendUser.name, sendUserFcmToken: sendUser.fcmToken ?? "empty", sendUserGender: sendUser.gender, receiveUserID: receiveUser.id, receiveUserName: receiveUser.name, receiveUserFcmToken: receiveUser.fcmToken ?? "empty", communityID: community.id, showUserID: receiveUser.id, zenoID: zeno.id, zenoString: zeno.question, createdAt: Date().timeIntervalSince1970)
         
-        do {
-            try await FirebaseManager.shared.create(data: alarm)
-        } catch {
-            print("firebase Alarm collection add error : \(error)")
-        }
-        
-        self.alarmArray.append(alarm)
+        await createAlarm(alarm: alarm)
         
         if let token = receiveUser.fcmToken, let alert = receiveUser.commInfoList.first(where: { $0.id == community.id })?.alert {
             if alert == true {
@@ -52,10 +49,30 @@ class AlarmViewModel: ObservableObject {
         // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
     }
     
+    /// 찌르기 기능시 사용, Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
+    @MainActor
+    func pushNudgeAlarm(nudgeAlarm: Alarm, currentUserGender: String) async {
+        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
+        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: "당신을 제노로 찌른 사람", createdAt: Date().timeIntervalSince1970)
+        await createAlarm(alarm: alarm)
+        
+        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: alarm.zenoString)
+        
+//        if let token = receiveUser.fcmToken, let alert = receiveUser.commInfoList.first(where: { $0.id == community.id })?.alert {
+//            if alert == true {
+//                PushNotificationManager.shared.sendPushNotification(toFCMToken: token, title: "Zeno", body: zeno.question)
+//            }
+//        }
+    }
+    
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
     /// 테스트용, Firebase Alarm Collection 에 데이터 추가
     private func createAlarm(alarm: Alarm) async {
-        try? await FirebaseManager.shared.create(data: alarm)
+        do {
+            try await FirebaseManager.shared.create(data: alarm)
+        } catch {
+            print("firebase Alarm collection add error : \(error)")
+        }
     }
 
     // fetch 함수 -> 항상 불러오는 X ->
