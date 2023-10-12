@@ -9,13 +9,13 @@
 import SwiftUI
 
 struct UserMoneyView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
     
     var body: some View {
         HStack {
             /// 친구가 있어야 하는가 ??
             VStack {
-                Text("10")
+                Text("\(mypageViewModel.friendIDList?.removeDuplicates().count ?? 0)")
                     .font(.system(size: 30))
                     .fontWeight(.semibold)
                 Text("친구")
@@ -25,7 +25,7 @@ struct UserMoneyView: View {
             
             /// 코인
             VStack( spacing: 0) {
-                Text("\(userViewModel.currentUser?.coin ?? 0)")
+                Text("\(mypageViewModel.userInfo?.coin ?? 0)")
                     .font(.system(size: 30))
                     .fontWeight(.semibold)
                 
@@ -41,13 +41,12 @@ struct UserMoneyView: View {
             
             /// 지목 받은 제노
             VStack {
-                Text("\(userViewModel.currentUser?.commInfoList.count ?? 0)")
+                Text("\(mypageViewModel.userInfo?.commInfoList.count ?? 0)")
                     .font(.system(size: 30))
                     .fontWeight(.semibold)
                 Text("득표수")
                     .font(.system(size: 15))
             }
-//            .frame(width: UIScreen.main.bounds.width/3)
             .frame(maxWidth: .infinity/3)
         }
         .frame(minHeight: 90)
@@ -59,6 +58,6 @@ struct UserMoneyView: View {
 struct UserMoneyView_Previews: PreviewProvider {
     static var previews: some View {
         UserMoneyView()
-            .environmentObject(UserViewModel())
+            .environmentObject(MypageViewModel())
     }
 }

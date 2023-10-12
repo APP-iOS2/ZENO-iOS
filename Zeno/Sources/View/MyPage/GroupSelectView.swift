@@ -14,12 +14,12 @@ enum UserChoice: String, CaseIterable {
 }
 
 struct GroupSelectView: View {
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
     @State var userSelected: UserChoice = .firends
-    private var testData = ["박서연", "신우진", "김하은", "김건섭", "원강묵"]
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(alignment: .trailing) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(UserChoice.allCases, id: \.self) { choiced in
@@ -56,6 +56,7 @@ struct GroupSelectView: View {
                 
                 if userSelected.rawValue == "친구 목록" {
                     MypageFriendListView()
+                        .environmentObject(mypageViewModel)
                 }
                 Spacer()
             }
@@ -65,5 +66,6 @@ struct GroupSelectView: View {
 struct GroupSelectView_Previews: PreviewProvider {
     static var previews: some View {
         GroupSelectView()
+            .environmentObject(MypageViewModel())
     }
 }

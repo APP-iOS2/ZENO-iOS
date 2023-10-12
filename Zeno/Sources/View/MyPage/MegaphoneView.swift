@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MegaphoneView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
     
     var body: some View {
         HStack {
@@ -17,7 +17,7 @@ struct MegaphoneView: View {
                 .font(.system(size: 30))
                 .foregroundColor(.red)
                 .fontWeight(.bold)
-            Text("확성기가 \(userViewModel.currentUser?.megaphone ?? 0)회 남았어요.")
+            Text("확성기가 \(mypageViewModel.userInfo?.megaphone ?? 0)회 남았어요.")
                 .foregroundColor(.white)
                 .font(.system(size: 20))
         }
@@ -31,6 +31,6 @@ struct MegaphoneView: View {
 struct MegaphoneView_Previews: PreviewProvider {
     static var previews: some View {
         MegaphoneView()
-            .environmentObject(UserViewModel())
+            .environmentObject(MypageViewModel())
     }
 }

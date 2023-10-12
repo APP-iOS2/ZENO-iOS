@@ -14,13 +14,11 @@ import FirebaseFirestore
 import FirebaseStorage
 
 struct MyPageMain: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
-    @EnvironmentObject private var commViewModel: CommViewModel
-    private var mypageViewModel = MypageViewModel()
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
+    
     @State private var isShowingSettingView = false
     @State private var isShowingZenoCoin = true // 첫 번째 뷰부터 시작
     @State private var timer: Timer?
-    @State private var commArray: [Community] = []
     let coinView = CoinView()
     let megaphoneView = MegaphoneView()
     
@@ -42,29 +40,24 @@ struct MyPageMain: View {
                 VStack(spacing: 0) {
                     HStack {
                         // 유저 프로필 이미지 설정
-                        if let imageURLString = userViewModel.currentUser?.imageURL,
-                           let imageURL = URL(string: imageURLString) {
+                        if let imageURLString = mypageViewModel.userInfo?.imageURL, let imageURL = URL(string: imageURLString) {
                             KFImage(imageURL)
                                 .placeholder {
-                                    ProgressView()
+                                    Image("ZenoIcon")
+                                        .resizable()
+                                        .modifier(TextModifier())
                                 }
                                 .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 30))
-                                .padding()
+                                .modifier(TextModifier())
                         } else {
-                            KFImage(URL(string: "https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg"))
+                            Image("ZenoIcon")
                                 .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 30))
-                                .padding()
+                                .modifier(TextModifier())
                         }
-
+                        
                         VStack(alignment: .leading) {
                             HStack {
-                                Text(userViewModel.currentUser?.name ?? "이름")
+                                Text(mypageViewModel.userInfo?.name ?? "이름")
                                     .font(.system(.title3))
                                     .fontWeight(.semibold)
                                 
@@ -74,21 +67,20 @@ struct MyPageMain: View {
                                     Image(systemName: "greaterthan")
                                 }
                             }
-                            Text(userViewModel.currentUser?.description ?? " ")
+                            Text(mypageViewModel.userInfo?.description ?? " ")
                         }
                         Spacer()
                     }
                     .foregroundColor(.black)
+                    /// 유저 재화 정보 뷰
                     UserMoneyView()
-                        .environmentObject(userViewModel)
+                    /// 재화정보 스크롤뷰
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 0) {
                             if isShowingZenoCoin {
                                 coinView
-                                    .environmentObject(userViewModel)
                             } else {
                                 megaphoneView
-                                    .environmentObject(userViewModel)
                             }
                         }
                         .frame(width: UIScreen.main.bounds.width, height: 60)
@@ -96,10 +88,6 @@ struct MyPageMain: View {
                     .background(Color.black)
                     .onAppear {
                         startTimer()
-                        /// 여기서 해야할 일 : 유저정보 가져오기
-//                        Task {
-//                            await mypageViewModel.userFriendIDList()
-//                        }
                     }
                     .onDisappear {
                         print("⏰ 타이머 끝")
@@ -107,22 +95,26 @@ struct MyPageMain: View {
                     }
                     GroupSelectView()
                         .foregroundColor(.black)
-                        .environmentObject(userViewModel)
                 }
             }
+            .task {
+                await mypageViewModel.getUserInfo()
+            }
+            .environmentObject(mypageViewModel)
             .foregroundColor(.white)
             .navigationTitle("마이제노")
             .toolbar {
                 ToolbarItem {
                     NavigationLink {
                         MypageSettingView()
+                            .environmentObject(mypageViewModel)
                     } label: {
                         Image(systemName: "gearshape")
                             .foregroundColor(.black)
                     }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)            
         }
     }
 }
@@ -131,51 +123,17 @@ struct MyPageMain_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             MyPageMain()
-                .environmentObject(UserViewModel(currentUser: .fakeCurrentUser))
-                .environmentObject(CommViewModel())
+                .environmentObject(MypageViewModel()) // MypageViewModel 환경 객체 제공
         }
     }
 }
 
-extension MyPageMain {
-    /*
-     @MainActor
-     func addRequestComm(comm: Community) async throws {
-         guard var currentUser else { return }
-         let requestComm = currentUser.requestComm + [comm.id]
-         try await firebaseManager.update(data: currentUser.self,
-                                          value: \.requestComm,
-                                          to: requestComm)
-         self.currentUser?.requestComm = requestComm
-     }
-     */
-    func findGroup() {
-        guard let currentUser = self.userViewModel.currentUser else { return }
-        let test = currentUser.commInfoList
-    }
-    
-    
-    func userGroupList() {
-        let db = Firestore.firestore()
-        
-        if let currentUser = userViewModel.currentUser?.commInfoList {
-            print("\(currentUser[0].id)")
-            db.collection("Community").document(currentUser[0].id).getDocument { document, error in
-                if let document = document, document.exists {
-                    let data = document.data()
-                    
-                    if let fieldValue = data?["name"] as? String {
-                        print("fieldValue : \(fieldValue)")
-                    } else {
-                        print("실패")
-                    }
-                } else {
-                    print("firebase document 존재 오류")
-                }
-            }
-//            for group in currentUser {
-//
-//            }
-        }
+struct TextModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .scaledToFill()
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 30))
+            .padding()
     }
 }
