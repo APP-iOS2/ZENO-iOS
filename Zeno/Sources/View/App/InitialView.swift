@@ -23,12 +23,13 @@ struct InitialView: View {
                 }
             }
             // 런치스크린
-            if isLoading {
+            if isLoading && !isnickNameChanged {
                 launchScreenView.transition(.opacity).zIndex(1)
             }
         }
         .edgesIgnoringSafeArea(.all)
         .onReceive(userViewModel.$isNickNameRegistViewPop, perform: { chg in
+            // isNickNameRegistViewPop을 true로 바꿔주는 시점이 onAppear가 끝난 시점이라서 onReceive에서 받아서 처리.
             print("🦕chg : \(chg.description)")
             if chg { isNickChangeSheet = true }
         })
@@ -36,11 +37,14 @@ struct InitialView: View {
             print("🦕sign : \(userViewModel.signStatus.rawValue)")
             print("🦕nick : \(isnickNameChanged.description)")
             
+            // 회원가입이 완료되지않았을때만 온보딩과 회원가입뷰 뿌려준다.
             // 런치스크린 타이머
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5, execute: {
-                withAnimation { isLoading.toggle() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    isLoading = false
+                }
                 if !isnickNameChanged {
-                    isNickChangeSheet.toggle()
+                    isNickChangeSheet = false
                 }
             })
         }

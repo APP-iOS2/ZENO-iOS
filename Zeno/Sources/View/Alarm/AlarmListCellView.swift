@@ -48,7 +48,7 @@ struct AlarmListCellView: View {
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . \(alarm.sendUserGender.rawValue)")
+                    Text("\(getCommunity.name) . \(alarm.sendUserGender.toString)")
                         .padding(.bottom, 4)
                     Text("3시간 전")
                         .font(.caption)
