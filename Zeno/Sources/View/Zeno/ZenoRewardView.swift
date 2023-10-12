@@ -38,12 +38,10 @@ struct ZenoRewardView: View {
                 } label: {
                     WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
                 }
-                .onTapGesture {
-                    Task {
-                        await userViewModel.updateUserCoin(to: 60)
-                    }
-                }
             }
+        }
+        .task {
+            await userViewModel.updateUserCoin(to: 60)
         }
         .navigationBarBackButtonHidden()
     }

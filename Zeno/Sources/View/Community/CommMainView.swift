@@ -15,6 +15,7 @@ struct CommMainView: View {
     @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
+    @State private var isPresentedAddCommView = false
     
     @AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
     
@@ -41,13 +42,16 @@ struct CommMainView: View {
                 }
             }
             .sheet(isPresented: $isShowingCommListSheet) {
-                CommListView(isPresented: $isShowingCommListSheet)
+                CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
             }
             .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
                 CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
             }
             .onTapGesture {
                 isShowingHamburgerView = false
+            }
+            .navigationDestination(isPresented: $isPresentedAddCommView) {
+                CommSettingView(editMode: .addNew)
             }
         }
         .tint(.black)
@@ -71,11 +75,6 @@ struct CommMainView: View {
             }
         }
     }
-}
-
-extension CommMainView {
-    // MARK: - 메인 뷰
-    
     /// 새로들어온 유저 뷰
     var newUserView: some View {
         VStack {
@@ -95,14 +94,19 @@ extension CommMainView {
                     HStack(spacing: 15) {
                         ForEach(commViewModel.recentlyJoinedMembers) { user in
                             VStack(spacing: 5) {
-                                Image(systemName: "person.circle")
-                                    .resizable()
+                                Circle()
+                                    .stroke()
                                     .frame(width: 30, height: 30)
+                                    .background(
+                                        ZenoKFImageView(user)
+                                            .clipShape(Circle())
+                                    )
                                 Text("\(user.name)")
                                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
                             }
                         }
                     }
+                    .padding(1)
                 }
                 .scrollIndicators(.hidden)
             }
@@ -111,45 +115,39 @@ extension CommMainView {
         .animation(.default, value: isShowingDetailNewBuddyToggle)
         .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
     }
-    
     /// 그룹 내 유저 목록 뷰
     var userListView: some View {
         VStack {
-            if isShowingUserSearchView {
-                HStack {
+            HStack {
+                if isShowingUserSearchView {
                     TextField(text: $commViewModel.userSearchTerm) {
                         Text("친구 찾기...")
-                            .font(.footnote)
                     }
-                    Spacer()
-                    Button {
-                        isShowingUserSearchView = false
-                        commViewModel.userSearchTerm = ""
-                    } label: {
+                    .font(.footnote)
+                } else {
+                    Text("친구 \(commViewModel.currentCommMembers.count)")
+                        .font(.footnote)
+                }
+                Spacer()
+                Button {
+                    isShowingUserSearchView.toggle()
+                    commViewModel.userSearchTerm = ""
+                } label: {
+                    if isShowingUserSearchView {
                         Text("취소")
-                            .font(.caption)
+                    } else {
+                        Image(systemName: "magnifyingglass")
                     }
                 }
+                .font(.caption)
+            }
+            if isShowingUserSearchView {
                 ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
                 }
             } else {
-                HStack {
-                    Text("친구 \(commViewModel.currentCommMembers.count)")
-                        .font(.footnote)
-                    Spacer()
-                    Button {
-                        isShowingUserSearchView = true
-                        print("유저 리스트 뷰 보이기")
-                    } label: {
-                        Image(systemName: "magnifyingglass")
-                            .font(.caption)
-                    }
-                }
-                VStack {
-                    ForEach(commViewModel.currentCommMembers) { user in
-                        userCell(user: user)
-                    }
+                ForEach(commViewModel.currentCommMembers) { user in
+                    userCell(user: user)
                 }
             }
         }
@@ -160,14 +158,17 @@ extension CommMainView {
     /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
-            ZenoKFImageView(user)
+            Circle()
+                .stroke()
                 .frame(width: 30, height: 30)
+                .background(
+                    ZenoKFImageView(user)
+                        .clipShape(Circle())
+                )
             VStack(alignment: .leading) {
-                // 유저 이름
                 Text("\(user.name)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
-                // 유저 한줄 소개
                 Text("\(user.description)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
                     .foregroundColor(Color(uiColor: .systemGray4))
@@ -175,16 +176,20 @@ extension CommMainView {
             }
             .padding(.leading, 4)
             Spacer()
-            Button {
-                print("친구추가 버튼")
-            } label: {
-                Text("친구추가")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+            if !commViewModel.isFriend(user: user) {
+                Button {
+                    Task {
+                        guard let comm = commViewModel.currentComm else { return }
+                        await userViewModel.addFriend(user: user, comm: comm)
+                    }
+                } label: {
+                    Text("친구추가")
+                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                }
             }
         }
         .homeListCell()
     }
-    
     // MARK: - 툴바
     
     /// 그룹 이름 툴바아이템

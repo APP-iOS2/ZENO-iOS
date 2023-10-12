@@ -13,23 +13,25 @@ struct AlarmSelectCommunityView: View {
     @EnvironmentObject var communityViewModel: CommViewModel
     
     var body: some View {
-        HStack {
-            Button(action: {
-                selectedCommunityId = ""
-            }, label: {
-                Text("전체")
-            })
-            .padding(.leading)
-            
-            ScrollView(.horizontal) {
-                HStack(spacing: 4) {
-                    ForEach(communityViewModel.joinedComm) { community in
-                        AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
+        VStack {
+            HStack {
+                Button(action: {
+                    selectedCommunityId = ""
+                }, label: {
+                    Text("전체")
+                })
+                .padding(.leading)
+                
+                ScrollView(.horizontal) {
+                    HStack(spacing: 4) {
+                        ForEach(communityViewModel.joinedComm) { community in
+                            AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
+                        }
                     }
                 }
             }
+            .padding(.vertical, -10)
         }
-        .padding(.bottom, -10)
     }
 }
 

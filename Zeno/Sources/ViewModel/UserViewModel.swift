@@ -16,8 +16,6 @@ final class UserViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    /// ZenoViewSheet닫는용
-    @Published var isShowingSheet: Bool = false
     /// 로그인여부(상태)
     @Published var signStatus: SignStatus = .none
     
@@ -38,6 +36,20 @@ final class UserViewModel: ObservableObject {
     
     init(currentUser: User) {
         self.currentUser = currentUser
+    }
+    
+    @MainActor
+    func addFriend(user: User, comm: Community) async {
+        guard let currentUser,
+              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+        var newInfo = currentUser.commInfoList
+        newInfo[index].buddyList.append(user.id)
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+            self.currentUser?.commInfoList = newInfo
+        } catch {
+            print(#function + "User Document에 commInfoList 업데이트 실패")
+        }
     }
     
     @MainActor
@@ -164,7 +176,11 @@ final class UserViewModel: ObservableObject {
         guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
         print("🦕UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
-        print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
+        if let currentUser {
+            print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
+        } else {
+            print("🦕현재 로그인된 유저 없음")
+        }
     }
     
     /// 로그아웃
@@ -209,6 +225,17 @@ final class UserViewModel: ObservableObject {
         try? await loadUserData()
     }
     
+    func updateUserFCMToken(_ fcmToken: String) async {
+        guard let currentUser else { return }
+        guard !fcmToken.isEmpty else { return }
+        
+        try? await firebaseManager.update(data: currentUser,
+                                          value: \.fcmToken,
+                                          to: fcmToken)
+        try? await loadUserData()
+    }
+    
+    // MARK: 제노 뷰
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
     @MainActor
     func updateZenoTimer() async {
@@ -217,65 +244,61 @@ final class UserViewModel: ObservableObject {
             let zenoStartTime = Date().timeIntervalSince1970
             try await firebaseManager.update(data: currentUser, value: \.zenoEndAt, to: zenoStartTime + Double(coolTime))
             try await loadUserData()
-            print("------------------------")
-            print("\(zenoStartTime)")
-            print("\(zenoStartTime + Double(coolTime))")
-            print("updateZenoTimer !! ")
         } catch {
-            print("Error updating zeno timer: \(error)")
+            debugPrint(#function + "Error updating zeno timer: \(error)")
         }
     }
     
-    // MARK: 이 함수가 자원 갉아먹고 있음
-    /// 사용자한테 몇초 남았다고 초를 보여주는 함수
-    func comparingTime() -> Double {
-        let currentTime = Date().timeIntervalSince1970
-        
-        if let currentUser = currentUser,
-           let zenoEndAt = currentUser.zenoEndAt {
-            return zenoEndAt - currentTime
-        } else {
-            return 0.0
-        }
-    }
-    
-    // MARK: 제노 뷰 모델로 옮길 예정
-    /// 친구 id 배열로  친구 이름 배열 받아오는 함수
-    func userIDtoName(idArray: [String]) async -> [String] {
-        var resultArray: [String] = []
+    // MARK: 제노 뷰
+    /// 친구 id 배열로  친구 User  배열 받아오는 함수
+    func IDArrayToUserArrary(idArray: [String]) async -> [User] {
+        var resultArray: [User] = []
         do {
             for index in 0..<idArray.count {
                 let result = try await fetchUser(withUid: idArray[index])
-                resultArray.append(result.name)
+                resultArray.append(result)
             }
         } catch {
-            print("fetch 유저 실패")
+            debugPrint(#function + "fetch 유저 실패")
             return []
         }
         return resultArray
     }
     
-    // MARK: 제노 뷰 모델로 옮길 예정
-    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
-    func commIDtoName(id: String) async -> String? {
+    // MARK: 제노 뷰
+    /// 친구 id로  친구 이름 받아오는 함수
+    func IDToName(id: String) async -> String {
         do {
-            let result = try await fetchCommunity(withUid: id)
+            let result = try await fetchUser(withUid: id)
             return result.name
         } catch {
-            print("fetchName 실패")
-            return nil
+            debugPrint(#function + "fetch 유저 실패")
         }
-    }
+        return "fetch실패" }
     
-    // MARK: 제노 뷰 모델로 옮길 예정
-    func fetchCommunity (withUid uid: String) async throws -> Community {
-        let result = await firebaseManager.read(type: Community.self, id: uid)
-        switch result {
-        case .success(let success):
-            return success
-        case .failure(let error):
-            throw error
+    // MARK: 제노 뷰
+    /// 해당 커뮤니티의 친구 수가 4명 이상인지 확인하는 함수
+    func hasFourFriends(comm: Community) -> Bool {
+        if let currentUser {
+            if let buddyListCount = currentUser.commInfoList.first(where: { $0.id == comm.id })?.buddyList.count {
+                return buddyListCount >= 4
+            }
+        } else {
+            debugPrint(#function + "실패")
         }
+        return false
+    }
+
+    // MARK: 제노 뷰
+    /// 커뮤니티 id로 친구 id배열을 받아오는 함수.
+    func getFriendsInComm(comm: Community) -> [String] {
+        if let currentUser {
+            return currentUser.commInfoList.first(where: { $0.id == comm.id })?.buddyList ?? []
+        } else {
+            debugPrint(#function + "commid로 해당하는 community를 찾을 수 없음")
+        }
+        debugPrint(#function + "currentUser가 없음")
+        return []
     }
     
     @MainActor
@@ -286,7 +309,7 @@ final class UserViewModel: ObservableObject {
             try await firebaseManager.create(data: currentUser)
             self.currentUser = currentUser
         } catch {
-            print(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
+            debugPrint(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
         }
     }
     

@@ -28,13 +28,12 @@ struct AlarmListCellView: View {
                     let url = URL(string: urlStr) {
                     KFImage(url)
                         .resizable()
-                        .frame(width: 60, height: 60)
+                        .frame(width: 50, height: 50)
                         .clipShape(Circle())
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    Color.hex("EB0FFE"), lineWidth: 2   // 여자
-                                    //                                   남자  Color.hex("0F62FE")
+                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 } else {
@@ -44,15 +43,13 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    Color.hex("EB0FFE"), lineWidth: 2
-                                    //                                    Color.hex("0F62FE")
+                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . 여자")
+                    Text("\(getCommunity.name) . \(alarm.sendUserGender)")
                         .padding(.bottom, 4)
-                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
                     Text("3시간 전")
                         .font(.caption)
                         .foregroundStyle(.gray)
@@ -62,10 +59,10 @@ struct AlarmListCellView: View {
                 
                 ShareLink(item: "\(alarm.zenoString)에 \(alarm.receiveUserName) 님을 선택했습니다.") {
                     Image(systemName: "square.and.arrow.up")
-                        .frame(width: 40, height: 40)
+                        .frame(width: 40, height: 40, alignment: .topTrailing)
                 }
             }
-            .padding(.vertical)
+            .padding(.bottom, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
             .onTapGesture {
@@ -77,6 +74,7 @@ struct AlarmListCellView: View {
                     Text("\(alarm.zenoString)")
                         .bold()
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
+                        .font(.subheadline)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -86,11 +84,10 @@ struct AlarmListCellView: View {
                 
                 Spacer()
             }
-            .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .black)
-            .padding(.bottom)
         }
+        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray)
         .padding()
-        .background(alarm.id == selectAlarm?.id ? Color("MainPurple1") : .white)
+        .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray6))
         .clipped()
         .cornerRadius(20)
     }
@@ -98,7 +95,7 @@ struct AlarmListCellView: View {
 
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
             .environmentObject(CommViewModel())
     }
 }

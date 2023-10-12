@@ -27,6 +27,10 @@ disabled_rules: # 사용하지 않는 룰
     - todo
     # 파일 줄번호 제한
     - file_length
+    # 파라미터 갯수 제한
+    - function_parameter_count
+    # 옵셔널 배열을 제한
+    - discouraged_optional_collection
 #    # 닫는 중괄호 앞에 세로 공백(빈 줄)을 포함하지 마세요.
 #    - vertical_whitespace_closing_braces
 #    # 여는 중괄호 뒤에 세로 공백(빈 줄)을 포함하지 마세요

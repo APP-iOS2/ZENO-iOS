@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ZenoSearchableCellView<T: ZenoSearchable>: View {
+struct ZenoSearchableCellView<T: ZenoProfileVisible>: View {
     let item: T
     let actionTitle: String
     let action: () -> Void
@@ -23,11 +23,9 @@ struct ZenoSearchableCellView<T: ZenoSearchable>: View {
                         .clipShape(Circle())
                 )
             VStack(alignment: .leading) {
-                // 유저 이름
                 Text("\(item.name)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
-                // 유저 한줄 소개
                 Text("\(item.description)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
                     .foregroundColor(Color(uiColor: .systemGray4))

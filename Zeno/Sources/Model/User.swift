@@ -66,6 +66,7 @@ enum Gender: Codable {
 
 #if DEBUG
 extension User {
+
     static let dummy: [User] = [
         .init(name: "원강묵",
               gender: .male,
@@ -138,6 +139,7 @@ extension User {
               requestComm: []
              )
     ]
+  
 }
 
 extension User {

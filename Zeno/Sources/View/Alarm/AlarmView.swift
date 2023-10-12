@@ -26,8 +26,6 @@ struct AlarmView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color("MainPink3")
-                    .ignoresSafeArea()
                 if commViewModel.joinedComm.isEmpty {
                     AlarmEmptyView()
                 } else {
@@ -37,16 +35,22 @@ struct AlarmView: View {
                         ScrollView {
                             ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                    .padding(.bottom, 4)
                             }
                             .navigationDestination(isPresented: $isShowInitialView) {
                                 if let selectAlarm {
-                                    AlarmInitialView(selectAlarm: selectAlarm)
+                                    AlarmChangingView(selectAlarm: selectAlarm)
                                 }
                             }
                         }
                         .padding()
+                        .frame(maxWidth: .infinity)
                         .refreshable {
-                            await alarmViewModel.fetchAlarm(showUserID: userViewModel.currentUser?.id ?? "")
+                            if let currentUser = userViewModel.currentUser {
+                                Task {
+                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+                                }
+                            }
                         }
                         .sheet(isPresented: $isShowPaymentSheet, content: {
                             AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
@@ -82,14 +86,9 @@ struct AlarmView: View {
                                 isShowPaymentSheet = true
                             }
                         }, label: {
-                            Text("선택하기")
-                                .font(.title3)
-                                .frame(maxWidth: .infinity)
+                            WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm == nil ? false : true)
                         })
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color("MainPurple1"))
                         .disabled(selectAlarm == nil ? true : false)
-                        .padding(.horizontal)
                     }
                 }
             }

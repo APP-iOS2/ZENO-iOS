@@ -74,7 +74,7 @@ struct SideMenuView: View {
 
 #if DEBUG
 /// 사이드바 예시뷰
- struct SideTestMainView: View {
+struct SideTestMainView: View {
     @State private var isPresented: Bool = false
     
     var body: some View {
@@ -98,9 +98,68 @@ struct SideMenuView: View {
 
 struct SideMenuView_Preview: PreviewProvider {
     static var previews: some View {
-       SideTestMainView()
+       SideTestMainView2()
             .environmentObject(CommViewModel())
             .environmentObject(UserViewModel())
     }
 }
 #endif
+
+struct SideMenuView2: View {
+    @Binding var isPresented: Bool
+    let comm: Community
+    @State private var dragOffset: CGFloat = 0
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .trailing) {
+                Color.black
+                    .opacity(isPresented ? 0.3 : 0)
+                    .edgesIgnoringSafeArea(.top)
+                    .onTapGesture {
+                        isPresented = false
+                    }
+                CommSideBarView(isPresented: $isPresented)
+                    .background(.background)
+                    .frame(width: geometry.size.width * 0.8)
+                    .offset(x: isPresented ? dragOffset : geometry.size.width)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                let valueTemp = value.translation.width
+                                if valueTemp >= 0 { dragOffset = valueTemp }
+                            }
+                            .onEnded { value in
+                                if value.translation.width > geometry.size.width * 0.4 {
+                                    isPresented = false
+                                }
+                                dragOffset = 0
+                            }
+                    )
+            }
+            .animation(.easeInOut(duration: 0.45), value: isPresented)
+        }
+    }
+}
+
+struct SideTestMainView2: View {
+    @State private var isPresented: Bool = false
+    
+    var body: some View {
+        ZStack {
+            Color.teal.opacity(0.5)
+            VStack(alignment: .trailing) {
+                HStack {
+                    Spacer()
+                    Button("사이드바") {
+                        isPresented.toggle()
+                    }
+                    .tint(.black)
+                }
+                Spacer()
+            }
+            .padding()
+        }
+        .overlay(SideMenuView2(isPresented: $isPresented, comm: Community.dummy[0]))
+    }
+}

@@ -73,12 +73,11 @@ extension CommSearchView {
 				.autocorrectionDisabled()
 				.onSubmit {
 					commViewModel.commSearchTerm = currentViewSerachTerm
-					print(commViewModel.joinedComm)
-					print(commViewModel.searchedComm)
+					commViewModel.addSearchTerm(currentViewSerachTerm)
 				}
 				
 				// 텍스트필드 초기화 버튼
-				if !commViewModel.commSearchTerm.isEmpty {
+				if !currentViewSerachTerm.isEmpty {
 					Button {
 						commViewModel.commSearchTerm = ""
 						currentViewSerachTerm = ""
@@ -110,25 +109,26 @@ extension CommSearchView {
 						.font(.footnote)
 						.foregroundColor(.gray)
 						.onTapGesture {
-							print("전체 삭제")
+							commViewModel.recentSearches = []
+							commViewModel.saveRecentSearches()
 						}
 				}
 				.padding(.trailing)
 				.padding(.bottom)
 				ScrollView {
-					ForEach(1..<6) { i in
+					ForEach(commViewModel.recentSearches, id: \.self) { searchTitle in
 						VStack {
 							HStack(spacing: 10) {
 								Image(systemName: "magnifyingglass")
 									.foregroundColor(Color(uiColor: .gray))
-								Text("검색한 커뮤니티 \(i)")
+								Text(searchTitle)
 									.font(.callout)
 								Spacer()
 							}
 							.padding([.top], 2)
 							.frame(maxWidth: .infinity)
 							.onTapGesture {
-								commViewModel.commSearchTerm = "검색한 커뮤니티 \(i)"
+								currentViewSerachTerm = searchTitle
 							}
 							Divider()
 						}

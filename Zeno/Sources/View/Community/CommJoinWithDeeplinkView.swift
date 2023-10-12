@@ -16,31 +16,80 @@ struct CommJoinWithDeeplinkView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     
     var body: some View {
-        VStack(alignment: .center) {
-            ZenoKFImageView(comm)
+        VStack(spacing: 5) {
             Text(comm.name)
-                .font(.headline)
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 22))
             Text("\(comm.joinMembers.count)명 참여중")
-                .font(.caption)
-            HStack(alignment: .center) {
-                Button("가입하기", role: ButtonRole.destructive) {
-                    Task {
-                        await commViewModel.joinCommWithDeeplink(commID: comm.id)
-                        try? await userViewModel.loadUserData()
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 14))
+                .padding(.top, 10)
+            Circle()
+                .stroke()
+                .background(
+                    ZenoKFImageView(comm)
+                )
+                .frame(width: .screenWidth * 0.6, height: .screenHeight / 2)
+                .clipShape(Circle())
+            Text(comm.description)
+                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 16))
+                .padding(.vertical)
+            ForEach(Btn.allCases) { btn in
+                Button {
+                    if btn == .join {
+                        Task {
+                            await commViewModel.joinCommWithDeeplink(commID: comm.id)
+                            await userViewModel.joinCommWithDeeplink(comm: comm)
+                            try? await userViewModel.loadUserData()
+                        }
                     }
                     isPresented = false
-                }
-                Button("취소", role: .cancel) {
-                    isPresented = false
+                } label: {
+                    HStack {
+                        Text(btn.title)
+                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .foregroundColor(.white)
+                            .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
+                            .background(
+                                btn.background
+                                    .opacity(0.5)
+                                    .shadow(radius: 3)
+                            )
+                            .cornerRadius(15)
+                    }
+                    .padding(.bottom, 10)
                 }
             }
         }
+        .padding()
+    }
+    
+    private enum Btn: CaseIterable, Identifiable {
+        case join, cancel
+        
+        var title: String {
+            switch self {
+            case .join:
+                return "가입 하기"
+            case .cancel:
+                return "취소"
+            }
+        }
+        
+        var background: Color {
+            switch self {
+            case .join:
+                return .purple2
+            case .cancel:
+                return .gray
+            }
+        }
+        
+        var id: Self { self }
     }
 }
 
 struct CommJoinWithDeeplinkView_Previews: PreviewProvider {
     static var previews: some View {
-        CommJoinWithDeeplinkView(isPresented: .constant(true), comm: .emptyComm)
+        CommJoinWithDeeplinkView(isPresented: .constant(true), comm: .dummy[0])
             .environmentObject(CommViewModel())
     }
 }
