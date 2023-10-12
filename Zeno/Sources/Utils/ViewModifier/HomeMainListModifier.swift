@@ -22,9 +22,9 @@ struct HomeListCellModifier: ViewModifier {
 	func body(content: Content) -> some View {
 		content
 			.padding()
-			.background(Color("MainPurple1"))
-			.foregroundColor(.white)
+			.background(.background)
 			.cornerRadius(10)
+			.shadow(radius: 1)
 	}
 }
 
