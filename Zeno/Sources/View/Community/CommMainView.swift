@@ -79,7 +79,7 @@ struct CommMainView: View {
     var newUserView: some View {
         VStack {
             HStack {
-                Text("새로 들어온 친구 \(commViewModel.recentlyJoinedMembers.count)")
+                Text("새로 들어온 구성원 \(commViewModel.recentlyJoinedMembers.count)")
 					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                     .font(.footnote)
                 Spacer()
@@ -87,9 +87,10 @@ struct CommMainView: View {
                     isShowingDetailNewBuddyToggle.toggle()
                 } label: {
                     Image(systemName: isShowingDetailNewBuddyToggle ? "chevron.up" : "chevron.down")
-                        .font(.caption2)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 }
             }
+			.foregroundColor(.primary)
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
@@ -103,6 +104,7 @@ struct CommMainView: View {
                                             .clipShape(Circle())
                                     )
                                 Text("\(user.name)")
+									.foregroundColor(.primary)
 									.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                             }
                         }
@@ -122,12 +124,12 @@ struct CommMainView: View {
             HStack {
                 if isShowingUserSearchView {
                     TextField(text: $commViewModel.userSearchTerm) {
-                        Text("친구 찾기...")
+                        Text("구성원 찾기...")
                     }
-                    .font(.footnote)
+					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 } else {
-                    Text("친구 \(commViewModel.currentCommMembers.count)")
-                        .font(.footnote)
+                    Text("구성원 \(commViewModel.currentCommMembers.count)")
+						.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 }
                 Spacer()
                 Button {
@@ -142,6 +144,7 @@ struct CommMainView: View {
                 }
                 .font(.caption)
             }
+			.foregroundColor(.primary)
             if isShowingUserSearchView {
                 ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
@@ -166,13 +169,13 @@ struct CommMainView: View {
                     ZenoKFImageView(user)
                         .clipShape(Circle())
                 )
-            VStack(alignment: .leading) {
+			VStack(alignment: .leading, spacing: 2) {
                 Text("\(user.name)")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                    .padding(.bottom, 1)
+					.foregroundColor(.primary)
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                 Text("\(user.description)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
-                    .foregroundColor(Color(uiColor: .systemGray4))
+                    .foregroundColor(Color(uiColor: .systemGray))
                     .lineLimit(1)
             }
             .padding(.leading, 4)
@@ -184,8 +187,16 @@ struct CommMainView: View {
                         await userViewModel.addFriend(user: user, comm: comm)
                     }
                 } label: {
-                    Text("친구추가")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
+					HStack(alignment: .bottom, spacing: 2) {
+						Image(systemName: "person.crop.circle.badge.plus")
+						Text("친구추가")
+					}
+					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+					.foregroundColor(.white)
+					.padding(5)
+					.background(Color("MainColor"))
+					.cornerRadius(6)
+					.shadow(radius: 0.3)
                 }
             }
         }
@@ -201,12 +212,17 @@ struct CommMainView: View {
             } label: {
                 HStack {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
+						.foregroundColor(.primary)
+						.font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
                     Image(systemName: "chevron.down")
-                        .font(.caption)
+						.font(.system(size: 12))
+						.fontWeight(.semibold)
                 }
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+				.foregroundColor(.primary)
             }
         }
+		
     }
     
     /// 햄버거 툴바아이템
@@ -217,6 +233,7 @@ struct CommMainView: View {
             } label: {
                 Image(systemName: "line.3.horizontal")
                     .fontWeight(.semibold)
+					.foregroundColor(.primary)
             }
         }
     }
