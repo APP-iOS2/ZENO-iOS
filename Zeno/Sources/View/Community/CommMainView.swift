@@ -80,6 +80,7 @@ struct CommMainView: View {
         VStack {
             HStack {
                 Text("새로 들어온 친구 \(commViewModel.recentlyJoinedMembers.count)")
+					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                     .font(.footnote)
                 Spacer()
                 Button {
@@ -102,7 +103,7 @@ struct CommMainView: View {
                                             .clipShape(Circle())
                                     )
                                 Text("\(user.name)")
-                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+									.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                             }
                         }
                     }
@@ -167,10 +168,10 @@ struct CommMainView: View {
                 )
             VStack(alignment: .leading) {
                 Text("\(user.name)")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
                 Text("\(user.description)")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
                     .foregroundColor(Color(uiColor: .systemGray4))
                     .lineLimit(1)
             }
@@ -184,7 +185,7 @@ struct CommMainView: View {
                     }
                 } label: {
                     Text("친구추가")
-                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
                 }
             }
         }
