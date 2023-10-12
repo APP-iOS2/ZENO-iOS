@@ -11,6 +11,17 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 
+extension KakaoSDKUser.Gender {
+    func convertToLocalGender() -> Gender {
+        switch self {
+        case .Male:
+            return .male
+        case .Female:
+            return .female
+        }
+    }
+}
+
 /// 로그인 여부 UserDefault에 저장
 enum SignStatus: String {
     case signIn, none
@@ -64,17 +75,13 @@ final class KakaoAuthService {
     
     private let kakao = UserApi.shared
     
-    /*----------------------------------------------
-             로그아웃 버튼을 안 누르면 토큰이 지워지지가 않음.
-             토큰 = 여러기기에서 발급 가능.
-     ----------------------------------------------*/
-    
     /// 카카오 유저 로그인 연동
     /// 유저정보, 토큰활성여부(Bool)
     func loginUserKakao() async -> (KakaoSDKUser.User?, Bool) {
         do {
+            print("🦕1")
             let accessToken = try await accessTokenConfirm()  // 토큰 확인
-            
+            print("🦕토큰 \(String(describing: accessToken))")
             if accessToken != nil {
                 return (await loginChkAndFetchUserInfo(), true)
             } else {
@@ -158,7 +165,7 @@ extension KakaoAuthService {
     }
     
     /// 유저정보 가져오기
-    private func fetchUserInfo() async -> Result<(KakaoSDKUser.User?, Error?), Error> {
+    func fetchUserInfo() async -> Result<(KakaoSDKUser.User?, Error?), Error> {
         return await withCheckedContinuation { continuation in
             kakao.me { user, error in
                 if let error {
@@ -191,6 +198,7 @@ extension KakaoAuthService {
     private func accessTokenConfirm() async throws -> AccessTokenInfo? {
         // 토큰 유무 파악
         if AuthApi.hasToken() {
+            print("🦕2")
             return try await withCheckedThrowingContinuation { continuation in
                 kakao.accessTokenInfo { accessToken, error in
                     if let error {

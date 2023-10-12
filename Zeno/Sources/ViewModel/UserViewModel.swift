@@ -19,6 +19,8 @@ final class UserViewModel: ObservableObject {
     /// 로그인여부(상태)
     @Published var signStatus: SignStatus = .none
     
+    @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
+    
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
@@ -128,7 +130,7 @@ final class UserViewModel: ObservableObject {
     func createUser(email: String,
                     passwrod: String,
                     name: String,
-                    gender: String,
+                    gender: Gender,
                     description: String,
                     imageURL: String
     ) async throws {
@@ -153,22 +155,29 @@ final class UserViewModel: ObservableObject {
             throw error
         }
     }
+    
     /// 이메일 회원가입 정보 등록하기
     @MainActor
     func uploadUserData(user: User) async {
         self.currentUser = user
-        try? await firebaseManager.create(data: user)
+        print("🦕유저: \(user)")
+        do {
+            try await firebaseManager.create(data: user)
+        } catch {
+            print("🦕creatUser에러: \(error.localizedDescription)")
+        }
     }
     
     /// 유저 데이터 가져오기
     @MainActor
     func loadUserData() async throws {
         self.userSession = Auth.auth().currentUser
+        print("🦕Auth.currentUser: \(String(describing: userSession))")
         guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
-        print("UID = \(currentUid)")
+        print("🦕UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
         if let currentUser {
-            print("🦕현재 로그인된 유저: \(currentUser)")
+            print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
         } else {
             print("🦕현재 로그인된 유저 없음")
         }
@@ -319,13 +328,45 @@ final class UserViewModel: ObservableObject {
     func deleteUser() async {
         do {
             if let currentUser {
-                try await firebaseManager.delete(data: currentUser)
+                // 파베인증삭제 -> user컬렉션 문서 삭제 -> 로그아웃with 카카오토큰삭제 -> 유저디폴트 삭제 ->
                 try await Auth.auth().currentUser?.delete()
+                print("🦕회원탈퇴 성공. 1회차")
+                try? await firebaseManager.delete(data: currentUser)
+                print("🦕User데이터Delete 성공.")
                 await self.logoutWithKakao()
+                print("🦕카카오 토큰 삭제")
+                UserDefaults.standard.removeObject(forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단여부 유저디폴트 삭제
+
             }
-        } catch {
-            print("🦕로그아웃 오류 : \(error.localizedDescription)")
-            return
+        } catch let error as NSError {
+            print("🦕로그아웃 오류: \(error.localizedDescription)")
+            
+            if AuthErrorCode.Code(rawValue: error.code) == .requiresRecentLogin {
+                let result = await KakaoAuthService.shared.fetchUserInfo()
+                switch result {
+                case .success(let (user, _)):
+                    if let user {
+                        let credential = EmailAuthProvider.credential(withEmail: user.kakaoAccount?.email ?? "",
+                                                                      password: String(describing: user.id))
+                        do {
+                            if let currentUser {
+                                try await Auth.auth().currentUser?.reauthenticate(with: credential) // 재인증
+                                try? await Auth.auth().currentUser?.delete()
+                                print("🦕회원탈퇴 성공. 2회차")
+                                try? await firebaseManager.delete(data: currentUser)
+                                print("🦕User데이터Delete 성공. 2회차")
+                                await self.logoutWithKakao()
+                                print("🦕카카오 토큰 삭제 2회차")
+                                UserDefaults.standard.removeObject(forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단여부 유저디폴트 삭제
+                            }
+                        } catch {
+                            print("🦕재인증실패 : \(error.localizedDescription)")
+                        }
+                    }
+                case .failure(let err):
+                    print("🦕카카오유저값 못가져옴 :\(err.localizedDescription)")
+                }
+            }
         }
     }
     
