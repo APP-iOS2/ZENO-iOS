@@ -8,7 +8,7 @@
 
 import StoreKit
 
-final class IAPStore: ObservableObject {
+class IAPStore: ObservableObject {
     /// App store conncect에서 생성하는 제품을 식별하는 ID 배열, 추후에 메가폰 적용
     private var productIDs = ["initialCheck", "megaphone"]
     @Published var products = [Product]()

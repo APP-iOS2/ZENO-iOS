@@ -6,9 +6,9 @@
 ////  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 ////
 //
-//import Foundation
+// import Foundation
 //
-//final class CommRepository2: Reducer {
+// final class CommRepository2: Reducer {
 //    struct State {
 //        var currentUser: User?
 //        var allComm: [Community]
@@ -49,4 +49,4 @@
 //            return user.commInfoList.contains(where: { $0.id == comm.id })
 //        }
 //    }
-//}
+// }

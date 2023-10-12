@@ -35,3 +35,15 @@ extension Color {
 		)
 	}
 }
+extension Color: Codable {
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.singleValueContainer()
+        let colorString = try container.decode(String.self)
+        self.init(colorString) // Assuming you have a function to convert a hex string to Color
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.description)
+    }
+}

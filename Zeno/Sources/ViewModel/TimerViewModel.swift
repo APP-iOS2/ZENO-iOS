@@ -8,7 +8,7 @@
 
 import Foundation
 
-class TimerViewModel: ObservableObject {
+final class TimerViewModel: ObservableObject {
     @Published var timeRemaining: String = ""
     @Published var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Published var futureData: Date? // Optional로 선언
