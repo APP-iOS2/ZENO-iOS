@@ -20,6 +20,8 @@ struct AlarmFrontCardView: View {
                 Text("초성을 확인하고 싶다면 ?")
                 Text("제노를 눌러주세요")
             }
+            .bold()
+            .foregroundColor(Color.white)
         }
         .background(
             RoundedRectangle(cornerRadius: 10)
