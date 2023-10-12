@@ -222,7 +222,6 @@ struct CommMainView: View {
 				.foregroundColor(.primary)
             }
         }
-		
     }
     
     /// 햄버거 툴바아이템
@@ -244,6 +243,9 @@ struct HomeMainView_Previews: PreviewProvider {
 		/*HomeMainView()*/
 		TabBarView()
 			.environmentObject(UserViewModel(currentUser: .dummy[0]))
-			.environmentObject(CommViewModel())
+            .environmentObject(CommViewModel())
+            .environmentObject(ZenoViewModel())
+            .environmentObject(AlarmViewModel())
+			.environmentObject(MypageViewModel())
 	}
 }

@@ -116,7 +116,7 @@ struct CommSideBarView: View {
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
-            .background(Color.purple.opacity(0.2))
+            .background(Color.purple2.opacity(0.4))
         }
         .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
