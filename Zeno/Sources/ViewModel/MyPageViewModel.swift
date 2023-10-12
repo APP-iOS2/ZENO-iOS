@@ -23,8 +23,9 @@ final class MypageViewModel: ObservableObject {
     /// user의 전체 친구 id값
     @Published var friendIDList: [User.ID]?
     let db = Firestore.firestore()
+    @Published var commArray: [Community] = []
     
-    /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
+    /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)1
     func userGroupIDList() {
         if let currentUser = userSession?.uid {
             print("❤️‍🩹❤️‍🩹❤️‍🩹❤️‍🩹\(currentUser)")
@@ -59,31 +60,6 @@ final class MypageViewModel: ObservableObject {
     }
     
     /// user의 모든 그룹의 모든 친구 id값을 가져올 수 있는 함수
-//    func userFriendIDList() {
-//        if let currentUser = userSession?.uid {
-//            db.collection("User").document(currentUser).getDocument { document, error in
-//                if let document = document, document.exists {
-//                    let data = document.data()
-//                    do {
-//                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-//                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-//                        /// user의 commInfoList 구조체 정보가 담김
-//                        self.groupList = user.commInfoList
-//                        dump("🛜\(self.groupList)")
-//                        self.groupIDList = self.groupList?.compactMap { $0.id }
-//                        self.friendIDList = self.groupList?.flatMap{ $0.buddyList }
-//                        dump("🛜\(self.friendIDList)")
-//                    } catch {
-//                        print("json parsing Error \(error.localizedDescription)")
-//                    }
-//                } else {
-//                    print("firebase document 존재 오류")
-//                }
-//            }
-//        }
-//    }
-    
-    ///어싱크 수정버전
     @MainActor
     func userFriendIDList() async -> Bool {
         do {
@@ -135,12 +111,32 @@ final class MypageViewModel: ObservableObject {
         self.allComm = communities
 //        filterJoinedComm()
     }
-    /// db에서 fetch한 모든 커뮤니티 중 currentUser가 속한 커뮤니티를 찾아 joinedComm을 업데이트함
-//    func filterJoinedComm() {
-//        guard let currentUser else { return }
-//        let commIDs = currentUser.commInfoList.map { $0.id }
-//        let communities = allComm.filter { commIDs.contains($0.id) }
-//        self.joinedComm = communities
-//    }
+    /// 파베유저정보 Fetch
+    func fetchUser(withUid uid: String) async throws -> User {
+        let result = await firebaseManager.read(type: User.self, id: uid)
+        switch result {
+        case .success(let success):
+            return success
+        case .failure(let error):
+            throw error
+        }
+    }
+    
+    // MARK: 제노 뷰 모델로 옮길 예정
+    /// 친구 id 배열로  친구 이름 배열 받아오는 함수
+    func IDArrayToNameArray(idArray: [String]) async -> [String] {
+        var resultArray: [String] = []
+        do {
+            for index in 0..<idArray.count {
+                let result = try await fetchUser(withUid: idArray[index])
+                resultArray.append(result.name)
+            }
+        } catch {
+            print(#function + "fetch 유저 실패")
+            return []
+        }
+        return resultArray
+    }
+    
     
 }
