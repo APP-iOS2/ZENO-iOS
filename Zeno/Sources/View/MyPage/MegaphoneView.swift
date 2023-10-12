@@ -14,16 +14,16 @@ struct MegaphoneView: View {
     var body: some View {
         HStack {
             Image(systemName: "speaker.wave.2.fill")
-                .font(.system(size: 30))
+                .font(.system(size: 25))
                 .foregroundColor(.red)
                 .fontWeight(.bold)
             Text("확성기가 \(mypageViewModel.userInfo?.megaphone ?? 0)회 남았어요.")
                 .foregroundColor(.white)
-                .font(.system(size: 20))
+                .font(.system(size: 18))
         }
 //        .frame(width: UIScreen.main.bounds.width, height: 60)
         .frame(maxWidth: .infinity)
-        .frame(height: 80)
+        .frame(height: 75)
         .background(.black)
     }
 }

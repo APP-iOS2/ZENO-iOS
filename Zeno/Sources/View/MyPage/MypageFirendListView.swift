@@ -20,7 +20,7 @@ struct MypageFriendListView: View {
     @State private var selectedGroupID = ""
     
     var body: some View {
-        VStack(alignment: .trailing) {
+        VStack(alignment: .trailing, spacing: 0) {
             Picker("그룹선택", selection: $selectedGroup) {
                 Text("전체").tag("all")
                 ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
@@ -28,7 +28,7 @@ struct MypageFriendListView: View {
                         .tag(mypageViewModel.commArray[group].id)
                 }
             }
-            .background(.green)
+            .font(.system(size: 12))
             .tint(.black)
             .onChange(of: selectedGroup) { newValue in
                 self.selectedGroupID = newValue
@@ -55,28 +55,38 @@ struct MypageFriendListView: View {
                                     }
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                                    .padding()
+                                    .frame(width: 70, height: 70)
+//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .clipShape(Circle())
+                                    .padding(8)
                             } else {
-                                KFImage(URL(string: "https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg"))
+                                Image("ZenoIcon")
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                                    .padding()
+                                    .frame(width: 70, height: 70)
+//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .clipShape(Circle())
+                                    .padding(8)
                             }
-                            VStack(alignment: .leading) {
+                            VStack(alignment: .leading, spacing: 20) {
                                 Text(friendInfo.name)
-                                    .background(.red)
+                                    .font(.system(size: 15))
+//                                    .background(.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 Text(friendInfo.description)
-                                    .background(.yellow)
+                                    .font(.system(size: 13))
+//                                    .background(.yellow)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .foregroundColor(.black)
-                            .background(.blue)
+                            .frame(maxWidth: .infinity)
+//                            .background(.blue)
                             Spacer()
                         }
-                        .background(.purple)
+//                        .background(.purple)
+//                        .padding(5)
+//                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.7))
+                        Divider()
                     }
                 }
             }

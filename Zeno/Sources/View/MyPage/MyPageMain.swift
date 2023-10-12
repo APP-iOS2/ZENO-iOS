@@ -55,25 +55,28 @@ struct MyPageMain: View {
                                 .modifier(TextModifier())
                         }
                         
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text(mypageViewModel.userInfo?.name ?? "이름")
-                                    .font(.system(.title3))
+                        VStack(alignment: .leading, spacing: 15) {
+                            HStack(spacing: 5) {
+                                Text(mypageViewModel.userInfo?.name ?? "홍길동")
+                                    .font(.system(.title2))
                                     .fontWeight(.semibold)
                                 
                                 NavigationLink {
                                     UserProfileEdit()
                                 } label: {
-                                    Image(systemName: "greaterthan")
+                                    Image(systemName: "chevron.right")
                                 }
                             }
-                            Text(mypageViewModel.userInfo?.description ?? " ")
+                            Text(mypageViewModel.userInfo?.description ?? "안녕하세요. 홍길동입니다.")
+                                .font(.system(size: 18))
                         }
                         Spacer()
                     }
                     .foregroundColor(.black)
                     /// 유저 재화 정보 뷰
                     UserMoneyView()
+                        .frame(minHeight: UIScreen.main.bounds.height/9)
+
                     /// 재화정보 스크롤뷰
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 0) {
@@ -94,7 +97,6 @@ struct MyPageMain: View {
                         stopTimer()
                     }
                     GroupSelectView()
-                        .foregroundColor(.black)
                 }
             }
             .task {
@@ -102,7 +104,7 @@ struct MyPageMain: View {
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)
-            .navigationTitle("마이제노")
+            .navigationTitle("마이페이지")
             .toolbar {
                 ToolbarItem {
                     NavigationLink {
@@ -114,7 +116,7 @@ struct MyPageMain: View {
                     }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)            
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -132,7 +134,7 @@ struct TextModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .scaledToFill()
-            .frame(width: 100, height: 100)
+            .frame(width: 120, height: 120)
             .clipShape(RoundedRectangle(cornerRadius: 30))
             .padding()
     }

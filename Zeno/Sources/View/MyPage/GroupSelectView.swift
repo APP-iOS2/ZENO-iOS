@@ -32,8 +32,8 @@ struct GroupSelectView: View {
                                     Text("\(choiced.rawValue)")
                                         .frame(minWidth: UIScreen.main.bounds.width / 2)
                                 }
-                                .frame(height: 50)
-                                .font(.system(size: 17, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
+                                .frame(height: 40)
+                                .font(.system(size: 15, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
                                 .foregroundColor(.primary)
                                 
                                 if choiced.rawValue == userSelected.rawValue {
@@ -48,9 +48,9 @@ struct GroupSelectView: View {
                             }
                         }
                     }
-                    .overlay(
-                        Divider().offset(x: 0, y: 30)
-                    )
+//                    .overlay(
+//                        Divider().offset(x: 0, y: 30)
+//                    )
                 }
                 Spacer()
                 
