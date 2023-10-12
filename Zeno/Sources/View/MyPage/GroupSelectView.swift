@@ -14,12 +14,12 @@ enum UserChoice: String, CaseIterable {
 }
 
 struct GroupSelectView: View {
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
     @State var userSelected: UserChoice = .firends
-    private var testData = ["박서연", "신우진", "김하은", "김건섭", "원강묵"]
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(alignment: .trailing) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(UserChoice.allCases, id: \.self) { choiced in
@@ -32,8 +32,8 @@ struct GroupSelectView: View {
                                     Text("\(choiced.rawValue)")
                                         .frame(minWidth: UIScreen.main.bounds.width / 2)
                                 }
-                                .frame(height: 50)
-                                .font(.system(size: 17, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
+                                .frame(height: 40)
+                                .font(.system(size: 15, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
                                 .foregroundColor(.primary)
                                 
                                 if choiced.rawValue == userSelected.rawValue {
@@ -48,14 +48,15 @@ struct GroupSelectView: View {
                             }
                         }
                     }
-                    .overlay(
-                        Divider().offset(x: 0, y: 30)
-                    )
+//                    .overlay(
+//                        Divider().offset(x: 0, y: 30)
+//                    )
                 }
                 Spacer()
                 
                 if userSelected.rawValue == "친구 목록" {
                     MypageFriendListView()
+                        .environmentObject(mypageViewModel)
                 }
                 Spacer()
             }
@@ -65,5 +66,6 @@ struct GroupSelectView: View {
 struct GroupSelectView_Previews: PreviewProvider {
     static var previews: some View {
         GroupSelectView()
+            .environmentObject(MypageViewModel())
     }
 }

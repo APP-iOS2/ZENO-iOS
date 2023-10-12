@@ -7,99 +7,101 @@
 //
 
 import SwiftUI
-
-enum GroupName: String, CaseIterable, Hashable {
-    case all = "전체"
-    case likelion = "멋쟁이 사자처럼"
-    case yagom = "야곰"
-    case codings = "코딩스파르타"
-    case zenoTest = "제노그룹"
-}
-
-struct TestPerson: Hashable, Identifiable {
-    var id: UUID = UUID()
-    var name: String
-    var description: String
-    var image: UIImage
-    var groupinfo: String
-}
+import Firebase
+import FirebaseAuth
+import FirebaseFirestoreSwift
+import Kingfisher
 
 struct MypageFriendListView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
-    
-    private var testData = [
-        TestPerson(name: "박서연", description: "안농하세여. 사과 러버에여.", image: UIImage(named: "Sample") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),
-        TestPerson(name: "원강묵", description: "나는야 포비, 원강묵", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.likelion.rawValue),
-        TestPerson(name: "신우진", description: "에디를 닮은 INFP", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.yagom.rawValue),
-        TestPerson(name: "김건섭", description: "하얀 멍뭉이 닮은 건섭", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.zenoTest.rawValue),
-        TestPerson(name: "함지수", description: "라디오 앵커 지수님", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.codings.rawValue),
-        TestPerson(name: "유하은", description: "완전힙 그자체 하은", image: UIImage(named: "profile") ?? UIImage(), groupinfo: GroupName.zenoTest.rawValue)
-    ]
-    
-    @State private var selectedGroup = GroupName.all.rawValue
+    let db = Firestore.firestore()
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
+    @State private var selectedGroup = "all"
+    /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
+    @State private var selectedGroupID = ""
     
     var body: some View {
-        VStack(alignment: .trailing) {
-            Picker("피커테스트", selection: $selectedGroup) {
-                ForEach(GroupName.allCases, id: \.self) { group in
-                    Text(group.rawValue)
-                        .tag(group.rawValue)
+        VStack(alignment: .trailing, spacing: 0) {
+            Picker("그룹선택", selection: $selectedGroup) {
+                Text("전체").tag("all")
+                ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
+                    Text(mypageViewModel.commArray[group].name)
+                        .tag(mypageViewModel.commArray[group].id)
                 }
-            }.tint(.black)
-
-            VStack(alignment: .leading) {
-                ForEach(testData) { friend in
-                    if friend.groupinfo == selectedGroup {
-                        HStack(spacing: 10) {
-                            Image(uiImage: friend.image)
-                                .resizable()
-                                .frame(width: 60, height: 60)
-                                .scaledToFit()
-//                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .clipShape(Circle())
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text(friend.name)
-                                    .font(.system(size: 20))
-                                    .fontWeight(.semibold)
-                                Text(friend.description)
-                            }
-                            Spacer()
-                        }
-                    } else if selectedGroup == GroupName.all.rawValue {
-                        HStack(spacing: 10) {
-                            Image(uiImage: friend.image)
-                                .resizable()
-                                .frame(width: 60, height: 60)
-                                .scaledToFit()
-//                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .clipShape(Circle())
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text(friend.name)
-                                    .font(.system(size: 20))
-                                    .fontWeight(.semibold)
-                                Text(friend.description)
-                            }
-                            Spacer()
-                        }
+            }
+            .font(.system(size: 12))
+            .tint(.black)
+            .onChange(of: selectedGroup) { newValue in
+                self.selectedGroupID = newValue
+                mypageViewModel.friendInfo = []
+                mypageViewModel.allMyPageFriendInfo = []
+                if newValue == "all" {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
                     }
                 }
-//                ForEach(filteredData, id: \.self) { friend in
-//                    HStack(spacing: 10) {
-//                        Image(uiImage: friend.image)
-//                            .resizable()
-//                            .frame(width: 80, height: 80)
-//                            .scaledToFit()
-//                            .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        VStack(alignment: .leading, spacing: 10) {
-//                            Text(friend.name)
-//                                .font(.system(size: 20))
-//                                .fontWeight(.semibold)
-//                            Text(friend.description)
-//                        }
-//                    }
-//                }
+                mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+            }
+            
+            VStack {
+                ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
+                    if let friendInfo = friend {
+                        HStack {
+                            if let imageURLString = friendInfo.imageURL,
+                               let imageURL = URL(string: imageURLString) {
+                                KFImage(imageURL)
+                                    .placeholder {
+                                        ProgressView()
+                                    }
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 70, height: 70)
+//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .clipShape(Circle())
+                                    .padding(8)
+                            } else {
+                                Image("ZenoIcon")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 70, height: 70)
+//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                                    .clipShape(Circle())
+                                    .padding(8)
+                            }
+                            VStack(alignment: .leading, spacing: 20) {
+                                Text(friendInfo.name)
+                                    .font(.system(size: 15))
+//                                    .background(.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(friendInfo.description)
+                                    .font(.system(size: 13))
+//                                    .background(.yellow)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+//                            .background(.blue)
+                            Spacer()
+                        }
+//                        .background(.purple)
+//                        .padding(5)
+//                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.7))
+                        Divider()
+                    }
+                }
             }
             .padding(.horizontal, 20)
+            .task {
+                /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
+                if await mypageViewModel.userFriendIDList() {
+                    print("💡 [MyPage] 유저 친구값 가져오기 성공")
+                    guard let groupFriendID = mypageViewModel.friendIDList else { return }
+                    mypageViewModel.groupFirendList = groupFriendID
+                    await mypageViewModel.getAllFriends()
+                    mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+                }
+                await mypageViewModel.getCommunityInfo() // 유저가 속한 전체 그룹의 이가져오는 함수 실행
+            }
             Spacer()
         }
     }
@@ -108,5 +110,19 @@ struct MypageFriendListView: View {
 struct MypageFirendListView_Previews: PreviewProvider {
     static var previews: some View {
         MypageFriendListView()
+            .environmentObject(MypageViewModel())
+    }
+}
+
+// 중복 Array 제거하기
+extension Array where Element: Equatable {
+    func removeDuplicates() -> [Element] {
+        var result: [Element] = []
+        for item in self {
+            if !result.contains(item) {
+                result.append(item)
+            }
+        }
+        return result
     }
 }

@@ -125,7 +125,7 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    /// 이메일 회원가입
+    /// 이메일 회원가입 ->  카카오가입할때
     @MainActor
     func createUser(email: String,
                     passwrod: String,

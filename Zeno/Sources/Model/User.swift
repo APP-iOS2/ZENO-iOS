@@ -45,11 +45,17 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
 }
 
 /// 성별 정보 열거형(내부용)
-enum Gender: String, Codable {
-    /// 남자
-    case male
-    /// 여자
-    case female
+enum Gender: Codable {
+  case male, female
+
+  var toString: String {
+    switch self {
+      case .male:
+        return "male"
+      case .female:
+        return "female"
+    }
+  }
 }
 
 #if DEBUG
