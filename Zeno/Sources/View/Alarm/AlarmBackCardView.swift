@@ -34,7 +34,6 @@ struct AlarmBackCardView: View {
                             .resizable()
                             .frame(width: .screenWidth * 0.3, height: .screenWidth * 0.3)
                             .padding(.bottom, 20)
-                        //                                .opacity(0.8)
                         
                         VStack(spacing: 20) {
                             Text("\(selectAlarm.receiveUserName)님을")
@@ -97,7 +96,7 @@ struct AlarmBackCardView: View {
                     } label: {
                         Text("다시 확인")
                             .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                            .foregroundStyle(.black)
+                            .foregroundColor(Color.primary)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
                                     .stroke(Color.mainColor, lineWidth: 1)

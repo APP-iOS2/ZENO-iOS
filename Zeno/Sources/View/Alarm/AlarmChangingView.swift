@@ -16,6 +16,7 @@ struct AlarmChangingView: View {
     
     @State private var isNudgingOn: Bool = false
     @State private var isCheckInitialTwice: Bool = false
+    @State private var backAlert: Bool = false
     @State private var isFlipped = false
     
     let selectAlarm: Alarm
@@ -39,6 +40,31 @@ struct AlarmChangingView: View {
                     isFlipped = true
                 }
             }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    backAlert = true
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                        Text("Back")
+                    }
+                }
+            }
+        }
+        .alert(isPresented: $backAlert) {
+            let firstButton = Alert.Button.destructive(Text("취소")) {
+                backAlert = false
+            }
+            let secondButton = Alert.Button.default(Text("돌아가기")) {
+                dismiss()
+                backAlert = false
+            }
+            return Alert(title: Text("이 화면을 나가면 다시 들어올 수 없습니다."),
+                         message: Text("돌아가시겠습니까 ?"),
+                         primaryButton: firstButton, secondaryButton: secondButton)
         }
     }
 }

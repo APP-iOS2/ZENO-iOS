@@ -15,34 +15,20 @@ struct PurchaseView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                Rectangle()
-                    .fill(
-                        AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]),
-                                        center: .topLeading,
-                                        angle: .degrees(180 + 55)))
-                    .frame(width: .screenWidth, height: .screenHeight * 0.4)
-                    .offset(y: -350)
-                VStack(alignment: .center, spacing: 10) {
-                    Image(systemName: "heart")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                    Text("See who likes you!")
-                        .bold()
-                        .font(.title)
-                    Text("View the members")
-                    Text("that want to connect with you")
-                }
-                .foregroundColor(.white)
-                .offset(y: -280)
-                
-                VStack {
-                    ForEach(iAPVM.products) { product in
-                        PurchaseCellView(
+            VStack {
+                ForEach(iAPVM.products, id: \.self) { product in
+                    ZStack {
+                        // TODO: 임시세요 !!
+                        Image(product.id == "initialCheck" ? "removedBG_Zeno" : "caution")
+                            .resizable()
+                            .frame(width: .screenWidth * 0.2, height: .screenWidth * 0.2)
+                            .offset(x: 90, y: -80)
+                        
+                        PurchaseCellSndView(
                             itemQuantity: product.id == "initialCheck" ? 10 : 1,
                             itemTitle: product.id == "initialCheck" ? "초성 확인권" : "메가폰",
-                            itemDescription: product.id == "initialCheck" ? "당신을 제노한 사람의 초성이 궁금할 땐?" : "내 마음을 들어내고 싶을 땐?\t\t\t  ",
-                            itemFeature1: product.id == "initialCheck" ? "🔎 초성 확인\tex) XㅈX" : "📢 문구,, \nex) 누구누구야! 우리 어디서 만나자 !",
+                            itemDescription: product.id == "initialCheck" ? "당신을 제노한 사람의 초성이 궁금할 땐?" : "내 마음을 들어내고 싶을 땐?",
+                            itemFeature1: product.id == "initialCheck" ? "🔎 초성 확인\tex) XㅈX" : "📢 문구,, \nex) 누구누구야! 그때 설렛다",
                             itemFeature2: product.id == "initialCheck" ? "🤏🏻 찌르기" : "",
                             itemPrice: product.displayPrice
                         ) {
@@ -70,9 +56,8 @@ struct PurchaseView: View {
                         }
                     }
                 }
-                .padding(.top, 65)
             }
-            .edgesIgnoringSafeArea(.all)
+            .padding(.top, 65)
         }
     }
 }
