@@ -62,6 +62,7 @@ struct AlarmListCellView: View {
                         .frame(width: 40, height: 40, alignment: .topTrailing)
                 }
             }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
             .padding(.bottom, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
@@ -72,9 +73,9 @@ struct AlarmListCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
-                        .bold()
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
-                        .font(.subheadline)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
