@@ -56,23 +56,32 @@ enum MainTab: Int, CaseIterable, Identifiable {
 
 struct TabBarView: View {
     @AppStorage("fcmToken") var fcmToken: String = ""
-    @State private var selectedTabIndex = 0
+    @State var selected = MainTab.home
     @EnvironmentObject private var userViewModel: UserViewModel
     @StateObject var alarmViewModel: AlarmViewModel = AlarmViewModel()
     @StateObject var iAPStore: IAPStore = IAPStore()
     
     var body: some View {
-        TabView(selection: $selectedTabIndex) {
+        TabView(selection: $selected) {
             ForEach(MainTab.allCases) { tab in
                 tab.view
-                    .tabItem {
-                        Image(systemName: tab.imageName)
-                        Text(tab.title)
-                    }
-                    .tag(tab.rawValue)
             }
-            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarBackground(.clear, for: .tabBar)
+            .toolbarBackground(.hidden, for: .tabBar)
 		}
+        .overlay {
+            VStack(alignment: .center) {
+                Spacer()
+                CustomTabView(selected: $selected)
+                    .frame(width: .screenWidth)
+            }
+        }
+        
+//        .toolbar {
+//            ToolbarItem(placement: .bottomBar) {
+//                CustomTabView(selected: $selected)
+//            }
+//        }
         .environmentObject(alarmViewModel)
         .environmentObject(iAPStore)
         .task {
@@ -87,8 +96,13 @@ struct TabBarView: View {
 
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
-        TabBarView()
-            .environmentObject(UserViewModel())
+        NavigationStack {
+            TabBarView()
+        }
+            .environmentObject(UserViewModel(currentUser: .dummy[0]))
             .environmentObject(CommViewModel())
+            .environmentObject(ZenoViewModel())
+            .environmentObject(AlarmViewModel())
+            .environmentObject(MypageViewModel())
     }
 }

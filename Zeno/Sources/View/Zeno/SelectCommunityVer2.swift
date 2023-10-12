@@ -37,9 +37,7 @@ struct SelectCommunityVer2: View {
                     ZStack {
                         LottieView(lottieFile: "wave")
                             .offset(y: -20)
-                        
-                        CardViewVer2(currentIndex: $currentIndex)
-                            .offset(y: -.screenHeight * 0.03)
+                        CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                             .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                             .onChange(of: currentIndex) { _ in
                                 withAnimation {
@@ -47,35 +45,56 @@ struct SelectCommunityVer2: View {
                                 }
                             }
                     }
-                    .frame(height: .screenHeight * 0.35)
                 }
-                
-                commuityListView()
-                    .frame(height: .screenHeight * 0.3)
+                .zIndex(1)
+                .background(.background)
+                commuityListView
                     .background(.clear)
-                
-                Spacer()
-                
+                    .zIndex(0)
+            }
+            .overlay {
                 VStack {
-                    switch isPlay {
-                    case .success:
-                        NavigationLink {
-                            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community!, allMyFriends: allMyFriends)
-                        } label: {
-                            WideButton(buttonName: "START", isplay: true)
+                    Spacer()
+                    VStack {
+                        switch isPlay {
+                        case .success:
+                            NavigationLink {
+                                if let community {
+                                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community, allMyFriends: allMyFriends)
+                                }
+                            } label: {
+                                WideButton(buttonName: "START", isplay: true)
+                            }
+                        case .lessThanFour:
+                            WideButton(buttonName: "START", isplay: false)
+                                .disabled(isPlay != .success)
+                        case .notSelected:
+                            Text("그룹을 선택해주세요")
+                                .foregroundColor(.secondary)
+                            WideButton(buttonName: "START", isplay: false)
+                                .disabled(isPlay != .success)
                         }
-                    case .lessThanFour:
-                        Text("그룹 내 친구 수가 4명을 넘지 않습니다")
-                            .foregroundColor(.red)
-                            .offset(y: -20)
-                        WideButton(buttonName: "START", isplay: false)
-                            .disabled(isPlay != .success)
-                    case .notSelected:
-                        Text("그룹을 선택해주세요")
-                            .foregroundColor(.secondary)
-                            .offset(y: -20)
-                        WideButton(buttonName: "START", isplay: false)
-                            .disabled(isPlay != .success)
+                    }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                    .padding(.top, 10)
+                    .frame(width: .screenWidth)
+                    .background {
+                        Blur(style: .light)
+                            .opacity(0.8)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(
+                                        colors: [
+                                            .white
+                                                .opacity(0.5),
+                                            .white
+                                                .opacity(0.95)
+                                        ]
+                                    ),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
                     }
                 }
             }
@@ -121,59 +140,109 @@ struct SelectCommunityVer2: View {
         .navigationBarBackButtonHidden()
     }
     
-    func commuityListView() -> some View {
-        List(Array(commViewModel.joinedComm.indices), id: \.self) { index in
-            Button {
-                selected = commViewModel.joinedComm[index].id
-                community = commViewModel.joinedComm[index]
-                currentIndex = index
-//                Task {
-//                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
-//                }
-                if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
-                    isPlay = .success
-                } else {
-                    isPlay = .lessThanFour
+    var commuityListView: some View {
+        ScrollViewReader { proxy in
+            List {
+                Text("가라")
+                    .foregroundColor(.clear)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                ForEach(Array(commViewModel.joinedComm.indices), id: \.self) { index in
+                    Button {
+                        selected = commViewModel.joinedComm[index].id
+                        community = commViewModel.joinedComm[index]
+                        currentIndex = index
+                        //                Task {
+                        //                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
+                        //                }
+                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+                            isPlay = .success
+                        } else {
+                            isPlay = .lessThanFour
+                        }
+                        
+                        if useConfentti {
+                            counter += 1
+                            useConfentti = false
+                        }
+                    } label: {
+                        HStack {
+                            ZenoKFImageView(commViewModel.joinedComm[index])
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                                .padding(.trailing, 10)
+                            Text(commViewModel.joinedComm[index].name)
+                                .font(selected == commViewModel.joinedComm[index].id ?
+                                      ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 19) :
+                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                                .foregroundColor(.primary.opacity(0.7))
+                            
+                            Spacer()
+                            
+                            Image(systemName: "checkmark")
+                                .opacity(selected == commViewModel.joinedComm[index].id ? 1 : 0)
+                                .padding(.trailing, .screenWidth * 0.05)
+                        }
+                    }
+                    .frame(width: .screenWidth * 0.9)
+                    .listRowBackground(EmptyView())
+                    .id(commViewModel.joinedComm[index].id)
                 }
-                
-                if useConfentti {
-                    counter += 1
-                    useConfentti = false
-                }
-            } label: {
-                HStack {
-                    ZenoKFImageView(commViewModel.joinedComm[index])
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                        .padding(.trailing, 10)
-                    Text(commViewModel.joinedComm[index].name)
-                        .font(selected == commViewModel.joinedComm[index].id ? ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 17) : ZenoFontFamily.NanumBarunGothicOTF.regular.swiftUIFont(size: 15))
-                        .foregroundColor(.primary.opacity(0.7))
-                    
-                    Spacer()
-                    
-                    Image(systemName: "checkmark")
-                        .opacity(selected == commViewModel.joinedComm[index].id ? 1 : 0)
-                        .offset(x: 31)
-                }
-                .frame(width: .screenWidth * 0.8)
+                Spacer()
+                    .frame(height: 70)
+                    .listRowSeparator(.hidden)
             }
-            .listRowBackground(EmptyView())
+            .offset(y: -50)
+            .overlay {
+                HStack {
+                    Spacer()
+                    Color.primary
+                        .colorInvert()
+                        .frame(width: .screenWidth * 0.055)
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .onChange(of: currentIndex) { newValue in
+                withAnimation {
+                    proxy.scrollTo(commViewModel.joinedComm[newValue].id, anchor: .center)
+                }
+            }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
     }
 }
 
 struct SelectCommunityVer2_Previews: PreviewProvider {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            TabBarView(selected: .zeno)
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                        }
+                    }
+                }
+        }
+    }
     
     static var previews: some View {
-        SelectCommunityVer2()
-            .environmentObject(UserViewModel())
-            .environmentObject(CommViewModel())
-            .onAppear {
-                UserViewModel.init(currentUser: User.fakeCurrentUser)
-            }
+        Preview()
     }
 }
