@@ -48,20 +48,12 @@ struct AlarmListCellView: View {
                         )
                 }
                 VStack(alignment: .leading) {
-<<<<<<< HEAD
                     Text("\(getCommunity.name)")
                     Text("\(alarm.sendUserGender.toString)")
                         .padding(.bottom, 1)
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")
                         .font(.caption)
-=======
-                    Text("\(getCommunity.name) . \(alarm.sendUserGender.toString)")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
-                        .padding(.bottom, 4)
-                    Text("3시간 전")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
->>>>>>> ace4846 ([Design] AlarmListCellView에서 전체적으로 폰트 한사이즈 낮췄습니다)
                         .foregroundStyle(.gray)
                 }
                 
