@@ -44,7 +44,7 @@ struct AlarmView: View {
                             }
                         }
                         .padding()
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
@@ -58,6 +58,9 @@ struct AlarmView: View {
                             }
                             .presentationDetents([.fraction(0.75)])
                         })
+                    }
+                    .onTapGesture {
+                        selectAlarm = nil
                     }
                     .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                     .cashAlert(

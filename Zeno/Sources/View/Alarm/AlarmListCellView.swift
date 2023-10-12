@@ -33,7 +33,7 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    .black, lineWidth: 1
                                 )
                         )
                 } else {
@@ -43,14 +43,16 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    .black, lineWidth: 1
                                 )
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . \(alarm.sendUserGender.toString)")
-                        .padding(.bottom, 4)
-                    Text("3시간 전")
+                    Text("\(getCommunity.name)")
+                    Text("\(alarm.sendUserGender)")
+                        .padding(.bottom, 1)
+                        .font(.caption2)
+                    Text("\(alarm.createdAt.theOtherDay)")
                         .font(.caption)
                         .foregroundStyle(.gray)
                 }
@@ -73,6 +75,7 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
                         .bold()
+                        .padding(.bottom, 2)
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
                         .font(.subheadline)
                 }
