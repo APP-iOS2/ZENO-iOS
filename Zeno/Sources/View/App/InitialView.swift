@@ -3,7 +3,7 @@ import SwiftUI
 struct InitialView: View {
     //    @StateObject var contentViewModel = ContentViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
-    @State var isLoading: Bool = true
+    @State private var isLoading: Bool = true
     @State private var isNickChangeSheet = false
     @AppStorage("nickNameChanged") private var isnickNameChanged = false // 닉변 안했으면 하게 한다.
     
@@ -44,7 +44,7 @@ struct InitialView: View {
                     isLoading = false
                 }
                 if !isnickNameChanged {
-                    isNickChangeSheet = false
+                    isNickChangeSheet = true
                 }
             })
         }

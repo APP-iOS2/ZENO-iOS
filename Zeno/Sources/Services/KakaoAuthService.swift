@@ -126,7 +126,7 @@ extension KakaoAuthService {
             // 카카오톡 계정으로 로그인 (카톡앱실행 X)
             return try await withCheckedThrowingContinuation { continuation in
                 // 로그인 힌트부분에 내가 로그인 했었던 이메일 세팅하기 -> UserDefault값 활용.
-                kakao.loginWithKakaoAccount(prompts: [.SelectAccount], loginHint: "swjtwin@nate.com") {(oauthToken, error) in
+                kakao.loginWithKakaoAccount {(oauthToken, error) in
                     if let error {
                         print("🐹카톡계정로그인 에러 \(error.localizedDescription)")
                         continuation.resume(throwing: error)
