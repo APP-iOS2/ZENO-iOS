@@ -22,8 +22,6 @@ struct CommStoryMainView: View {
                 VStack {
                     ZStack {
                         Rectangle()
-                            // TODO: 강사님께도 여쭤보기
-                            //.offset(x: -30)
                             .cornerRadius(10)
                             .foregroundColor(.gray3)
                             .frame(width: 80, height: 98)

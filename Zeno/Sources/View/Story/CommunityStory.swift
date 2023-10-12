@@ -23,5 +23,5 @@ struct Story: Identifiable, FirebaseAvailable, Codable {
     /// 익명인지 아닌지
     let anonymous: Bool
     /// 작성날짜
-    let createdAt: Double = Date().timeIntervalSince1970
+    var createdAt: Double = Date().timeIntervalSince1970
 }
