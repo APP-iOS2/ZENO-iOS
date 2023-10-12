@@ -20,7 +20,7 @@ struct AlarmBackCardView: View {
         VStack {
             // TODO: - 성별표시
             RoundedRectangle(cornerRadius: 10)
-                .stroke(selectAlarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 3)
+                .stroke(selectAlarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 3)
                 .overlay(
                     VStack(alignment: .center, spacing: 10) {
                         VStack(spacing: 20) {
@@ -62,7 +62,7 @@ struct AlarmBackCardView_Previews: PreviewProvider {
                           selectAlarm: Alarm(sendUserID: "aa",
                                              sendUserName: "강동원참치",
                                              sendUserFcmToken: "sendToken",
-                                             sendUserGender: "남자",
+                                             sendUserGender: .male,
                                              receiveUserID: "bb",
                                              receiveUserName: "함지수",
                                              receiveUserFcmToken: "token",

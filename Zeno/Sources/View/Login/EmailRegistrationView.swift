@@ -21,24 +21,24 @@ struct EmailRegistrationView: View {
                 .modifier(LoginTextFieldModifier())
             TextField("이름을 입력해주세요.", text: $emailLoginViewModel.registrationName)
                 .modifier(LoginTextFieldModifier())
-            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
-                .modifier(LoginTextFieldModifier())
+//            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
+//                .modifier(LoginTextFieldModifier())
             TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
                 .modifier(LoginTextFieldModifier())
             Button {
-//                Task {
-//                    do {
-//                        try await userViewModel.createUser(
-//                            email: emailLoginViewModel.registrationEmail,
-//                            passwrod: emailLoginViewModel.registrationPassword,
-//                            name: emailLoginViewModel.registrationName,
-//                            gender: emailLoginViewModel.registrationGender,
-//                            description: emailLoginViewModel.registrationDescription,
-//                            imageURL: "")
-//                    } catch {
-//                        print("회원가입 실패 \(error.localizedDescription)")
-//                    }
-//                }
+                Task {
+                    do {
+                        try await userViewModel.createUser(
+                            email: emailLoginViewModel.registrationEmail,
+                            passwrod: emailLoginViewModel.registrationPassword,
+                            name: emailLoginViewModel.registrationName,
+                            gender: emailLoginViewModel.registrationGender,
+                            description: emailLoginViewModel.registrationDescription,
+                            imageURL: "")
+                    } catch {
+                        print("회원가입 실패 \(error.localizedDescription)")
+                    }
+                }
             } label: {
                 loginButtonLabel(title: "회원가입",
                                  tintColor: .white,

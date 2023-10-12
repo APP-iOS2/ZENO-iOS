@@ -41,13 +41,16 @@ extension UserViewModel {
                 print("🦕토큰여부 \(isTokened)")
                 if !isTokened {
                     do {
+                        // 1. https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg  // 빈거
+                        // 2. https://k.kakaocdn.net/dn/ciQMBt/btsycuaeWmV/lv5RtAsudfPkXl6u8rcmsK/img_640x640.jpg  // 뭔가 넣은거
+                        // 3. https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg  // 빈거
                         // 회원가입 후 바로 로그인.
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
-                                                  name: user.kakaoAccount?.profile?.nickname ?? "[none]",
-                                                  gender: user.kakaoAccount?.gender?.convertToLocalGender() ?? .none,
-                                                  description: user.kakaoAccount?.legalName ?? "",
-                                                  imageURL: user.kakaoAccount?.profile?.profileImageUrl?.absoluteString ?? "[none]")
+                                                  name: user.kakaoAccount?.profile?.nickname ?? "",
+                                                  gender: user.kakaoAccount?.gender?.convertToLocalGender() ?? .male,
+                                                  description: "",
+                                                  imageURL: user.kakaoAccount?.profile?.profileImageUrl?.absoluteString)
                         print("🦕회원가입 완료")
                         await self.login(email: user.kakaoAccount?.email ?? "",
                                          password: String(describing: user.id))

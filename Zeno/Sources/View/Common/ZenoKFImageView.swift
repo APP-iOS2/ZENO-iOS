@@ -36,9 +36,9 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
            let manAsset = ["man1", "man2"].randomElement(),
            let womanAsset = ["woman1", "woman2"].randomElement() {
             switch user.gender {
-            case "Male":
+            case .male:
                 return Image(manAsset)
-            case "Female":
+            case .female:
                 return Image(womanAsset)
             default:
                 return Image("ZenoIcon")

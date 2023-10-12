@@ -131,7 +131,7 @@ struct AlarmChangingView_Previews: PreviewProvider {
         AlarmChangingView(selectAlarm: Alarm(sendUserID: "aa",
                                              sendUserName: "강동원참치",
                                              sendUserFcmToken: "sendToken",
-                                             sendUserGender: "여자",
+                                             sendUserGender: .female,
                                              receiveUserID: "bb",
                                              receiveUserName: "함지수",
                                              receiveUserFcmToken: "token",

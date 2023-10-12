@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable {
+struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisible {
     var id: String = UUID().uuidString
     /// 이름
     var name: String
@@ -55,18 +55,15 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoSearchable 
 }
 
 /// 성별 정보 열거형(내부용)
-enum Gender: Codable {
+enum Gender: String, Codable {
     /// 남자
     case male
     /// 여자
     case female
-    /// 정체불명
-    case none
 }
 
 #if DEBUG
 extension User {
-
     static let dummy: [User] = [
         .init(name: "원강묵",
               gender: .male,

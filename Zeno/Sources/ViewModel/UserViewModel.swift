@@ -132,7 +132,7 @@ final class UserViewModel: ObservableObject {
                     name: String,
                     gender: Gender,
                     description: String,
-                    imageURL: String
+                    imageURL: String?
     ) async throws {
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: passwrod)

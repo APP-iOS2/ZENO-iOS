@@ -15,6 +15,8 @@ struct InitView: View {
     var body: some View {
         ZStack(alignment: .center) {
             Image("splashBackground")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
             ZStack {
                 LottieView(lottieFile: "bubbles")
             }
@@ -51,7 +53,6 @@ struct InitView: View {
             }
             .offset(y: 150)
         }
-        .ignoresSafeArea()
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 withAnimation(.easeIn(duration: 1)) {

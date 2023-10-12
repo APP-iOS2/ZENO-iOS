@@ -33,7 +33,7 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 } else {
@@ -43,12 +43,12 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == "여자" ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
                                 )
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . \(alarm.sendUserGender)")
+                    Text("\(getCommunity.name) . \(alarm.sendUserGender.rawValue)")
                         .padding(.bottom, 4)
                     Text("3시간 전")
                         .font(.caption)
@@ -95,7 +95,7 @@ struct AlarmListCellView: View {
 
 struct AlarmListCellView_Preview: PreviewProvider {
     static var previews: some View {
-        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
+        AlarmListCellView(selectAlarm: .constant(Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: .female, receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031)), alarm: Alarm(sendUserID: "aa", sendUserName: "aa", sendUserFcmToken: "sendToken", sendUserGender: .female, receiveUserID: "bb", receiveUserName: "bb", receiveUserFcmToken: "recieveToken", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "zeno", createdAt: 91842031))
             .environmentObject(CommViewModel())
     }
 }

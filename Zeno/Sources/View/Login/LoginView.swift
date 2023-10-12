@@ -16,6 +16,8 @@ struct LoginView: View {
         NavigationStack {
             ZStack {
                 Image("LoginBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
                 Image("ZenoPng")
                     .resizable()
                     .frame(width: 300, height: 300)

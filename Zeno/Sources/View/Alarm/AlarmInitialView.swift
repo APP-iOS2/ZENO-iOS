@@ -134,7 +134,7 @@ struct AlarmInitialView: View {
 
 struct AlarmInitialView_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", sendUserFcmToken: "sendToken", sendUserGender: "여자", receiveUserID: "bb", receiveUserName: "강동원참치", receiveUserFcmToken: "token", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "자꾸 눈이 마주치는 사람", createdAt: 91842031))
+        AlarmInitialView(selectAlarm: Alarm(sendUserID: "aa", sendUserName: "함지수", sendUserFcmToken: "sendToken", sendUserGender: .female, receiveUserID: "bb", receiveUserName: "강동원참치", receiveUserFcmToken: "token", communityID: "cc", showUserID: "1234", zenoID: "dd", zenoString: "자꾸 눈이 마주치는 사람", createdAt: 91842031))
             .environmentObject(AlarmViewModel())
             .environmentObject(UserViewModel())
     }

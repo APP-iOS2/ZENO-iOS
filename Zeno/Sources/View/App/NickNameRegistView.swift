@@ -17,7 +17,7 @@ struct NickNameRegistView: View {
     @State private var isNotHanguel: Bool = false
     @FocusState private var isTextFocused: Bool // ios 15이상에서만 동작
     private let textMaxCount: Int = 5
-    private var debouncer: Debouncer = .init(delay: 0.5)
+    private var debouncer: Debouncer = .init(delay: 1.0)
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

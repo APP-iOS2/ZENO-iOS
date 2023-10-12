@@ -27,11 +27,11 @@ struct InitialView: View {
                 launchScreenView.transition(.opacity).zIndex(1)
             }
         }
+        .edgesIgnoringSafeArea(.all)
         .onReceive(userViewModel.$isNickNameRegistViewPop, perform: { chg in
             print("🦕chg : \(chg.description)")
             if chg { isNickChangeSheet = true }
         })
-        .ignoresSafeArea()
         .onAppear {
             print("🦕sign : \(userViewModel.signStatus.rawValue)")
             print("🦕nick : \(isnickNameChanged.description)")
