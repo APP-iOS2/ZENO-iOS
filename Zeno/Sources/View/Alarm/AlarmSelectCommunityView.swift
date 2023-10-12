@@ -13,25 +13,36 @@ struct AlarmSelectCommunityView: View {
     @EnvironmentObject var communityViewModel: CommViewModel
     
     var body: some View {
-        VStack {
-            HStack {
-                Button(action: {
-                    selectedCommunityId = ""
-                }, label: {
-                    Text("전체")
-                })
-                .padding(.leading)
-                
-                ScrollView(.horizontal) {
-                    HStack(spacing: 4) {
-                        ForEach(communityViewModel.joinedComm) { community in
-                            AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
-                        }
+        HStack {
+            ScrollView(.horizontal) {
+                HStack(spacing: 4) {
+                    VStack {
+                        Image("All1")
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(
+                                        AngularGradient(gradient: Gradient(colors: [.red, .yellow, .purple, .red]), center: .center), lineWidth: 3
+                                    )
+                                    .opacity(selectedCommunityId.isEmpty ? 1 : 0)
+                            )
+                            .onTapGesture {
+                                selectedCommunityId = ""
+                            }
+                        Text("전체")
+                            .font(.footnote)
+                            .frame(width: 72)
+                    }
+                    ForEach(communityViewModel.joinedComm) { community in
+                        AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
                     }
                 }
             }
-            .padding(.vertical, -10)
         }
+        .padding(.vertical, -10)
+        .padding(.horizontal)
     }
 }
 
