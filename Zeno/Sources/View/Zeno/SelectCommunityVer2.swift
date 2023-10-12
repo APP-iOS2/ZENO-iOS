@@ -28,6 +28,7 @@ struct SelectCommunityVer2: View {
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
+    @State private var dragWidth: CGFloat = 0
     
     var body: some View {
         NavigationStack {
@@ -37,7 +38,7 @@ struct SelectCommunityVer2: View {
                         LottieView(lottieFile: "wave")
                             .offset(y: -20)
                         
-                        CardViewVer2(currentIndex: currentIndex)
+                        CardViewVer2(currentIndex: $currentIndex)
                             .offset(y: -.screenHeight * 0.03)
                             .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                             .onChange(of: currentIndex) { _ in
@@ -83,6 +84,39 @@ struct SelectCommunityVer2: View {
                 selected = ""
                 isPlay = .notSelected
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        dragWidth = value.translation.width
+                    }
+                    .onEnded { value in
+                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        if value.translation.width > 0 {
+                            guard currentIndex > 0 else { return }
+                            currentIndex -= 1
+                        } else if value.translation.width < 0 {
+                            guard currentIndex < commViewModel.joinedComm.count - 1 else { return }
+                            currentIndex += 1
+                        } else {
+                            currentIndex = currentIndex
+                            return
+                        }
+                        selected = commViewModel.joinedComm[currentIndex].id
+                        community = commViewModel.joinedComm[currentIndex]
+                        dragWidth = 0
+                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[currentIndex]) {
+                            isPlay = .success
+                        } else {
+                            isPlay = .lessThanFour
+                        }
+                        
+                        if useConfentti {
+                            counter += 1
+                            useConfentti = false
+                        }
+                    }
+            )
         }
         .navigationBarBackButtonHidden()
     }

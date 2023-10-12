@@ -15,11 +15,11 @@ enum MainTab: Int, CaseIterable, Identifiable {
     var view: some View {
         switch self {
         case .home:
-            CommMainView()
+            AlarmView()
         case .zeno:
             SelectCommunityVer2()
         case .alert:
-            AlarmView()
+            CommMainView()
         case .myPage:
             MyPageMain()
         }
@@ -32,7 +32,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
         case .zeno:
             return "제노"
         case .alert:
-            return "알림"
+            return "그룹"
         case .myPage:
             return "마이페이지"
         }
@@ -45,7 +45,7 @@ enum MainTab: Int, CaseIterable, Identifiable {
         case .zeno:
             return "z.circle.fill"
         case .alert:
-            return "bell.fill"
+            return "rectangle.3.group"
         case .myPage:
             return "person.circle"
         }
