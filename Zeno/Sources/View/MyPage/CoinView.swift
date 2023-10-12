@@ -9,21 +9,21 @@
 import SwiftUI
 
 struct CoinView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var mypageViewModel: MypageViewModel
     
     var body: some View {
         VStack {
                 HStack {
                     Text("Z")
-                        .font(.system(size: 30))
+                        .font(.system(size: 25))
                         .foregroundColor(ZenoAsset.Assets.mainPurple1.swiftUIColor)
                         .fontWeight(.bold)
-                    Text("제노 확인권이 \(userViewModel.currentUser?.showInitial ?? 0)회 남았어요.")
+                    Text("제노 확인권이 \(mypageViewModel.userInfo?.showInitial ?? 0)회 남았어요.")
                         .foregroundColor(.white)
-                        .font(.system(size: 20))
+                        .font(.system(size: 18))
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 80)
+                .frame(height:75)
                 .background(.black)
         }
     }
@@ -32,7 +32,7 @@ struct CoinView: View {
 struct CoinView_Previews: PreviewProvider {
     static var previews: some View {
         CoinView()
-            .environmentObject(UserViewModel())
+            .environmentObject(MypageViewModel())
     }
 }
  

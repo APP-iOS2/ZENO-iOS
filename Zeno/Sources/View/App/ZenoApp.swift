@@ -81,6 +81,7 @@ struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var commViewModel = CommViewModel()
+    @StateObject private var mypageViewModel = MypageViewModel()
     
     init() {
         let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY")
@@ -94,6 +95,7 @@ struct ZenoApp: App {
             InitialView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
+                .environmentObject(mypageViewModel)
                 .onChange(of: userViewModel.currentUser) { newValue in
                     commViewModel.updateCurrentUser(user: newValue)
                 }
