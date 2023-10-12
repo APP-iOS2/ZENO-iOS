@@ -18,7 +18,13 @@ struct AlarmFrontCardView: View {
                 .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.15)
             VStack(spacing: 10) {
                 Text("초성을 확인하고 싶다면 ?")
-                Text("제노를 눌러주세요")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 17))
+                HStack(spacing: 0) {
+                    Text("제노")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 24))
+                    Text("를 눌러주세요")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 24))
+                }
             }
             .bold()
             .foregroundColor(Color.white)

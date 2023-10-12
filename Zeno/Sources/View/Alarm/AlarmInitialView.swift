@@ -40,8 +40,10 @@ struct AlarmInitialView: View {
                     VStack(spacing: 4) {
                         Text("\(selectAlarm.sendUserName)님을")
                         Text("\(selectAlarm.zenoString)")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                         Text("으로 선택한 사람")
                     }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                     .padding(.bottom, 10)
                     
                     Text(chosung)
@@ -58,7 +60,7 @@ struct AlarmInitialView: View {
                     Button {
                         isNudgingOn = true
                     } label: {
-                        WideButton(buttonName: "찌르기", isplay: true)
+                        WideButton(buttonName: "찌르기", systemImage: "", isplay: true)
                     }
                     .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
                         Button {

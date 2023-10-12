@@ -42,6 +42,7 @@ struct AlarmBackCardView: View {
                                 .bold()
                             Text("으로 선택한 사람은 ?")
                         }
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                         .padding(.bottom, 10)
                         
                         // 초성은 조금 더 크게 보여줘야 하지 않을까 ?
