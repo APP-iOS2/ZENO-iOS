@@ -46,7 +46,7 @@ struct AlarmChangingView: View {
 struct AlarmChangingView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmChangingView(selectAlarm: Alarm(sendUserID: "aa",
-                                             sendUserName: "강동원참치",
+                                             sendUserName: "함지수",
                                              sendUserFcmToken: "sendToken",
                                              sendUserGender: .female,
                                              receiveUserID: "bb",

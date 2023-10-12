@@ -11,7 +11,7 @@ import SwiftUI
 struct AlarmBackCardView: View {
     @EnvironmentObject var alarmVM: AlarmViewModel
     @EnvironmentObject var userVM: UserViewModel
-
+    
     let selectAlarm: Alarm
     
     @Binding var isFlipped: Bool
@@ -27,8 +27,15 @@ struct AlarmBackCardView: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 3)
                 .overlay(
-                    VStack(alignment: .center, spacing: 10) {
+                    VStack(alignment: .center, spacing: 20) {
                         Spacer()
+                        
+                        Image("removedBG_Zeno")
+                            .resizable()
+                            .frame(width: .screenWidth * 0.3, height: .screenWidth * 0.3)
+                            .padding(.bottom, 20)
+                        //                                .opacity(0.8)
+                        
                         VStack(spacing: 20) {
                             Text("\(selectAlarm.receiveUserName)님을")
                             Text("\"\(selectAlarm.zenoString)\"")
@@ -38,13 +45,14 @@ struct AlarmBackCardView: View {
                         }
                         .padding(.bottom, 10)
                         
+                        // 초성은 조금 더 크게 보여줘야 하지 않을까 ?
                         Text(chosung)
                             .background(
                                 RoundedRectangle(cornerRadius: 30)
                                     .stroke(.primary, lineWidth: 1)
                                     .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.04)
                             )
-                            .padding(.top, 20)
+                            .padding(.top, 10)
                         
                         Spacer()
                         
@@ -62,14 +70,14 @@ struct AlarmBackCardView: View {
                         }
                         .padding(.bottom, 20)
                     }
-                    .padding(10)
+                        .padding(10)
                 )
                 .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
-                .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
-                .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
                 .offset(y: -40)
                 .padding(10)
         }
+        .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
+        .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
         .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
             Button {
                 // TODO: 찌른 알람을 보내는 함수 호출(push noti 어쩌구) / 찌르기 전용 알람 보내기 - AlarmVM
@@ -141,7 +149,7 @@ struct AlarmBackCardView: View {
 struct AlarmBackCardView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmBackCardView(selectAlarm: Alarm(sendUserID: "aa",
-                                             sendUserName: "강동원참치",
+                                             sendUserName: "함지수",
                                              sendUserFcmToken: "sendToken",
                                              sendUserGender: .male,
                                              receiveUserID: "bb",
