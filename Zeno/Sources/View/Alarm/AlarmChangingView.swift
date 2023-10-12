@@ -30,6 +30,11 @@ struct AlarmChangingView: View {
                     .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
                     .opacity(isFlipped ? 0 : 1)
                 
+                LottieView(lottieFile: "click")
+                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
+                    .offset(x: .screenWidth/3, y: .screenHeight/4)
+                    .opacity(isFlipped ? 0 : 1)
+                
                 // 뒷면 뷰
                 AlarmBackCardView(selectAlarm: selectAlarm,
                                   isFlipped: $isFlipped)

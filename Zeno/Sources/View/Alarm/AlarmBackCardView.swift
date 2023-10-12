@@ -11,7 +11,11 @@ import SwiftUI
 struct AlarmBackCardView: View {
     @EnvironmentObject var alarmVM: AlarmViewModel
     @EnvironmentObject var userVM: UserViewModel
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 6871a5a ([수정] 초성 확인 뷰 찌르기 버튼 위치 수정)
     let selectAlarm: Alarm
     
     @Binding var isFlipped: Bool
@@ -70,14 +74,22 @@ struct AlarmBackCardView: View {
                         }
                         .padding(.bottom, 20)
                     }
-                        .padding(10)
+                    .padding(10)
                 )
                 .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
+<<<<<<< HEAD
                 .offset(y: -40)
                 .padding(10)
         }
         .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
         .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
+=======
+                .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
+                .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
+                .offset(y: -40)
+                .padding(10)
+        }
+>>>>>>> 6871a5a ([수정] 초성 확인 뷰 찌르기 버튼 위치 수정)
         .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
             Button {
                 // TODO: 찌른 알람을 보내는 함수 호출(push noti 어쩌구) / 찌르기 전용 알람 보내기 - AlarmVM
@@ -97,7 +109,11 @@ struct AlarmBackCardView: View {
                     } label: {
                         Text("다시 확인")
                             .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+<<<<<<< HEAD
                             .foregroundColor(Color.primary)
+=======
+                            .foregroundStyle(.black)
+>>>>>>> 6871a5a ([수정] 초성 확인 뷰 찌르기 버튼 위치 수정)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
                                     .stroke(Color.mainColor, lineWidth: 1)
@@ -149,7 +165,11 @@ struct AlarmBackCardView: View {
 struct AlarmBackCardView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmBackCardView(selectAlarm: Alarm(sendUserID: "aa",
+<<<<<<< HEAD
                                              sendUserName: "함지수",
+=======
+                                             sendUserName: "강동원참치",
+>>>>>>> 6871a5a ([수정] 초성 확인 뷰 찌르기 버튼 위치 수정)
                                              sendUserFcmToken: "sendToken",
                                              sendUserGender: .male,
                                              receiveUserID: "bb",
