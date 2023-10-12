@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct CardViewVer2: View {
-    let currentIndex: Int
+    @Binding var currentIndex: Int
     private let itemSize: CGFloat = 200
 
     @EnvironmentObject var commViewModel: CommViewModel
@@ -39,6 +39,6 @@ struct CardViewVer2: View {
 
 struct CardViewVer2_Previews: PreviewProvider {
     static var previews: some View {
-        CardViewVer2(currentIndex: 2)
+        CardViewVer2(currentIndex: .constant(2))
     }
 }
