@@ -39,17 +39,15 @@ struct SelectCommunityVer2: View {
                     ZStack {
                         LottieView(lottieFile: "wave")
                             .offset(y: -20)
-                        
                         CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                             .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                             .onChange(of: currentIndex) { _ in
                                 withAnimation {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+                                }
                             }
-                        }
                     }
                 }
-                
                 /// 커뮤니티 리스트 뷰
                 commuityListView
                     .offset(y: currentIndex == 0 || currentIndex == 1 || currentIndex == 2 ? -.screenWidth * 0.13 : 0 )
@@ -85,21 +83,6 @@ struct SelectCommunityVer2: View {
                     .background {
                         Blur(style: .light)
                             .opacity(0.8)
-                        //                            .background(
-                        //                                LinearGradient(
-                        //                                    gradient: Gradient(
-                        //                                        colors: [
-                        //                                            .primary
-                        //                                                .opacity(0.5),
-                        //                                            .primary
-                        //                                                .opacity(0.95)
-                        //                                        ]
-                        //                                    ),
-                        //                                    startPoint: .top,
-                        //                                    endPoint: .bottom
-                        //                                )
-                        //                                .colorInvert()
-                        //                        )
                     }
                 }
             }
@@ -150,12 +133,8 @@ struct SelectCommunityVer2: View {
     var commuityListView: some View {
         ScrollViewReader { proxy in
             List {
-                Text("가라")
-                    .foregroundColor(.clear)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                
-                ForEach(Array(commViewModel.joinedComm.indices), id: \.self) { index in
+                ForEach(Array(commViewModel.joinedComm.indices),
+                        id: \.self) { index in
                     Button {
                         selected = commViewModel.joinedComm[index].id
                         community = commViewModel.joinedComm[index]
@@ -194,12 +173,13 @@ struct SelectCommunityVer2: View {
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
                 }
-                
-                Spacer()
-                    .frame(height: 70)
+                Text("가라")
+                    .padding()
+                    .padding(1)
+                    .foregroundColor(.clear)
+                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
-            .offset(y: -20)
             .overlay {
                 HStack {
                     Spacer()
