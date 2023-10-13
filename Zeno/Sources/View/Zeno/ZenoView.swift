@@ -154,9 +154,9 @@ struct Zeno_Previews: PreviewProvider {
                             commViewModel.updateCurrentUser(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
-                        }
                     }
                 }
+            }
         }
     }
     

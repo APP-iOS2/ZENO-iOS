@@ -9,11 +9,9 @@
 import SwiftUI
 
 class HapticManager {
-    
     static let instance = HapticManager()
     
     func notification(type: UINotificationFeedbackGenerator.FeedbackType) {
-        
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(type)
     }
@@ -57,9 +55,7 @@ class HapticManager {
                      Button("soft") { HapticManager.instance.impact(style: .soft) }
                  }
              }
-             .navigationBarTitle("서근개발노트")
          }
      }
  }
  */
-
