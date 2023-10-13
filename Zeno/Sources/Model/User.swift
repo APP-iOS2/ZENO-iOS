@@ -13,7 +13,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
     /// 이름
     var name: String
     /// 성별
-    let gender: Gender
+    var gender: Gender
     /// 프로필 이미지
     var imageURL: String?
     /// 한줄 소개
@@ -45,17 +45,17 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
 }
 
 /// 성별 정보 열거형(내부용)
-enum Gender: Codable {
-  case male, female
-
-  var toString: String {
-    switch self {
-      case .male:
-        return "남자"
-      case .female:
-        return "여자"
+enum Gender: Codable, CaseIterable {
+    case male, female
+    
+    var toString: String {
+        switch self {
+        case .male:
+            return "남자"
+        case .female:
+            return "여자"
+        }
     }
-  }
 }
 
 #if DEBUG
