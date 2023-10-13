@@ -15,7 +15,7 @@ final class MypageViewModel: ObservableObject {
     /// 파베가져오기
     private let firebaseManager = FirebaseManager.shared
     /// 파이어베이스 Auth의 User
-    private let userSession = Auth.auth().currentUser
+//    private let userSession = Auth.auth().currentUser
     /// 지금 로그인중인 firebase Auth에 해당 하는 유저의 User 객체 정보 가져오기
     @Published var userInfo: User?
     /// User의 joinedCommInfo 정보
@@ -35,7 +35,7 @@ final class MypageViewModel: ObservableObject {
 
     /// User 객체값 가져오기
     func getUserInfo() async {
-        if let currentUser = userSession?.uid {
+        if let currentUser = Auth.auth().currentUser?.uid {
 //            let document = try await db.collection("User").document(currentUser).getDocument()
             await db.collection("User").document(currentUser).getDocument { document, error in
                 if let document = document, document.exists {
@@ -56,7 +56,7 @@ final class MypageViewModel: ObservableObject {
     
     /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
     func userGroupIDList() {
-        if let currentUser = userSession?.uid {
+        if let currentUser = Auth.auth().currentUser?.uid {
             db.collection("User").document(currentUser).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()
@@ -90,7 +90,7 @@ final class MypageViewModel: ObservableObject {
     @MainActor
     func userFriendIDList() async -> Bool {
         do {
-            guard let currentUser = userSession?.uid else {
+            guard let currentUser = Auth.auth().currentUser?.uid else {
                 return false
             }
             let document = try await db.collection("User").document(currentUser).getDocument()
