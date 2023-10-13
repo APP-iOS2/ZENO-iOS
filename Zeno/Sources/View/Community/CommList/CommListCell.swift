@@ -12,9 +12,9 @@ struct CommListCell: View {
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
-	var comm: Community
+	let comm: Community
 	
-	@State var isShowingCommRequestView = false
+	@State private var isShowingCommRequestView = false
 	
 	var body: some View {
 		VStack {

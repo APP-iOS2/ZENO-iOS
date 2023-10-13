@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct InitialView: View {
-    //    @StateObject var contentViewModel = ContentViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
     @State private var isLoading: Bool = true
     @State private var isNickChangeSheet = false
@@ -23,6 +22,7 @@ struct InitialView: View {
                             .environmentObject(EmailLoginViewModel())
                             .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
                     } else {
+                        // 로그인 정보가 저장되어 있다면 런치스크린과 같은 화면을 띄워줌
                         InitialStoryBoard()
                     }
                 }
@@ -54,6 +54,7 @@ struct InitialView: View {
                 }
             }
         }
+        .tint(.mainColor)
     }
 }
 
@@ -78,7 +79,7 @@ struct StartView_Previews: PreviewProvider {
                         switch result {
                         case .success(let user):
                             userViewModel.currentUser = user
-                            userViewModel.signStatus == .signIn
+                            userViewModel.signStatus = .signIn
                             print("preview 유저로드 성공")
                         case .failure:
                             print("preview 유저로드 실패")

@@ -15,7 +15,7 @@ final class MypageViewModel: ObservableObject {
     /// 파베가져오기
     private let firebaseManager = FirebaseManager.shared
     /// 파이어베이스 Auth의 User
-//    private let userSession = Auth.auth().currentUser
+    /// private let userSession = Auth.auth().currentUser
     /// 지금 로그인중인 firebase Auth에 해당 하는 유저의 User 객체 정보 가져오기
     @Published var userInfo: User?
     /// User의 joinedCommInfo 정보

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject private var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
 
     var body: some View {

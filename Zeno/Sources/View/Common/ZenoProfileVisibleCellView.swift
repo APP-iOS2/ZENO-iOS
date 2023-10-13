@@ -8,10 +8,10 @@
 
 import SwiftUI
 
-struct ZenoProfileVisibleCellView<T: ZenoProfileVisible>: View {
-    let item: T
-    let actionTitle: String
-    let action: () -> Void
+struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, BtnLabel: View>: View {
+    let item: Item
+    let label: () -> BtnLabel
+    let interaction: (Item) -> Void
     
     var body: some View {
         HStack(alignment: .center) {
@@ -36,10 +36,15 @@ struct ZenoProfileVisibleCellView<T: ZenoProfileVisible>: View {
             .padding(.leading, 4)
             Spacer()
             Button {
-                action()
+                interaction(item)
             } label: {
-                Text(actionTitle)
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                label()
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    .foregroundColor(.white)
+                    .padding(5)
+                    .background(Color("MainColor"))
+                    .cornerRadius(6)
+                    .shadow(radius: 0.3)
             }
         }
         .homeListCell()

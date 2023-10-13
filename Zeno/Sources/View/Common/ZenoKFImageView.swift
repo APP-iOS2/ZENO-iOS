@@ -14,21 +14,22 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     let ratio: SwiftUI.ContentMode
     
     var body: some View {
-        if let urlStr = item.imageURL,
-           let url = URL(string: urlStr) {
-            KFImage(url)
-                .cacheOriginalImage()
-                .resizable()
-                .placeholder {
-                    placeholderImg
-                        .resizable()
-                }
-                .aspectRatio(contentMode: ratio)
-        } else {
-            placeholderImg
-                .resizable()
-                .aspectRatio(contentMode: ratio)
+        Group {
+            if let urlStr = item.imageURL,
+               let url = URL(string: urlStr) {
+                KFImage(url)
+                    .cacheOriginalImage()
+                    .resizable()
+                    .placeholder {
+                        placeholderImg
+                            .resizable()
+                    }
+            } else {
+                placeholderImg
+                    .resizable()
+            }
         }
+        .aspectRatio(contentMode: ratio)
     }
     
     var placeholderImg: Image {
@@ -73,6 +74,6 @@ class ZenoCacheManager<T: AnyObject> {
     
     func loadImage(url: URL?) -> T? {
         guard let url else { return nil }
-        return shared.object(forKey: url.absoluteString as NSString) as? T
+        return shared.object(forKey: url.absoluteString as NSString)
     }
 }

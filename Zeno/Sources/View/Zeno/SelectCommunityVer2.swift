@@ -19,6 +19,7 @@ enum PlayStatus {
 struct SelectCommunityVer2: View {
     @Environment(\.colorScheme) var colorScheme
     
+    @StateObject private var zenoViewModel = ZenoViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
@@ -48,9 +49,9 @@ struct SelectCommunityVer2: View {
                             }
                     }
                 }
+                .frame(height: .screenHeight * 0.35)
                 /// 커뮤니티 리스트 뷰
                 commuityListView
-                    .offset(y: currentIndex == 0 || currentIndex == 1 ? -.screenWidth * 0.09 : currentIndex == 2 ? -.screenWidth * 0.09 : 0)
                     .background(.clear)
             }
             .overlay {
@@ -109,25 +110,16 @@ struct SelectCommunityVer2: View {
                             currentIndex = currentIndex
                             return
                         }
-                        
-                        selected = commViewModel.joinedComm[currentIndex].id
-                        community = commViewModel.joinedComm[currentIndex]
+                        select(index: currentIndex)
                         dragWidth = 0
-                        
-                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[currentIndex]) {
-                            isPlay = .success
-                        } else {
-                            isPlay = .lessThanFour
-                        }
-                        
-                        if useConfentti {
-                            counter += 1
-                            useConfentti = false
-                        }
                     }
             )
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: commViewModel.joinedComm) { newValue in
+            zenoViewModel.joinedComm = newValue
+            zenoViewModel.setJoinedComm(comms: newValue)
+        }
     }
     
     var commuityListView: some View {
@@ -136,20 +128,8 @@ struct SelectCommunityVer2: View {
                 ForEach(Array(commViewModel.joinedComm.indices),
                         id: \.self) { index in
                     Button {
-                        selected = commViewModel.joinedComm[index].id
-                        community = commViewModel.joinedComm[index]
                         currentIndex = index
-                        
-                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
-                            isPlay = .success
-                        } else {
-                            isPlay = .lessThanFour
-                        }
-                        
-                        if useConfentti {
-                            counter += 1
-                            useConfentti = false
-                        }
+                        select(index: index)
                     } label: {
                         HStack {
                             ZenoKFImageView(commViewModel.joinedComm[index])
@@ -175,7 +155,7 @@ struct SelectCommunityVer2: View {
                 }
                 Text("가라")
                     .padding()
-                    .padding(1)
+                    .padding()
                     .foregroundColor(.clear)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -195,6 +175,22 @@ struct SelectCommunityVer2: View {
                     proxy.scrollTo(commViewModel.joinedComm[newValue].id, anchor: .center)
                 }
             }
+        }
+    }
+    
+    func select(index: Int) {
+        selected = commViewModel.joinedComm[index].id
+        community = commViewModel.joinedComm[index]
+        
+        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+            isPlay = .success
+        } else {
+            isPlay = .lessThanFour
+        }
+        
+        if useConfentti {
+            counter += 1
+            useConfentti = false
         }
     }
 }
