@@ -9,32 +9,30 @@
 import SwiftUI
 
 struct CustomTabView: View {
-    @Binding var selected: MainTab
+    @EnvironmentObject var tabBarViewModel: TabBarViewModel
     @State private var interval: CGFloat = 0
     
     var body: some View {
         HStack {
             ForEach(MainTab.allCases) { item in
                 Button {
-//                    withAnimation {
-                        selected = item
-//                    }
+                    tabBarViewModel.selected = item
                 } label: {
                     VStack {
                         Image(systemName: item.imageName)
                             .resizable()
                             .symbolVariant(.fill)
                             .frame(width: 25, height: 25)
-                            .shake(selected == item ? 0.8 : 0)
+                            .shake(tabBarViewModel.selected == item ? 0.8 : 0)
                         Text(item.title)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
                     }
-                    .scaleEffect(selected == item ? 1.1 : 1.0)
+                    .scaleEffect(tabBarViewModel.selected == item ? 1.1 : 1.0)
                     .frame(
                         width: .screenWidth * 0.9 / CGFloat(MainTab.allCases.count),
                         height: 70
                     )
-                    .tint(selected == item ? .white : Color.purple2)
+                    .tint(tabBarViewModel.selected == item ? .white : Color.purple2)
                 }
             }
         }
@@ -51,10 +49,11 @@ struct CustomTabView: View {
 
 struct CustomTabView_Previews: PreviewProvider {
     struct Preview: View {
-        @State private var selected: MainTab = .home
+        @State private var selected: MainTab = .alert
         
         var body: some View {
-            CustomTabView(selected: $selected)
+            CustomTabView()
+                .environmentObject(TabBarViewModel())
         }
     }
     
