@@ -221,7 +221,7 @@ struct SelectCommunityVer2_Previews: PreviewProvider {
         @StateObject private var alarmViewModel: AlarmViewModel = .init()
         
         var body: some View {
-            TabBarView(selected: .zeno)
+            TabBarView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
