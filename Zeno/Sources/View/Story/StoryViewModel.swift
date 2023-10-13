@@ -39,7 +39,7 @@ final class StoryViewModel: ObservableObject {
             self.story.removeAll()
             
             try querySnapShot.documents.forEach { queryDocumentSnapshot in
-                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self )
+                _ = try queryDocumentSnapshot.data(as: Alarm.self )
                 // self.story.append(tempAlarm)
             }
         } catch {

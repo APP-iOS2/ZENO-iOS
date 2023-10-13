@@ -40,8 +40,6 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                 return Image(manAsset)
             case .female:
                 return Image(womanAsset)
-            default:
-                return Image("ZenoIcon")
             }
         } else if (item as? Community) != nil {
             return Image(CommAsset.team1.rawValue)

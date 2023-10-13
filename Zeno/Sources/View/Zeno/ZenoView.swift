@@ -59,7 +59,9 @@ struct ZenoView: View {
                                 }
                                 
                                 Task {
-                                    await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    if let currentUser = userViewModel.currentUser {
+                                        await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    }
                                     debugPrint(user.name)
                                     debugPrint(zenoList[selected-1].question)
                                 }
@@ -125,15 +127,36 @@ struct ZenoView: View {
 }
 
 struct ZenoView_pro: PreviewProvider {
-    @EnvironmentObject private var userViewModel: UserViewModel
-
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: .emptyComm, allMyFriends: User.dummy)
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                        }
+                    }
+                }
+        }
+    }
+    
     static var previews: some View {
-        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: Community.emptyComm, allMyFriends: User.dummy)
-            .environmentObject(UserViewModel())
-            .environmentObject(AlarmViewModel())
-            .environmentObject(CommViewModel())
-            .onAppear {
-                UserViewModel.init(currentUser: User.fakeCurrentUser)
-            }
+        Preview()
     }
 }

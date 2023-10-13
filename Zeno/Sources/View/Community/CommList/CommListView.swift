@@ -45,24 +45,13 @@ struct CommListView: View {
 						.padding(.bottom, 25)
 					} else {
 						ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
-							Button {
-								if commViewModel.joinedComm.contains(community) {
-                                    commViewModel.changeSelectedComm(index: index)
-									isPresented = false
-								} else {
-									// TODO: 새로운 그룹 가입 뷰
-								}
-							} label: {
-								HStack {
-									VStack(alignment: .leading, spacing: 10) {
-										Text("\(community.name)")
-									}
-									Spacer()
-									Image(systemName: "chevron.forward")
-								}
-								.groupCell()
-							}
+                            ZenoSearchableCellView(item: community,
+                                                   actionTitle: "") {
+                                commViewModel.changeSelectedComm(index: index)
+                                isPresented = false
+                            }
 						}
+                        .padding(2)
 					}
 					Button {
                         isPresentedAddCommView = true
@@ -75,6 +64,8 @@ struct CommListView: View {
 						}
 						.groupCell()
 					}
+                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 16))
+                    .tint(.purple2)
 				}
 				.padding()
 			}
@@ -102,14 +93,40 @@ extension CommListView {
 }
 
 struct GroupListView_Previews: PreviewProvider {
-	@State static var isPresented = true
-	@State static var userViewModel = UserViewModel(currentUser: .dummy[0])
-	static var previews: some View {
-		CommMainView()
-			.sheet(isPresented: $isPresented) {
-                CommListView(isPresented: $isPresented, isPresentedAddCommView: .constant(false))
-			}
-			.environmentObject(userViewModel)
-			.environmentObject(CommViewModel())
-	}
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        @State private var isPresented = true
+        
+        var body: some View {
+            CommMainView()
+                .sheet(isPresented: $isPresented) {
+                    CommListView(isPresented: $isPresented, isPresentedAddCommView: .constant(false))
+                }
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                        }
+                    }
+                }
+        }
+    }
+    
+    static var previews: some View {
+        Preview()
+    }
 }

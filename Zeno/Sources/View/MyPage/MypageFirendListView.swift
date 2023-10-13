@@ -118,10 +118,8 @@ struct MypageFirendListView_Previews: PreviewProvider {
 extension Array where Element: Equatable {
     func removeDuplicates() -> [Element] {
         var result: [Element] = []
-        for item in self {
-            if !result.contains(item) {
-                result.append(item)
-            }
+        for item in self where !result.contains(item) {
+            result.append(item)
         }
         return result
     }
