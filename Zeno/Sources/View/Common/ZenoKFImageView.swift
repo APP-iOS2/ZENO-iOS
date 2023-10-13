@@ -73,6 +73,6 @@ class ZenoCacheManager<T: AnyObject> {
     
     func loadImage(url: URL?) -> T? {
         guard let url else { return nil }
-        return shared.object(forKey: url.absoluteString as NSString) as? T
+        return shared.object(forKey: url.absoluteString as NSString)
     }
 }

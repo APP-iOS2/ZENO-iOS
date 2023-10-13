@@ -12,6 +12,9 @@ struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
     
+    @State private var isDeportAlert = false
+    @State private var deportUser = User.emptyUser
+    
     var body: some View {
         VStack {
             HStack {
@@ -29,12 +32,19 @@ struct CommUserMgmtView: View {
                         Section {
                             switch section {
                             case .wait:
-                                ForEach($commViewModel.currentWaitApprovalMembers) { $user in
-                                        CommUserMgmtCellView(user: $user, actionType: .accept)
+                                ForEach(commViewModel.currentWaitApprovalMembers) { user in
+                                    ZenoProfileVisibleCellView(item: user, actionTitle: "가입수락") {
+                                        Task {
+                                            await commViewModel.acceptMember(user: user)
+                                        }
+                                    }
                                 }
                             case .general:
-                                ForEach($commViewModel.currentCommMembers) { $user in
-                                    CommUserMgmtCellView(user: $user, actionType: .deport)
+                                ForEach(commViewModel.currentCommMembers) { user in
+                                    ZenoProfileVisibleCellView(item: user, actionTitle: "추방하기") {
+                                        deportUser = user
+                                        isDeportAlert = true
+                                    }
                                 }
                             }
                         } header: {
@@ -57,8 +67,23 @@ struct CommUserMgmtView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
             }
+            .refreshable {
+                Task {
+                    await commViewModel.fetchCurrentCommMembers()
+                }
+            }
         }
         .tint(.black)
+        .alert("\(deportUser.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
+            Button("내보내기", role: .destructive) {
+                Task {
+                    await commViewModel.deportMember(user: deportUser)
+                }
+            }
+            Button("취소", role: .cancel) {
+                deportUser = .emptyUser
+            }
+        }
     }
     
     private enum MGMTSection: CaseIterable, Identifiable {

@@ -80,7 +80,6 @@ struct SettingTextFieldView: View {
 	}
 	
 	func a() -> Bool {
-		
 		return true
 	}
 }

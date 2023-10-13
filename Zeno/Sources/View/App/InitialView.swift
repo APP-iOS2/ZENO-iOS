@@ -78,7 +78,7 @@ struct StartView_Previews: PreviewProvider {
                         switch result {
                         case .success(let user):
                             userViewModel.currentUser = user
-                            userViewModel.signStatus == .signIn
+                            userViewModel.signStatus = .signIn
                             print("preview 유저로드 성공")
                         case .failure:
                             print("preview 유저로드 실패")
