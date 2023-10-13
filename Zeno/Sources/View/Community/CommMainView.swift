@@ -23,32 +23,32 @@ struct CommMainView: View {
     var body: some View {
         NavigationStack {
             mainView
-            .refreshable {
-                Task {
-                    try? await userViewModel.loadUserData()
-                    await commViewModel.fetchAllComm()
+                .refreshable {
+                    Task {
+                        try? await userViewModel.loadUserData()
+                        await commViewModel.fetchAllComm()
+                    }
                 }
-            }
-            .toolbar {
-                // 커뮤니티 선택 버튼
-                groupNameToolbarItem
-                // 햄버거 바
-                if commViewModel.currentComm != nil {
-                    hamburgerToolbarItem
+                .toolbar {
+                    // 커뮤니티 선택 버튼
+                    groupNameToolbarItem
+                    // 햄버거 바
+                    if commViewModel.currentComm != nil {
+                        hamburgerToolbarItem
+                    }
                 }
-            }
-            .sheet(isPresented: $isShowingCommListSheet) {
-                CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
-            }
-            .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
-                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
-            }
-            .onTapGesture {
-                isShowingHamburgerView = false
-            }
-            .navigationDestination(isPresented: $isPresentedAddCommView) {
-                CommSettingView(editMode: .addNew)
-            }
+                .sheet(isPresented: $isShowingCommListSheet) {
+                    CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
+                }
+                .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
+                    CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
+                }
+                .navigationDestination(isPresented: $isPresentedAddCommView) {
+                    CommSettingView(editMode: .addNew)
+                }
+                .onTapGesture {
+                    isShowingHamburgerView = false
+                }
         }
         .tint(.black)
         .overlay(
