@@ -28,7 +28,6 @@ struct AlarmCellView: View {
                     Text("\(gender)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                         .font(.caption)
-                        .padding(.bottom, 1)
                     Text("20초 전")
                         .font(.caption)
                         .foregroundStyle(.black)

@@ -45,13 +45,14 @@ struct SelectCommunityVer2: View {
                             .onChange(of: currentIndex) { _ in
                                 withAnimation {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                }
                             }
+                        }
                     }
                 }
                 
                 /// 커뮤니티 리스트 뷰
                 commuityListView
+                    .offset(y: currentIndex == 0 || currentIndex == 1 ? -.screenWidth * 0.15 : 0 )
                     .background(.clear)
             }
             .overlay {

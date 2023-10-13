@@ -75,12 +75,6 @@ struct TabBarView: View {
                     .frame(width: .screenWidth)
             }
         }
-        
-//        .toolbar {
-//            ToolbarItem(placement: .bottomBar) {
-//                CustomTabView(selected: $selected)
-//            }
-//        }
         .environmentObject(alarmViewModel)
         .environmentObject(iAPStore)
         .task {
