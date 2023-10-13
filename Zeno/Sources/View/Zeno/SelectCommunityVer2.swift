@@ -17,6 +17,8 @@ enum PlayStatus {
 }
 
 struct SelectCommunityVer2: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
@@ -37,6 +39,7 @@ struct SelectCommunityVer2: View {
                     ZStack {
                         LottieView(lottieFile: "wave")
                             .offset(y: -20)
+                        
                         CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                             .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                             .onChange(of: currentIndex) { _ in
@@ -46,16 +49,16 @@ struct SelectCommunityVer2: View {
                             }
                     }
                 }
-                .zIndex(1)
-                .background(.background)
+                
+                /// 커뮤니티 리스트 뷰
                 commuityListView
                     .background(.clear)
-                    .zIndex(0)
             }
             .overlay {
                 VStack {
                     Spacer()
                     VStack {
+                        /// isPlay 상태에 따라 달라짐
                         switch isPlay {
                         case .success:
                             NavigationLink {
@@ -81,20 +84,21 @@ struct SelectCommunityVer2: View {
                     .background {
                         Blur(style: .light)
                             .opacity(0.8)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(
-                                        colors: [
-                                            .white
-                                                .opacity(0.5),
-                                            .white
-                                                .opacity(0.95)
-                                        ]
-                                    ),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                        //                            .background(
+                        //                                LinearGradient(
+                        //                                    gradient: Gradient(
+                        //                                        colors: [
+                        //                                            .primary
+                        //                                                .opacity(0.5),
+                        //                                            .primary
+                        //                                                .opacity(0.95)
+                        //                                        ]
+                        //                                    ),
+                        //                                    startPoint: .top,
+                        //                                    endPoint: .bottom
+                        //                                )
+                        //                                .colorInvert()
+                        //                        )
                     }
                 }
             }
@@ -121,9 +125,11 @@ struct SelectCommunityVer2: View {
                             currentIndex = currentIndex
                             return
                         }
+                        
                         selected = commViewModel.joinedComm[currentIndex].id
                         community = commViewModel.joinedComm[currentIndex]
                         dragWidth = 0
+                        
                         if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[currentIndex]) {
                             isPlay = .success
                         } else {
@@ -147,14 +153,13 @@ struct SelectCommunityVer2: View {
                     .foregroundColor(.clear)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
+                
                 ForEach(Array(commViewModel.joinedComm.indices), id: \.self) { index in
                     Button {
                         selected = commViewModel.joinedComm[index].id
                         community = commViewModel.joinedComm[index]
                         currentIndex = index
-                        //                Task {
-                        //                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
-                        //                }
+                        
                         if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
                             isPlay = .success
                         } else {
@@ -188,6 +193,7 @@ struct SelectCommunityVer2: View {
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
                 }
+                
                 Spacer()
                     .frame(height: 70)
                     .listRowSeparator(.hidden)

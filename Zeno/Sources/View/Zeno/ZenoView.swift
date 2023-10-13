@@ -25,9 +25,11 @@ struct ZenoView: View {
     var body: some View {
         if selected < zenoList.count {
             ZStack {
+                /// 백 그라운드 이미지 제트 스택으로 쌓아 둠
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
                 
+                /// 프로그래스 바
                 VStack(alignment: .center) {
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
                         Text("\(selected+1) / \(zenoList.count)")
@@ -35,12 +37,14 @@ struct ZenoView: View {
                     .opacityAndWhite()
                     .bold()
                     
+                    /// 랜덤 제노 퀘스쳔
                     Text(zenoList[selected].question)
                         .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
                         .fixedSize(horizontal: false, vertical: true)
 
+                    /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
@@ -49,27 +53,30 @@ struct ZenoView: View {
                     
                     Spacer()
                     
+                    /// 친구들 버튼 창
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {
+                                /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
                                 if selected == zenoList.count-1 {
                                     Task {
                                         await userViewModel.updateZenoTimer()
                                     }
                                 }
                                 
+                                /// 버튼을 누를 때 마다 해당 사용자에게 알림이 감
                                 Task {
                                     await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected-1])
                                     debugPrint(user.name)
                                     debugPrint(zenoList[selected-1].question)
                                 }
-                                
                                 selected += 1
                                 resetUsers()
                             } label: {
                                 HStack {
                                     ZenoKFImageView(user)
                                         .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
                                         .foregroundColor(.primary)
                                     Text(user.name)
                                         .foregroundColor(.primary)
@@ -100,9 +107,7 @@ struct ZenoView: View {
                     .padding(.top, 15)
                 }
                 .padding()
-                
                 .onAppear {
-                    // MARK: 제노 뷰
                     Task {
                         await
                         allMyFriends =
@@ -125,7 +130,8 @@ struct ZenoView: View {
 }
 
 struct ZenoView_pro: PreviewProvider {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @StateObject private var userViewModel: UserViewModel = .init()
+    @StateObject private var commViewModel: CommViewModel = .init()
 
     static var previews: some View {
         ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: Community.emptyComm, allMyFriends: User.dummy)
