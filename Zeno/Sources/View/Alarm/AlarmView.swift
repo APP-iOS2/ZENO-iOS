@@ -150,9 +150,9 @@ struct AlarmView: View {
                                 isShowPaymentSheet = true
                             }
                         }, label: {
-                            WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm == nil ? false : true)
+                            WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm != nil ? true : false)
                         })
-                        .disabled(selectAlarm == nil ? true : false)
+                        .disabled(selectAlarm == nil || isBlur ? true : false)
                         .blur(radius: isBlur ? 1.5 : 0)
                     }
                 }
