@@ -70,7 +70,11 @@ struct AlarmListCellView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
             .onTapGesture {
-                selectAlarm = alarm
+                if let selectCell = selectAlarm, selectCell.id == alarm.id {
+                    selectAlarm = nil
+                } else {
+                    selectAlarm = alarm
+                }
             }
             
             HStack {
@@ -84,7 +88,11 @@ struct AlarmListCellView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    selectAlarm = alarm
+                    if let selectCell = selectAlarm, selectCell.id == alarm.id {
+                        selectAlarm = nil
+                    } else {
+                        selectAlarm = alarm
+                    }
                 }
                 
                 Spacer()

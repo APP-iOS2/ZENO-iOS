@@ -26,6 +26,11 @@ struct AlarmView: View {
     @State private var usingCoin: Bool = false
     @State private var usingInitialTicket: Bool = false
     
+    var isBlur: Bool {
+        return isShowPaymentSheet || usingCoin ||  usingInitialTicket ||
+                isLackingCoin || isLackingInitialTicket
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -33,6 +38,12 @@ struct AlarmView: View {
                     AlarmEmptyView()
                 } else {
                     VStack {
+                        Text("홈")
+                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                        
                         AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                         
                         ScrollView {
@@ -45,78 +56,72 @@ struct AlarmView: View {
                                     AlarmChangingView(selectAlarm: selectAlarm)
                                 }
                             }
+                            // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
+                            Color.clear.frame(height: 80)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
-                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+//                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
                                 }
                             }
                         }
-                        .blur(radius: isShowPaymentSheet ? 1.5 : 0)
-//                        .sheet(isPresented: $isShowPaymentSheet, content: {
-//                            AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
-//                                isShowInitialView = true
-//                            }
-//                            .presentationDetents([.fraction(0.75)])
-//                        })
-                        .goodsAlert(
-                            isPresented: $isShowPaymentSheet,
-                            content1: "당신을 제노한 사람의 초성을",
-                            content2: "확인하시겠습니까 ?",
-                            primaryButtonTitle1: "코인 사용",
-                            primaryAction1: {
-                                if userViewModel.currentUser?.coin ?? 0 >= 60 {
-                                    usingCoin = true
-                                } else {
-                                    print(" 코인 결제 임")
-                                    isLackingCoin.toggle()
-                                    
-                                    isShowPaymentSheet = false
-                                }
-                            },
-                            primaryButtonTitle2: "초성 확인권 사용",
-                            primaryAction2: {
-                                print("초성확인권 사용")
-                                if userViewModel.currentUser?.showInitial ?? 0 > 0 {
-                                    usingInitialTicket.toggle()
-                                } else {
-                                    print(" 유료 결제 임")
-                                    isLackingInitialTicket.toggle()
-                                    
-                                    isShowPaymentSheet = false
-                                }
-                            },
-                            primaryButtonTitle3: "다음에",
-                            primaryAction3: {
+                    }
+                    .blur(radius: isBlur ? 1.5 : 0)
+                    .goodsAlert(
+                        isPresented: $isShowPaymentSheet,
+                        content1: "당신을 제노한 사람의 초성을",
+                        content2: "확인하시겠습니까 ?",
+                        primaryButtonTitle1: "코인 사용",
+                        primaryAction1: {
+                            if userViewModel.currentUser?.coin ?? 0 >= 60 {
+                                usingCoin = true
+                            } else {
+                                print(" 코인 결제 임")
+                                isLackingCoin.toggle()
+                                
                                 isShowPaymentSheet = false
-                            })
-                        .usingAlert(
-                            isPresented: $usingCoin,
-                            imageName: "dollar-coin",
-                            content: "코인") {
-                                isShowInitialView.toggle()
-                                Task {
-                                    await userViewModel.updateUserCoin(to: -60)
-                                }
-                                usingCoin = false
                             }
-                        .usingAlert(
-                            isPresented: $usingInitialTicket,
-                            imageName: "",
-                            content: "초성 확인권") {
-                                isShowInitialView.toggle()
-                                Task {
-                                    await userViewModel.updateUserInitialCheck(to: -1)
-                                }
-                                usingInitialTicket = false
+                        },
+                        primaryButtonTitle2: "초성 확인권 사용",
+                        primaryAction2: {
+                            print("초성확인권 사용")
+                            if userViewModel.currentUser?.showInitial ?? 0 > 0 {
+                                usingInitialTicket.toggle()
+                            } else {
+                                print(" 유료 결제 임")
+                                isLackingInitialTicket.toggle()
+                                
+                                isShowPaymentSheet = false
                             }
-                    }
-                    .onTapGesture {
-                        selectAlarm = nil
-                    }
+                        },
+                        primaryButtonTitle3: "다음에",
+                        primaryAction3: {
+                            isShowPaymentSheet = false
+                        })
+                    .usingAlert(
+                        isPresented: $usingCoin,
+                        imageName: "dollar-coin",
+                        content: "코인") {
+                            isShowInitialView.toggle()
+                            Task {
+                                await userViewModel.updateUserCoin(to: -60)
+                            }
+                            usingCoin = false
+                        }
+                    .usingAlert(
+                        isPresented: $usingInitialTicket,
+                        imageName: "",
+                        content: "초성 확인권") {
+                            isShowInitialView.toggle()
+                            Task {
+                                await userViewModel.updateUserInitialCheck(to: -1)
+                            }
+                            usingInitialTicket = false
+                        }
                     .cashAlert(
                         isPresented: $isLackingCoin,
                         title: "코인이 부족합니다.",
@@ -148,6 +153,7 @@ struct AlarmView: View {
                             WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm == nil ? false : true)
                         })
                         .disabled(selectAlarm == nil ? true : false)
+                        .blur(radius: isBlur ? 1.5 : 0)
                     }
                 }
             }

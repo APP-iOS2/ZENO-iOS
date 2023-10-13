@@ -83,6 +83,7 @@ class AlarmViewModel: ObservableObject {
         // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
         let alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
+//            .order(by: "createdAt", descending: true)
         do {
             let querySnapShot = try await alarmRef.getDocuments()
             self.alarmArray.removeAll()
@@ -92,8 +93,29 @@ class AlarmViewModel: ObservableObject {
                 let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
                 self.alarmArray.append(tempAlarm)
             }
+            alarmArray.sort { $0.createdAt > $1.createdAt }
         } catch {
-            print(error)
+            print("== fetchAlarm : \(error)")
+        }
+    }
+    
+    /// 로컬에서 마지막 알람 이후 Firestore 에 저장된 알람 데이터를 가져옴
+    @MainActor
+    func fetchLastestAlarm(showUserID: String) async {
+        let alarmRef = Firestore.firestore().collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .whereField("createdAt", isGreaterThan: self.alarmArray.first?.createdAt ?? 0)
+        do {
+            let querySnapShot = try await alarmRef.getDocuments()
+            
+            try querySnapShot.documents.forEach { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.alarmArray.append(tempAlarm)
+            }
+            
+            alarmArray.sort { $0.createdAt > $1.createdAt }
+        } catch {
+            print("== fetchLastestAlarm : \(error)")
         }
     }
     
