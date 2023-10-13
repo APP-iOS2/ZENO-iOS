@@ -35,6 +35,7 @@ struct MypageSettingView: View {
             Button {
                 Task {
                     await userViewModel.logoutWithKakao()
+                    userViewModel.isNeedLogin = true
                 }
             } label: {
                 HStack {
@@ -49,6 +50,7 @@ struct MypageSettingView: View {
             Button {
                 Task {
                     await userViewModel.deleteUser()
+                    userViewModel.isNeedLogin = true
                 }
             } label: {
                 Text("회원탈퇴")
