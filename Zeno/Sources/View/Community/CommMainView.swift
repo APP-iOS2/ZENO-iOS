@@ -11,6 +11,7 @@ import SwiftUI
 struct CommMainView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var commViewModel: CommViewModel
+    @EnvironmentObject var tabBarViewModel: TabBarViewModel
     
     @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
@@ -21,12 +22,7 @@ struct CommMainView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                if commViewModel.currentComm != nil {
-                    newUserView
-                    userListView
-                }
-            }
+            mainView
             .refreshable {
                 Task {
                     try? await userViewModel.loadUserData()
@@ -64,18 +60,30 @@ struct CommMainView: View {
         .onChange(of: commViewModel.allComm) { _ in
             commViewModel.filterJoinedComm()
         }
+        .onChange(of: tabBarViewModel.selected) { _ in
+            isShowingHamburgerView = false
+        }
         .onChange(of: commViewModel.currentComm) { _ in
             Task {
                 await commViewModel.fetchCurrentCommMembers()
             }
         }
-        .onOpenURL { url in
-            Task {
-                await commViewModel.handleInviteURL(url)
+    }
+    
+    @ViewBuilder
+    var mainView: some View {
+        if commViewModel.currentComm != nil {
+            ScrollView {
+                if commViewModel.currentComm != nil {
+                    newUserView
+                    userListView
+                }
             }
+        } else {
+            AlarmEmptyView()
         }
     }
-    /// 새로들어온 유저 뷰
+    
     var newUserView: some View {
         VStack {
             HStack {
@@ -118,7 +126,7 @@ struct CommMainView: View {
         .animation(.default, value: isShowingDetailNewBuddyToggle)
         .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
     }
-    /// 그룹 내 유저 목록 뷰
+    
     var userListView: some View {
         VStack {
             HStack {
@@ -159,7 +167,6 @@ struct CommMainView: View {
         .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
     }
     
-    /// 유저 셀 뷰
     func userCell(user: User) -> some View {
         HStack {
             Circle()
@@ -202,9 +209,7 @@ struct CommMainView: View {
         }
         .homeListCell()
     }
-    // MARK: - 툴바
     
-    /// 그룹 이름 툴바아이템
     var groupNameToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
@@ -224,7 +229,6 @@ struct CommMainView: View {
         }
     }
     
-    /// 햄버거 툴바아이템
     var hamburgerToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button {
@@ -240,9 +244,8 @@ struct CommMainView: View {
 
 struct HomeMainView_Previews: PreviewProvider {
 	static var previews: some View {
-		/*HomeMainView()*/
 		TabBarView()
-			.environmentObject(UserViewModel(currentUser: .dummy[0]))
+			.environmentObject(UserViewModel())
             .environmentObject(CommViewModel())
             .environmentObject(ZenoViewModel())
             .environmentObject(AlarmViewModel())

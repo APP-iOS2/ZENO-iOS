@@ -34,10 +34,6 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    init(currentUser: User) {
-        self.currentUser = currentUser
-    }
-    
     @MainActor
     func addFriend(user: User, comm: Community) async {
         guard let currentUser,
