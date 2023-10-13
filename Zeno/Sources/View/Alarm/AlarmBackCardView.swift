@@ -26,13 +26,15 @@ struct AlarmBackCardView: View {
                         VStack(spacing: 20) {
                             Text(content1)
                             Text(content2)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16))
                                 .multilineTextAlignment(.center)
-                                .bold()
                             Text(content3)
                         }
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                         .padding(.bottom, 10)
                         
                         Text(content4)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                             .frame(width: 140, height: 50)
                             .background(
                                 RoundedRectangle(cornerRadius: 30)
