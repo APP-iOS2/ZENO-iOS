@@ -33,7 +33,7 @@ struct AlarmGoodsBtnView: View {
             }
             .foregroundColor(.black)
             .padding([.bottom, .top], 50)
-            .font(.title2)
+            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
             .bold()
             
             Button {
@@ -41,11 +41,11 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    Image(systemName: "bitcoinsign.circle")
+                    Image("dollar-coin")
                         .resizable()
                         .frame(width: .screenWidth * 0.07, height: .screenWidth * 0.07)
                     Text(primaryButtonTitle1)
-                        .font(.title3)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
@@ -62,7 +62,7 @@ struct AlarmGoodsBtnView: View {
                         .frame(width: .screenWidth * 0.08, height: .screenWidth * 0.06)
                     
                     Text(primaryButtonTitle2)
-                        .font(.title3)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
@@ -74,7 +74,7 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 Text(primaryButtonTitle3)
-                    .bold()
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
                     .frame(maxWidth: .infinity)
             }
             .initialButtonBackgroundModifier(fontColor: .black, color: .hex("D9D9D9"))

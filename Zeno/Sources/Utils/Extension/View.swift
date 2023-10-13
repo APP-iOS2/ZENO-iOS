@@ -53,6 +53,22 @@ extension View {
         )
     }
     
+    func usingAlert(
+        isPresented: Binding<Bool>,
+        imageName: String,
+        content: String,
+        primaryAction1: @escaping () -> Void
+    ) -> some View {
+        return modifier(
+            AlarmAlertBtnModifier(
+                isPresented: isPresented,
+                imageName: imageName,
+                content: content,
+                primaryAction1: primaryAction1
+            )
+        )
+    }
+    
     func initialButtonBackgroundModifier(fontColor: Color, color: Color) -> some View {
         modifier(InitialButtonBackgroundModifier(color: color, fontColor: fontColor))
     }
