@@ -27,6 +27,32 @@ extension View {
         )
     }
     
+    func goodsAlert(
+        isPresented: Binding<Bool>,
+        content1: String,
+        content2: String,
+        primaryButtonTitle1: String,
+        primaryAction1: @escaping () -> Void,
+        primaryButtonTitle2: String,
+        primaryAction2: @escaping () -> Void,
+        primaryButtonTitle3: String,
+        primaryAction3: @escaping () -> Void
+    ) -> some View {
+        return modifier(
+            AlarmGoodsAlertModifier(
+                isPresented: isPresented,
+                content1: content1,
+                content2: content2,
+                primaryButtonTitle1: primaryButtonTitle1,
+                primaryAction1: primaryAction1,
+                primaryButtonTitle2: primaryButtonTitle2,
+                primaryAction2: primaryAction2,
+                primaryButtonTitle3: primaryButtonTitle3,
+                primaryAction3: primaryAction3
+            )
+        )
+    }
+    
     func initialButtonBackgroundModifier(fontColor: Color, color: Color) -> some View {
         modifier(InitialButtonBackgroundModifier(color: color, fontColor: fontColor))
     }
