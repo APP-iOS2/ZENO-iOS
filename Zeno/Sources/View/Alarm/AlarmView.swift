@@ -33,6 +33,12 @@ struct AlarmView: View {
                     AlarmEmptyView()
                 } else {
                     VStack {
+                        Text("홈")
+                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                        
                         AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                         
                         ScrollView {
@@ -45,13 +51,16 @@ struct AlarmView: View {
                                     AlarmChangingView(selectAlarm: selectAlarm)
                                 }
                             }
+                            // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
+                            Color.clear.frame(height: 80)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
-                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+//                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
+                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
                                 }
                             }
                         }
@@ -148,6 +157,7 @@ struct AlarmView: View {
                             WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm == nil ? false : true)
                         })
                         .disabled(selectAlarm == nil ? true : false)
+                        .blur(radius: isLackingCoin || isLackingInitialTicket ? 1.5 : 0)
                     }
                 }
             }
