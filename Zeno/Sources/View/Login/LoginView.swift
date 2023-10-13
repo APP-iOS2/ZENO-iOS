@@ -11,14 +11,13 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 Image("bubbleBackground")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                
                 
                 LottieView(lottieFile: "bubbles")
                 VStack {
@@ -33,12 +32,9 @@ struct LoginView: View {
                         .opacity(0.6)
                 }
                 .offset(y: -50)
-         
                 
                 VStack {
-                    
                     Spacer()
-                    
                     Button {
                         Task {
                             await userViewModel.startWithKakao()
