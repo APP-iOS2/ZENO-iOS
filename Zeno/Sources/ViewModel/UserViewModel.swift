@@ -17,9 +17,10 @@ class UserViewModel: ObservableObject {
     /// 현재 로그인된 유저
     @Published var currentUser: User?
     /// 로그인여부(상태)
-    @Published var signStatus: SignStatus = .none
+    @Published var signStatus: SignStatus = .unSign
     
     @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
+    @Published var isNeedLogin: Bool = false
     
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
@@ -30,6 +31,8 @@ class UserViewModel: ObservableObject {
             try? await loadUserData() // currentUser Value 가져오기 서버에서
             if self.currentUser != nil {
                 await self.getSignStatus() // currentUser의 값이 nil이 아닐때만 상태값 가져오기.
+            } else {
+                isNeedLogin = true
             }
         }
     }
@@ -185,7 +188,7 @@ class UserViewModel: ObservableObject {
         try? Auth.auth().signOut()
         self.userSession = nil
         self.currentUser = nil
-        self.setSignStatus(.none)
+        self.setSignStatus(.unSign)
     }
     
     /// 코인 사용 업데이트 함수

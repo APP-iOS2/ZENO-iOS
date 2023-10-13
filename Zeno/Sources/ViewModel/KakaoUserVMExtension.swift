@@ -18,7 +18,7 @@ extension UserViewModel {
         switch self.signStatus {
         case .signIn:
             break
-        case .none: // 새로 앱다운, 회원탈퇴했을때
+        case .unSign: // 새로 앱다운, 회원탈퇴했을때
             await loginWithKakao()
         }
     }

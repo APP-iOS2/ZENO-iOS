@@ -47,7 +47,24 @@ struct MypageSettingView: View {
                 Divider()
                 Button {
                     Task {
+                        await userViewModel.logoutWithKakao()
+                        userViewModel.isNeedLogin = true
+                    }
+                } label: {
+                    HStack {
+                        Text("로그아웃")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                    .padding()
+                }
+                 
+                Divider()
+                Button {
+                    Task {
                         await userViewModel.deleteUser()
+                        userViewModel.isNeedLogin = true
                     }
                 } label: {
                     Text("회원탈퇴")
@@ -57,9 +74,8 @@ struct MypageSettingView: View {
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
                 .padding()
             }
-            
+            .foregroundColor(.primary)
         }
-        .foregroundColor(.primary)
     }
     
     private func rowView(_ label: String) -> some View {
