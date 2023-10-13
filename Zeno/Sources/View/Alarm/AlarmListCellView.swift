@@ -49,7 +49,7 @@ struct AlarmListCellView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name)")
-                    Text("\(alarm.sendUserGender)")
+                    Text("\(alarm.sendUserGender.toString)")
                         .padding(.bottom, 1)
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")
