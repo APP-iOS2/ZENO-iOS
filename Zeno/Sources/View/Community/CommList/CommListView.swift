@@ -45,10 +45,35 @@ struct CommListView: View {
 						.padding(.bottom, 25)
 					} else {
 						ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
-                            ZenoSearchableCellView(item: community,
-                                                   actionTitle: "") {
+                            Button {
                                 commViewModel.changeSelectedComm(index: index)
                                 isPresented = false
+                            } label: {
+                                HStack(alignment: .center) {
+                                    Circle()
+                                        .stroke()
+                                        .frame(width: 30, height: 30)
+                                        .background(
+                                            ZenoKFImageView(community)
+                                                .clipShape(Circle())
+                                        )
+                                    VStack(alignment: .leading) {
+                                        Text("\(community.name)")
+                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+                                            .padding(.bottom, 1)
+                                        if !community.description.isEmpty {
+                                            Text("\(community.description)")
+                                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                                .foregroundColor(Color(uiColor: .systemGray4))
+                                                .lineLimit(1)
+                                        }
+                                    }
+                                    .padding(.leading, 4)
+                                    Spacer()
+                                    Image(systemName: "chevron.forward")
+                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                }
+                                .homeListCell()
                             }
 						}
                         .padding(2)

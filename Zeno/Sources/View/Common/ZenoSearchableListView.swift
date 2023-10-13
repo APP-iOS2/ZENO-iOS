@@ -33,7 +33,7 @@ struct ZenoSearchableListView<T: ZenoProfileVisible>: View where T: Hashable {
 					}
 				}
 				ForEach(items) { item in
-                    ZenoSearchableCellView(item: item, actionTitle: "친구추가") {
+                    ZenoProfileVisibleCellView(item: item, actionTitle: "친구추가") {
 					}
 					//
 					.fullScreenCover(isPresented: $isShowingCommJoinView) {
@@ -54,7 +54,7 @@ struct ZenoSearchableListView<T: ZenoProfileVisible>: View where T: Hashable {
 				}
 				VStack {
 					ForEach(items) { item in
-                        ZenoSearchableCellView(item: item, actionTitle: "친구추가") {
+                        ZenoProfileVisibleCellView(item: item, actionTitle: "친구추가") {
 						}
 					}
 				}

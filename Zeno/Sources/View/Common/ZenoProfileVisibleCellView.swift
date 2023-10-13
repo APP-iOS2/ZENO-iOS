@@ -1,5 +1,5 @@
 //
-//  ZenoSearchableCellView.swift
+//  ZenoProfileVisibleCellView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/05.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ZenoSearchableCellView<T: ZenoProfileVisible>: View {
+struct ZenoProfileVisibleCellView<T: ZenoProfileVisible>: View {
     let item: T
     let actionTitle: String
     let action: () -> Void
@@ -38,24 +38,10 @@ struct ZenoSearchableCellView<T: ZenoProfileVisible>: View {
             Button {
                 action()
             } label: {
-                label
+                Text(actionTitle)
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
-        .onTapGesture {
-            if actionTitle.isEmpty {
-                action()
-            }
-        }
         .homeListCell()
-    }
-    
-    @ViewBuilder
-    var label: some View {
-        if actionTitle.isEmpty {
-            Image(systemName: "chevron.forward")
-        } else {
-            Text(actionTitle)
-        }
     }
 }
