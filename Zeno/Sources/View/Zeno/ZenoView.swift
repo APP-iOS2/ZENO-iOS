@@ -42,7 +42,6 @@ struct ZenoView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
                         .opacityAndWhite()
-                        .fixedSize(horizontal: false, vertical: true)
 
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
@@ -131,17 +130,37 @@ struct ZenoView: View {
     }
 }
 
-struct ZenoView_pro: PreviewProvider {
-    @StateObject private var userViewModel: UserViewModel = .init()
-    @StateObject private var commViewModel: CommViewModel = .init()
-
-    static var previews: some View {
-        ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: Community.emptyComm, allMyFriends: User.dummy)
-            .environmentObject(UserViewModel())
-            .environmentObject(AlarmViewModel())
-            .environmentObject(CommViewModel())
-            .onAppear {
-                UserViewModel.init(currentUser: User.fakeCurrentUser)
+struct Zeno_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            TabBarView(selected: .zeno)
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                    }
+                }
+            }
         }
+    }
+    
+    static var previews: some View {
+        Preview()
     }
 }
