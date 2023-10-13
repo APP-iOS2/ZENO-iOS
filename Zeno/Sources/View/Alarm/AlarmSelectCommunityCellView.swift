@@ -47,7 +47,7 @@ struct AlarmSelectCommunityCellView: View {
             }
             
             Text("\(community.name)")
-                .font(.footnote)
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(width: 72)

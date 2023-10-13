@@ -49,11 +49,12 @@ struct AlarmListCellView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
                     Text("\(alarm.sendUserGender.toString)")
                         .padding(.bottom, 1)
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")
-                        .font(.caption)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
                         .foregroundStyle(.gray)
                 }
                 
@@ -64,6 +65,7 @@ struct AlarmListCellView: View {
                         .frame(width: 40, height: 40, alignment: .topTrailing)
                 }
             }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
             .padding(.bottom, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
@@ -74,10 +76,10 @@ struct AlarmListCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
-                        .bold()
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                         .padding(.bottom, 2)
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
-                        .font(.subheadline)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())

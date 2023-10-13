@@ -24,6 +24,7 @@ struct AlarmInitialBtnView: View {
     var body: some View {
         VStack {
             Text("Zeno 초성 확인하기")
+                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
                 .bold()
                 .padding(.bottom, 50)
             
@@ -40,6 +41,8 @@ struct AlarmInitialBtnView: View {
                 }
             } label: {
                 Text("코인으로 초성 확인")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                    .frame(width: .screenWidth * 0.5)
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
             .alert(isPresented: $usingCoin) {
@@ -69,6 +72,8 @@ struct AlarmInitialBtnView: View {
                 }
             } label: {
                 Text("초성 확인권으로 초성 확인")
+                    .frame(width: .screenWidth * 0.5)
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                     .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
             }
             .alert(isPresented: $usingInitialTicket) {
