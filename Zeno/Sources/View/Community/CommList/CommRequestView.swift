@@ -101,5 +101,7 @@ struct CommRequestView: View {
 struct CommReqestView_Previews: PreviewProvider {
 	static var previews: some View {
 		CommRequestView(isShowingCommRequestView: .constant(true), aplicationStatus: true, comm: Community.dummy[0])
+            .environmentObject(UserViewModel())
+            .environmentObject(CommViewModel())
 	}
 }

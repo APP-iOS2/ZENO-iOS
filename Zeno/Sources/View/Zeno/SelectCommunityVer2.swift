@@ -19,6 +19,7 @@ enum PlayStatus {
 struct SelectCommunityVer2: View {
     @Environment(\.colorScheme) var colorScheme
     
+    @StateObject private var zenoViewModel = ZenoViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
@@ -48,10 +49,9 @@ struct SelectCommunityVer2: View {
                             }
                     }
                 }
+                .frame(height: .screenHeight * 0.35)
                 /// 커뮤니티 리스트 뷰
                 commuityListView
-                    // 3 -> 4, 4 -> 3번째 아이템으로 넘어갈 때 스크롤 이상을 유발함
-//                    .offset(y: currentIndex == 0 || currentIndex == 1 ? -.screenWidth * 0.09 : currentIndex == 2 ? -.screenWidth * 0.09 : 0)
                     .background(.clear)
             }
             .overlay {
@@ -116,6 +116,10 @@ struct SelectCommunityVer2: View {
             )
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: commViewModel.joinedComm) { newValue in
+            zenoViewModel.joinedComm = newValue
+            zenoViewModel.setJoinedComm(comms: newValue)
+        }
     }
     
     var commuityListView: some View {

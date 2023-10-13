@@ -22,7 +22,6 @@ class CommViewModel: ObservableObject {
     /// currentUser가 마지막으로 선택한 커뮤니티, 가입된 커뮤니티가 없으면 nil을 반환
     var currentComm: Community? {
         guard joinedComm.count - 1 >= selectedComm else {
-            selectedComm = 0
             return nil
         }
         return joinedComm[selectedComm]
