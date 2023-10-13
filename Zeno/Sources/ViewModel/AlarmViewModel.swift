@@ -33,7 +33,7 @@ class AlarmViewModel: ObservableObject {
     /// 제노 게임에서 사람 선택 시 사용, Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
     @MainActor
     func pushAlarm(sendUser: User, receiveUser: User, community: Community, zeno: Zeno) async {
-        let alarm = Alarm(sendUserID: sendUser.id, sendUserName: sendUser.name, sendUserFcmToken: sendUser.fcmToken ?? "empty", sendUserGender: sendUser.gender, receiveUserID: receiveUser.id, receiveUserName: receiveUser.name, receiveUserFcmToken: receiveUser.fcmToken ?? "empty", communityID: community.id, showUserID: receiveUser.id, zenoID: zeno.id, zenoString: zeno.question, createdAt: Date().timeIntervalSince1970)
+        let alarm = Alarm(sendUserID: sendUser.id, sendUserName: sendUser.name, sendUserFcmToken: sendUser.fcmToken ?? "empty", sendUserGender: sendUser.gender == .female ? Gender.female : Gender.male, receiveUserID: receiveUser.id, receiveUserName: receiveUser.name, receiveUserFcmToken: receiveUser.fcmToken ?? "empty", communityID: community.id, showUserID: receiveUser.id, zenoID: zeno.id, zenoString: zeno.question, createdAt: Date().timeIntervalSince1970)
         
         await createAlarm(alarm: alarm)
         
@@ -53,7 +53,7 @@ class AlarmViewModel: ObservableObject {
     @MainActor
     func pushNudgeAlarm(nudgeAlarm: Alarm, currentUserGender: Gender) async {
         // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
-        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: "당신을 제노로 찌른 사람", createdAt: Date().timeIntervalSince1970)
+        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: "당신을 제노로 찌른 사람", createdAt: Date().timeIntervalSince1970)
         await createAlarm(alarm: alarm)
         
         PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: alarm.zenoString)

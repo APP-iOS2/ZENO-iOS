@@ -66,7 +66,6 @@ struct TabBarView: View {
             ForEach(MainTab.allCases) { tab in
                 tab.view
             }
-            .toolbarBackground(.clear, for: .tabBar)
             .toolbarBackground(.hidden, for: .tabBar)
 		}
         .overlay {

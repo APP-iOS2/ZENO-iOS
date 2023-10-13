@@ -47,6 +47,8 @@ struct ZenoView: View {
                         .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.4)
                         .padding([.top, .bottom], 10)
                     
+                    Spacer()
+                    
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(users) { user in
                             Button {

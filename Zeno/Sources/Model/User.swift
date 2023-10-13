@@ -51,9 +51,9 @@ enum Gender: Codable {
     var toString: String {
         switch self {
         case .male:
-            return "male"
+            return "남자"
         case .female:
-            return "female"
+            return "여자"
         }
     }
 }

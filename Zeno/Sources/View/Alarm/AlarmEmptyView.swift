@@ -13,13 +13,20 @@ struct AlarmEmptyView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack {
-            Image(systemName: "bell.slash")
-                .font(.largeTitle)
-                .padding()
+        ZStack {
+            LottieView(lottieFile: "bubbles")
             
-            Text("가입된 커뮤니티가 없습니다.")
-                .font(.title3)
+            VStack {
+                Image(systemName: "person.fill.xmark")
+                    .resizable()
+                    .frame(width: 80, height: 54)
+                    .foregroundColor(.ggullungColor)
+                    .padding(.bottom, 3)
+                
+                Text("가입된 커뮤니티가 없습니다")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                    .foregroundColor(.ggullungColor)
+            }
         }
         .onAppear {
             if !commViewModel.joinedComm.isEmpty {
