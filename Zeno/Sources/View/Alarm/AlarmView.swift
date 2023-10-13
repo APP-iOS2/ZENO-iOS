@@ -23,6 +23,9 @@ struct AlarmView: View {
     @State private var isPurchaseSheet: Bool = false
     @State private var selectAlarm: Alarm?
     
+    @State private var usingCoin: Bool = false
+    @State private var usingInitialTicket: Bool = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -52,17 +55,68 @@ struct AlarmView: View {
                                 }
                             }
                         }
-                        .sheet(isPresented: $isShowPaymentSheet, content: {
-                            AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
-                                isShowInitialView = true
+                        .blur(radius: isShowPaymentSheet ? 1.5 : 0)
+//                        .sheet(isPresented: $isShowPaymentSheet, content: {
+//                            AlarmInitialBtnView(isPresented: $isShowPaymentSheet, isLackingCoin: $isLackingCoin, isLackingInitialTicket: $isLackingInitialTicket) {
+//                                isShowInitialView = true
+//                            }
+//                            .presentationDetents([.fraction(0.75)])
+//                        })
+                        .goodsAlert(
+                            isPresented: $isShowPaymentSheet,
+                            content1: "당신을 제노한 사람의 초성을",
+                            content2: "확인하시겠습니까 ?",
+                            primaryButtonTitle1: "코인 사용",
+                            primaryAction1: {
+                                if userViewModel.currentUser?.coin ?? 0 >= 60 {
+                                    usingCoin = true
+                                } else {
+                                    print(" 코인 결제 임")
+                                    isLackingCoin.toggle()
+                                    
+                                    isShowPaymentSheet = false
+                                }
+                            },
+                            primaryButtonTitle2: "초성 확인권 사용",
+                            primaryAction2: {
+                                print("초성확인권 사용")
+                                if userViewModel.currentUser?.showInitial ?? 0 > 0 {
+                                    usingInitialTicket.toggle()
+                                } else {
+                                    print(" 유료 결제 임")
+                                    isLackingInitialTicket.toggle()
+                                    
+                                    isShowPaymentSheet = false
+                                }
+                            },
+                            primaryButtonTitle3: "다음에",
+                            primaryAction3: {
+                                isShowPaymentSheet = false
+                            })
+                        .usingAlert(
+                            isPresented: $usingCoin,
+                            imageName: "dollar-coin",
+                            content: "코인") {
+                                isShowInitialView.toggle()
+                                Task {
+                                    await userViewModel.updateUserCoin(to: -60)
+                                }
+                                usingCoin = false
                             }
-                            .presentationDetents([.fraction(0.75)])
-                        })
+                        .usingAlert(
+                            isPresented: $usingInitialTicket,
+                            imageName: "",
+                            content: "초성 확인권") {
+                                isShowInitialView.toggle()
+                                Task {
+                                    await userViewModel.updateUserInitialCheck(to: -1)
+                                }
+                                usingInitialTicket = false
+                            }
                     }
                     .onTapGesture {
                         selectAlarm = nil
                     }
-                    .blur(radius: isShowPaymentSheet ? 1.5 : 0)
                     .cashAlert(
                         isPresented: $isLackingCoin,
                         title: "코인이 부족합니다.",

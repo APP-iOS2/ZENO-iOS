@@ -49,12 +49,14 @@ struct AlarmChangingView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    backAlert = true
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.backward")
-                        Text("Back")
+                if isFlipped { // 카드가 뒤집어지면서 back 버튼 나타날 수 있게
+                    Button {
+                        backAlert = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.backward")
+                            Text("Back")
+                        }
                     }
                 }
             }
