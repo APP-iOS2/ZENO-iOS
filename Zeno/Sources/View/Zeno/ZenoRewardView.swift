@@ -18,7 +18,7 @@ struct ZenoRewardView: View {
                 
                 Group {
                     Group {
-                        Text("60 코인 획득")
+                        Text("20 코인 획득")
                         Text("")
                     }
                     .font(ZenoFontFamily.NanumBarunGothicOTF.bold.swiftUIFont(size: 30))
@@ -41,7 +41,7 @@ struct ZenoRewardView: View {
             }
         }
         .task {
-            await userViewModel.updateUserCoin(to: 60)
+            await userViewModel.updateUserCoin(to: 20)
         }
         .navigationBarBackButtonHidden()
     }
