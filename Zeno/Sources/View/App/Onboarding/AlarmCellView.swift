@@ -47,7 +47,7 @@ struct AlarmCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     HStack {
-                        Text("< \(question) >")
+                        Text("\(question)")
                         Text("질문에")
                             .fontWeight(.regular)
                     }
