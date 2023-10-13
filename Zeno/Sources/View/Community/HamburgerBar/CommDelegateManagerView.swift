@@ -32,7 +32,7 @@ struct CommDelegateManagerView: View {
             if !commViewModel.currentCommMembers.isEmpty {
                 ForEach(commViewModel.currentCommMembers) { user in
                     HStack {
-                        ZenoSearchableCellView(item: user,
+                        ZenoProfileVisibleCellView(item: user,
                                                actionTitle: "매니저 권한 위임"
                         ) {
                             selectedUser = user

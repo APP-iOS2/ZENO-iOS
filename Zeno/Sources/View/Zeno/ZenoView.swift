@@ -140,8 +140,5 @@ struct ZenoView_pro: PreviewProvider {
             .environmentObject(UserViewModel())
             .environmentObject(AlarmViewModel())
             .environmentObject(CommViewModel())
-            .onAppear {
-                UserViewModel.init(currentUser: User.fakeCurrentUser)
-        }
     }
 }
