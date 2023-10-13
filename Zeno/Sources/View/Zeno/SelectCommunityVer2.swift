@@ -106,11 +106,11 @@ struct SelectCommunityVer2: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
-                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
                         dragWidth = value.translation.width
                     }
                     .onEnded { value in
-                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
                         if value.translation.width > 0 {
                             guard currentIndex > 0 else { return }
                             currentIndex -= 1
@@ -192,7 +192,7 @@ struct SelectCommunityVer2: View {
                     .frame(height: 70)
                     .listRowSeparator(.hidden)
             }
-            .offset(y: -50)
+            .offset(y: -20)
             .overlay {
                 HStack {
                     Spacer()

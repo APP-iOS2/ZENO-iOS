@@ -31,7 +31,7 @@ struct SideMenuView: View {
                 
                 // 실제 나타낼 컨텐츠 (widthSizeRate의 비율로 나타내준다.)
                 ZStack {
-                    Color.init(uiColor: .systemBackground)
+                    Color(uiColor: .systemBackground)
                     
                     CommSideBarView(isPresented: $isPresented)
                 }

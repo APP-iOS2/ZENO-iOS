@@ -26,20 +26,36 @@ struct ZenoSearchableCellView<T: ZenoProfileVisible>: View {
                 Text("\(item.name)")
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
-                Text("\(item.description)")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
-                    .foregroundColor(Color(uiColor: .systemGray4))
-                    .lineLimit(1)
+                if !item.description.isEmpty {
+                    Text("\(item.description)")
+                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                        .foregroundColor(Color(uiColor: .systemGray4))
+                        .lineLimit(1)
+                }
             }
             .padding(.leading, 4)
             Spacer()
             Button {
                 action()
             } label: {
-                Text(actionTitle)
+                label
                     .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
             }
         }
+        .onTapGesture {
+            if actionTitle.isEmpty {
+                action()
+            }
+        }
         .homeListCell()
+    }
+    
+    @ViewBuilder
+    var label: some View {
+        if actionTitle.isEmpty {
+            Image(systemName: "chevron.forward")
+        } else {
+            Text(actionTitle)
+        }
     }
 }

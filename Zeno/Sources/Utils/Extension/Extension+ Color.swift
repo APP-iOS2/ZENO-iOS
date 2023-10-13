@@ -37,7 +37,7 @@ extension Color {
 }
 extension Color: Codable {
     public init(from decoder: Decoder) throws {
-        var container = try decoder.singleValueContainer()
+        let container = try decoder.singleValueContainer()
         let colorString = try container.decode(String.self)
         self.init(colorString) // Assuming you have a function to convert a hex string to Color
     }

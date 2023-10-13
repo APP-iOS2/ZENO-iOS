@@ -37,7 +37,7 @@ final class MypageViewModel: ObservableObject {
     func getUserInfo() async {
         if let currentUser = userSession?.uid {
 //            let document = try await db.collection("User").document(currentUser).getDocument()
-            await db.collection("User").document(currentUser).getDocument { document, error in
+            db.collection("User").document(currentUser).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()
                     do {
