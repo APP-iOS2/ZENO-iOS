@@ -20,6 +20,7 @@ class ZenoViewModel: ObservableObject {
         case lessThanFour
         case notSelected
     }
+    
     @Published var isPlay: PlayStatus
     
     init() {
@@ -34,7 +35,6 @@ class ZenoViewModel: ObservableObject {
             isPlay = .lessThanFour
         }
     }
-    
     
     // MARK: 제노 뷰
     /// 커뮤니티 id로 친구 id배열을 받아오는 함수.

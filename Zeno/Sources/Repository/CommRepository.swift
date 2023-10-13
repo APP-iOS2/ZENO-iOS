@@ -29,8 +29,8 @@ class CommRepository {
         var result: [Community]?
         semaphore.wait()
         switch action {
-        case let .set(allComms):
-            setAllComm(allComm)
+        case let .set(communities):
+            setAllComm(communities)
         case .getAll:
             result = getAllComm()
         case .getjoined:

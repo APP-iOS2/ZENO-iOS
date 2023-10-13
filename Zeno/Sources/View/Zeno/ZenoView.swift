@@ -66,7 +66,9 @@ struct ZenoView: View {
                                 
                                 /// 버튼을 누를 때 마다 해당 사용자에게 알림이 감
                                 Task {
-                                    await alarmViewModel.pushAlarm(sendUser: userViewModel.currentUser!, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    if let currentUser = userViewModel.currentUser {
+                                        await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                    }
                                     debugPrint(user.name)
                                     debugPrint(zenoList[selected-1].question)
                                 }
@@ -140,6 +142,6 @@ struct ZenoView_pro: PreviewProvider {
             .environmentObject(CommViewModel())
             .onAppear {
                 UserViewModel.init(currentUser: User.fakeCurrentUser)
-            }
+        }
     }
 }

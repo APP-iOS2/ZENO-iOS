@@ -56,7 +56,7 @@ struct CommMainView: View {
         }
         .tint(.black)
         .overlay(
-            SideMenuView(
+            CommSideMenuView(
                 isPresented: $isShowingHamburgerView,
                 comm: commViewModel.currentComm ?? Community.dummy[0]
             )

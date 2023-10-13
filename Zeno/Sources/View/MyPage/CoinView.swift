@@ -23,7 +23,7 @@ struct CoinView: View {
                         .font(.system(size: 18))
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height:75)
+                .frame(height: 75)
                 .background(.black)
         }
     }
