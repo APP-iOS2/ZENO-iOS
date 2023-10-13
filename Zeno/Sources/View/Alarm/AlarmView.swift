@@ -76,6 +76,8 @@ struct AlarmView: View {
                     )
                     .sheet(isPresented: $isPurchaseSheet, content: {
                         PurchaseView()
+                            .presentationDetents([.fraction(0.75)])
+                            .presentationDragIndicator(.visible)
                     })
                     
                     VStack {
