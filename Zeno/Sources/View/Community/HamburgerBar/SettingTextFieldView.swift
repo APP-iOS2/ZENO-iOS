@@ -13,10 +13,11 @@ struct SettingTextFieldView: View {
 	@Environment(\.dismiss) var dismiss
 	let title: String
 	@Binding var value: String
-	
+	@State private var isValidGroupName: Bool = false
     @State private var fixedText: String = ""
 	@FocusState private var isTextFocused: Bool // ios 15이상에서만 동작
-	let textMaxCount: Int = 50
+	let textMaxCount: Int = 15
+	private let debouncer: Debouncer = .init(delay: 2.0)
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
@@ -25,6 +26,7 @@ struct SettingTextFieldView: View {
                     dismiss()
                 }
 				Text(title)
+					.font(.regular(14))
 				Spacer()
 				Button {
 					value = fixedText
@@ -32,7 +34,7 @@ struct SettingTextFieldView: View {
 				} label: {
 					Text("확인")
 				}
-                .disabled(fixedText.isEmpty)
+				.disabled(!isValidGroupName || fixedText.isEmpty)
 			}
 			.padding()
             .tint(.black)
@@ -43,7 +45,10 @@ struct SettingTextFieldView: View {
 					.focused($isTextFocused)
 					.onChange(of: fixedText) { newValue in
 						if fixedText.count > textMaxCount {
-                            fixedText = String(newValue.prefix(textMaxCount))
+							fixedText = String(newValue.prefix(textMaxCount))
+						}
+						debouncer.run {
+							isValidGroupName = a()
 						}
 					}
                 if !fixedText.isEmpty {
@@ -72,6 +77,11 @@ struct SettingTextFieldView: View {
 			fixedText = value
 			isTextFocused = true
 		}
+	}
+	
+	func a() -> Bool {
+		
+		return true
 	}
 }
 
