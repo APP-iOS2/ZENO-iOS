@@ -116,10 +116,6 @@ struct SelectCommunityVer2: View {
             )
         }
         .navigationBarBackButtonHidden()
-        .onChange(of: commViewModel.joinedComm) { newValue in
-            zenoViewModel.joinedComm = newValue
-            zenoViewModel.setJoinedComm(comms: newValue)
-        }
     }
     
     var commuityListView: some View {
