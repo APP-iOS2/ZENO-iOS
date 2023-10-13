@@ -15,12 +15,12 @@ struct CoinView: View {
         VStack {
                 HStack {
                     Text("Z")
-                        .font(.system(size: 25))
-                        .foregroundColor(ZenoAsset.Assets.mainPurple1.swiftUIColor)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 25))
+                        .foregroundColor(Color.purple2)
                         .fontWeight(.bold)
                     Text("제노 확인권이 \(mypageViewModel.userInfo?.showInitial ?? 0)회 남았어요.")
                         .foregroundColor(.white)
-                        .font(.system(size: 18))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 75)

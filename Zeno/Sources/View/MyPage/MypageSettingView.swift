@@ -13,52 +13,53 @@ struct MypageSettingView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-//            NavigationLink(destination: UserProfileEdit()) {
-//                rowView("프로필 수정")
-//            }
-//            Divider()
             
-            Group {
-                linkView("개인정보처리방침", "https://www.pipc.go.kr/np/default/page.do?mCode=H010000000")
-                Divider()
-                
-                linkView("Zeno 문의하기", "https://www.google.com/")
-                Divider()
-                
-                linkView("이용약관", "https://www.google.com/")
-                Divider()
-                
-                linkView("알림 설정", UIApplication.openSettingsURLString)
-                Divider()
-            }
-            
-            Button {
-                Task {
-                    await userViewModel.logoutWithKakao()
+            ScrollView(showsIndicators: false) {
+                Group {
+                    linkView("개인정보처리방침", "https://www.pipc.go.kr/np/default/page.do?mCode=H010000000")
+                    Divider()
+                    
+                    linkView("Zeno 문의하기", "https://www.google.com/")
+                    Divider()
+                    
+                    linkView("이용약관", "https://www.google.com/")
+                    Divider()
+                    
+                    linkView("알림 설정", UIApplication.openSettingsURLString)
+                    Divider()
                 }
-            } label: {
-                HStack {
-                    Text("로그아웃")
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                
+                Button {
+                    Task {
+                        await userViewModel.logoutWithKakao()
+                    }
+                } label: {
+                    HStack {
+                        Text("로그아웃")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.right")
+                    }
+                }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                .padding()
+                
+                Divider()
+                Button {
+                    Task {
+                        await userViewModel.deleteUser()
+                    }
+                } label: {
+                    Text("회원탈퇴")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Image(systemName: "chevron.right")
                 }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                .padding()
             }
-            .padding()
             
-            Divider()
-            Button {
-                Task {
-                    await userViewModel.deleteUser()
-                }
-            } label: {
-                Text("회원탈퇴")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "chevron.right")
-            }
-            .padding()
         }
-        .foregroundColor(.black)
-        .navigationBarTitleDisplayMode(.inline)
+        .foregroundColor(.primary)
     }
     
     private func rowView(_ label: String) -> some View {

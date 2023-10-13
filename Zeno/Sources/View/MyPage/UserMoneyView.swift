@@ -13,48 +13,47 @@ struct UserMoneyView: View {
     
     var body: some View {
         HStack {
-            /// 친구가 있어야 하는가 ??
-            VStack {
+            VStack(spacing: 3){
                 Text("\(mypageViewModel.friendIDList?.removeDuplicates().count ?? 0)")
-                    .font(.system(size: 25))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
                 Text("친구")
-                    .font(.system(size: 15))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
             }
             .frame(maxWidth: .infinity/3)
             
             /// 코인
-            VStack( spacing: 0) {
+            VStack( spacing: 4) {
                 Text("\(mypageViewModel.userInfo?.coin ?? 0)")
-                    .font(.system(size: 25))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
-                
-                HStack(spacing: 0) {
-                    Image("pointCoin")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                    Text("코인")
-                        .font(.system(size: 15))
-                }
+                Text("코인")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+//                HStack(spacing: 0) {
+//                    Image("pointCoin")
+//                        .resizable()
+//                        .frame(width: 17, height: 17)
+//                    Text("코인")
+//                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+//                }
             }
             .frame(maxWidth: .infinity/3)
-//            .frame(width: UIScreen.main.bounds.width/3)
             
             /// 지목 받은 제노
-            VStack {
+            VStack(spacing: 3){
                 Text("\(mypageViewModel.userInfo?.commInfoList.count ?? 0)")
-                    .font(.system(size: 25))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
                 Text("득표수")
-                    .font(.system(size: 15))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
             }
             .frame(maxWidth: .infinity/3)
         }
         .padding(10)
-        .background(ZenoAsset.Assets.mainPurple1.swiftUIColor)
+        .background(Color.purple2)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+//        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.purple2, lineWidth: 0.7))
         .foregroundColor(.white)
-        .padding()
     }
 }
 
