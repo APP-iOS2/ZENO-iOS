@@ -179,8 +179,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, 10)
                             Text(commViewModel.joinedComm[index].name)
                                 .font(selected == commViewModel.joinedComm[index].id ?
-                                      ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 19) :
-                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17) :
+                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
                                 .foregroundColor(.primary.opacity(0.7))
                             
                             Spacer()
