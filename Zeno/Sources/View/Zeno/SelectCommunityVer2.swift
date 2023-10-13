@@ -50,7 +50,7 @@ struct SelectCommunityVer2: View {
                 }
                 /// 커뮤니티 리스트 뷰
                 commuityListView
-                    .offset(y: currentIndex == 0 || currentIndex == 1 || currentIndex == 2 ? -.screenWidth * 0.13 : 0 )
+                    .offset(y: currentIndex == 0 || currentIndex == 1 ? -.screenWidth * 0.09 : currentIndex == 2 ? -.screenWidth * 0.09 : 0)
                     .background(.clear)
             }
             .overlay {
