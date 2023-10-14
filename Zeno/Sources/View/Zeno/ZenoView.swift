@@ -20,7 +20,7 @@ struct ZenoView: View {
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
-
+    
     var body: some View {
         if selected < zenoList.count {
             ZStack {
@@ -28,8 +28,10 @@ struct ZenoView: View {
                 Image(asset: ZenoImages(name: "ZenoBackgroundBasic"))
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
                 
+                /// 로띠쀼
+                LottieView(lottieFile: "Bigbubble")
                 /// 프로그래스 바
-                VStack(alignment: .center) {                    
+                VStack(alignment: .center) {
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
                         Text("\(selected+1) / \(zenoList.count)")
                             .foregroundColor(.white)
@@ -39,16 +41,18 @@ struct ZenoView: View {
                     
                     /// 랜덤 제노 퀘스쳔
                     Text(zenoList[selected].question)
+                        .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
-                        .frame(height: .screenHeight * 0.13)
+                        .frame(width: .screenWidth * 0.88,
+                               height: .screenHeight * 0.13)
                         .opacityAndWhite()
-
+                    
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.4)
+                        .frame(width: .screenWidth * 0.94, height: .screenHeight * 0.4)
                     
                     Spacer()
                     
@@ -56,6 +60,8 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(myFriends) { user in
                             Button {
+                                /// 진동
+                                HapticManager.instance.impact(style: .soft)
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
                                 if selected == zenoList.count-1 {
                                     Task {
@@ -82,6 +88,7 @@ struct ZenoView: View {
                                     Text(user.name)
                                         .foregroundColor(.primary)
                                 }
+                                .shake(0.8)
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
                                 .padding()
@@ -91,6 +98,7 @@ struct ZenoView: View {
                                         .opacity(0.6)
                                 )
                             }
+                            .offset(y: -20)
                         }
                     }
                     .transaction { view in
@@ -106,12 +114,14 @@ struct ZenoView: View {
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                     }
+                    .offset(y: -5)
                 }
                 .padding()
             }
             .onAppear {
                 resetUsers()
-            }.navigationBarBackButtonHidden(true)
+            }
+            .navigationBarBackButtonHidden(true)
         } else {
             ZenoRewardView()
         }
@@ -134,6 +144,7 @@ struct Zeno_Previews: PreviewProvider {
         
         var body: some View {
             TabBarView()
+                .edgesIgnoringSafeArea(.vertical)
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
@@ -148,9 +159,9 @@ struct Zeno_Previews: PreviewProvider {
                             commViewModel.updateCurrentUser(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
+                        }
                     }
                 }
-            }
         }
     }
     
