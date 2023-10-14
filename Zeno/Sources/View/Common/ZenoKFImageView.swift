@@ -43,7 +43,7 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                 return Image(womanAsset)
             }
         } else if (item as? Community) != nil {
-            return Image("team1")
+            return Image("ZenoIcon")
         } else {
             return Image("ZenoIcon")
         }
