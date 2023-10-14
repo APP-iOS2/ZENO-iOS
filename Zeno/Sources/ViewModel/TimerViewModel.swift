@@ -29,6 +29,10 @@ final class TimerViewModel: ObservableObject {
         }
     }
     
+    deinit {
+        self.timer.upstream.connect().cancel()
+    }
+    
     // MARK: 이 함수가 자원 갉아먹고 있음
     /// 사용자한테 몇초 남았다고 초를 보여주는 함수
     func comparingTime(currentUser: User?) -> Double {

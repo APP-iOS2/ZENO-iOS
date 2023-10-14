@@ -23,7 +23,6 @@ struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
-    @State private var path = NavigationPath()
     @State private var isPlay: PlayStatus = .notSelected
     @State private var community: Community?
     @State private var selected = ""
@@ -33,7 +32,7 @@ struct SelectCommunityVer2: View {
     @State private var dragWidth: CGFloat = 0
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $zenoViewModel.path) {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
                     ZStack {
@@ -54,7 +53,7 @@ struct SelectCommunityVer2: View {
                     .background(.clear)
             }
             .navigationDestination(for: Community.self) { value in
-                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, path: $path)
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value)
             }
             .overlay {
                 VStack {
@@ -65,7 +64,7 @@ struct SelectCommunityVer2: View {
                         case .success:
                             Button {
                                 if let community {
-                                    path.append(community)
+                                    zenoViewModel.path.append(community)
                                 }
                             } label: {
                                 WideButton(buttonName: "START", isplay: true)
@@ -118,6 +117,7 @@ struct SelectCommunityVer2: View {
                     }
             )
         }
+        .environmentObject(zenoViewModel)
         .navigationBarBackButtonHidden()
     }
     

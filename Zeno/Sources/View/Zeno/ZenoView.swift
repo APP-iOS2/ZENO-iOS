@@ -11,7 +11,6 @@ import SwiftUI
 struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
-    @Binding var path: NavigationPath
     
     @State private var allMyFriends: [User] = []
     @State private var users: [User] = []
@@ -119,7 +118,7 @@ struct ZenoView: View {
             }
             .navigationBarBackButtonHidden(true)
         } else {
-            ZenoRewardView(path: $path)
+            ZenoRewardView()
         }
     }
     

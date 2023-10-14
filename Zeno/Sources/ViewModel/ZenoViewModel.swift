@@ -6,7 +6,7 @@
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
@@ -14,6 +14,8 @@ import FirebaseFirestoreSwift
 class ZenoViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 15
+    
+    @Published var path = NavigationPath()
     
     enum PlayStatus {
         case success

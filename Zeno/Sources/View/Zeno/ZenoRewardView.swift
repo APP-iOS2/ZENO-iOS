@@ -9,8 +9,6 @@
 import SwiftUI
 
 struct ZenoRewardView: View {
-    @Binding var path: NavigationPath
-    
     @EnvironmentObject private var userViewModel: UserViewModel
 
     var body: some View {
@@ -36,7 +34,7 @@ struct ZenoRewardView: View {
                 Spacer()
                 
                 NavigationLink {
-                    FinishZenoView(path: $path)
+                    FinishZenoView()
                 } label: {
                     WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
                 }
@@ -50,7 +48,36 @@ struct ZenoRewardView: View {
 }
 
 struct ZenoRewardView_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            TabBarView()
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                    }
+                }
+            }
+        }
+    }
+    
     static var previews: some View {
-        ZenoRewardView(path: .constant(.init()))
+        Preview()
     }
 }

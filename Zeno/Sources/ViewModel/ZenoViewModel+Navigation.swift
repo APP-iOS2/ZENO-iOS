@@ -9,4 +9,7 @@
 import Foundation
 
 extension ZenoViewModel {
+    func resetZenoNavigation() {
+        path = .init()
+    }
 }
