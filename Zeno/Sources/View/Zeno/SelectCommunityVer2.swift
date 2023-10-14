@@ -48,7 +48,6 @@ struct SelectCommunityVer2: View {
                     }
                 }
                 .frame(height: .screenHeight * 0.35)
-                Text("\(myFriends.count)")
                 /// 커뮤니티 리스트 뷰
                 commuityListView
                     .background(.clear)
