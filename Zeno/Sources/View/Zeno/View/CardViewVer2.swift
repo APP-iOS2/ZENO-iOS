@@ -38,6 +38,7 @@ struct CardViewVer2: View {
                                     .clipShape(Circle())
                                 }
                             }
+                            
                             .scaleEffect(currentIndex == index ? 0.98 : 0.73)
                         
                         /// 그룹 이름

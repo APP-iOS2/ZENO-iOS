@@ -52,7 +52,7 @@ struct ZenoView: View {
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: .screenWidth * 0.94, height: .screenHeight * 0.4)
+                        .frame(width: .screenWidth * 0.94, height: .screenHeight * 0.32)
                     
                     Spacer()
                     
@@ -88,7 +88,7 @@ struct ZenoView: View {
                                     Text(user.name)
                                         .foregroundColor(.primary)
                                 }
-                                .shake(0.8)
+                                .shake(0.8) // 애니메이션 동작 안함
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
                                 .padding()

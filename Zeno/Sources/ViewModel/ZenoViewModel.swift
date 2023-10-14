@@ -65,15 +65,14 @@ final class ZenoViewModel: ObservableObject {
     @MainActor
     func IDArrayToUserArrary(idArray: [String]) async -> [User] {
         var resultArray: [User] = []
-        do {
-            for index in 0..<idArray.count {
+        for index in 0..<idArray.count {
+            do {
                 let result = try await fetchUser(withUid: idArray[index])
                 resultArray.append(result)
+            } catch {
+                print("\(index)")
+                debugPrint(#function + "fetch 유저 실패")
             }
-            debugPrint(resultArray.count)
-        } catch {
-            debugPrint(#function + "fetch 유저 실패")
-            return []
         }
         return resultArray
     }
