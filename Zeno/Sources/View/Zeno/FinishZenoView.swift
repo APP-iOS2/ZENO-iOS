@@ -22,11 +22,11 @@ struct FinishZenoView: View {
                 if timerViewModel.timesUp == false {
                     Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
                         .blueAndBMfont()
-                        .padding(.top, 20)
+                        .offset(y: 30)
                 } else {
                     Text(" 시간이 다 됐어요! ")
                         .blueAndBMfont()
-                        .padding(.top, 20)
+                        .offset(y: 30)
                     Button {
                         navigationSwitch = true
                     } label: {

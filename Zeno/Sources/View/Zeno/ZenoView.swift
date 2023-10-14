@@ -30,25 +30,26 @@ struct ZenoView: View {
                     .frame(width: .screenWidth, height: .screenHeight - .screenHeight * 0.2)
                 
                 /// 프로그래스 바
-                VStack(alignment: .center) {
+                VStack(alignment: .center) {                    
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
                         Text("\(selected+1) / \(zenoList.count)")
+                            .foregroundColor(.white)
                     }
-                    .opacityAndWhite()
+                    .progressViewStyle(LinearProgressViewStyle(tint: .white))
                     .bold()
                     
                     /// 랜덤 제노 퀘스쳔
                     Text(zenoList[selected].question)
                         .fixedSize(horizontal: false, vertical: true)
                         .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 28))
+                        .frame(height: .screenHeight * 0.13)
                         .opacityAndWhite()
 
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.4)
-                        .padding([.top, .bottom], 10)
+                        .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.4)
                     
                     Spacer()
                     
@@ -97,6 +98,7 @@ struct ZenoView: View {
                         view.disablesAnimations = true
                     }
                     
+                    /// 리셋 버튼
                     Button {
                         resetUsers()
                     } label: {
@@ -105,7 +107,6 @@ struct ZenoView: View {
                             .foregroundColor(.white)
                             .shadow(radius: 4)
                     }
-                    .padding(.top, 15)
                 }
                 .padding()
                 .onAppear {
