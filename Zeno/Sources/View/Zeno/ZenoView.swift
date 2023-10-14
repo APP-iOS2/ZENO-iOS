@@ -12,8 +12,7 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     
-    // TODO: private 붙이기
-    @State var allMyFriends: [User]
+    @State private var allMyFriends: [User] = []
     @State private var users: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
