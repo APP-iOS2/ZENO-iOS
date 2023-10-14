@@ -50,6 +50,7 @@ struct AlarmView: View {
                             ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                                     .padding(.bottom, 4)
+                                    .padding(.horizontal)
                             }
                             .navigationDestination(isPresented: $isShowInitialView) {
                                 if let selectAlarm {
@@ -59,7 +60,6 @@ struct AlarmView: View {
                             // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
                             Color.clear.frame(height: 80)
                         }
-                        .padding()
                         .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
@@ -70,6 +70,7 @@ struct AlarmView: View {
                             }
                         }
                     }
+//                    .shadow(color: .ggullungColor.opacity(0.4), radius: 5, y: 3)
                     .blur(radius: isBlur ? 1.5 : 0)
                     .goodsAlert(
                         isPresented: $isShowPaymentSheet,
