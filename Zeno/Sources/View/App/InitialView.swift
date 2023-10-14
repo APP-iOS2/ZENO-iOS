@@ -27,6 +27,7 @@ struct InitialView: View {
                     }
                 }
             }
+			.tint(.mainColor)
             // 런치스크린
             if isLoading && !isnickNameChanged {
                 InitView()
