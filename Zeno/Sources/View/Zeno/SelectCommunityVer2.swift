@@ -88,7 +88,7 @@ struct SelectCommunityVer2: View {
                     .frame(width: .screenWidth)
                     .background {
                         Blur(style: .light)
-                            .opacity(0.8)
+                            .opacity(0.9)
                             .edgesIgnoringSafeArea(.bottom)
                     }
                 }
