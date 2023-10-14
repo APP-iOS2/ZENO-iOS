@@ -24,6 +24,7 @@ struct CardViewVer2: View {
                         /// 그룹 이미지 뷰
                         ZenoKFImageView(commViewModel.joinedComm[index])
                             .clipShape(Circle())
+                            .shadow(radius: 3)
                             .frame(width: itemSize, height: itemSize)
                             .overlay {
                                 if isPlay == .lessThanFour, currentIndex == index {
@@ -38,8 +39,12 @@ struct CardViewVer2: View {
                                     .clipShape(Circle())
                                 }
                             }
-                            .scaleEffect(currentIndex == index ? 0.98 : 0.73)
-                        
+                            .scaleEffect(currentIndex == index ? 1 : 0.6)
+                            .rotation3DEffect(
+                                .degrees(currentIndex == index ? 0 : 30),
+                                axis: (x: -0.3, y: 0.15, z: 0.1)
+//                                axis: (x: 0.5, y: 0, z: 0)
+                            )
                         /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
@@ -50,6 +55,7 @@ struct CardViewVer2: View {
             }
             .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.35)
         }
+        .animation(.easeInOut, value: currentIndex)
         .disabled(true)
     }
 }

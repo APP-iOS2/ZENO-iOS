@@ -74,9 +74,31 @@ struct CommMainView: View {
     var mainView: some View {
         if commViewModel.currentComm != nil {
             ScrollView {
-                if commViewModel.currentComm != nil {
-                    newUserView
-                    userListView
+                VStack {
+                    if commViewModel.currentComm != nil {
+                        newUserView
+                        userListView
+                        if commViewModel.currentCommMembers.isEmpty && !commViewModel.joinedComm.isEmpty {
+                            Button {
+                                shareText()
+                            } label: {
+                                VStack {
+                                    LottieView(lottieFile: "invitePeople")
+                                        .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
+                                        .overlay {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 50))
+                                                .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
+                                        }
+                                    Text("친구를 초대해보세요")
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 24))
+                                        .offset(y: .screenHeight * -0.03)
+                                }
+                                .foregroundColor(.ggullungColor)
+                            }
+                            .frame(height: .screenHeight * 0.55)
+                        }
+                    }
                 }
             }
         } else {
@@ -88,7 +110,7 @@ struct CommMainView: View {
         VStack {
             HStack {
                 Text("새로 들어온 구성원 \(commViewModel.recentlyJoinedMembers.count)")
-					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                     .font(.footnote)
                 Spacer()
                 if !commViewModel.recentlyJoinedMembers.isEmpty {
@@ -100,7 +122,7 @@ struct CommMainView: View {
                     }
                 }
             }
-			.foregroundColor(.primary)
+            .foregroundColor(.primary)
             if isShowingDetailNewBuddyToggle {
                 ScrollView(.horizontal) {
                     HStack(spacing: 15) {
@@ -114,8 +136,8 @@ struct CommMainView: View {
                                             .clipShape(Circle())
                                     )
                                 Text("\(user.name)")
-									.foregroundColor(.primary)
-									.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                                    .foregroundColor(.primary)
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                             }
                         }
                     }
@@ -136,10 +158,10 @@ struct CommMainView: View {
                     TextField(text: $commViewModel.userSearchTerm) {
                         Text("구성원 찾기...")
                     }
-					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 } else {
                     Text("구성원 \(commViewModel.currentCommMembers.count)")
-						.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 }
                 Spacer()
                 if !commViewModel.currentCommMembers.isEmpty {
@@ -156,7 +178,7 @@ struct CommMainView: View {
                     .font(.caption)
                 }
             }
-			.foregroundColor(.primary)
+            .foregroundColor(.primary)
             if isShowingUserSearchView {
                 ForEach(commViewModel.searchedUsers) { user in
                     userCell(user: user)
@@ -180,9 +202,9 @@ struct CommMainView: View {
                     ZenoKFImageView(user)
                         .clipShape(Circle())
                 )
-			VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("\(user.name)")
-					.foregroundColor(.primary)
+                    .foregroundColor(.primary)
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                 Text("\(user.description)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
@@ -198,16 +220,16 @@ struct CommMainView: View {
                         await userViewModel.addFriend(user: user, comm: comm)
                     }
                 } label: {
-					HStack(alignment: .bottom, spacing: 2) {
-						Image(systemName: "person.crop.circle.badge.plus")
-						Text("친구추가")
-					}
-					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-					.foregroundColor(.white)
-					.padding(5)
-					.background(Color("MainColor"))
-					.cornerRadius(6)
-					.shadow(radius: 0.3)
+                    HStack(alignment: .bottom, spacing: 2) {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                        Text("친구추가")
+                    }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    .foregroundColor(.white)
+                    .padding(5)
+                    .background(Color("MainColor"))
+                    .cornerRadius(6)
+                    .shadow(radius: 0.3)
                 }
             }
         }
@@ -221,14 +243,14 @@ struct CommMainView: View {
             } label: {
                 HStack {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
-						.foregroundColor(.primary)
-						.font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                        .foregroundColor(.primary)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
                     Image(systemName: "chevron.down")
-						.font(.system(size: 12))
-						.fontWeight(.semibold)
+                        .font(.system(size: 12))
+                        .fontWeight(.semibold)
                 }
                 .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-				.foregroundColor(.primary)
+                .foregroundColor(.primary)
             }
         }
     }
@@ -241,20 +263,66 @@ struct CommMainView: View {
                 Image(systemName: "line.3.horizontal")
                     .font(.system(size: 18))
                     .fontWeight(.semibold)
-					.foregroundColor(.primary)
+                    .foregroundColor(.primary)
                     .padding(.leading)
+            }
+        }
+    }
+    
+    private func shareText() {
+        guard let commID = commViewModel.currentComm?.id else { return }
+        let deepLink = "zenoapp://invite?commID=\(commID)"
+        let activityVC = UIActivityViewController(
+            activityItems: [deepLink],
+            applicationActivities: [KakaoActivity(), IGActivity()]
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            if let mainWindow = windowScene.windows.first {
+                mainWindow.rootViewController?.present(
+                    activityVC,
+                    animated: true,
+                    completion: {
+                        print("공유창 나타나면서 할 작업들?")
+                    }
+                )
             }
         }
     }
 }
 
 struct HomeMainView_Previews: PreviewProvider {
-	static var previews: some View {
-		TabBarView()
-			.environmentObject(UserViewModel())
-            .environmentObject(CommViewModel())
-            .environmentObject(ZenoViewModel())
-            .environmentObject(AlarmViewModel())
-			.environmentObject(MypageViewModel())
-	}
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            TabBarView()
+                .edgesIgnoringSafeArea(.vertical)
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+                .onAppear {
+                    Task {
+                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+                        switch result {
+                        case .success(let user):
+                            userViewModel.currentUser = user
+                            commViewModel.updateCurrentUser(user: user)
+                        case .failure:
+                            print("preview 유저로드 실패")
+                        }
+                    }
+                }
+        }
+    }
+    
+    static var previews: some View {
+        Preview()
+    }
 }

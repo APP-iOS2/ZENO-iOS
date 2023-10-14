@@ -13,7 +13,7 @@ struct UserMoneyView: View {
     
     var body: some View {
         HStack {
-            VStack(spacing: 3){
+            VStack(spacing: 3) {
                 Text("\(mypageViewModel.friendIDList?.removeDuplicates().count ?? 0)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
