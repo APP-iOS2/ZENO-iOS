@@ -40,7 +40,7 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoProfil
 extension Community {
     static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
 	// 욕설 주의;;
-	static let badWords = ["시발", "씨발", "개새끼", "병신", "시바", "엿먹어", "븅신"]
+	static let badWords = ["시발", "씨발", "개새끼", "병신", "시바", "엿먹어", "븅신", "ㅅㅂ", "ㅂㅅ", "ㅅㅂㄴ", "ㅂㅅㅅㄲ"]
 }
 
 extension Array<Community> {
