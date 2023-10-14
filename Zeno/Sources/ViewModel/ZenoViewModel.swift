@@ -113,7 +113,5 @@ final class ZenoViewModel: ObservableObject {
             throw error
         }
     }
-    
-    /// ZenoView에서 유저를 랜덤으로 뽑아와주는 ㅎ
-
 }
+
