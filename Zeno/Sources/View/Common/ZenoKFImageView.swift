@@ -43,7 +43,7 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                 return Image(womanAsset)
             }
         } else if (item as? Community) != nil {
-            return Image(CommAsset.team1.rawValue)
+            return Image("team1")
         } else {
             return Image("ZenoIcon")
         }
@@ -53,14 +53,6 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     init(_ item: T, ratio: SwiftUI.ContentMode = .fill) {
         self.item = item
         self.ratio = ratio
-    }
-    
-    private enum UserAsset: String, CaseIterable {
-        case man1, man2, woman1, woman2
-    }
-    
-    private enum CommAsset: String, CaseIterable {
-        case team1, team2, team3, team4
     }
 }
 
