@@ -14,7 +14,7 @@ struct AlarmSelectCommunityView: View {
     
     var body: some View {
         HStack {
-            ScrollView(.horizontal) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 4) {
                     VStack {
                         Image("All1")
@@ -34,6 +34,7 @@ struct AlarmSelectCommunityView: View {
                         Text("전체")
                             .font(.footnote)
                             .frame(width: 72)
+                            .padding(.leading)
                     }
                     ForEach(communityViewModel.joinedComm) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
@@ -42,7 +43,8 @@ struct AlarmSelectCommunityView: View {
             }
         }
         .padding(.vertical, -10)
-        .padding(.horizontal)
+//        .shadow(radius: 5)
+//        .padding(.horizontal)
     }
 }
 

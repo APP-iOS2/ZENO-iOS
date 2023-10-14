@@ -15,6 +15,7 @@ struct HomeListModifier: ViewModifier {
 			.background(Color(uiColor: .systemGray6))
 			.cornerRadius(10)
 			.padding(.horizontal)
+            .shadow(color: .ggullungColor.opacity(0.1), radius: 3)
 	}
 }
 
@@ -24,7 +25,7 @@ struct HomeListCellModifier: ViewModifier {
 			.padding()
 			.background(.background)
 			.cornerRadius(10)
-			.shadow(radius: 1)
+            .shadow(color: .ggullungColor.opacity(0.2), radius: 10)
 	}
 }
 
