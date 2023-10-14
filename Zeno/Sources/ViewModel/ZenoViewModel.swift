@@ -27,6 +27,24 @@ class ZenoViewModel: ObservableObject {
         self.isPlay = .notSelected
     }
     
+    /// currentUser 값 가져오기
+//    func loadUserData() async throws {
+//        self.userSession = Auth.auth().currentUser
+//        print("🦕Auth.currentUser: \(String(describing: userSession))")
+//        guard let currentUid = userSession?.uid else {
+//            isNeedLogin = true
+//            print("🦕로그인된 유저 없음")
+//            return
+//        }
+//        print("🦕UID = \(currentUid)")
+//        self.currentUser = try? await fetchUser(withUid: currentUid)
+//        if let currentUser {
+//            print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
+//        } else {
+//            print("🦕현재 로그인된 유저 없음")
+//        }
+//    }
+    
     /// isPlay 배출
     func isPlayStatus(comm: Community, currentUser: User) {
         if hasFourFriends(comm: comm, currentUser: currentUser) {
