@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ZenoRewardView: View {
+    @Binding var path: NavigationPath
+    
     @EnvironmentObject private var userViewModel: UserViewModel
 
     var body: some View {
@@ -34,7 +36,7 @@ struct ZenoRewardView: View {
                 Spacer()
                 
                 NavigationLink {
-                    FinishZenoView()
+                    FinishZenoView(path: $path)
                 } label: {
                     WideButton(buttonName: "Get Coin", systemImage: "arrowshape.turn.up.forward.fill", isplay: true)
                 }
@@ -49,6 +51,6 @@ struct ZenoRewardView: View {
 
 struct ZenoRewardView_Previews: PreviewProvider {
     static var previews: some View {
-        ZenoRewardView()
+        ZenoRewardView(path: .constant(.init()))
     }
 }

@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct FinishZenoView: View {
-    @State private var navigationSwitch: Bool = false
+    @Binding var path: NavigationPath
+    
     @State private var stack = NavigationPath()
     @StateObject private var timerViewModel = TimerViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -19,24 +20,21 @@ struct FinishZenoView: View {
             VStack {
                 LottieView(lottieFile: "beforeZenoFirst")
                 
-                if timerViewModel.timesUp == false {
-                    Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
-                        .blueAndBMfont()
-                        .padding(.top, 20)
-                } else {
+                if timerViewModel.timesUp {
                     Text(" 시간이 다 됐어요! ")
                         .blueAndBMfont()
-                        .padding(.top, 20)
+                        .offset(y: 30)
                     Button {
-                        navigationSwitch = true
+                        path = .init()
                     } label: {
                         WideButton(buttonName: "제노하러가기", isplay: true)
                     }
+                } else {
+                    Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
+                        .blueAndBMfont()
+                        .offset(y: 30)
                 }
             }
-        }
-        .navigationDestination(isPresented: $navigationSwitch) {
-            SelectCommunityVer2()
         }
         .onAppear {
             timerViewModel.myZenoTimer = Int(timerViewModel.comparingTime(currentUser: userViewModel.currentUser))
@@ -52,7 +50,7 @@ struct FinishZenoView: View {
 
 struct FinishZenoView_Previews: PreviewProvider {
     static var previews: some View {
-        FinishZenoView()
+        FinishZenoView(path: .constant(.init()))
             .environmentObject(UserViewModel())
     }
-}
+    

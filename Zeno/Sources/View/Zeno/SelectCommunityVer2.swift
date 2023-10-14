@@ -23,10 +23,9 @@ struct SelectCommunityVer2: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
-    @State private var stack = NavigationPath()
+    @State private var path = NavigationPath()
     @State private var isPlay: PlayStatus = .notSelected
     @State private var community: Community?
-    @State private var allMyFriends: [User] = []
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
@@ -34,7 +33,7 @@ struct SelectCommunityVer2: View {
     @State private var dragWidth: CGFloat = 0
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
                     ZStack {
@@ -54,6 +53,9 @@ struct SelectCommunityVer2: View {
                 commuityListView
                     .background(.clear)
             }
+            .navigationDestination(for: Community.self) { value in
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, path: $path)
+            }
             .overlay {
                 VStack {
                     Spacer()
@@ -61,9 +63,9 @@ struct SelectCommunityVer2: View {
                         /// isPlay 상태에 따라 달라짐
                         switch isPlay {
                         case .success:
-                            NavigationLink {
+                            Button {
                                 if let community {
-                                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community, allMyFriends: allMyFriends)
+                                    path.append(community)
                                 }
                             } label: {
                                 WideButton(buttonName: "START", isplay: true)
@@ -84,6 +86,7 @@ struct SelectCommunityVer2: View {
                     .background {
                         Blur(style: .light)
                             .opacity(0.8)
+                            .edgesIgnoringSafeArea(.bottom)
                     }
                 }
             }
