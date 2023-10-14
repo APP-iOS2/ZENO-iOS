@@ -9,6 +9,7 @@
 import Foundation
 
 extension Double {
+    /// Double(TimeIntetrval)을 yyyy-MM-dd 형식으로 String을 반환함
     var convertDate: String {
         let date = Date(timeIntervalSince1970: self)
         let dateFormatter = DateFormatter()

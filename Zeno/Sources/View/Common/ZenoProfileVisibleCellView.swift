@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, BtnLabel: View>: View {
+struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
     let item: Item
-    let label: () -> BtnLabel
+    let label: () -> Label
     let interaction: (Item) -> Void
     
     var body: some View {

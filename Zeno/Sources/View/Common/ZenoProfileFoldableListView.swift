@@ -1,5 +1,5 @@
 //
-//  ZenoProfileVisibleListView.swift
+//  ZenoProfileFoldableListView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/14.
@@ -55,12 +55,14 @@ struct ZenoProfileVisibleListView<Item: ZenoProfileVisible,
 
 struct ZenoProfileVisibleListView_Previews: PreviewProvider {
     static var previews: some View {
-        ZenoProfileVisibleListView(list: User.dummy) {
-            Text("헤더ㅋ")
-        } btnLabel: {
-            Text("버튼ㅋ")
-        } interaction: { item in
-            print(item)
+        ScrollView {
+            ZenoProfileVisibleListView(list: User.dummy) {
+                Text("헤더ㅋ")
+            } btnLabel: {
+                Text("버튼ㅋ")
+            } interaction: { item in
+                print(item)
+            }
         }
     }
 }
