@@ -63,15 +63,19 @@ final class ZenoViewModel: ObservableObject {
     // MARK: 제노 뷰
     /// 친구 id 배열로  친구 User  배열 받아오는 함수
     @MainActor
-    func IDArrayToUserArrary(idArray: [String]) async {
+    func IDArrayToUserArrary(idArray: [String]) async -> [User] {
+        var resultArray: [User] = []
         do {
             for index in 0..<idArray.count {
                 let result = try await fetchUser(withUid: idArray[index])
-                self.myfriends.append(result)
+                resultArray.append(result)
             }
+            debugPrint(resultArray.count)
         } catch {
             debugPrint(#function + "fetch 유저 실패")
+            return []
         }
+        return resultArray
     }
     
     // MARK: 제노 뷰

@@ -11,8 +11,9 @@ import SwiftUI
 struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
+    let user: [User]
     
-    @State var user: [User]
+    @State private var myFriends: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
@@ -52,7 +53,7 @@ struct ZenoView: View {
                     
                     /// 친구들 버튼 창
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
-                        ForEach(zenoViewModel.myfriends) { user in
+                        ForEach(myFriends) { user in
                             Button {
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
                                 if selected == zenoList.count-1 {
@@ -109,16 +110,15 @@ struct ZenoView: View {
             }
             .onAppear {
                 resetUsers()
-            }
-            .navigationBarBackButtonHidden(true)
+            }.navigationBarBackButtonHidden(true)
         } else {
             ZenoRewardView()
         }
     }
     
     func resetUsers() {
-        if zenoViewModel.myfriends.count >= 4 {
-            zenoViewModel.myfriends = Array(zenoViewModel.myfriends.shuffled().prefix(upTo: 4))
+        if user.count >= 4 {
+            myFriends = Array(user.shuffled().prefix(upTo: 4))
         }
     }
 }

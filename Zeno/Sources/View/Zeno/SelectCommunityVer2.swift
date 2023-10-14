@@ -22,6 +22,7 @@ struct SelectCommunityVer2: View {
     @StateObject private var zenoViewModel = ZenoViewModel()
     @EnvironmentObject private var commViewModel: CommViewModel
     
+    @State private var myFriends: [User] = []
     @State private var isPlay: PlayStatus = .notSelected
     @State private var community: Community?
     @State private var selected = ""
@@ -42,18 +43,18 @@ struct SelectCommunityVer2: View {
                             .onChange(of: currentIndex) { _ in
                                 withAnimation {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+                                }
                             }
-                        }
                     }
                 }
                 .frame(height: .screenHeight * 0.35)
+                Text("\(myFriends.count)")
                 /// 커뮤니티 리스트 뷰
                 commuityListView
                     .background(.clear)
             }
             .navigationDestination(for: Community.self) { value in
-                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: Task { await zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community!))}
-               )
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
             }
             
             .overlay {
@@ -65,7 +66,10 @@ struct SelectCommunityVer2: View {
                         case .success:
                             Button {
                                 if let community {
-                                    zenoViewModel.path.append(community)
+                                    Task {
+                                        await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
+                                        zenoViewModel.path.append(community)
+                                    }
                                 }
                             } label: {
                                 WideButton(buttonName: "START", isplay: true)
@@ -152,6 +156,7 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, .screenWidth * 0.05)
                         }
                     }
+                    
                     .frame(width: .screenWidth * 0.9)
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
