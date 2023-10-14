@@ -21,21 +21,24 @@ struct SettingTextFieldView: View {
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
-            ZenoNavigationBackBtn {
-                dismiss()
-            } label: {
-                HStack {
-                    Text(title)
-                    Spacer()
-                    Button {
-                        value = fixedText
-                        dismiss()
-                    } label: {
-                        Text("확인")
+            HStack {
+                ZenoNavigationBackBtn {
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text(title)
+                        Spacer()
                     }
-                    .disabled(!isValidGroupName || fixedText.isEmpty)
                 }
+                Button {
+                    value = fixedText
+                    dismiss()
+                } label: {
+                    Text("확인")
+                }
+                .disabled(!isValidGroupName || fixedText.isEmpty)
             }
+            .padding(.horizontal)
 			HStack {
 				TextField("\(fixedText)",
                           text: $fixedText,

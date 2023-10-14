@@ -27,32 +27,37 @@ struct CommSettingView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                ZenoNavigationBackBtn {
-                    if isValueChanged {
-                        backActionWarning = true
-                    } else {
-                        dismiss()
-                    }
-                } label: {
-                    HStack {
-                        Text("\(editMode.title)")
-                        Spacer()
-                        Button("완료") {
-                            Task {
-                                switch editMode {
-                                case .addNew:
-                                    await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-                                    await userViewModel.joinNewGroup(newID: emptyComm.id)
-                                case .edit:
-                                    await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
-                                }
-                                dismiss()
-                            }
+                HStack {
+                    ZenoNavigationBackBtn {
+                        if isValueChanged {
+                            backActionWarning = true
+                        } else {
+                            dismiss()
                         }
-                        .disabled(!(!emptyComm.name.isEmpty ||
-                                    isValueChanged))
+                    } label: {
+                        HStack {
+                            Text("\(editMode.title)")
+                            Spacer()
+                                .disabled(!(!emptyComm.name.isEmpty ||
+                                            isValueChanged))
+                        }
                     }
+                    Button("완료") {
+                        Task {
+                            switch editMode {
+                            case .addNew:
+                                await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+                                await userViewModel.joinNewGroup(newID: emptyComm.id)
+                            case .edit:
+                                await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+                            }
+                            dismiss()
+                        }
+                    }
+                    .disabled(!(!emptyComm.name.isEmpty ||
+                                isValueChanged))
                 }
+                .padding(.horizontal)
                 Button {
                     isImagePicker.toggle()
                 } label: {
