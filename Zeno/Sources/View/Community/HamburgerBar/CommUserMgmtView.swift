@@ -19,15 +19,14 @@ struct CommUserMgmtView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
+            ZenoNavigationBackBtn {
+                dismiss()
+            } label: {
+                HStack {
+                    Text("구성원 관리")
+                    Spacer()
                 }
-                Text("구성원 관리")
-                    .padding(.leading, 30)
-                Spacer()
             }
-            .padding()
             ScrollView(showsIndicators: false) {
                 ForEach(MGMTSection.allCases) { section in
                     switch section {

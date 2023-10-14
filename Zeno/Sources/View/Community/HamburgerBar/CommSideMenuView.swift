@@ -32,20 +32,20 @@ struct CommSideMenuView: View {
                 .frame(width: geometry.size.width * 0.8)
                 .offset(x: isPresented ? dragOffset : geometry.size.width)
                 .animation(.easeInOut(duration: 0.45), value: isPresented)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            let valueTemp = value.translation.width
-                            if valueTemp >= 0 { dragOffset = valueTemp }
-                        }
-                        .onEnded { value in
-                            if value.translation.width > geometry.size.width * 0.4 {
-                                isPresented = false
-                            }
-                            dragOffset = 0
-                        }
-                )
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let valueTemp = value.translation.width
+                        if valueTemp >= 0 { dragOffset = valueTemp }
+                    }
+                    .onEnded { value in
+                        if value.translation.width > geometry.size.width * 0.4 {
+                            isPresented = false
+                        }
+                        dragOffset = 0
+                    }
+            )
         }
     }
 }

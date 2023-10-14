@@ -38,7 +38,14 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoProfil
 }
 
 extension Community {
-	static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
+    static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
+}
+
+extension Array<Community> {
+    func filterJoined(user: User?) -> Self {
+        guard let user else { return [] }
+        return filter { $0.joinMembers.contains { $0.id == user.id } }
+    }
 }
 
 #if DEBUG

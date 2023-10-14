@@ -19,22 +19,18 @@ struct CommDelegateManagerView: View {
     
     var body: some View {
         ScrollView {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
-                }
-                Group {
+            ZenoNavigationBackBtn {
+                dismiss()
+            } label: {
+                HStack {
                     if commViewModel.currentCommMembers.isEmpty {
                         Text("가입된 유저가 없습니다")
                     } else {
                         Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
                     }
+                    Spacer()
                 }
-                .padding(.leading, 30)
-                Spacer()
             }
-            .padding()
-            .tint(.primary)
             if !commViewModel.currentCommMembers.isEmpty {
                 ForEach(commViewModel.currentCommMembers) { user in
                     HStack {

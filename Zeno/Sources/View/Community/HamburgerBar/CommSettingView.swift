@@ -27,34 +27,32 @@ struct CommSettingView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    ZenoNavigationBackBtn {
-                        if isValueChanged {
-                            backActionWarning = true
-                        } else {
-                            dismiss()
-                        }
+                ZenoNavigationBackBtn {
+                    if isValueChanged {
+                        backActionWarning = true
+                    } else {
+                        dismiss()
                     }
-                    .tint(.black)
-                    Text("\(editMode.title)")
-                        .padding(.leading, 30)
-                    Spacer()
-                    Button("완료") {
-                        Task {
-                            switch editMode {
-                            case .addNew:
-                                await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-                                await userViewModel.joinNewGroup(newID: emptyComm.id)
-                            case .edit:
-                                await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+                } label: {
+                    HStack {
+                        Text("\(editMode.title)")
+                        Spacer()
+                        Button("완료") {
+                            Task {
+                                switch editMode {
+                                case .addNew:
+                                    await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+                                    await userViewModel.joinNewGroup(newID: emptyComm.id)
+                                case .edit:
+                                    await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+                                }
+                                dismiss()
                             }
-                            dismiss()
                         }
+                        .disabled(!(!emptyComm.name.isEmpty ||
+                                    isValueChanged))
                     }
-                    .disabled(!(!emptyComm.name.isEmpty ||
-                                isValueChanged))
                 }
-                .padding()
                 Button {
                     isImagePicker.toggle()
                 } label: {

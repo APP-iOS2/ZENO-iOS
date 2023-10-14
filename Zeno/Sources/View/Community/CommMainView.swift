@@ -91,11 +91,13 @@ struct CommMainView: View {
 					.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                     .font(.footnote)
                 Spacer()
-                Button {
-                    isShowingDetailNewBuddyToggle.toggle()
-                } label: {
-                    Image(systemName: isShowingDetailNewBuddyToggle ? "chevron.up" : "chevron.down")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                if !commViewModel.recentlyJoinedMembers.isEmpty {
+                    Button {
+                        isShowingDetailNewBuddyToggle.toggle()
+                    } label: {
+                        Image(systemName: isShowingDetailNewBuddyToggle ? "chevron.up" : "chevron.down")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    }
                 }
             }
 			.foregroundColor(.primary)
@@ -140,17 +142,19 @@ struct CommMainView: View {
 						.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 }
                 Spacer()
-                Button {
-                    isShowingUserSearchView.toggle()
-                    commViewModel.userSearchTerm = ""
-                } label: {
-                    if isShowingUserSearchView {
-                        Text("취소")
-                    } else {
-                        Image(systemName: "magnifyingglass")
+                if !commViewModel.currentCommMembers.isEmpty {
+                    Button {
+                        isShowingUserSearchView.toggle()
+                        commViewModel.userSearchTerm = ""
+                    } label: {
+                        if isShowingUserSearchView {
+                            Text("취소")
+                        } else {
+                            Image(systemName: "magnifyingglass")
+                        }
                     }
+                    .font(.caption)
                 }
-                .font(.caption)
             }
 			.foregroundColor(.primary)
             if isShowingUserSearchView {
@@ -235,8 +239,10 @@ struct CommMainView: View {
                 isShowingHamburgerView = true
             } label: {
                 Image(systemName: "line.3.horizontal")
+                    .font(.system(size: 18))
                     .fontWeight(.semibold)
 					.foregroundColor(.primary)
+                    .padding(.leading)
             }
         }
     }
