@@ -12,15 +12,13 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     
-    @State private var allMyFriends: [User] = []
-    @State private var users: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
-    
+    @EnvironmentObject private var zenoViewModel: ZenoViewModel
+
     var body: some View {
         if selected < zenoList.count {
             ZStack {
@@ -53,18 +51,18 @@ struct ZenoView: View {
                     
                     /// 친구들 버튼 창
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
-                        ForEach(users) { user in
+                        ForEach(zenoViewModel.myfriends) { user in
                             Button {
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
                                 if selected == zenoList.count-1 {
                                     Task {
-                                        await userViewModel.updateZenoTimer()
+                                        await zenoViewModel.updateZenoTimer()
                                     }
                                 }
                                 
                                 /// 버튼을 누를 때 마다 해당 사용자에게 알림이 감
                                 Task {
-                                    if let currentUser = userViewModel.currentUser {
+                                    if let currentUser = zenoViewModel.currentUser {
                                         await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected-1])
                                     }
                                     debugPrint(user.name)
@@ -107,14 +105,9 @@ struct ZenoView: View {
                     .padding(.top, 15)
                 }
                 .padding()
-                .onAppear {
-                    Task {
-                        await
-                        allMyFriends =
-                        userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community))
-                        resetUsers()
-                    }
-                }
+            }
+            .onAppear {
+                resetUsers()
             }
             .navigationBarBackButtonHidden(true)
         } else {
@@ -123,8 +116,8 @@ struct ZenoView: View {
     }
     
     func resetUsers() {
-        if allMyFriends.count >= 4 {
-            users = Array(allMyFriends.shuffled().prefix(upTo: 4))
+        if myfriends.count >= 4 {
+            myfriends = Array(myfriends.shuffled().prefix(upTo: 4))
         }
     }
 }

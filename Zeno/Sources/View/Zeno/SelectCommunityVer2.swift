@@ -20,7 +20,6 @@ struct SelectCommunityVer2: View {
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject private var zenoViewModel = ZenoViewModel()
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
     @State private var isPlay: PlayStatus = .notSelected
@@ -43,8 +42,8 @@ struct SelectCommunityVer2: View {
                             .onChange(of: currentIndex) { _ in
                                 withAnimation {
                                     ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                }
                             }
+                        }
                     }
                 }
                 .frame(height: .screenHeight * 0.35)
@@ -53,7 +52,12 @@ struct SelectCommunityVer2: View {
                     .background(.clear)
             }
             .navigationDestination(for: Community.self) { value in
-                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value)
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value )
+            }
+            .onDisappear {
+                Task {
+                    await zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community!))
+                }
             }
             .overlay {
                 VStack {
@@ -90,6 +94,9 @@ struct SelectCommunityVer2: View {
                 }
             }
             .onAppear {
+                Task {
+                    try? await zenoViewModel.loadUserData()
+                }
                 currentIndex = 0
                 selected = ""
                 isPlay = .notSelected
@@ -181,7 +188,7 @@ struct SelectCommunityVer2: View {
         selected = commViewModel.joinedComm[index].id
         community = commViewModel.joinedComm[index]
         
-        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+        if zenoViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
             isPlay = .success
         } else {
             isPlay = .lessThanFour
