@@ -74,24 +74,29 @@ struct CommMainView: View {
     var mainView: some View {
         if commViewModel.currentComm != nil {
             ScrollView {
-                if commViewModel.currentComm != nil {
-                    newUserView
-                    userListView
-                    
-                    // MARK: 작업한 부분 - ! 지금 전체 뷰에서 뜨는 오류 있음
-                    if !commViewModel.currentCommMembers.isEmpty {
-                        LottieView(lottieFile: "invitePeople")
-                            .frame(width: .screenWidth * 0.6 , height: .screenHeight * 0.3)
-                        
-                        Button {
-                            shareText()
-                        } label: {
-                            VStack {
-                                Image(systemName: "person.crop.circle.badge.minus")
-                                    .frame(width: 100, height: 100)
-                                Text("친구를 초대해보세요")
-                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+                VStack {
+                    if commViewModel.currentComm != nil {
+                        newUserView
+                        userListView
+                        if commViewModel.currentCommMembers.isEmpty && !commViewModel.joinedComm.isEmpty {
+                            Button {
+                                shareText()
+                            } label: {
+                                VStack {
+                                    LottieView(lottieFile: "invitePeople")
+                                        .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
+                                        .overlay {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 50))
+                                                .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
+                                        }
+                                    Text("친구를 초대해보세요")
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 24))
+                                        .offset(y: .screenHeight * -0.03)
+                                }
+                                .foregroundColor(.ggullungColor)
                             }
+                            .frame(height: .screenHeight * 0.55)
                         }
                     }
                 }
@@ -288,7 +293,6 @@ struct CommMainView: View {
 
 struct HomeMainView_Previews: PreviewProvider {
     struct Preview: View {
-        @StateObject private var tabBarViewModel: TabBarViewModel = .init()
         @StateObject private var userViewModel: UserViewModel = .init()
         @StateObject private var commViewModel: CommViewModel = .init()
         @StateObject private var zenoViewModel: ZenoViewModel = .init()
@@ -298,14 +302,12 @@ struct HomeMainView_Previews: PreviewProvider {
         var body: some View {
             TabBarView()
                 .edgesIgnoringSafeArea(.vertical)
-                .environmentObject(tabBarViewModel)
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
                 .environmentObject(mypageViewModel)
                 .environmentObject(alarmViewModel)
                 .onAppear {
-                    tabBarViewModel.selected = .comm
                     Task {
                         let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
                         switch result {
