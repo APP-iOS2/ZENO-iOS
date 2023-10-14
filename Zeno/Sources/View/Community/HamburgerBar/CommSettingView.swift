@@ -94,6 +94,7 @@ struct CommSettingView: View {
                 Spacer()
             }
         }
+		.tint(.mainColor)
         .navigationBarBackButtonHidden()
         .overlay(
             ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
@@ -176,7 +177,6 @@ struct CommSettingView: View {
                         }
                     }
                 }
-                .tint(.black)
             }
         default:
             EmptyView()
