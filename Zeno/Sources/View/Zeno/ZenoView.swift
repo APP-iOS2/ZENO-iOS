@@ -12,6 +12,7 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     
+    @State var user: [User]
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     
@@ -116,8 +117,8 @@ struct ZenoView: View {
     }
     
     func resetUsers() {
-        if myfriends.count >= 4 {
-            myfriends = Array(myfriends.shuffled().prefix(upTo: 4))
+        if zenoViewModel.myfriends.count >= 4 {
+            zenoViewModel.myfriends = Array(zenoViewModel.myfriends.shuffled().prefix(upTo: 4))
         }
     }
 }

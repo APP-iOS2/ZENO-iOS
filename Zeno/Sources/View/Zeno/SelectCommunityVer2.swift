@@ -52,13 +52,10 @@ struct SelectCommunityVer2: View {
                     .background(.clear)
             }
             .navigationDestination(for: Community.self) { value in
-                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value )
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: Task { await zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community!))}
+               )
             }
-            .onDisappear {
-                Task {
-                    await zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community!))
-                }
-            }
+            
             .overlay {
                 VStack {
                     Spacer()
