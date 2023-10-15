@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
     let item: Item
+    let isBtnHidden: Bool
     let label: () -> Label
     let interaction: (Item) -> Void
     
@@ -35,16 +36,18 @@ struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
             }
             .padding(.leading, 4)
             Spacer()
-            Button {
-                interaction(item)
-            } label: {
-                label()
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-                    .foregroundColor(.white)
-                    .padding(5)
-                    .background(Color("MainColor"))
-                    .cornerRadius(6)
-                    .shadow(radius: 0.3)
+            if !isBtnHidden {
+                Button {
+                    interaction(item)
+                } label: {
+                    label()
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                        .foregroundColor(.white)
+                        .padding(5)
+                        .background(Color("MainColor"))
+                        .cornerRadius(6)
+                        .shadow(radius: 0.3)
+                }
             }
         }
         .homeListCell()
