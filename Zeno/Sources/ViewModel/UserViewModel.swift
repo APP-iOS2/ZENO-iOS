@@ -27,7 +27,6 @@ class UserViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
-    
     @MainActor
     init() {
         print("🦕userViewModel 초기화")

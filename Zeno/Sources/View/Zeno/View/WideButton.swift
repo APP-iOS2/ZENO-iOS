@@ -39,7 +39,6 @@ struct WideButton_Previews: PreviewProvider {
     }
 }
 
-
 struct WideButton2: View {
     @State var buttonName: String
     @State var systemImage: String = "play.fill"
@@ -65,9 +64,8 @@ struct WideButton2: View {
     }
 }
 
-//struct WideButton2_Previews: PreviewProvider {
+// struct WideButton2_Previews: PreviewProvider {
 //    static var previews: some View {
 //        WideButton2(buttonName: "Start", systemImage: "play.fill", isplay: false)
 //    }
-//}
-
+// }

@@ -59,7 +59,7 @@ struct CommListView: View {
                                             if !community.description.isEmpty {
                                                 Text("\(community.description)")
                                                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
-                                                    .foregroundColor(Color(uiColor: .systemGray4))
+                                                    .foregroundColor(.gray3)
                                                     .lineLimit(1)
                                             }
                                         }

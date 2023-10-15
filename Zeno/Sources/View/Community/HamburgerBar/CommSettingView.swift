@@ -34,30 +34,27 @@ struct CommSettingView: View {
                         } else {
                             dismiss()
                         }
-                    } label: {
+                    } tailingLabel: {
                         HStack {
                             Text("\(editMode.title)")
                             Spacer()
-                                .disabled(!(!emptyComm.name.isEmpty ||
-                                            isValueChanged))
-                        }
-                    }
-                    Button("완료") {
-                        Task {
-                            switch editMode {
-                            case .addNew:
-                                await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-                                await userViewModel.joinNewGroup(newID: emptyComm.id)
-                            case .edit:
-                                await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+                            Button("완료") {
+                                Task {
+                                    switch editMode {
+                                    case .addNew:
+                                        await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+                                        await userViewModel.joinNewGroup(newID: emptyComm.id)
+                                    case .edit:
+                                        await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+                                    }
+                                    dismiss()
+                                }
                             }
-                            dismiss()
+                            .disabled(emptyComm.name.isEmpty ||
+                                        !isValueChanged)
                         }
                     }
-                    .disabled(!(!emptyComm.name.isEmpty ||
-                                isValueChanged))
                 }
-                .padding(.horizontal)
                 Button {
                     isImagePicker.toggle()
                 } label: {

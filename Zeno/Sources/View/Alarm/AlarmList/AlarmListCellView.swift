@@ -50,7 +50,7 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
-                        //.foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
+                        // .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
                     Text("\(alarm.sendUserGender.toString)")
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")

@@ -10,17 +10,17 @@ import SwiftUI
 
 struct ZenoNavigationBackBtn<Label: View>: View {
     let action: () -> Void
-    let label: () -> Label
+    let tailingLabel: () -> Label
     
     var body: some View {
-        Button {
-            action()
-        } label: {
-            HStack {
+        HStack {
+            Button {
+                action()
+            } label: {
                 Image(systemName: "chevron.backward")
-                label()
-                    .padding(.leading, 30)
             }
+            tailingLabel()
+                .padding(.leading, 30)
         }
         .tint(.primary)
         .padding()

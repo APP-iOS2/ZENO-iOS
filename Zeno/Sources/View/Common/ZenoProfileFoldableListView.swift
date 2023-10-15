@@ -8,42 +8,39 @@
 
 import SwiftUI
 
-struct ZenoProfileVisibleListView<Item: ZenoProfileVisible,
+struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
                                   HeaderLabel: View,
                                   BtnLabel: View>: View {
+    @Binding var isListFold: Bool
     let list: [Item]
     let headerLabel: () -> HeaderLabel
     let btnLabel: () -> BtnLabel
     let interaction: (Item) -> Void
     
-    @State private var isListFold = false
     @State private var emptyList: [Item] = []
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading) {
-                Section {
-                    ForEach(isListFold ? emptyList : list) { item in
-                        ZenoProfileVisibleCellView(item: item, label: btnLabel, interaction: interaction)
-                    }
-                } header: {
-                    HStack {
-                        headerLabel()
-                        Spacer()
-                        if !list.isEmpty {
-                            Button {
-                                isListFold.toggle()
-                            } label: {
-                                Image(systemName: isListFold ? "chevron.down" : "chevron.up")
-                            }
+        VStack {
+            Section {
+                ForEach(isListFold ? emptyList : list) { item in
+                    ZenoProfileVisibleCellView(item: item, label: btnLabel, interaction: interaction)
+                }
+            } header: {
+                HStack {
+                    headerLabel()
+                    Spacer()
+                    if !list.isEmpty {
+                        Button {
+                            isListFold.toggle()
+                        } label: {
+                            Image(systemName: isListFold ? "chevron.down" : "chevron.up")
                         }
                     }
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-                    .font(.footnote)
                 }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                .font(.footnote)
             }
         }
-        .animation(.easeInOut, value: [isListFold])
         .modifier(HomeListModifier())
         .onChange(of: isListFold) { _ in
             if isListFold {
@@ -67,7 +64,7 @@ struct ZenoProfileVisibleListView<Item: ZenoProfileVisible,
 
 struct ZenoProfileVisibleListView_Previews: PreviewProvider {
     static var previews: some View {
-        ZenoProfileVisibleListView(list: User.dummy) {
+        ZenoProfileFoldableListView(isListFold: .constant(true), list: User.dummy) {
             Text("헤더ㅋ")
         } btnLabel: {
             Text("버튼ㅋ")

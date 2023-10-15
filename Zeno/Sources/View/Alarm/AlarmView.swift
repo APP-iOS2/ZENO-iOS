@@ -159,6 +159,9 @@ struct AlarmView: View {
                 }
             }
         }
+        .onChange(of: selectedCommunityId) { _ in
+            selectAlarm = nil
+        }
     }
 }
 

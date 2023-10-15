@@ -453,4 +453,25 @@ class CommViewModel: ObservableObject {
             print(#function + "그룹에 가입신청 실패")
         }
     }
+    /// ShareSheet 올리기
+    func shareText() {
+        guard let commID = currentComm?.id else { return }
+        let deepLink = "zenoapp://invite?commID=\(commID)"
+        let activityVC = UIActivityViewController(
+            activityItems: [deepLink],
+            applicationActivities: [KakaoActivity(), IGActivity()]
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            if let mainWindow = windowScene.windows.first {
+                mainWindow.rootViewController?.present(
+                    activityVC,
+                    animated: true,
+                    completion: {
+                        print("공유창 나타나면서 할 작업들?")
+                    }
+                )
+            }
+        }
+    }
 }

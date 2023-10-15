@@ -21,7 +21,7 @@ struct CommDelegateManagerView: View {
         ScrollView {
             ZenoNavigationBackBtn {
                 dismiss()
-            } label: {
+            } tailingLabel: {
                 HStack {
                     if commViewModel.currentCommMembers.isEmpty {
                         Text("가입된 유저가 없습니다")
