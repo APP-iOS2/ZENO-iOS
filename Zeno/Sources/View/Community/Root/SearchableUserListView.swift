@@ -20,7 +20,7 @@ struct SearchableUserListView: View {
                 ForEach(isShowingUserSearchView ?
                         commViewModel.searchedUsers :
                             commViewModel.currentCommMembers) { user in
-                    ZenoProfileVisibleCellView(item: user) {
+                    ZenoProfileVisibleCellView(item: user, isBtnHidden: commViewModel.isFriend(user: user)) {
                         HStack(alignment: .bottom, spacing: 2) {
                             Image(systemName: "person.crop.circle.badge.plus")
                             Text("친구추가")
