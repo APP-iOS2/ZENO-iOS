@@ -9,10 +9,12 @@
 import SwiftUI
 
 struct CommEmptyView: View {
+	let action: () -> Void
+	
     var body: some View {
         VStack {
             Button {
-                //버튼 액션
+                action()
             } label: {
                 LottieView(lottieFile: "search")
                     .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.2)
@@ -26,13 +28,13 @@ struct CommEmptyView: View {
             
             Text("그룹을 찾거나 만들어보세요 ! ")
                 .padding(.top, 10)
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+				.font(.regular(16))
         }
     }
 }
 
 struct CommEmptyView_Previews: PreviewProvider {
     static var previews: some View {
-        CommEmptyView()
+		CommEmptyView(action: { })
     }
 }
