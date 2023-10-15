@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-
+// MARK: 10.15 추가
 struct AlarmListEmptyView: View {
     var body: some View {
         VStack {
