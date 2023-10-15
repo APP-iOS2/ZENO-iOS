@@ -53,12 +53,26 @@ struct CommDelegateManagerView: View {
             Button("변경", role: .destructive) {
                 Task {
                     if let selectedUser {
-                        await commViewModel.delegateManager(user: selectedUser)
+                        await delegateManager(user: selectedUser)
                     }
                 }
             }
             Button("취소", role: .cancel) {
                 selectedUser = nil
+            }
+        }
+    }
+    
+    @MainActor
+    func delegateManager(user: User) async {
+        if commViewModel.isCurrentCommManager {
+            guard let currentComm = commViewModel.currentComm else { return }
+            do {
+                try await FirebaseManager.shared.update(data: currentComm, value: \.managerID, to: user.id)
+                guard let commIndex = commViewModel.allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                commViewModel.allComm[commIndex].managerID = user.id
+            } catch {
+                print(#function + "매니저 권한 위임 업데이트 실패")
             }
         }
     }

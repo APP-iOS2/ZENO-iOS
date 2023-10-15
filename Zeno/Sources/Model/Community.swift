@@ -48,6 +48,10 @@ extension Array<Community> {
         guard let user else { return [] }
         return filter { $0.joinMembers.contains { $0.id == user.id } }
     }
+    
+    func getCurrent(id: Community.ID) -> Community? {
+        first { $0.id == id }
+    }
 }
 
 #if DEBUG

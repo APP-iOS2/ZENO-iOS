@@ -50,8 +50,7 @@ struct CommSettingView: View {
                                     dismiss()
                                 }
                             }
-                            .disabled(emptyComm.name.isEmpty ||
-                                        !isValueChanged)
+                            .disabled(emptyComm.name.isEmpty || !isValueChanged)
                         }
                     }
                 }
@@ -103,6 +102,9 @@ struct CommSettingView: View {
             SettingTextFieldView(title: "그룹 소개", value: $emptyComm.description)
         }
         .onChange(of: emptyComm) { newValue in
+            if commViewModel.joinedComm.isEmpty {
+                isValueChanged = Community.emptyComm != newValue
+            }
             guard let currentComm = commViewModel.currentComm else { return }
             isValueChanged = currentComm != newValue
         }
