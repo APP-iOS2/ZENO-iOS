@@ -32,100 +32,104 @@ struct SelectCommunityVer2: View {
     @State private var dragWidth: CGFloat = 0
     
     var body: some View {
-        NavigationStack(path: $zenoViewModel.path) {
-            VStack {
-                ScrollViewReader { ScrollViewProxy in
-                    ZStack {
-                        LottieView(lottieFile: "wave")
-                            .offset(y: -20)
-                        CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
-                            .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
-                            .onChange(of: currentIndex) { _ in
-                                withAnimation {
-                                    ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                }
-                            }
-                    }
-                }
-                .frame(height: .screenHeight * 0.35)
-                /// 커뮤니티 리스트 뷰
-                commuityListView
-                    .background(.clear)
-            }
-            .navigationDestination(for: Community.self) { value in
-                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
-            }
-            
-            .overlay {
+        if commViewModel.joinedComm.isEmpty {
+            AlarmEmptyView()
+        } else {
+            NavigationStack(path: $zenoViewModel.path) {
                 VStack {
-                    Spacer()
-                    VStack {
-                        /// isPlay 상태에 따라 달라짐
-                        switch isPlay {
-                        case .success:
-                            Button {
-                                if let community {
-                                    Task {
-                                        await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
-                                        zenoViewModel.path.append(community)
+                    ScrollViewReader { ScrollViewProxy in
+                        ZStack {
+                            LottieView(lottieFile: "wave")
+                                .offset(y: -20)
+                            CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
+                                .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                                .onChange(of: currentIndex) { _ in
+                                    withAnimation {
+                                        ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
                                     }
                                 }
-                            } label: {
-                                WideButton2(buttonName: "START", isplay: true)
+                        }
+                    }
+                    .frame(height: .screenHeight * 0.35)
+                    /// 커뮤니티 리스트 뷰
+                    commuityListView
+                        .background(.clear)
+                }
+                .navigationDestination(for: Community.self) { value in
+                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
+                }
+                
+                .overlay {
+                    VStack {
+                        Spacer()
+                        VStack {
+                            /// isPlay 상태에 따라 달라짐
+                            switch isPlay {
+                            case .success:
+                                Button {
+                                    if let community {
+                                        Task {
+                                            await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
+                                            zenoViewModel.path.append(community)
+                                        }
+                                    }
+                                } label: {
+                                    WideButton2(buttonName: "START", isplay: true)
+                                }
+                            case .lessThanFour:
+                                WideButton2(buttonName: "START", isplay: false)
+                                    .disabled(isPlay != .success)
+                            case .notSelected:
+                                Text("그룹을 선택해주세요")
+                                    .foregroundColor(.secondary)
+                                WideButton2(buttonName: "START", isplay: false)
+                                    .disabled(isPlay != .success)
                             }
-                        case .lessThanFour:
-                            WideButton2(buttonName: "START", isplay: false)
-                                .disabled(isPlay != .success)
-                        case .notSelected:
-                            Text("그룹을 선택해주세요")
-                                .foregroundColor(.secondary)
-                            WideButton2(buttonName: "START", isplay: false)
-                                .disabled(isPlay != .success)
+                        }
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                        .padding(.top, 10)
+                        .frame(width: .screenWidth)
+                        .background {
+                            Blur(style: .light)
+                                .opacity(0.9)
+                                .edgesIgnoringSafeArea(.bottom)
                         }
                     }
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                    .padding(.top, 10)
-                    .frame(width: .screenWidth)
-                    .background {
-                        Blur(style: .light)
-                            .opacity(0.9)
-                            .edgesIgnoringSafeArea(.bottom)
-                    }
                 }
-            }
-            .onAppear {
-                Task {
-                    try? await zenoViewModel.loadUserData()
-                }
-                currentIndex = 0
-                selected = ""
-                isPlay = .notSelected
-            }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
-                        dragWidth = value.translation.width
+                .onAppear {
+                    Task {
+                        try? await zenoViewModel.loadUserData()
                     }
-                    .onEnded { value in
-                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
-                        if value.translation.width > 0 {
-                            guard currentIndex > 0 else { return }
-                            currentIndex -= 1
-                        } else if value.translation.width < 0 {
-                            guard currentIndex < commViewModel.joinedComm.count - 1 else { return }
-                            currentIndex += 1
-                        } else {
-                            currentIndex = currentIndex
-                            return
+                    currentIndex = 0
+                    selected = ""
+                    isPlay = .notSelected
+                }
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            guard value.startLocation.y < .screenHeight * 0.4 else { return }
+                            dragWidth = value.translation.width
                         }
-                        select(index: currentIndex)
-                        dragWidth = 0
-                    }
-            )
+                        .onEnded { value in
+                            guard value.startLocation.y < .screenHeight * 0.4 else { return }
+                            if value.translation.width > 0 {
+                                guard currentIndex > 0 else { return }
+                                currentIndex -= 1
+                            } else if value.translation.width < 0 {
+                                guard currentIndex < commViewModel.joinedComm.count - 1 else { return }
+                                currentIndex += 1
+                            } else {
+                                currentIndex = currentIndex
+                                return
+                            }
+                            select(index: currentIndex)
+                            dragWidth = 0
+                        }
+                )
+            }
+            .environmentObject(zenoViewModel)
+            .navigationBarBackButtonHidden()
         }
-        .environmentObject(zenoViewModel)
-        .navigationBarBackButtonHidden()
     }
     
     var commuityListView: some View {

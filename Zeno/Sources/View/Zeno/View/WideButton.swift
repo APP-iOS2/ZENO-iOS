@@ -26,7 +26,7 @@ struct WideButton: View {
                 }
         }
         .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
-        .background(isplay ? Color.purple2 : .gray2)
+        .background(isplay ? Color.purple2 : Color(uiColor: .systemGray4))
         .cornerRadius(15)
         .shadow(radius: 1)
         .padding(.bottom, 20)
@@ -57,7 +57,7 @@ struct WideButton2: View {
                 }
         }
         .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
-        .background(isplay ? Color.purple2 : .gray2)
+        .background(isplay ? Color.purple2 : Color(uiColor: .systemGray4))
         .cornerRadius(15)
         .shadow(radius: 1)
         .padding(.bottom, 20)

@@ -47,16 +47,16 @@ struct AlarmView: View {
                         AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                         
                         ScrollView {
-                            ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
-                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                                    .padding(.bottom, 4)
-                                    .padding(.horizontal)
-                            }
-                            .navigationDestination(isPresented: $isShowInitialView) {
-                                if let selectAlarm {
-                                    AlarmChangingView(selectAlarm: selectAlarm)
-                                }
-                            }
+                            // MARK: 10.15 추가, 해당 커뮤니티에 알림이 없을 경우
+                            if alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }.isEmpty {
+                                  AlarmListEmptyView()
+                              } else {
+                                  ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
+                                      AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                          .padding(.bottom, 4)
+                                          .padding(.horizontal)
+                                  }
+                              }
                             // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
                             Color.clear.frame(height: 80)
                         }
