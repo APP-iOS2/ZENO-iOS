@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// 한글로 써져있는지 체크 (정규 표현식 패턴을 사용)
 func koreaLangCheck(_ input: String) -> Bool {
     let pattern = "^[가-힣]*$"

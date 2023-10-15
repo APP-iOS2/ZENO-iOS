@@ -44,6 +44,7 @@ extension UserViewModel {
                         // 1. https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg  // 빈거
                         // 2. https://k.kakaocdn.net/dn/ciQMBt/btsycuaeWmV/lv5RtAsudfPkXl6u8rcmsK/img_640x640.jpg  // 뭔가 넣은거
                         // 3. https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg  // 빈거
+                        // KakaoAuthService.shared.noneImageURL에 (빈이미지 URL) 상수값으로 담아둠. 23.10.15
                         // 회원가입 후 바로 로그인.
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
@@ -83,24 +84,8 @@ extension UserViewModel {
             }
         } else {
             // 유저정보를 못받아오면 애초에 할수있는게 없음.
+            // TODO: - alert 하나 추가해서 상태띄워주는거 추가하면 좋을듯. 아직 보류 (23.10.15)
             print("🦕ERROR: 카카오톡 유저정보 못가져옴")
-        }
-    }
-    
-    /// 카카오 로그인 && Firebase 로그인 ( 회원가입 없음 )
-    private func loginWithKakaoNoRegist() async {
-        let (user, _) = await KakaoAuthService.shared.loginUserKakao()
-        
-        if let user {
-            // 이메일이 있으면 회원가입, 로그인은 진행이 됨.
-            if user.kakaoAccount?.email != nil {
-                // 토큰정보가 있을 경우 로그인 진행
-                await self.login(email: user.kakaoAccount?.email ?? "",
-                                 password: String(describing: user.id))
-            }
-        } else {
-            // 유저정보를 못받아오면 애초에 할수있는게 없음.
-            print("ERROR: 카카오톡 유저정보 못가져옴")
         }
     }
 }

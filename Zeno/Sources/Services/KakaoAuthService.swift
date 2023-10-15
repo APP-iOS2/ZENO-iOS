@@ -50,6 +50,8 @@ final class KakaoAuthService {
     
     private let kakao = UserApi.shared
     
+    let noneImageURL: String = "https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg"
+    
     /// 카카오 유저 로그인 연동
     /// 유저정보, 토큰활성여부(Bool)
     func loginUserKakao() async -> (KakaoSDKUser.User?, Bool) {
@@ -91,7 +93,7 @@ final class KakaoAuthService {
                         return user
                     }
                 case .failure(let err):
-                    print(err.localizedDescription)
+                    print(#function, err.localizedDescription)
                     return nil
                 }
             }

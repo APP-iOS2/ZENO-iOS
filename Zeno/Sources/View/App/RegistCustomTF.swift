@@ -8,13 +8,15 @@
 
 import SwiftUI
 
+/// 회원가입 정보입력TextField
 struct RegistCustomTF: View {
     let titleText: String
     let placeholderText: String
     @Binding var customText: String
     @Binding var isNotHanguel: Bool
-    @FocusState private var isTextFocused: Bool // ios 15이상에서만 동작
     let textMaxCount: Int
+    let isFocusing: Bool
+    @FocusState var isTextFocused: Bool // ios 15이상에서만 동작
     var debouncer: Debouncer = .init(delay: 0.6)
     
     var body: some View {
@@ -63,6 +65,9 @@ struct RegistCustomTF: View {
             .frame(maxWidth: .infinity)
         }
         .padding()
+        .onAppear {
+            isTextFocused = isFocusing
+        }
     }
 }
 
@@ -72,6 +77,7 @@ struct RegistCustomTF_Previews: PreviewProvider {
                        placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
                        customText: .constant(""),
                        isNotHanguel: .constant(false),
-                       textMaxCount: 5)
+                       textMaxCount: 5,
+                       isFocusing: true)
     }
 }
