@@ -91,7 +91,7 @@ struct CommMainView: View {
                                                 .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
                                         }
                                     Text("친구를 초대해보세요")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 24))
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
                                         .offset(y: .screenHeight * -0.03)
                                 }
                                 .foregroundColor(.ggullungColor)
