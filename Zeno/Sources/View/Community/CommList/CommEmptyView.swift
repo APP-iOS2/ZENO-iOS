@@ -12,7 +12,7 @@ struct CommEmptyView: View {
     var body: some View {
         VStack {
             Button {
-                
+                //버튼 액션
             } label: {
                 LottieView(lottieFile: "search")
                     .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.2)
@@ -23,9 +23,9 @@ struct CommEmptyView: View {
                             .offset(x: .screenWidth * 0.17, y: .screenHeight * 0.07)
                 }
             }
-
+            
             Text("그룹을 찾거나 만들어보세요 ! ")
-                .padding(.top,10)
+                .padding(.top, 10)
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
         }
     }
