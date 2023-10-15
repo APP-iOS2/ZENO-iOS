@@ -50,7 +50,6 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
-                        // .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
                     Text("\(alarm.sendUserGender.toString)")
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")
@@ -100,9 +99,10 @@ struct AlarmListCellView: View {
         }
         .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray4)
         .padding()
-        .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray6))
+        .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray5))
         .clipped()
         .cornerRadius(20)
+        .shadow(radius: 2)
     }
 }
 

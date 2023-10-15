@@ -16,6 +16,7 @@ struct ZenoView: View {
     @State private var myFriends: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
+    @State private var isAnimation: Bool = true
     
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
@@ -30,6 +31,7 @@ struct ZenoView: View {
                 
                 /// 로띠쀼
                 LottieView(lottieFile: "Bigbubble")
+                
                 /// 프로그래스 바
                 VStack(alignment: .center) {
                     ProgressView(value: Double(selected + 1), total: Double(zenoList.count)) {
@@ -47,13 +49,16 @@ struct ZenoView: View {
                         .frame(width: .screenWidth * 0.88,
                                height: .screenHeight * 0.13)
                         .opacityAndWhite()
-                    
+                        .animation(.easeOut, value: isAnimation)
+                        
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: .screenWidth * 0.94, height: .screenHeight * 0.32)
-                    
+                        .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
+                               , height: .screenHeight * 0.32)
+                        .animation(.interpolatingSpring(stiffness: 0.1, damping: 0.1), value: isAnimation)
+
                     Spacer()
                     
                     /// 친구들 버튼 창
@@ -101,6 +106,7 @@ struct ZenoView: View {
                             .offset(y: -20)
                         }
                     }
+                    /// 버튼 클릭 바뀌는 것 때문에 애니메이션 제어했음.
                     .transaction { view in
                         view.disablesAnimations = true
                     }
