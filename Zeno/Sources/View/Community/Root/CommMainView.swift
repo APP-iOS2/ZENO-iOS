@@ -53,7 +53,10 @@ struct CommMainView: View {
                         }
                     }
                 } else {
-                    CommEmptyView()
+					// 가입된 커뮤니티가 없을 때
+					CommEmptyView {
+						isShowingCommListSheet.toggle()
+					}
                 }
             }
             .refreshable {
@@ -63,10 +66,10 @@ struct CommMainView: View {
                 }
             }
             .toolbar {
-                // 커뮤니티 선택 버튼
-                groupNameToolbarItem
-                // 햄버거 바
                 if commViewModel.currentComm != nil {
+					// 커뮤니티 선택 버튼
+					groupNameToolbarItem
+					// 햄버거 바
                     hamburgerToolbarItem
                 }
             }
