@@ -36,7 +36,7 @@ struct AlarmAlertCheckBtnView: View {
                     .padding(.top, 30)
                 
                 Text("\(content)을 사용하시겠습니까 ?")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                 
                 HStack {
                     Button {

@@ -33,7 +33,7 @@ struct AlarmGoodsBtnView: View {
             }
             .foregroundColor(.black)
             .padding([.bottom, .top], 50)
-            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
             .bold()
             
             Button {
@@ -43,9 +43,9 @@ struct AlarmGoodsBtnView: View {
                 HStack {
                     Image("dollar-coin")
                         .resizable()
-                        .frame(width: .screenWidth * 0.07, height: .screenWidth * 0.07)
+                        .frame(width: .screenWidth * 0.07, height: .screenWidth * 0.06)
                     Text(primaryButtonTitle1)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
@@ -62,7 +62,7 @@ struct AlarmGoodsBtnView: View {
                         .frame(width: .screenWidth * 0.08, height: .screenWidth * 0.06)
                     
                     Text(primaryButtonTitle2)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
