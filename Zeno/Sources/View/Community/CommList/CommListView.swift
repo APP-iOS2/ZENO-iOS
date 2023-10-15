@@ -31,10 +31,16 @@ struct CommListView: View {
                     VStack {
                         if commViewModel.joinedComm.isEmpty {
                             VStack(alignment: .center) {
-                                Text("현재 가입된 그룹이 없습니다🥲")
-                                    .font(.title2)
-                                Text("새로운 그룹을 탐색해 그룹에 가입하거나")
-                                Text("새로운 그룹을 만들어 보세요!")
+								LottieView(lottieFile: "cry")
+									.frame(width: .screenWidth * 0.3, height: .screenHeight * 0.1)
+                                Text("현재 가입된 그룹이 없습니다")
+									.font(.bold(20))
+									.padding(.bottom, 5)
+								Group {
+									Text("새로운 그룹을 탐색해 그룹에 가입하거나")
+									Text("새로운 그룹을 만들어 보세요!")
+								}
+								.font(.regular(16))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical)
@@ -48,21 +54,24 @@ struct CommListView: View {
                                     HStack(alignment: .center) {
                                         Circle()
                                             .stroke()
-                                            .frame(width: 30, height: 30)
+                                            .frame(width: 40, height: 40)
                                             .background(
                                                 ZenoKFImageView(comm)
                                                     .clipShape(Circle())
                                             )
-                                        VStack(alignment: .leading) {
+										VStack(alignment: .leading, spacing: 4) {
                                             Text("\(comm.name)")
-                                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                                                .padding(.bottom, 1)
-                                            if !comm.description.isEmpty {
-                                                Text("\(comm.description)")
-                                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
-                                                    .foregroundColor(.gray3)
-                                                    .lineLimit(1)
-                                            }
+                                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+											if !comm.description.isEmpty {
+												Text("\(comm.description)")
+													.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+													.foregroundColor(.gray)
+													.lineLimit(1)
+											}
+											Text("\(comm.joinMembers.count)명 참여중")
+												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
+												.foregroundColor(Color(uiColor: .systemGray4))
+												.padding(.top, 2)
                                         }
                                         .padding(.leading, 4)
                                         Spacer()
@@ -81,7 +90,7 @@ struct CommListView: View {
                             HStack {
                                 Circle()
                                     .stroke()
-                                    .frame(width: 30, height: 30)
+                                    .frame(width: 35, height: 35)
                                     .background(
                                         Image(systemName: "plus")
                                             .clipShape(Circle())
@@ -90,11 +99,12 @@ struct CommListView: View {
                                 Text("새로운 그룹 만들기")
                                 Spacer()
                             }
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                                 .padding(.bottom, 1)
                         }
                         .groupCell()
-                        .tint(.purple2)
+						.tint(.mainColor)
+						.shadow(color: .mainColor, radius: 1)
                         .padding(2)
                     }
                     .padding()
@@ -111,11 +121,10 @@ extension CommListView {
 	var searchBar: some View {
 		HStack(spacing: 10) {
 			Image(systemName: "magnifyingglass")
-				.foregroundColor(Color(uiColor: .systemGray))
 			Text("새로운 그룹 탐색하기")
-				.foregroundColor(Color(uiColor: .systemGray))
 			Spacer()
 		}
+		.font(.regular(14))
 		.frame(maxWidth: .infinity)
 		.padding(.horizontal)
 		.padding(.vertical, 11)
@@ -123,6 +132,7 @@ extension CommListView {
 		.cornerRadius(10)
 		.padding(.horizontal)
 		.padding(.top)
+		.foregroundColor(Color(uiColor: .systemGray))
 	}
 }
 
