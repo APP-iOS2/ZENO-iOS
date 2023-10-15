@@ -35,6 +35,7 @@ struct AlarmSelectCommunityView: View {
                             .font(.footnote)
                             .frame(width: 72)
                     }
+                    .padding(.leading, 5)
                     ForEach(communityViewModel.joinedComm) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)
                     }
