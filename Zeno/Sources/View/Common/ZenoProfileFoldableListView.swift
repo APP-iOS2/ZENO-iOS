@@ -23,7 +23,7 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
         VStack {
             Section {
                 ForEach(isListFold ? emptyList : list) { item in
-                    ZenoProfileVisibleCellView(item: item, label: btnLabel, interaction: interaction)
+                    ZenoProfileVisibleCellView(item: item, isBtnHidden: false, label: btnLabel, interaction: interaction)
                 }
             } header: {
                 HStack {

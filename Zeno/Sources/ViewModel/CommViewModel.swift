@@ -128,16 +128,15 @@ class CommViewModel: ObservableObject {
     }
     /// currentUser를 변경하는 함수
     func updateCurrentUser(user: User?) {
-        self.currentUser = user
-        let joinedComm = allComm.filterJoined(user: user)
-        self.joinedComm = joinedComm
-        guard !joinedComm.isEmpty else { return }
+        currentUser = user
+        joinedComm = allComm.filterJoined(user: user)
     }
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
         currentCommID = id
     }
     /// db에서 fetch한 모든 커뮤니티 중 currentUser가 속한 커뮤니티를 찾아 joinedComm을 업데이트함
+    @MainActor
     func filterJoinedComm() {
         guard let currentUser else { return }
         let commIDs = currentUser.commInfoList.map { $0.id }
@@ -424,7 +423,7 @@ class CommViewModel: ObservableObject {
                 }
             }
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-            let removed = joinedComm.remove(at: index)
+            joinedComm.remove(at: index)
             guard let firstComm = joinedComm.first else { return }
             setCurrentID(id: firstComm.id)
         } catch {
