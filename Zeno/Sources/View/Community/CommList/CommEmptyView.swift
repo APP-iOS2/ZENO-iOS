@@ -11,15 +11,19 @@ import SwiftUI
 struct CommEmptyView: View {
     var body: some View {
         VStack {
-            LottieView(lottieFile: "search")
-                .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.2)
-                .overlay {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.gray4)
-                        .offset(x: .screenWidth * 0.17, y: .screenHeight * 0.07)
+            Button {
+                
+            } label: {
+                LottieView(lottieFile: "search")
+                    .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.2)
+                    .overlay {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray4)
+                            .offset(x: .screenWidth * 0.17, y: .screenHeight * 0.07)
                 }
-            
+            }
+
             Text("그룹을 찾거나 만들어보세요 ! ")
                 .padding(.top,10)
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
