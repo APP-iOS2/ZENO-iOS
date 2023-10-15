@@ -38,12 +38,12 @@ struct CommSideBarView: View {
                 VStack(alignment: .leading, spacing: 40) {
                     ForEach(SideMenu.allCases) { item in
                         Button {
+                            isPresented = false
                             switch item {
                             case .memberMGMT:
-                                isPresented = false
                                 isSelectContent.toggle()
                             case .inviteComm:
-                                shareText()
+                                    commViewModel.shareText()
                             case .delegateManager:
                                 if commViewModel.isCurrentCommManager {
                                     isDelegateManagerView = true
@@ -197,40 +197,6 @@ struct CommSideBarView: View {
         }
         
         var id: Self { self }
-    }
-    
-    /// 공유 시트
-    private func shareText() {
-        guard let commID = commViewModel.currentComm?.id else { return }
-        let deepLink = "zenoapp://invite?commID=\(commID)"
-        let activityVC = UIActivityViewController(
-            activityItems: [deepLink],
-            applicationActivities: [KakaoActivity(), IGActivity()]
-        )
-        
-        // 공유 제외할 것들. (기본 제공중에서)
-//        activityVC.excludedActivityTypes = [.postToTwitter,
-//            .postToWeibo,
-//            .postToVimeo,
-//            .postToFlickr,
-//            .postToTencentWeibo,
-//            .saveToCameraRoll,
-//            .mail,
-//            .print,
-//            .assignToContact
-//        ]
-                
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            if let mainWindow = windowScene.windows.first {
-                mainWindow.rootViewController?.present(
-                    activityVC,
-                    animated: true,
-                    completion: {
-                        print("공유창 나타나면서 할 작업들?")
-                    }
-                )
-            }
-        }
     }
 }
 

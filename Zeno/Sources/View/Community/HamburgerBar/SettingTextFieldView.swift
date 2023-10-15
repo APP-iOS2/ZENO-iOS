@@ -21,31 +21,30 @@ struct SettingTextFieldView: View {
 	private let debouncer: Debouncer = .init(delay: 0.5)
 	@State private var notificationStatement = "" // 텍스트 필드 밑 알림문구
 	@State private var duplicationState: DuplicationState = .none
-	
+    @State private var isValueChanged: Bool = false
+    
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
-			
 			// 전체 툴바 버튼 확인버튼 아니면 모든 영역이 뒤로가기 기능
 			HStack {
 				ZenoNavigationBackBtn {
 					dismiss()
-				} label: {
+				} tailingLabel: {
 					HStack {
 						Text(title)
 						Spacer()
+                        Button {
+                            value = fixedText
+                            dismiss()
+                        } label: {
+                            Text("확인")
+                                .font(.bold(16))
+                        }
+                        .disabled(!isValidGroupName || fixedText.isEmpty || !isValueChanged)
 					}
 				}
-				Button {
-					value = fixedText
-				} label: {
-					Text("확인")
-						.font(.bold(16))
-				}
-				.padding(.trailing)
-				.disabled(!isValidGroupName || fixedText.isEmpty)
 			}
 			.font(.regular(16))
-			
 			// 이름 텍스트필드 뷰
 			HStack {
 				TextField("\(fixedText)",
@@ -55,6 +54,7 @@ struct SettingTextFieldView: View {
 				.focused($isTextFocused)
 				.onChange(of: fixedText) { newValue in
 					// 텍스트 필드가 비었을 때
+                    isValueChanged = fixedText != value
 					guard !fixedText.isEmpty else {
 						duplicationState = .none
 						return
