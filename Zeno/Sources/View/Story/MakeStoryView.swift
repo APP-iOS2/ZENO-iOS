@@ -67,12 +67,12 @@ struct MakeStoryView: View {
                         .frame(width: .screenWidth-40)
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 30))
                     
-//                    Button {
-//                        isImagePicker = true
-//                    } label: {
-//                        ExView()
-//                    }
-//                    .offset(x: 10, y: 200)
+                    Button {
+                        isImagePicker = true
+                    } label: {
+                        ExView()
+                    }
+                    .offset(x: 10, y: 200)
                 }
             }
             .overlay(

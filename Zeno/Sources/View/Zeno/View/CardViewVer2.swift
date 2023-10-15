@@ -40,11 +40,11 @@ struct CardViewVer2: View {
                                 }
                             }
                             .scaleEffect(currentIndex == index ? 1 : 0.8)
-//                            .rotation3DEffect(
-//                                .degrees(currentIndex == index ? 0 : 30),
-//                                axis: (x: -0.3, y: 0.15, z: 0.1)
-////                                axis: (x: 0.5, y: 0, z: 0)
-//                            )
+                            .rotation3DEffect(
+                                .degrees(currentIndex == index ? 0 : 30),
+                                axis: (x: -0.3, y: 0.0, z: 0.1)
+//                                axis: (x: 0.5, y: 0, z: 0)
+                            )
                         /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
