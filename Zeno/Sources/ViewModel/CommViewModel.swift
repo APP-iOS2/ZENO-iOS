@@ -12,19 +12,22 @@ class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let commRepo = CommRepository.shared
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
-    private var currentUser: User?
-    /// 마지막으로 선택한 커뮤니티의 Index값을 UserDefaults에 저장
-    @AppStorage("selectedComm") private var selectedComm: Int = 0
+    private(set) var currentUser: User?
+    /// 마지막으로 선택한 커뮤니티의 ID를 UserDefaults에 저장
+    @AppStorage("selectedCommID") var currentCommID: Community.ID = ""
     /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
     @Published var allComm: [Community] = []
     /// currentUser가 가입한 모든 커뮤니티
     @Published var joinedComm: [Community] = []
     /// currentUser가 마지막으로 선택한 커뮤니티, 가입된 커뮤니티가 없으면 nil을 반환
     var currentComm: Community? {
-        guard joinedComm.count - 1 >= selectedComm else {
-            return nil
+        if !joinedComm.isEmpty {
+            guard let currentComm = joinedComm.getCurrent(id: currentCommID) else {
+                return joinedComm.first
+            }
+            return currentComm
         }
-        return joinedComm[selectedComm]
+        return nil
     }
     /// 선택된 커뮤니티의 모든 유저(본인 포함)
     @Published var currentCommMembers: [User] = []
@@ -85,6 +88,7 @@ class CommViewModel: ObservableObject {
     var searchedComm: [Community] {
         var searchCom = allComm
             .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
+            .filter { $0.isSearchable }
         if !joinedComm.isEmpty {
 			guard let currentUser else { return [] }
 			
@@ -125,11 +129,13 @@ class CommViewModel: ObservableObject {
     /// currentUser를 변경하는 함수
     func updateCurrentUser(user: User?) {
         self.currentUser = user
-        filterJoinedComm()
+        let joinedComm = allComm.filterJoined(user: user)
+        self.joinedComm = joinedComm
+        guard !joinedComm.isEmpty else { return }
     }
     /// 선택된 커뮤니티 Index를 변경하는 함수
-    func changeSelectedComm(index: Int) {
-        selectedComm = index
+    func setCurrentID(id: Community.ID) {
+        currentCommID = id
     }
     /// db에서 fetch한 모든 커뮤니티 중 currentUser가 속한 커뮤니티를 찾아 joinedComm을 업데이트함
     func filterJoinedComm() {
@@ -198,8 +204,8 @@ class CommViewModel: ObservableObject {
         }
         guard let currentUser else { return }
         if currentUser.commInfoList.contains(where: { $0.id == commID }) {
-            guard let index = joinedComm.firstIndex(where: { $0.id == commID }) else { return }
-            selectedComm = index
+            guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
+            setCurrentID(id: comm.id)
         } else {
             commIDInDeepLink = commID
             isJoinWithDeeplinkView = true
@@ -265,20 +271,7 @@ class CommViewModel: ObservableObject {
             }
         }
     }
-    /// 매니저 권한 위임 함수
-    @MainActor
-    func delegateManager(user: User) async {
-        if isCurrentCommManager {
-            guard let currentComm else { return }
-            do {
-                try await firebaseManager.update(data: currentComm, value: \.managerID, to: user.id)
-                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                allComm[commIndex] = currentComm
-            } catch {
-                print(#function + "매니저 권한 위임 업데이트 실패")
-            }
-        }
-    }
+    
     /// 매니저가 그룹 가입신청 수락하는 함수
     @MainActor
     func acceptMember(user: User) async {
@@ -335,8 +328,7 @@ class CommViewModel: ObservableObject {
                 return nil
             }
         }
-        self.allComm = communities
-        filterJoinedComm()
+        allComm = communities
     }
     /// 커뮤니티의 설정(이미지, 이름, 설명, 검색여부)를 업데이트하는 함수
     @MainActor
@@ -371,7 +363,8 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.create(data: newComm)
             }
             allComm.append(newComm)
-            changeSelectedComm(index: allComm.count - 1)
+            joinedComm.append(newComm)
+            setCurrentID(id: newComm.id)
         } catch {
             print(#function + "새 Community Collection에 추가 실패")
         }
@@ -431,8 +424,9 @@ class CommViewModel: ObservableObject {
                 }
             }
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-            joinedComm.remove(at: index)
-            selectedComm = 0
+            let removed = joinedComm.remove(at: index)
+            guard let firstComm = joinedComm.first else { return }
+            setCurrentID(id: firstComm.id)
         } catch {
             print(#function + "Community의 Members 업데이트 실패")
         }

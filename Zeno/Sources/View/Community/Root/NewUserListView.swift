@@ -19,7 +19,7 @@ struct NewUserListView: View {
             Section {
                 if isShowingDetailNewBuddyToggle {
                     ScrollView(.horizontal) {
-                        HStack(spacing: 15) {
+                        HStack(alignment: .center, spacing: 15) {
                             ForEach(commViewModel.recentlyJoinedMembers) { user in
                                 VStack(spacing: 5) {
                                     Circle()

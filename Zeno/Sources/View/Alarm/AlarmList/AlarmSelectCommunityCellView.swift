@@ -18,6 +18,7 @@ struct AlarmSelectCommunityCellView: View {
             if let urlStr = community.imageURL,
                 let url = URL(string: urlStr) {
                 KFImage(url)
+                    .cacheOriginalImage()
                     .resizable()
                     .frame(width: 60, height: 60)
                     .clipShape(Circle())

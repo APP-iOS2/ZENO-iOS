@@ -39,9 +39,9 @@ struct CommListView: View {
                             .padding(.vertical)
                             .padding(.bottom, 25)
                         } else {
-                            ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
+                            ForEach(commViewModel.joinedComm) { comm in
                                 Button {
-                                    commViewModel.changeSelectedComm(index: index)
+                                    commViewModel.setCurrentID(id: comm.id)
                                     isPresented = false
                                 } label: {
                                     HStack(alignment: .center) {
@@ -49,15 +49,15 @@ struct CommListView: View {
                                             .stroke()
                                             .frame(width: 30, height: 30)
                                             .background(
-                                                ZenoKFImageView(community)
+                                                ZenoKFImageView(comm)
                                                     .clipShape(Circle())
                                             )
                                         VStack(alignment: .leading) {
-                                            Text("\(community.name)")
+                                            Text("\(comm.name)")
                                                 .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
                                                 .padding(.bottom, 1)
-                                            if !community.description.isEmpty {
-                                                Text("\(community.description)")
+                                            if !comm.description.isEmpty {
+                                                Text("\(comm.description)")
                                                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
                                                     .foregroundColor(.gray3)
                                                     .lineLimit(1)
