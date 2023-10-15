@@ -16,7 +16,7 @@ struct EmailLoginView: View {
         VStack {
             Spacer()
             Text("Zeno")
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 60))
                 .fontWeight(.black)
                 .foregroundStyle(LinearGradient(
                     colors: [Color("MainPurple1"), Color("MainPurple2")],

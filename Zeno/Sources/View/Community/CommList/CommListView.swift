@@ -59,11 +59,11 @@ struct CommListView: View {
                                         )
                                     VStack(alignment: .leading) {
                                         Text("\(community.name)")
-                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
                                             .padding(.bottom, 1)
                                         if !community.description.isEmpty {
                                             Text("\(community.description)")
-                                                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
                                                 .foregroundColor(Color(uiColor: .systemGray4))
                                                 .lineLimit(1)
                                         }
@@ -89,7 +89,7 @@ struct CommListView: View {
 						}
 						.groupCell()
 					}
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 16))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                     .tint(.purple2)
 				}
 				.padding()

@@ -39,7 +39,7 @@ struct AlarmView: View {
                 } else {
                     VStack {
                         Text("홈")
-                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
                             .foregroundColor(.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
@@ -151,7 +151,7 @@ struct AlarmView: View {
                                 isShowPaymentSheet = true
                             }
                         }, label: {
-                            WideButton(buttonName: "선택하기", systemImage: "", isplay: selectAlarm != nil ? true : false)
+                            WideButton(buttonName: "초성확인하기", systemImage: "", isplay: selectAlarm != nil ? true : false)
                         })
                         .disabled(selectAlarm == nil || isBlur ? true : false)
                         .blur(radius: isBlur ? 1.5 : 0)

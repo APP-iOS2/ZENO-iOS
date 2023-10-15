@@ -71,15 +71,15 @@ struct SelectCommunityVer2: View {
                                     }
                                 }
                             } label: {
-                                WideButton(buttonName: "START", isplay: true)
+                                WideButton2(buttonName: "START", isplay: true)
                             }
                         case .lessThanFour:
-                            WideButton(buttonName: "START", isplay: false)
+                            WideButton2(buttonName: "START", isplay: false)
                                 .disabled(isPlay != .success)
                         case .notSelected:
                             Text("그룹을 선택해주세요")
                                 .foregroundColor(.secondary)
-                            WideButton(buttonName: "START", isplay: false)
+                            WideButton2(buttonName: "START", isplay: false)
                                 .disabled(isPlay != .success)
                         }
                     }

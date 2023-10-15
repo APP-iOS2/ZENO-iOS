@@ -24,11 +24,11 @@ struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
                 )
             VStack(alignment: .leading) {
                 Text("\(item.name)")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 15))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
                     .padding(.bottom, 1)
                 if !item.description.isEmpty {
                     Text("\(item.description)")
-                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
                         .foregroundColor(Color(uiColor: .systemGray4))
                         .lineLimit(1)
                 }
