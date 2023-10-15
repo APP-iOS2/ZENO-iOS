@@ -20,81 +20,89 @@ struct CommListView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				// 서치 바
 				Button {
 					isShowingSearchCommSheet = true
 					commViewModel.commSearchTerm = .init()
 				} label: {
 					searchBar
 				}
-				.fullScreenCover(isPresented: $isShowingSearchCommSheet) {
-					CommSearchView(isShowingSearchCommSheet: $isShowingSearchCommSheet)
-				}
-				
-				ScrollView {
-					// 가입된 그룹이 없을때/있을때
-					if commViewModel.joinedComm.isEmpty {
-						VStack(alignment: .center) {
-							Text("현재 가입된 그룹이 없습니다🥲")
-								.font(.title2)
-							Text("새로운 그룹을 탐색해 그룹에 가입하거나")
-							Text("새로운 그룹을 만들어 보세요!")
-						}
-						.frame(maxWidth: .infinity)
-						.padding(.vertical)
-						.padding(.bottom, 25)
-					} else {
-						ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
-                            Button {
-                                commViewModel.changeSelectedComm(index: index)
-                                isPresented = false
-                            } label: {
-                                HStack(alignment: .center) {
-                                    Circle()
-                                        .stroke()
-                                        .frame(width: 30, height: 30)
-                                        .background(
-                                            ZenoKFImageView(community)
-                                                .clipShape(Circle())
-                                        )
-                                    VStack(alignment: .leading) {
-                                        Text("\(community.name)")
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                                            .padding(.bottom, 1)
-                                        if !community.description.isEmpty {
-                                            Text("\(community.description)")
-                                                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
-                                                .foregroundColor(Color(uiColor: .systemGray4))
-                                                .lineLimit(1)
-                                        }
-                                    }
-                                    .padding(.leading, 4)
-                                    Spacer()
-                                    Image(systemName: "chevron.forward")
-                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
-                                }
-                                .homeListCell()
+                ScrollView(showsIndicators: false) {
+                    VStack {
+                        if commViewModel.joinedComm.isEmpty {
+                            VStack(alignment: .center) {
+                                Text("현재 가입된 그룹이 없습니다🥲")
+                                    .font(.title2)
+                                Text("새로운 그룹을 탐색해 그룹에 가입하거나")
+                                Text("새로운 그룹을 만들어 보세요!")
                             }
-						}
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical)
+                            .padding(.bottom, 25)
+                        } else {
+                            ForEach(Array(zip(commViewModel.joinedComm, commViewModel.joinedComm.indices)), id: \.1) { community, index in
+                                Button {
+                                    commViewModel.changeSelectedComm(index: index)
+                                    isPresented = false
+                                } label: {
+                                    HStack(alignment: .center) {
+                                        Circle()
+                                            .stroke()
+                                            .frame(width: 30, height: 30)
+                                            .background(
+                                                ZenoKFImageView(community)
+                                                    .clipShape(Circle())
+                                            )
+                                        VStack(alignment: .leading) {
+                                            Text("\(community.name)")
+                                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+                                                .padding(.bottom, 1)
+                                            if !community.description.isEmpty {
+                                                Text("\(community.description)")
+                                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
+                                                    .foregroundColor(Color(uiColor: .systemGray4))
+                                                    .lineLimit(1)
+                                            }
+                                        }
+                                        .padding(.leading, 4)
+                                        Spacer()
+                                        Image(systemName: "chevron.forward")
+                                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                    }
+                                    .groupCell()
+                                }
+                            }
+                            .padding(2)
+                        }
+                        Button {
+                            isPresentedAddCommView = true
+                            isPresented = false
+                        } label: {
+                            HStack {
+                                Circle()
+                                    .stroke()
+                                    .frame(width: 30, height: 30)
+                                    .background(
+                                        Image(systemName: "plus")
+                                            .clipShape(Circle())
+                                            .bold()
+                                    )
+                                Text("새로운 그룹 만들기")
+                                Spacer()
+                            }
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+                                .padding(.bottom, 1)
+                        }
+                        .groupCell()
+                        .tint(.purple2)
                         .padding(2)
-					}
-					Button {
-                        isPresentedAddCommView = true
-                        isPresented = false
-					} label: {
-						HStack {
-							Image(systemName: "plus.circle")
-							Text("새로운 그룹 만들기")
-							Spacer()
-						}
-						.groupCell()
-					}
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-                    .tint(.purple2)
+                    }
+                    .padding()
 				}
-				.padding()
 			}
 		}
+        .fullScreenCover(isPresented: $isShowingSearchCommSheet) {
+            CommSearchView(isShowingSearchCommSheet: $isShowingSearchCommSheet)
+        }
 	}
 }
 
@@ -119,6 +127,7 @@ extension CommListView {
 
 struct GroupListView_Previews: PreviewProvider {
     struct Preview: View {
+        @StateObject private var tabBarViewModel: TabBarViewModel = .init()
         @StateObject private var userViewModel: UserViewModel = .init()
         @StateObject private var commViewModel: CommViewModel = .init()
         @StateObject private var zenoViewModel: ZenoViewModel = .init()
@@ -131,6 +140,7 @@ struct GroupListView_Previews: PreviewProvider {
                 .sheet(isPresented: $isPresented) {
                     CommListView(isPresented: $isPresented, isPresentedAddCommView: .constant(false))
                 }
+                .environmentObject(tabBarViewModel)
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)

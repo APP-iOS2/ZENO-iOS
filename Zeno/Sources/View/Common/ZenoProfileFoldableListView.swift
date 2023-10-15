@@ -17,35 +17,47 @@ struct ZenoProfileVisibleListView<Item: ZenoProfileVisible,
     let interaction: (Item) -> Void
     
     @State private var isListFold = false
+    @State private var emptyList: [Item] = []
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Section {
-                if !isListFold {
-                    ForEach(list) { item in
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading) {
+                Section {
+                    ForEach(isListFold ? emptyList : list) { item in
                         ZenoProfileVisibleCellView(item: item, label: btnLabel, interaction: interaction)
                     }
-                }
-            } header: {
-                HStack {
-                    headerLabel()
-                    Spacer()
-                    if !list.isEmpty {
-                        Button {
-                            isListFold.toggle()
-                        } label: {
-                            Image(systemName: isListFold ? "chevron.down" : "chevron.up")
+                } header: {
+                    HStack {
+                        headerLabel()
+                        Spacer()
+                        if !list.isEmpty {
+                            Button {
+                                isListFold.toggle()
+                            } label: {
+                                Image(systemName: isListFold ? "chevron.down" : "chevron.up")
+                            }
                         }
                     }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+                    .font(.footnote)
                 }
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-                .font(.footnote)
             }
         }
         .animation(.easeInOut, value: [isListFold])
-        .frame(maxWidth: .infinity, alignment: .leading)
         .modifier(HomeListModifier())
+        .onChange(of: isListFold) { _ in
+            if isListFold {
+                withAnimation {
+                    for _ in 0..<emptyList.count {
+                        emptyList.removeLast()
+                    }
+                }
+            } else {
+                emptyList = list
+            }
+        }
         .onAppear {
+            emptyList = list
             if list.isEmpty {
                 isListFold = true
             }
@@ -55,14 +67,12 @@ struct ZenoProfileVisibleListView<Item: ZenoProfileVisible,
 
 struct ZenoProfileVisibleListView_Previews: PreviewProvider {
     static var previews: some View {
-        ScrollView {
-            ZenoProfileVisibleListView(list: User.dummy) {
-                Text("헤더ㅋ")
-            } btnLabel: {
-                Text("버튼ㅋ")
-            } interaction: { item in
-                print(item)
-            }
+        ZenoProfileVisibleListView(list: User.dummy) {
+            Text("헤더ㅋ")
+        } btnLabel: {
+            Text("버튼ㅋ")
+        } interaction: { item in
+            print(item.name)
         }
     }
 }

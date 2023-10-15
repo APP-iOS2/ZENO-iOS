@@ -345,11 +345,11 @@ class CommViewModel: ObservableObject {
             if let image {
                 let changedComm = try await firebaseManager.createWithImage(data: comm, image: image)
                 guard let index = joinedComm.firstIndex(where: { $0.id == changedComm.id }) else { return }
-                allComm[index] = changedComm
+                joinedComm[index] = changedComm
             } else {
                 try await firebaseManager.create(data: comm)
                 guard let index = joinedComm.firstIndex(where: { $0.id == comm.id }) else { return }
-                allComm[index] = comm
+                joinedComm[index] = comm
             }
         } catch {
             print(#function + "Community Collection에 업데이트 실패")
@@ -371,6 +371,7 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.create(data: newComm)
             }
             allComm.append(newComm)
+            changeSelectedComm(index: allComm.count - 1)
         } catch {
             print(#function + "새 Community Collection에 추가 실패")
         }

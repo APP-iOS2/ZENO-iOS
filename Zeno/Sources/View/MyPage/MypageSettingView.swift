@@ -13,7 +13,6 @@ struct MypageSettingView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            
             ScrollView(showsIndicators: false) {
                 Group {
                     linkView("개인정보처리방침", "https://www.pipc.go.kr/np/default/page.do?mCode=H010000000")
