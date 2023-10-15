@@ -53,7 +53,7 @@ struct CommMainView: View {
                         }
                     }
                 } else {
-                    AlarmEmptyView()
+                    CommEmptyView()
                 }
             }
             .refreshable {

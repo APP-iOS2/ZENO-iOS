@@ -26,6 +26,7 @@ struct CommListView: View {
 				} label: {
 					searchBar
 				}
+                
                 ScrollView(showsIndicators: false) {
                     VStack {
                         if commViewModel.joinedComm.isEmpty {
