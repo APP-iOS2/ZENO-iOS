@@ -11,12 +11,11 @@ import FirebaseDynamicLinks
 
 /// DynamicLink(미구현)
 extension AppDelegate {
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        let handled = DynamicLinks.dynamicLinks()
+//    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
+//                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+//        let handled = DynamicLinks.dynamicLinks()
 //            .handleUniversalLink(userActivity.webpageURL!) { dynamiclink, error in
-            .handleUniversalLink(userActivity.webpageURL!) { _, _ in
-            }
-        return handled
-    }
+//            }
+//        return handled
+//    }
 }

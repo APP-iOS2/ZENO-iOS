@@ -102,7 +102,6 @@ struct MyPageMain: View {
                                     Text("\(mypageViewModel.userInfo?.showInitial ?? 0)회")
                                         .foregroundColor(.primary)
                                 }.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-
                             }
 //                        }
                         Spacer()
@@ -115,7 +114,7 @@ struct MyPageMain: View {
                         .frame(minHeight: UIScreen.main.bounds.height/9)
                         .padding(.horizontal, 17)
 
-                    /// 재화정보 스크롤뷰
+//                    /// 재화정보 스크롤뷰
 //                    ScrollView(.horizontal, showsIndicators: false) {
 //                        HStack(spacing: 0) {
 //                            if isShowingZenoCoin {
