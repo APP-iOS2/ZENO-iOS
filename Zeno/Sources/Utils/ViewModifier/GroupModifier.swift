@@ -11,6 +11,7 @@ import SwiftUI
 struct GroupCellModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+			.frame(maxHeight: 40)
             .padding()
             .background(.background)
             .cornerRadius(10)
