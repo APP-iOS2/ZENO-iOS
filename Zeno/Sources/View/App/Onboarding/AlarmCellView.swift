@@ -28,7 +28,6 @@ struct AlarmCellView: View {
                     Text("\(gender)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                         .font(.caption)
-                        .padding(.bottom, 1)
                     Text("20초 전")
                         .font(.caption)
                         .foregroundStyle(.black)
@@ -48,7 +47,7 @@ struct AlarmCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     HStack {
-                        Text("< \(question) >")
+                        Text("\(question)")
                         Text("질문에")
                             .fontWeight(.regular)
                     }

@@ -34,11 +34,14 @@ struct CommSettingView: View {
                         } else {
                             dismiss()
                         }
+                    } label: {
+                        HStack {
+                            Text("\(editMode.title)")
+                            Spacer()
+                                .disabled(!(!emptyComm.name.isEmpty ||
+                                            isValueChanged))
+                        }
                     }
-                    .tint(.black)
-                    Text("\(editMode.title)")
-                        .padding(.leading, 30)
-                    Spacer()
                     Button("완료") {
                         Task {
                             switch editMode {
@@ -54,7 +57,7 @@ struct CommSettingView: View {
                     .disabled(!(!emptyComm.name.isEmpty ||
                                 isValueChanged))
                 }
-                .padding()
+                .padding(.horizontal)
                 Button {
                     isImagePicker.toggle()
                 } label: {
@@ -91,6 +94,7 @@ struct CommSettingView: View {
                 Spacer()
             }
         }
+		.tint(.mainColor)
         .navigationBarBackButtonHidden()
         .overlay(
             ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
@@ -173,7 +177,6 @@ struct CommSettingView: View {
                         }
                     }
                 }
-                .tint(.black)
             }
         default:
             EmptyView()

@@ -12,53 +12,69 @@ struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
     
+    @State private var isDeportAlert = false
+    @State private var deportUser = User.emptyUser
+    @State private var isWaitListFold = false
+    @State private var isCurrentListFold = false
+    
     var body: some View {
         VStack {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
+            ZenoNavigationBackBtn {
+                dismiss()
+            } label: {
+                HStack {
+                    Text("구성원 관리")
+                    Spacer()
                 }
-                Text("구성원 관리")
-                    .padding(.leading, 30)
-                Spacer()
             }
-            .padding()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading) {
-                    ForEach(MGMTSection.allCases) { section in
-                        Section {
-                            switch section {
-                            case .wait:
-                                ForEach($commViewModel.currentWaitApprovalMembers) { $user in
-                                        CommUserMgmtCellView(user: $user, actionType: .accept)
-                                }
-                            case .general:
-                                ForEach($commViewModel.currentCommMembers) { $user in
-                                    CommUserMgmtCellView(user: $user, actionType: .deport)
-                                }
+                ForEach(MGMTSection.allCases) { section in
+                    switch section {
+                    case .wait:
+                        ZenoProfileVisibleListView(list: commViewModel.currentWaitApprovalMembers) {
+                            Text("\(section.header) \(commViewModel.currentWaitApprovalMembers.count)")
+                        } btnLabel: {
+                            HStack(alignment: .bottom, spacing: 2) {
+                                Image(systemName: "person.crop.circle.badge.plus")
+                                Text("가입수락")
                             }
-                        } header: {
-                            HStack {
-                                Text(section.header)
-                                    .font(.headline)
-                                Spacer()
-                                switch section {
-                                case .wait:
-                                    Text("\(commViewModel.currentWaitApprovalMembers.count) 명")
-                                case .general:
-                                    Text("\(commViewModel.currentCommMembers.count) 명")
-                                }
+                        } interaction: { user in
+                            Task {
+                                await commViewModel.acceptMember(user: user)
                             }
-                            .font(.footnote)
+                        }
+                    case .general:
+                        ZenoProfileVisibleListView(list: commViewModel.currentCommMembers) {
+                            Text("\(section.header) \(commViewModel.currentCommMembers.count)")
+                        } btnLabel: {
+                            HStack(alignment: .bottom, spacing: 2) {
+                                Image(systemName: "person.crop.circle.badge.minus")
+                                Text("추방하기")
+                            }
+                        } interaction: { user in
+                            deportUser = user
+                            isDeportAlert = true
                         }
                     }
                 }
-                .gmTitle()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
+            }
+            .refreshable {
+                Task {
+                    await commViewModel.fetchCurrentCommMembers()
+                }
             }
         }
         .tint(.black)
+        .alert("\(deportUser.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
+            Button("내보내기", role: .destructive) {
+                Task {
+                    await commViewModel.deportMember(user: deportUser)
+                }
+            }
+            Button("취소", role: .cancel) {
+                deportUser = .emptyUser
+            }
+        }
     }
     
     private enum MGMTSection: CaseIterable, Identifiable {

@@ -135,6 +135,7 @@ extension User {
 }
 
 extension User {
+    static let emptyUser: User = .init(name: "", gender: .male, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: [])
     static let fakeCurrentUser: User = User(
         name: "페이커",
         gender: .male,

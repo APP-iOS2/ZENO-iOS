@@ -17,13 +17,14 @@ enum PlayStatus {
 }
 
 struct SelectCommunityVer2: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @Environment(\.colorScheme) var colorScheme
+    
+    @StateObject private var zenoViewModel = ZenoViewModel()
     @EnvironmentObject private var commViewModel: CommViewModel
     
-    @State private var stack = NavigationPath()
+    @State private var myFriends: [User] = []
     @State private var isPlay: PlayStatus = .notSelected
     @State private var community: Community?
-    @State private var allMyFriends: [User] = []
     @State private var selected = ""
     @State private var currentIndex: Int = 0
     @State private var counter: Int = 0
@@ -31,7 +32,7 @@ struct SelectCommunityVer2: View {
     @State private var dragWidth: CGFloat = 0
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $zenoViewModel.path) {
             VStack {
                 ScrollViewReader { ScrollViewProxy in
                     ZStack {
@@ -46,32 +47,39 @@ struct SelectCommunityVer2: View {
                             }
                     }
                 }
-                .zIndex(1)
-                .background(.background)
+                .frame(height: .screenHeight * 0.35)
+                /// 커뮤니티 리스트 뷰
                 commuityListView
                     .background(.clear)
-                    .zIndex(0)
             }
+            .navigationDestination(for: Community.self) { value in
+                ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
+            }
+            
             .overlay {
                 VStack {
                     Spacer()
                     VStack {
+                        /// isPlay 상태에 따라 달라짐
                         switch isPlay {
                         case .success:
-                            NavigationLink {
+                            Button {
                                 if let community {
-                                    ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: community, allMyFriends: allMyFriends)
+                                    Task {
+                                        await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
+                                        zenoViewModel.path.append(community)
+                                    }
                                 }
                             } label: {
-                                WideButton(buttonName: "START", isplay: true)
+                                WideButton2(buttonName: "START", isplay: true)
                             }
                         case .lessThanFour:
-                            WideButton(buttonName: "START", isplay: false)
+                            WideButton2(buttonName: "START", isplay: false)
                                 .disabled(isPlay != .success)
                         case .notSelected:
                             Text("그룹을 선택해주세요")
                                 .foregroundColor(.secondary)
-                            WideButton(buttonName: "START", isplay: false)
+                            WideButton2(buttonName: "START", isplay: false)
                                 .disabled(isPlay != .success)
                         }
                     }
@@ -80,25 +88,15 @@ struct SelectCommunityVer2: View {
                     .frame(width: .screenWidth)
                     .background {
                         Blur(style: .light)
-                            .opacity(0.8)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(
-                                        colors: [
-                                            .white
-                                                .opacity(0.5),
-                                            .white
-                                                .opacity(0.95)
-                                        ]
-                                    ),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                            .opacity(0.9)
+                            .edgesIgnoringSafeArea(.bottom)
                     }
                 }
             }
             .onAppear {
+                Task {
+                    try? await zenoViewModel.loadUserData()
+                }
                 currentIndex = 0
                 selected = ""
                 isPlay = .notSelected
@@ -106,11 +104,11 @@ struct SelectCommunityVer2: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
-                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
                         dragWidth = value.translation.width
                     }
                     .onEnded { value in
-                        guard value.startLocation.y < .screenHeight * 0.3 else { return }
+                        guard value.startLocation.y < .screenHeight * 0.4 else { return }
                         if value.translation.width > 0 {
                             guard currentIndex > 0 else { return }
                             currentIndex -= 1
@@ -121,50 +119,23 @@ struct SelectCommunityVer2: View {
                             currentIndex = currentIndex
                             return
                         }
-                        selected = commViewModel.joinedComm[currentIndex].id
-                        community = commViewModel.joinedComm[currentIndex]
+                        select(index: currentIndex)
                         dragWidth = 0
-                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[currentIndex]) {
-                            isPlay = .success
-                        } else {
-                            isPlay = .lessThanFour
-                        }
-                        
-                        if useConfentti {
-                            counter += 1
-                            useConfentti = false
-                        }
                     }
             )
         }
+        .environmentObject(zenoViewModel)
         .navigationBarBackButtonHidden()
     }
     
     var commuityListView: some View {
         ScrollViewReader { proxy in
             List {
-                Text("가라")
-                    .foregroundColor(.clear)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                ForEach(Array(commViewModel.joinedComm.indices), id: \.self) { index in
+                ForEach(Array(commViewModel.joinedComm.indices),
+                        id: \.self) { index in
                     Button {
-                        selected = commViewModel.joinedComm[index].id
-                        community = commViewModel.joinedComm[index]
                         currentIndex = index
-                        //                Task {
-                        //                    allMyFriends = await userViewModel.IDArrayToUserArrary(idArray: userViewModel.getFriendsInComm(comm: community ?? Community.dummy[1]))
-                        //                }
-                        if userViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
-                            isPlay = .success
-                        } else {
-                            isPlay = .lessThanFour
-                        }
-                        
-                        if useConfentti {
-                            counter += 1
-                            useConfentti = false
-                        }
+                        select(index: index)
                     } label: {
                         HStack {
                             ZenoKFImageView(commViewModel.joinedComm[index])
@@ -173,8 +144,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, 10)
                             Text(commViewModel.joinedComm[index].name)
                                 .font(selected == commViewModel.joinedComm[index].id ?
-                                      ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 19) :
-                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17) :
+                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
                                 .foregroundColor(.primary.opacity(0.7))
                             
                             Spacer()
@@ -184,15 +155,18 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, .screenWidth * 0.05)
                         }
                     }
+                    
                     .frame(width: .screenWidth * 0.9)
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
                 }
-                Spacer()
-                    .frame(height: 70)
+                Text("가라")
+                    .padding()
+                    .padding()
+                    .foregroundColor(.clear)
+                    .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
-            .offset(y: -50)
             .overlay {
                 HStack {
                     Spacer()
@@ -210,6 +184,22 @@ struct SelectCommunityVer2: View {
             }
         }
     }
+    
+    func select(index: Int) {
+        selected = commViewModel.joinedComm[index].id
+        community = commViewModel.joinedComm[index]
+        
+        if zenoViewModel.hasFourFriends(comm: commViewModel.joinedComm[index]) {
+            isPlay = .success
+        } else {
+            isPlay = .lessThanFour
+        }
+        
+        if useConfentti {
+            counter += 1
+            useConfentti = false
+        }
+    }
 }
 
 struct SelectCommunityVer2_Previews: PreviewProvider {
@@ -221,7 +211,7 @@ struct SelectCommunityVer2_Previews: PreviewProvider {
         @StateObject private var alarmViewModel: AlarmViewModel = .init()
         
         var body: some View {
-            TabBarView(selected: .zeno)
+            TabBarView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)

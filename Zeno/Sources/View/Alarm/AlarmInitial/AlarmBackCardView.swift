@@ -1,5 +1,5 @@
 //
-//  AlarmChangingView.swift
+//  AlarmBackCardView.swift
 //  Zeno
 //
 //  Created by Jisoo HAM on 10/10/23.
@@ -8,59 +8,81 @@
 
 import SwiftUI
 
-struct AlarmChangingView: View {
-    @Environment(\.dismiss) private var dismiss
-    
+struct AlarmBackCardView: View {
     @EnvironmentObject var alarmVM: AlarmViewModel
     @EnvironmentObject var userVM: UserViewModel
     
+    let selectAlarm: Alarm
+    
+    @Binding var isFlipped: Bool
+    
     @State private var isNudgingOn: Bool = false
     @State private var isCheckInitialTwice: Bool = false
-    @State private var isFlipped = false
-    
     @State private var chosung: String = ""
-    let selectAlarm: Alarm
     
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
     
     var body: some View {
-        ZStack {
-            // 앞면 뷰
-            AlarmFrontCardView(isFlipped: $isFlipped)
-                .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
-                .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
-                .opacity(isFlipped ? 0 : 1)
-            
-            // 뒷면 뷰
-            AlarmBackCardView(content1: "\(selectAlarm.receiveUserName)님을",
-                              content2: "\"\(selectAlarm.zenoString)\"",
-                              content3: "으로 선택한 사람은 ?",
-                              content4: "\(chosung)",
-                              selectAlarm: selectAlarm,
-                              isFlipped: $isFlipped) // true
-            .opacity(isFlipped ? 1 : 0) // 버튼을 누를 때만 보이도록 함
-            
-            VStack {
-                Spacer()
-                
-                Button {
-                    isNudgingOn = true
-                } label: {
-                    WideButton(buttonName: "찌르기", systemImage: "", isplay: true)
-                }
-                .opacity(isFlipped ? 1 : 0)
-            }
+        VStack {
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray, lineWidth: 3)
+                .overlay(
+                    VStack(alignment: .center, spacing: 20) {
+                        Spacer()
+                        
+                        Image("removedBG_Zeno")
+                            .resizable()
+                            .frame(width: .screenWidth * 0.3, height: .screenWidth * 0.3)
+                            .padding(.bottom, 20)
+                        
+                        VStack(spacing: 20) {
+                            Text("\(selectAlarm.receiveUserName)님을")
+                            Text("\"\(selectAlarm.zenoString)\"")
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16))
+                                .multilineTextAlignment(.center)
+                            Text("으로 선택한 사람은 ?")
+                        }
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                        .padding(.bottom, 10)
+                        
+                        // 초성은 조금 더 크게 보여줘야 하지 않을까 ?
+                        Text(chosung)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                            .background(
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(.primary, lineWidth: 1)
+                                    .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.04)
+                            )
+                            .padding(.top, 10)
+                        
+                        Spacer()
+                        
+                        Button {
+                            isNudgingOn = true
+                        } label: {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.05)
+                                    .foregroundColor(.purple2)
+                                    .shadow(radius: 1)
+                                Text("찌르기")
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.bottom, 20)
+                    }
+                        .padding(10)
+                )
+                .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
+                .offset(y: -40)
+                .padding(10)
         }
-        .onTapGesture {
-            withAnimation {
-                isFlipped = true
-            }
-        }
+        .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
+        .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
         .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
             Button {
                 // TODO: 찌른 알람을 보내는 함수 호출(push noti 어쩌구) / 찌르기 전용 알람 보내기 - AlarmVM
                 isNudgingOn.toggle()
-                dismiss()
             } label: {
                 Text("확인")
             }
@@ -76,7 +98,7 @@ struct AlarmChangingView: View {
                     } label: {
                         Text("다시 확인")
                             .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                            .foregroundStyle(.black)
+                            .foregroundColor(Color.primary)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
                                     .stroke(Color.mainColor, lineWidth: 1)
@@ -100,7 +122,6 @@ struct AlarmChangingView: View {
                          primaryButton: firstButton, secondaryButton: secondButton)
         }
     }
-    
     /// 초성 확인 로직
     private func ChosungCheck(word: String) -> String {
         var initialResult = ""
@@ -126,21 +147,22 @@ struct AlarmChangingView: View {
     }
 }
 
-struct AlarmChangingView_Previews: PreviewProvider {
+struct AlarmBackCardView_Previews: PreviewProvider {
     static var previews: some View {
-        AlarmChangingView(selectAlarm: Alarm(sendUserID: "aa",
-                                             sendUserName: "강동원참치",
+        AlarmBackCardView(selectAlarm: Alarm(sendUserID: "aa",
+                                             sendUserName: "함지수",
                                              sendUserFcmToken: "sendToken",
-                                             sendUserGender: .female,
+                                             sendUserGender: .male,
                                              receiveUserID: "bb",
                                              receiveUserName: "함지수",
                                              receiveUserFcmToken: "token",
                                              communityID: "cc",
                                              showUserID: "1234",
                                              zenoID: "dd",
-                                             zenoString: "에어팟이 없다는 가정 하에, 줄 이어폰 나눠낄 수 있는 사람",
-                                             createdAt: 91842031))
-            .environmentObject(AlarmViewModel())
-            .environmentObject(UserViewModel())
+                                             zenoString: "자꾸 눈이 마주치는 사람",
+                                             createdAt: 91842031),
+                          isFlipped: .constant(true))
+        .environmentObject(AlarmViewModel())
+        .environmentObject(UserViewModel())
     }
 }

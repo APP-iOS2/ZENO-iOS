@@ -18,9 +18,9 @@ struct CommJoinWithDeeplinkView: View {
     var body: some View {
         VStack(spacing: 5) {
             Text(comm.name)
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 22))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
             Text("\(comm.joinMembers.count)명 참여중")
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 14))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                 .padding(.top, 10)
             Circle()
                 .stroke()
@@ -30,7 +30,7 @@ struct CommJoinWithDeeplinkView: View {
                 .frame(width: .screenWidth * 0.6, height: .screenHeight / 2)
                 .clipShape(Circle())
             Text(comm.description)
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 16))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                 .padding(.vertical)
             ForEach(Btn.allCases) { btn in
                 Button {
@@ -45,7 +45,7 @@ struct CommJoinWithDeeplinkView: View {
                 } label: {
                     HStack {
                         Text(btn.title)
-                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
                             .foregroundColor(.white)
                             .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
                             .background(

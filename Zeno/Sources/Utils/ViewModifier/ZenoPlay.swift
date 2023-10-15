@@ -24,7 +24,7 @@ struct SelectCommunity: ViewModifier {
 struct SelectCommunity2: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
             .padding(.bottom, 20)
             .foregroundColor(Color.hex("281E44"))
     }

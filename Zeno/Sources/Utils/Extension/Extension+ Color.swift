@@ -9,7 +9,7 @@
 import SwiftUI
 
 extension Color {
-    static let mainColor = Color(red: 123/255, green: 103/255, blue: 200/255)
+    static let mainColor = Color("MainColor")
     static let ggullungColor = Color(red: 49/255, green: 43/255, blue: 92/255)
     static let purple2 = hex("ac9ff0")
     static let purple3 = hex("8F62DC")
@@ -35,9 +35,10 @@ extension Color {
 		)
 	}
 }
+
 extension Color: Codable {
     public init(from decoder: Decoder) throws {
-        var container = try decoder.singleValueContainer()
+        let container = try decoder.singleValueContainer()
         let colorString = try container.decode(String.self)
         self.init(colorString) // Assuming you have a function to convert a hex string to Color
     }

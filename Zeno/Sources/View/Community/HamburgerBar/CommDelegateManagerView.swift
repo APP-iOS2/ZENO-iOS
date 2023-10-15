@@ -19,22 +19,27 @@ struct CommDelegateManagerView: View {
     
     var body: some View {
         ScrollView {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
+            ZenoNavigationBackBtn {
+                dismiss()
+            } label: {
+                HStack {
+                    if commViewModel.currentCommMembers.isEmpty {
+                        Text("가입된 유저가 없습니다")
+                    } else {
+                        Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
+                    }
+                    Spacer()
                 }
-                titleView
-                    .padding(.leading, 30)
-                Spacer()
             }
-            .padding()
-            .tint(.primary)
             if !commViewModel.currentCommMembers.isEmpty {
                 ForEach(commViewModel.currentCommMembers) { user in
                     HStack {
-                        ZenoSearchableCellView(item: user,
-                                               actionTitle: "매니저 권한 위임"
-                        ) {
+                        ZenoProfileVisibleCellView(item: user) {
+                            HStack(alignment: .bottom, spacing: 2) {
+                                Image(systemName: "person.crop.square.filled.and.at.rectangle")
+                                Text("매니저 권한 위임")
+                            }
+                        } interaction: { user in
                             selectedUser = user
                             isAlert = true
                         }
@@ -55,15 +60,6 @@ struct CommDelegateManagerView: View {
             Button("취소", role: .cancel) {
                 selectedUser = nil
             }
-        }
-    }
-    
-    @ViewBuilder
-    var titleView: some View {
-        if commViewModel.currentCommMembers.isEmpty {
-            Text("가입된 유저가 없습니다")
-        } else {
-            Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
         }
     }
 }

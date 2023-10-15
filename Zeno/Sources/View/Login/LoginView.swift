@@ -9,25 +9,32 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject private var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Image("LoginBackground")
+                Image("bubbleBackground")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                Image("ZenoPng")
-                    .resizable()
-                    .frame(width: 300, height: 300)
-                    .offset(y: -250)
+                
+                LottieView(lottieFile: "bubbles")
                 VStack {
-                    ZStack {
-                        Image("ZenoBackground")
-                    }
-                    Spacer()
+                    Text("zeno")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 80))
+                        .foregroundColor(.white)
+                    .opacity(0.6)
                     
+                    Text("제노는어쩌구저쩌구야")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
+                        .foregroundColor(.white)
+                        .opacity(0.6)
+                }
+                .offset(y: -50)
+                
+                VStack {
+                    Spacer()
                     Button {
                         Task {
                             await userViewModel.startWithKakao()

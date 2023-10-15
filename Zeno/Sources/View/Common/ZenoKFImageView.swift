@@ -15,21 +15,22 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     private let isRandom: Bool
     
     var body: some View {
-        if let urlStr = item.imageURL,
-           let url = URL(string: urlStr) {
-            KFImage(url)
-                .cacheOriginalImage()
-                .resizable()
-                .placeholder {
-                    placeholderImg
-                        .resizable()
-                }
-                .aspectRatio(contentMode: ratio)
-        } else {
-            placeholderImg
-                .resizable()
-                .aspectRatio(contentMode: ratio)
+        Group {
+            if let urlStr = item.imageURL,
+               let url = URL(string: urlStr) {
+                KFImage(url)
+                    .cacheOriginalImage()
+                    .resizable()
+                    .placeholder {
+                        placeholderImg
+                            .resizable()
+                    }
+            } else {
+                placeholderImg
+                    .resizable()
+            }
         }
+        .aspectRatio(contentMode: ratio)
     }
     
     private var placeholderImg: Image {
@@ -47,7 +48,7 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                 return Image(womanAsset)
             }
         } else if (item as? Community) != nil {
-            return Image(CommAsset.team1.rawValue)
+            return Image("ZenoIcon")
         } else {
             return Image("ZenoIcon")
         }
@@ -59,14 +60,6 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
         self.item = item
         self.ratio = ratio
         self.isRandom = isRandom
-    }
-    
-    private enum UserAsset: String, CaseIterable {
-        case man1, man2, woman1, woman2
-    }
-    
-    private enum CommAsset: String, CaseIterable {
-        case team1, team2, team3, team4
     }
 }
 
@@ -80,6 +73,6 @@ class ZenoCacheManager<T: AnyObject> {
     
     func loadImage(url: URL?) -> T? {
         guard let url else { return nil }
-        return shared.object(forKey: url.absoluteString as NSString) as? T
+        return shared.object(forKey: url.absoluteString as NSString)
     }
 }

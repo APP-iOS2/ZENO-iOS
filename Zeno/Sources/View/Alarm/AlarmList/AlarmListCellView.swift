@@ -33,7 +33,7 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    .black, lineWidth: 1
                                 )
                         )
                 } else {
@@ -43,16 +43,18 @@ struct AlarmListCellView: View {
                         .overlay(
                             Circle()
                                 .strokeBorder(
-                                    alarm.sendUserGender == .female ? Color.hex("EB0FFE") : Color.hex("0F62FE"), lineWidth: 2
+                                    .black, lineWidth: 1
                                 )
                         )
                 }
                 VStack(alignment: .leading) {
-                    Text("\(getCommunity.name) . \(alarm.sendUserGender.toString)")
-                        .padding(.bottom, 4)
-                    Text("3시간 전")
-                        .font(.caption)
-                        .foregroundStyle(.gray)
+                    Text("\(getCommunity.name)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
+                        //.foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
+                    Text("\(alarm.sendUserGender.toString)")
+                        .font(.caption2)
+                    Text("\(alarm.createdAt.theOtherDay)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
                 }
                 
                 Spacer()
@@ -62,30 +64,41 @@ struct AlarmListCellView: View {
                         .frame(width: 40, height: 40, alignment: .topTrailing)
                 }
             }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
             .padding(.bottom, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
             .onTapGesture {
-                selectAlarm = alarm
+                if let selectCell = selectAlarm, selectCell.id == alarm.id {
+                    selectAlarm = nil
+                } else {
+                    selectAlarm = alarm
+                }
             }
             
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
-                        .bold()
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+                        .padding(.bottom, 1)
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
-                        .font(.subheadline)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                        .offset(y: -3)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    selectAlarm = alarm
+                    if let selectCell = selectAlarm, selectCell.id == alarm.id {
+                        selectAlarm = nil
+                    } else {
+                        selectAlarm = alarm
+                    }
                 }
                 
                 Spacer()
             }
         }
-        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray)
+        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray4)
         .padding()
         .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray6))
         .clipped()

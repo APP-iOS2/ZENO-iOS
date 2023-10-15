@@ -17,25 +17,28 @@ class UserViewModel: ObservableObject {
     /// 현재 로그인된 유저
     @Published var currentUser: User?
     /// 로그인여부(상태)
-    @Published var signStatus: SignStatus = .none
+    @Published var signStatus: SignStatus = .unSign
     
     @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
+    // userViewModel의 currentUser가 변경되었지만 alarmViewModel의 정보가 변경되기 이전에 isNeedLogin이 변경되어
+    // AlarmView에 순간적으로 가입된 커뮤니티가 없습니다가 뜨는 버그있음
+    @Published var isNeedLogin: Bool = false
     
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
+    
+    @MainActor
     init() {
         print("🦕userViewModel 초기화")
         Task {
             try? await loadUserData() // currentUser Value 가져오기 서버에서
             if self.currentUser != nil {
                 await self.getSignStatus() // currentUser의 값이 nil이 아닐때만 상태값 가져오기.
+            } else {
+                isNeedLogin = true
             }
         }
-    }
-    
-    init(currentUser: User) {
-        self.currentUser = currentUser
     }
     
     @MainActor
@@ -173,7 +176,11 @@ class UserViewModel: ObservableObject {
     func loadUserData() async throws {
         self.userSession = Auth.auth().currentUser
         print("🦕Auth.currentUser: \(String(describing: userSession))")
-        guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
+        guard let currentUid = userSession?.uid else {
+            isNeedLogin = true
+            print("🦕로그인된 유저 없음")
+            return
+        }
         print("🦕UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
         if let currentUser {
@@ -189,7 +196,7 @@ class UserViewModel: ObservableObject {
         try? Auth.auth().signOut()
         self.userSession = nil
         self.currentUser = nil
-        self.setSignStatus(.none)
+        self.setSignStatus(.unSign)
     }
     
     /// 코인 사용 업데이트 함수

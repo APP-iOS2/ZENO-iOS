@@ -24,7 +24,7 @@ extension KakaoSDKUser.Gender {
 
 /// 로그인 여부 UserDefault에 저장
 enum SignStatus: String {
-    case signIn, none
+    case signIn, unSign
     
     /// 로그인상태 저장.
     func saveStatus() {
@@ -37,7 +37,7 @@ enum SignStatus: String {
            let status = SignStatus(rawValue: statusString) {
             return status
         } else {
-            return .none
+            return .unSign
         }
     }
 }

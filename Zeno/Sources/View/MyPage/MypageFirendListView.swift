@@ -23,13 +23,14 @@ struct MypageFriendListView: View {
         VStack(alignment: .trailing, spacing: 0) {
             Picker("그룹선택", selection: $selectedGroup) {
                 Text("전체").tag("all")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                 ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
                     Text(mypageViewModel.commArray[group].name)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .tag(mypageViewModel.commArray[group].id)
                 }
             }
-            .font(.system(size: 12))
-            .tint(.black)
+            .tint(.primary)
             .onChange(of: selectedGroup) { newValue in
                 self.selectedGroupID = newValue
                 mypageViewModel.friendInfo = []
@@ -43,7 +44,10 @@ struct MypageFriendListView: View {
                 mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
             }
             
-            VStack {
+            VStack(alignment: .leading) {
+                Text("친구 \(mypageViewModel.friendInfo.count)명")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
+                    .foregroundColor(.primary)
                 ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
                     if let friendInfo = friend {
                         HStack {
@@ -70,15 +74,13 @@ struct MypageFriendListView: View {
                             }
                             VStack(alignment: .leading, spacing: 20) {
                                 Text(friendInfo.name)
-                                    .font(.system(size: 15))
-//                                    .background(.red)
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Text(friendInfo.description)
-                                    .font(.system(size: 13))
-//                                    .background(.yellow)
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
 //                            .background(.blue)
                             Spacer()
@@ -118,10 +120,8 @@ struct MypageFirendListView_Previews: PreviewProvider {
 extension Array where Element: Equatable {
     func removeDuplicates() -> [Element] {
         var result: [Element] = []
-        for item in self {
-            if !result.contains(item) {
-                result.append(item)
-            }
+        for item in self where !result.contains(item) {
+            result.append(item)
         }
         return result
     }

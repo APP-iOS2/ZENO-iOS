@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CardViewVer2: View {
     @Binding var currentIndex: Int
+    
     let isPlay: PlayStatus
     private let itemSize: CGFloat = 200
 
@@ -20,8 +21,10 @@ struct CardViewVer2: View {
             HStack(alignment: .center, spacing: 10) {
                 ForEach(commViewModel.joinedComm.indices, id: \.self) { index in
                     VStack {
+                        /// 그룹 이미지 뷰
                         ZenoKFImageView(commViewModel.joinedComm[index])
                             .clipShape(Circle())
+                            .shadow(radius: 3)
                             .frame(width: itemSize, height: itemSize)
                             .overlay {
                                 if isPlay == .lessThanFour, currentIndex == index {
@@ -36,41 +39,23 @@ struct CardViewVer2: View {
                                     .clipShape(Circle())
                                 }
                             }
-                        //                        .overlay(alignment: .centerFirstTextBaseline) {
-                        //                            Text(commViewModel.joinedComm[index].name)
-                        //                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
-                        //                                .offset(y: 30)
-                        //                                .frame(width: 200)
-                        //                                .opacity(currentIndex == index ? 1.0 : 0.3)
-                        //                        }
-                            .scaleEffect(currentIndex == index ? 0.98 : 0.73)
+                            .scaleEffect(currentIndex == index ? 1 : 0.8)
+                            .rotation3DEffect(
+                                .degrees(currentIndex == index ? 0 : 30),
+                                axis: (x: -0.3, y: 0.0, z: 0.1)
+//                                axis: (x: 0.5, y: 0, z: 0)
+                            )
+                        /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
                             .frame(width: 200)
                             .opacity(currentIndex == index ? 1.0 : 0.3)
-                            .background {
-                                Blur(style: .light)
-                                    .opacity(0.8)
-                                    .background(
-                                        LinearGradient(
-                                            gradient: Gradient(
-                                                colors: [
-                                                    .white
-                                                        .opacity(0.5),
-                                                    .white
-                                                        .opacity(0.95)
-                                                ]
-                                            ),
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                            }
                     }
                 }
             }
-            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.4)
+            .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.35)
         }
+        .animation(.easeInOut, value: currentIndex)
         .disabled(true)
     }
 }
