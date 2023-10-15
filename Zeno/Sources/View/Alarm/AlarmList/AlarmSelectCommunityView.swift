@@ -34,7 +34,6 @@ struct AlarmSelectCommunityView: View {
                         Text("전체")
                             .font(.footnote)
                             .frame(width: 72)
-                            .padding(.leading)
                     }
                     ForEach(communityViewModel.joinedComm) { community in
                         AlarmSelectCommunityCellView(selectedCommunityId: $selectedCommunityId, community: community)

@@ -50,8 +50,9 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(getCommunity.name)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
+                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
                     Text("\(alarm.sendUserGender.toString)")
-                        .padding(.bottom, 1)
+                        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray3)
                         .font(.caption2)
                     Text("\(alarm.createdAt.theOtherDay)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
@@ -81,9 +82,10 @@ struct AlarmListCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-                        .padding(.bottom, 2)
+                        .padding(.bottom, 1)
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                        .offset(y: -6)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -98,7 +100,7 @@ struct AlarmListCellView: View {
                 Spacer()
             }
         }
-        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray)
+        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray4)
         .padding()
         .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray6))
         .clipped()
