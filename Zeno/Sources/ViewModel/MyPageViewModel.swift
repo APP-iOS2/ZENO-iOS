@@ -31,45 +31,30 @@ final class MypageViewModel: ObservableObject {
     @Published var allMyPageFriendInfo: [User?] = []
     /// User의 그룹별 buddyList가 담긴 배열
     @Published var groupFirendList: [String] = []
+    /// 친구들의 정보를 담을 유저 데이터
     @Published var friendInfo: [User?] = []
-
+    /// 모든 알람 문서 가져와서 담을 데이터
+    @Published var allAlarmData: [Alarm] = []
+    
     /// User 객체값 가져오기
-    func getUserInfo() async {
+    func getUserInfo() {
         if let currentUser = Auth.auth().currentUser?.uid {
-//            let document = try await db.collection("User").document(currentUser).getDocument()
             db.collection("User").document(currentUser).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-                        self.userInfo = user
+                        if let data = data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(User.self, from: jsonData)
+                            self.groupList = user.commInfoList
+                            self.groupIDList = self.groupList?.compactMap { $0.id }
+                            self.userInfo = user
+                        }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
                 } else {
                     print("[Error]! getUserInfo 함수 에러 발생")
-                }
-            }
-        }
-    }
-    
-    /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
-    func userGroupIDList() {
-        if let currentUser = Auth.auth().currentUser?.uid {
-            db.collection("User").document(currentUser).getDocument { document, error in
-                if let document = document, document.exists {
-                    let data = document.data()
-                    do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-                        self.groupList = user.commInfoList
-                        self.groupIDList = self.groupList?.compactMap { $0.id }
-                    } catch {
-                        print("json parsing Error \(error.localizedDescription)")
-                    }
-                } else {
-                    print("firebase document 존재 오류")
                 }
             }
         }
@@ -220,4 +205,26 @@ final class MypageViewModel: ObservableObject {
             }
         }
     }
+    
+    /// Alarm 문서 모두 패치해서 가져오기
+//    func fetchAllAlarmData() async {
+//        db.collection("User").document(currentUser).getDocument { document, error in
+//            if let document = document, document.exists {
+//                let data = document.data()
+//                do {
+//                    if let data = data {
+//                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+//                        let user = try JSONDecoder().decode(User.self, from: jsonData)
+//                        self.groupList = user.commInfoList
+//                        self.groupIDList = self.groupList?.compactMap { $0.id }
+//                        self.userInfo = user
+//                    }
+//                } catch {
+//                    print("json parsing Error \(error.localizedDescription)")
+//                }
+//            } else {
+//                print("[Error]! getUserInfo 함수 에러 발생")
+//            }
+//        }
+//    }
 }

@@ -38,10 +38,6 @@ struct MyPageMain: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
-//                    Text("마이페이지")
-//                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
-//                        .font(.footnote)
-//                        .foregroundColor(.primary)
                     HStack {
                         Text("마이페이지")
                             .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
@@ -75,35 +71,43 @@ struct MyPageMain: View {
                                 .modifier(TextModifier())
                         }
                         
-//                        Group {
-                            VStack(alignment: .leading, spacing: 15) {
-                                HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 15) {
+                            HStack(spacing: 10) {
+                                NavigationLink {
+                                    UserProfileEdit()
+                                } label: {
                                     Text(mypageViewModel.userInfo?.name ?? "홍길동")
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 19))
                                         .fontWeight(.semibold)
-                                    
-                                    NavigationLink {
-                                        UserProfileEdit()
-                                    } label: {
-                                        Image(systemName: "chevron.right")
-                                    }
                                 }
-                                Text(mypageViewModel.userInfo?.description ?? "안녕하세요. 홍길동입니다.")
-                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                                HStack(spacing: 3) {
-                                    Image(systemName: "speaker.wave.2.fill")
-                                        .foregroundColor(.red)
-                                    Text("\(mypageViewModel.userInfo?.megaphone ?? 0)회   ")
-                                    Text("Z")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
-//                                        .foregroundColor(Color.purple2)
-                                        .foregroundColor(Color.mainColor)
-                                        .fontWeight(.bold)
-                                    Text("\(mypageViewModel.userInfo?.showInitial ?? 0)회")
-                                        .foregroundColor(.primary)
-                                }.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                NavigationLink {
+                                    UserProfileEdit()
+                                } label: {
+                                    Image(systemName: "chevron.right")
+                                }
                             }
-//                        }
+                            Text(mypageViewModel.userInfo?.description ?? "안녕하세요. 홍길동입니다.")
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
+                            HStack {
+                                Button {
+                                    print("button tapped")
+                                } label: {
+                                    HStack(spacing: 3) {
+                                        Text("Z")
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
+                                            .foregroundColor(Color.mainColor)
+                                            .fontWeight(.bold)
+                                        Text("\(mypageViewModel.userInfo?.showInitial ?? 0)회")
+                                            .foregroundColor(.primary)
+                                    }.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                }
+                                Button {
+                                    print("info button tapped!")
+                                } label: {
+                                    InformationButtonView()
+                                }
+                            }
+                        }
                         Spacer()
                     }
                     .frame(maxHeight: 120)
@@ -113,26 +117,26 @@ struct MyPageMain: View {
                     UserMoneyView()
                         .frame(minHeight: UIScreen.main.bounds.height/9)
                         .padding(.horizontal, 17)
-
-//                    /// 재화정보 스크롤뷰
-//                    ScrollView(.horizontal, showsIndicators: false) {
-//                        HStack(spacing: 0) {
-//                            if isShowingZenoCoin {
-//                                coinView
-//                            } else {
-//                                megaphoneView
-//                            }
-//                        }
-//                        .frame(width: UIScreen.main.bounds.width, height: 60)
-//                    }
-//                    .background(Color.black)
-//                    .onAppear {
-//                        startTimer()
-//                    }
-//                    .onDisappear {
-//                        print("⏰ 타이머 끝")
-//                        stopTimer()
-//                    }
+                    
+                    //                    /// 재화정보 스크롤뷰
+                    //                    ScrollView(.horizontal, showsIndicators: false) {
+                    //                        HStack(spacing: 0) {
+                    //                            if isShowingZenoCoin {
+                    //                                coinView
+                    //                            } else {
+                    //                                megaphoneView
+                    //                            }
+                    //                        }
+                    //                        .frame(width: UIScreen.main.bounds.width, height: 60)
+                    //                    }
+                    //                    .background(Color.black)
+                    //                    .onAppear {
+                    //                        startTimer()
+                    //                    }
+                    //                    .onDisappear {
+                    //                        print("⏰ 타이머 끝")
+                    //                        stopTimer()
+                    //                    }
                     GroupSelectView()
                 }
             }
@@ -141,19 +145,9 @@ struct MyPageMain: View {
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)
-//            .navigationTitle("마이페이지")
-//            .toolbar {
-//                ToolbarItem {
-//                    NavigationLink {
-//                        MypageSettingView()
-//                            .environmentObject(mypageViewModel)
-//                    } label: {
-//                        Image(systemName: "gearshape")
-//                            .foregroundColor(.black)
-//                    }
-//                }
-//            }
-//            .navigationBarTitleDisplayMode(.large)
+            .refreshable {
+                await mypageViewModel.getUserInfo()
+            }
         }
     }
 }
@@ -172,7 +166,7 @@ struct TextModifier: ViewModifier {
         content
             .scaledToFill()
             .frame(width: 120, height: 120)
-//            .clipShape(RoundedRectangle(cornerRadius: 30))
+        //            .clipShape(RoundedRectangle(cornerRadius: 30))
             .clipShape(Circle())
             .padding()
     }
