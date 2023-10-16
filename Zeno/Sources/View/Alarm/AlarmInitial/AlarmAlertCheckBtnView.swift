@@ -13,7 +13,8 @@ struct AlarmAlertCheckBtnView: View {
     
     let imageName: String
     let content: String
-    
+    let quantity: Int
+    let usingGoods: Int
     let primaryAction1: () -> Void
     
     var body: some View {
@@ -29,14 +30,23 @@ struct AlarmAlertCheckBtnView: View {
                 .padding(.trailing, 16)
             
             VStack(spacing: 26) {
-                Image(imageName)
+                Image(systemName: imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 40)
+                    .frame(width: 30)
                     .padding(.top, 30)
                 
                 Text("\(content)을 사용하시겠습니까 ?")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                
+                Divider()
+                
+                Text("잔여 \(content) : \(quantity)개")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                    .padding(.bottom, -10)
+                
+                Text("사용 : \(usingGoods)개")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                 
                 HStack {
                     Button {
@@ -80,7 +90,11 @@ struct AlarmAlertCheckBtnView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmAlertCheckBtnView(
             isPresented: .constant(false),
-            imageName: "dollar-coin", content: "초성확인권") {
+            imageName: "dollar-coin",
+            content: "초성확인권",
+            quantity: 20,
+            usingGoods: 1
+        ) {
                 // 아아
             }
     }

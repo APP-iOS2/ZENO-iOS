@@ -25,17 +25,19 @@ struct CommSideBarView: View {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다.")
-                        .font(.headline)
+						.font(.regular(16))
                     Text("\(commViewModel.currentComm?.joinMembers.count ?? 0)명 참여중")
-                        .font(.caption)
+						.font(.thin(12))
                     Text("생성일 \(commViewModel.currentComm?.createdAt.convertDate ?? "가입된 커뮤니티가 없습니다.")")
-                        .font(.caption)
+						.font(.thin(12))
                         .foregroundStyle(.gray)
                 }
-                .padding(.top, 5)
+				.foregroundColor(.primary)
+				.padding(.top, 20)
+				.padding(.bottom, 10)
                 .padding(.horizontal)
                 Divider()
-                VStack(alignment: .leading, spacing: 40) {
+                VStack(alignment: .leading, spacing: 30) {
                     ForEach(SideMenu.allCases) { item in
                         Button {
                             isPresented = false
@@ -43,7 +45,7 @@ struct CommSideBarView: View {
                             case .memberMGMT:
                                 isSelectContent.toggle()
                             case .inviteComm:
-                                    commViewModel.shareText()
+                                    commViewModel.kakao()
                             case .delegateManager:
                                 if commViewModel.isCurrentCommManager {
                                     isDelegateManagerView = true
@@ -55,22 +57,28 @@ struct CommSideBarView: View {
                                     Text(item.title)
                                     Spacer()
                                     Image(systemName: "chevron.right")
+										.foregroundColor(.gray)
                                 }
                             } else {
                                 if commViewModel.isCurrentCommManager {
                                     HStack {
                                         Text(item.title)
+										Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
+											.foregroundColor(.gray)
                                     }
                                 }
                             }
                         }
+						.foregroundColor(.primary)
+						.font(.regular(14))
                     }
                 }
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
+			.background(RoundedCorners(tl: 22, tr: 0, bl: 0, br: 0).fill(Color(uiColor: .systemBackground)))
             Spacer()
             HStack {
                 ForEach(SideBarBtn.allCases) { btn in
@@ -113,12 +121,13 @@ struct CommSideBarView: View {
                     }
                 }
             }
+			.foregroundColor(.primary)
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
+            .padding(.bottom, CGFloat.screenHeight == 667 ? 10 : 0)
             .background(Color.purple2.opacity(0.4))
         }
-        .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
             CommSettingView(editMode: .edit)
         }
@@ -154,6 +163,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
+                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }
@@ -198,6 +208,45 @@ struct CommSideBarView: View {
         
         var id: Self { self }
     }
+	
+	struct RoundedCorners: Shape {
+		var tl: CGFloat = 0.0
+		var tr: CGFloat = 0.0
+		var bl: CGFloat = 0.0
+		var br: CGFloat = 0.0
+		
+		func path(in rect: CGRect) -> Path {
+			var path = Path()
+			
+			let w = rect.size.width
+			let h = rect.size.height
+			
+			let tr = min(min(self.tr, h/2), w/2)
+			let tl = min(min(self.tl, h/2), w/2)
+			let bl = min(min(self.bl, h/2), w/2)
+			let br = min(min(self.br, h/2), w/2)
+			
+			path.move(to: CGPoint(x: w / 2.0, y: 0))
+			path.addLine(to: CGPoint(x: w - tr, y: 0))
+			path.addArc(center: CGPoint(x: w - tr, y: tr), radius: tr,
+						startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 0), clockwise: false)
+			
+			path.addLine(to: CGPoint(x: w, y: h - br))
+			path.addArc(center: CGPoint(x: w - br, y: h - br), radius: br,
+						startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
+			
+			path.addLine(to: CGPoint(x: bl, y: h))
+			path.addArc(center: CGPoint(x: bl, y: h - bl), radius: bl,
+						startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
+			
+			path.addLine(to: CGPoint(x: 0, y: tl))
+			path.addArc(center: CGPoint(x: tl, y: tl), radius: tl,
+						startAngle: Angle(degrees: 180), endAngle: Angle(degrees: 270), clockwise: false)
+			path.closeSubpath()
+			
+			return path
+		}
+	}
 }
 
 struct GroupSideBarView_Preview: PreviewProvider {

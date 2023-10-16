@@ -54,6 +54,7 @@ struct CardViewVer2: View {
                 }
             }
             .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.35)
+            .padding(.vertical)
         }
         .animation(.easeInOut, value: currentIndex)
         .disabled(true)

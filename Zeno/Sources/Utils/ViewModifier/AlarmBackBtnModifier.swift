@@ -1,20 +1,20 @@
 //
-//  CashAlertModifier.swift
+//  AlarmBackBtnModifier.swift
 //  Zeno
 //
-//  Created by Jisoo HAM on 2023/09/26.
-//  Copyright © 2023 https://github.com/gnksbm/Zeno. All rights reserved.
+//  Created by Jisoo HAM on 10/16/23.
+//  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
 import SwiftUI
 
-struct CashAlertModifier: ViewModifier {
+struct AlarmBackBtnModifier: ViewModifier {
     @Binding var isPresented: Bool
-    var imageTitle: String?
+    
     let title: String
-    let content: String
-    let primaryButtonTitle: String
-    let primaryAction: () -> Void
+    let subTitle: String
+    
+    let primaryAction1: () -> Void
     
     func body(content: Content) -> some View {
         ZStack {
@@ -30,14 +30,10 @@ struct CashAlertModifier: ViewModifier {
                             self.isPresented = false // 외부 영역 터치 시 내려감
                         }
                     
-                    AlarmCoinShortageView(
-                        isPresented: self.$isPresented,
-                        imageTitle: self.imageTitle,
-                        title: self.title,
-                        content: self.content,
-                        primaryButtonTitle: self.primaryButtonTitle,
-                        primaryAction: self.primaryAction
-                    )
+                    AlarmBackBtnView(isPresented: self.$isPresented,
+                                     title: self.title,
+                                     subTitle: self.subTitle,
+                                     primaryAction1: self.primaryAction1)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }

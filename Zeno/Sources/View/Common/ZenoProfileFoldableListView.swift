@@ -20,7 +20,7 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
     @State private var emptyList: [Item] = []
     
     var body: some View {
-        VStack {
+        LazyVStack {
             Section {
                 ForEach(isListFold ? emptyList : list) { item in
                     ZenoProfileVisibleCellView(item: item, isBtnHidden: false, label: btnLabel, interaction: interaction)

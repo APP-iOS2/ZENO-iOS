@@ -29,6 +29,7 @@ struct TabBarView: View {
                 Spacer()
                 CustomTabView()
                     .frame(width: .screenWidth)
+                    .offset(y: CGFloat.screenHeight == 667 ? 20 : 0)
             }
         }
         .environmentObject(tabBarViewModel)
@@ -40,6 +41,14 @@ struct TabBarView: View {
                 tabBarViewModel.selected = .comm
             }
         }
+        .joinWithDeepLink(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.deepLinkTargetComm) {
+            Task {
+                await commViewModel.joinCommWithDeeplink()
+                await userViewModel.joinCommWithDeeplink(comm: commViewModel.deepLinkTargetComm)
+            }
+            commViewModel.isJoinWithDeeplinkView = false
+        }
+        .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
         .task {
             if let loginUser = userViewModel.currentUser {
                 print("fetch alarm and update user fcmtoken")

@@ -22,6 +22,7 @@ struct NickNameRegistView: View {
     @State private var selectedImage: UIImage?
     @State private var isImagePicker: Bool = false
     @State private var isProgressLoading: Bool = false
+    @State private var nextNavigation: Bool = false
     
     private var checkingText: String {
         if nameText.count >= 2 {
@@ -64,6 +65,7 @@ struct NickNameRegistView: View {
                         if nameText.count >= 2 {
                             Task {
                                 await dataConfirm()
+                                nextNavigation.toggle()
                                 dismiss()
                             }
                         } else {
@@ -160,6 +162,9 @@ struct NickNameRegistView: View {
         )
         .onAppear {
             getUserData()
+        }
+        .navigationDestination(isPresented: $nextNavigation) {
+            OnboardingMainView()
         }
     }
     
