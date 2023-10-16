@@ -40,7 +40,7 @@ struct CommListView: View {
 									Text("새로운 그룹을 탐색해 그룹에 가입하거나")
 									Text("새로운 그룹을 만들어 보세요!")
 								}
-								.font(.regular(16))
+								.font(.thin(14))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical)
@@ -60,24 +60,25 @@ struct CommListView: View {
                                                     .clipShape(Circle())
                                             )
 										VStack(alignment: .leading, spacing: 4) {
-											HStack {
+											HStack(alignment: .center) {
 												Text("\(comm.name)")
 													.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
 													.lineLimit(1)
-												Spacer()
-												HStack(spacing: 1) {
+												HStack(alignment: .lastTextBaseline, spacing: 1) {
 													Image(systemName: "person.2.fill")
+														.font(.regular(11))
 													Text("\(comm.joinMembers.count)")
 												}
-												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
+												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
 												.foregroundColor(Color(uiColor: .systemGray3))
 												
 											}
+											if !comm.description.isEmpty {
 												Text("\(comm.description)")
 													.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
 													.foregroundColor(.gray)
 													.lineLimit(1)
-											
+											}
                                         }
                                         .padding(.leading, 4)
                                         Spacer()
