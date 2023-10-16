@@ -37,7 +37,6 @@ struct CommJoinWithDeeplinkView: View {
                         Task {
                             await commViewModel.joinCommWithDeeplink()
                             await userViewModel.joinCommWithDeeplink(comm: commViewModel.deepLinkTargetComm)
-                            try? await userViewModel.loadUserData()
                         }
                     }
                     isPresented = false

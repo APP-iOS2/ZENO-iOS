@@ -13,7 +13,7 @@ struct InformationButtonView: View {
     
     var body: some View {
         VStack {
-            Button{
+            Button {
                 isButtonTapped.toggle()
             } label: {
                 Image(systemName: "info.circle")

@@ -91,7 +91,7 @@ struct CommMainView: View {
             )
         )
         .onChange(of: commViewModel.allComm) { _ in
-            commViewModel.filterJoinedComm()
+            commViewModel.joinedComm = commViewModel.allComm.filterJoined(user: commViewModel.currentUser)
         }
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
