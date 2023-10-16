@@ -19,7 +19,7 @@ struct NewUserListView: View {
             Section {
                 if isShowingDetailNewBuddyToggle {
                     ScrollView(.horizontal) {
-                        HStack(alignment: .center, spacing: 15) {
+                        HStack(spacing: 15) {
                             ForEach(commViewModel.recentlyJoinedMembers) { user in
                                 VStack(spacing: 5) {
                                     Circle()
@@ -40,7 +40,7 @@ struct NewUserListView: View {
                     .scrollIndicators(.hidden)
                 }
             } header: {
-                HStack {
+                HStack(alignment: .center) {
                     Text("새로 들어온 구성원 \(commViewModel.recentlyJoinedMembers.count)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                         .font(.footnote)
