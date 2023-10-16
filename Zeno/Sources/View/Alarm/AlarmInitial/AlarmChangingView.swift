@@ -48,6 +48,25 @@ struct AlarmChangingView: View {
                 }
             }
         }
+        .usingAlert(
+            isPresented: $isCheckInitialTwice,
+            imageName: "ticket",
+            content: "초성 확인권",
+            quantity: userVM.currentUser?.showInitial ?? 0,
+            usingGoods: 1) {
+                isCheckInitialTwice.toggle()
+                Task {
+                    await userVM.updateUserInitialCheck(to: -1)
+                }
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
+        }
+        .backAlert(isPresented: $backAlert,
+                   title: "이 화면을 나가면 다시 돌아올 수 없습니다.",
+                   subTitle: "돌아가시겠습니까?",
+                   primaryAction1: {
+                dismiss()
+                backAlert = false
+        })
         .task {
             chosung = ChosungCheck(word: selectAlarm.sendUserName)
         }
@@ -63,18 +82,18 @@ struct AlarmChangingView: View {
                             Text("Back")
                         }
                     }
-                    .alert(isPresented: $backAlert) {
-                        let firstButton = Alert.Button.destructive(Text("취소")) {
-                            backAlert = false
-                        }
-                        let secondButton = Alert.Button.default(Text("돌아가기")) {
-                            dismiss()
-                            backAlert = false
-                        }
-                        return Alert(title: Text("이 화면을 나가면 다시 들어올 수 없습니다."),
-                                     message: Text("돌아가시겠습니까 ?"),
-                                     primaryButton: firstButton, secondaryButton: secondButton)
-                    }
+//                    .alert(isPresented: $backAlert) {
+//                        let firstButton = Alert.Button.destructive(Text("취소")) {
+//                            backAlert = false
+//                        }
+//                        let secondButton = Alert.Button.default(Text("돌아가기")) {
+//                            dismiss()
+//                            backAlert = false
+//                        }
+//                        return Alert(title: Text("이 화면을 나가면 다시 들어올 수 없습니다."),
+//                                     message: Text("돌아가시겠습니까 ?"),
+//                                     primaryButton: firstButton, secondaryButton: secondButton)
+//                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -90,20 +109,6 @@ struct AlarmChangingView: View {
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.mainColor, lineWidth: 1)
                                 )
-                        }
-                        .alert(isPresented: $isCheckInitialTwice) {
-                            let firstButton = Alert.Button.destructive(Text("취소")) {
-                                isCheckInitialTwice = false
-                            }
-                            let secondButton = Alert.Button.default(Text("사용")) {
-                                Task {
-                                    await userVM.updateUserInitialCheck(to: -1)
-                                }
-                                chosung = ChosungCheck(word: selectAlarm.sendUserName)
-                            }
-                            return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
-                                         message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
-                                         primaryButton: firstButton, secondaryButton: secondButton)
                         }
                     }
                 }
