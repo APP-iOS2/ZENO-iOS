@@ -206,7 +206,7 @@ final class MypageViewModel: ObservableObject {
         }
     }
     
-    /// Alarm 문서 모두 패치해서 가져오기
+//    /// Alarm 문서 모두 패치해서 가져오기
 //    func fetchAllAlarmData() async {
 //        db.collection("User").document(currentUser).getDocument { document, error in
 //            if let document = document, document.exists {

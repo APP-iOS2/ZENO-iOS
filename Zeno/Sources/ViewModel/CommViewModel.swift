@@ -104,10 +104,10 @@ class CommViewModel: ObservableObject {
     @Published var deepLinkTargetComm: Community = .emptyComm
     /// 딥링크 수신 정상 처리에 따라 가입하는 View를 보여주는 Bool
     @Published var isJoinWithDeeplinkView: Bool = false
+    
     init() {
         Task {
             await fetchAllComm()
-            await fetchCurrentCommMembers()
         }
 		loadRecentSearches() // 최근검색어 불러오기
     }
@@ -128,14 +128,6 @@ class CommViewModel: ObservableObject {
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
         currentCommID = id
-    }
-    /// db에서 fetch한 모든 커뮤니티 중 currentUser가 속한 커뮤니티를 찾아 joinedComm을 업데이트함
-    @MainActor
-    func filterJoinedComm() {
-        guard let currentUser else { return }
-        let commIDs = currentUser.commInfoList.map { $0.id }
-        let communities = allComm.filter { commIDs.contains($0.id) }
-        self.joinedComm = communities
     }
     
     func getCommunityByID(_ id: String) -> Community? {
@@ -205,8 +197,8 @@ class CommViewModel: ObservableObject {
                     deepLinkTargetComm = success
                     isJoinWithDeeplinkView = true
                 case .failure:
-                    // TODO: 딥링크가 유효하지 않음을 처리할 로직
-                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(deepLinkTargetComm.id)")
+                    // TODO: 딥링크가 유효하지 않음을 보여줄 로직
+                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
                 }
             }
         }
@@ -220,7 +212,7 @@ class CommViewModel: ObservableObject {
         do {
             try await firebaseManager.update(data: deepLinkTargetComm, value: \.joinMembers, to: newCommMembers)
             guard let index = allComm.firstIndex(where: { $0.id == deepLinkTargetComm.id }) else { return }
-            allComm[index].joinMembers = newCommMembers
+            allComm[index].joinMembers = newCommMembers 
         } catch {
             print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
         }
@@ -252,9 +244,9 @@ class CommViewModel: ObservableObject {
                 await waitResults.asyncForEach { [weak self] result in
                     switch result {
                     case .success(let user):
-                        let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
+                        let removedRequests = user.requestComm.filter { $0 != currentComm.id }
                         do {
-                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
+                            try await self?.firebaseManager.update(data: user, value: \.requestComm, to: removedRequests)
                         } catch {
                             print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
                         }
@@ -262,8 +254,10 @@ class CommViewModel: ObservableObject {
                         print(#function + "삭제 된 커뮤니티의 waitApprovalMembers의 id가 User Collection에서 Document 찾기 실패함")
                     }
                 }
-                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id })
+                else { return }
                 allComm.remove(at: commIndex)
+                joinedComm = allComm.filterJoined(user: currentUser)
             } catch {
                 print(#function + "그룹 삭제 실패")
             }
@@ -282,9 +276,15 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.update(data: currentComm, value: \.waitApprovalMemberIDs, to: updatedWaitList)
                 do {
                     try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: updatedCurrentMembers)
-                    guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                    allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
-                    allComm[commIndex].joinMembers = updatedCurrentMembers
+                    do {
+                        let newCommInfo = user.commInfoList + [.init(id: currentComm.id, buddyList: [], alert: true)]
+                        try await firebaseManager.update(data: user, value: \.commInfoList, to: newCommInfo)
+                        guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                        allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
+                        allComm[commIndex].joinMembers = updatedCurrentMembers
+                    } catch {
+                        print(#function + "가입한 유저 Document에 commInfoList 업데이트 실패")
+                    }
                 } catch {
                     print(#function + "커뮤니티 Document에 waitApprovalMemberIDs 업데이트 실패")
                 }
@@ -393,29 +393,36 @@ class CommViewModel: ObservableObject {
                 .filter { currentWaitMemberIDs.contains($0.id) }
         }
     }
+    /*
+     1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
+     2. [ ] currentUser의 commInfoList에서 해당 currentComm정보지우기
+     3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
+     4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
+     5. [ ] 로컬 업데이트
+     */
     /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수
     @MainActor
     func leaveComm() async {
         guard let currentComm,
               let currentUser
         else { return }
-        let memberIDs = currentComm.joinMembers.map { $0.id }
         let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         do {
             try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
-            let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: memberIDs)
+            let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                     ids: changedMembers.map({ $0.id }))
             await results.asyncForEach { [weak self] result in
                 switch result {
-                case .success(let user):
-                    guard var updatedCommInfo = user.commInfoList
+                case .success(let success):
+                    guard var updatedCommInfo = success.commInfoList
                         .first(where: { $0.id == currentComm.id }) else { return }
                     if updatedCommInfo.buddyList.contains(currentUser.id) {
                         do {
                             updatedCommInfo.buddyList = updatedCommInfo.buddyList.filter({ $0 != currentUser.id })
-                            guard let index = user.commInfoList.firstIndex(where: { $0.id == updatedCommInfo.id }) else { return }
-                            var updatedCommInfolist = user.commInfoList
+                            guard let index = success.commInfoList.firstIndex(where: { $0.id == updatedCommInfo.id }) else { return }
+                            var updatedCommInfolist = success.commInfoList
                             updatedCommInfolist[index] = updatedCommInfo
-                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: updatedCommInfolist)
+                            try await self?.firebaseManager.update(data: success, value: \.commInfoList, to: updatedCommInfolist)
                         } catch {
                             print(#function + "탈퇴한 유저를 buddyList에 가진 User의 commInfoList 업데이트 실패")
                         }
@@ -424,6 +431,7 @@ class CommViewModel: ObservableObject {
                     break
                 }
             }
+            // 로컬 업데이트
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
             joinedComm.remove(at: index)
             guard let firstComm = joinedComm.first else { return }
@@ -463,7 +471,7 @@ class CommViewModel: ObservableObject {
                     activityVC,
                     animated: true,
                     completion: {
-                        print("공유창 나타나면서 할 작업들?")
+//                        print("공유창 나타나면서 할 작업들?")
                     }
                 )
             }
