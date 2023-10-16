@@ -40,13 +40,14 @@ struct CommMainView: View {
                                         .overlay {
                                             Image(systemName: "plus.circle.fill")
                                                 .font(.system(size: 50))
+												.foregroundColor(.mainColor)
                                                 .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
                                         }
                                     Text("친구를 초대해보세요")
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
+										.foregroundColor(.primary)
                                         .offset(y: .screenHeight * -0.03)
                                 }
-                                .foregroundColor(.ggullungColor)
                             }
                             .frame(height: .screenHeight * 0.55)
                         }

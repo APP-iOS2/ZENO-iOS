@@ -32,13 +32,15 @@ struct CommListView: View {
 								LottieView(lottieFile: "cry")
 									.frame(width: .screenWidth * 0.3, height: .screenHeight * 0.1)
                                 Text("현재 가입된 그룹이 없습니다")
+									.foregroundColor(.primary)
 									.font(.bold(20))
 									.padding(.bottom, 5)
 								Group {
 									Text("새로운 그룹을 탐색해 그룹에 가입하거나")
 									Text("새로운 그룹을 만들어 보세요!")
 								}
-								.font(.regular(16))
+								.font(.thin(14))
+								.foregroundColor(.primary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical)
@@ -52,29 +54,37 @@ struct CommListView: View {
                                     HStack(alignment: .center) {
                                         Circle()
                                             .stroke()
-                                            .frame(width: 40, height: 40)
+                                            .frame(width: 35, height: 35)
                                             .background(
                                                 ZenoKFImageView(comm)
                                                     .clipShape(Circle())
                                             )
 										VStack(alignment: .leading, spacing: 4) {
-                                            Text("\(comm.name)")
-                                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+											HStack(alignment: .center) {
+												Text("\(comm.name)")
+													.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+													.lineLimit(1)
+													.foregroundColor(.primary)
+												HStack(alignment: .lastTextBaseline, spacing: 1) {
+													Image(systemName: "person.2.fill")
+														.font(.regular(11))
+													Text("\(comm.joinMembers.count)")
+												}
+												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
+												.foregroundColor(Color(uiColor: .systemGray3))
+											}
 											if !comm.description.isEmpty {
 												Text("\(comm.description)")
 													.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
 													.foregroundColor(.gray)
 													.lineLimit(1)
 											}
-											Text("\(comm.joinMembers.count)명 참여중")
-												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
-												.foregroundColor(Color(uiColor: .systemGray4))
-												.padding(.top, 2)
                                         }
-                                        .padding(.leading, 4)
+                                        .padding(.leading, 5)
                                         Spacer()
                                         Image(systemName: "chevron.forward")
                                             .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+											.foregroundColor(.gray)
                                     }
                                     .groupCell()
                                 }
@@ -94,6 +104,7 @@ struct CommListView: View {
                                             .clipShape(Circle())
                                             .bold()
                                     )
+									.bold()
                                 Text("새로운 그룹 만들기")
                                 Spacer()
                             }

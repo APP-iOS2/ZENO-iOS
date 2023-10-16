@@ -26,6 +26,8 @@ struct OnboardingLastView: View {
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 40))
                     .foregroundColor(.white)
                     .padding(40)
+                    .accessibilityLabel("제노를 즐기러 가볼까요?")
+                    .accessibilityHint("누르면 제노를 시작할 수 있어요")
             }
             .onTapGesture {
                 dismiss()

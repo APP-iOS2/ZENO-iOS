@@ -142,6 +142,7 @@ struct AlarmView: View {
                         }
                         .cashAlert(
                             isPresented: $isLackingCoin,
+                            imageTitle: nil,
                             title: "코인이 부족합니다.",
                             content: "투표를 통해 코인을 모아보세요.",
                             primaryButtonTitle: "확인",
@@ -149,6 +150,7 @@ struct AlarmView: View {
                         )
                         .cashAlert(
                             isPresented: $isLackingInitialTicket,
+                            imageTitle: nil,
                             title: "초성확인권이 부족합니다.",
                             content: "초성확인권을 구매하세요.",
                             primaryButtonTitle: "확인",

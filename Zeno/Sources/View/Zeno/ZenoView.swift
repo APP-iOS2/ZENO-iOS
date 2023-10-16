@@ -12,13 +12,13 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     let user: [User]
-    private let debouncer: Debouncer = .init(delay: 0.5)
+    private let debouncer: Debouncer = .init(delay: 0.35)
     
     @State private var myFriends: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     @State private var isAnimation: Bool = true
-    
+        
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
@@ -57,8 +57,7 @@ struct ZenoView: View {
                         .scaledToFit()
                         .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
                                , height: .screenHeight * 0.32)
-                        .animation(.interpolatingSpring(stiffness: 0.1, damping: 0.1), value: isAnimation)
-
+            
                     Spacer()
                     
                     /// 친구들 버튼 창
@@ -102,7 +101,7 @@ struct ZenoView: View {
                                         .clipShape(Circle())
                                         .foregroundColor(.primary)
                                     Text(user.name)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.black)
                                 }
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
@@ -117,9 +116,9 @@ struct ZenoView: View {
                         }
                     }
                     /// 버튼 클릭 바뀌는 것 때문에 애니메이션 제어했음.
-//                    .transaction { view in
-//                        view.disablesAnimations = isAnimation
-//                    }
+                    .transaction { view in
+                        view.disablesAnimations = isAnimation
+                    }
                     
                     /// 리셋 버튼
                     Button {

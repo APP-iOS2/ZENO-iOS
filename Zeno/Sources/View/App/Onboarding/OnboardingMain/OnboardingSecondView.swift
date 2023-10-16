@@ -24,10 +24,13 @@ struct OnboardingSecondView: View {
                     Text("그룹에 가입해")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 34))
                         .opacity(0.9)
+                        .accessibilityLabel("그룹에 가입해")
                     Text("더 많은 사람들과")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 34))
+                        .accessibilityLabel("더 많은 사람들과")
                         .opacity(0.9)
                     Text("제노를 즐겨보세요")
+                        .accessibilityLabel("제노를 즐겨보세요")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 38))
                 }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 40))
