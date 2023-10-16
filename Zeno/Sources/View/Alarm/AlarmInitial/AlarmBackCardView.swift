@@ -15,9 +15,10 @@ struct AlarmBackCardView: View {
     let selectAlarm: Alarm
     
     @Binding var isFlipped: Bool
+    @Binding var chosung: String
     
     @State private var isNudgingOn: Bool = false
-    @Binding var chosung: String
+    @State private var isNoneUser: Bool = false
     
     var body: some View {
         VStack {
@@ -67,16 +68,15 @@ struct AlarmBackCardView: View {
                             }
                         }
                         .padding(.bottom, 20)
-                        .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
+                        .alert("찌르기가 허용되지 않는 유저입니다. ", isPresented: $isNoneUser) {
                             Button {
-                                // TODO: 찌른 알람을 보내는 함수 호출(push noti 어쩌구) / 찌르기 전용 알람 보내기 - AlarmVM
-                                isNudgingOn.toggle()
+                                isNoneUser = false
                             } label: {
                                 Text("확인")
                             }
                         }
                     }
-                        .padding(10)
+                    .padding(10)
                 )
                 .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
                 .offset(y: -40)
@@ -84,43 +84,25 @@ struct AlarmBackCardView: View {
         }
         .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
         .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
-//        .task {
-//            chosung = ChosungCheck(word: selectAlarm.sendUserName)
-//        }
-//        .toolbar {
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                if isFlipped {
-//                    if userVM.currentUser?.showInitial ?? 0 > 0 {
-//                        Button {
-//                            isCheckInitialTwice = true
-//                            print("확인2버튼 눌리른중")
-//                        } label: {
-//                            Text("다시 확인2")
-//                                .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-//                                .foregroundColor(Color.primary)
-//                                .background(
-//                                    RoundedRectangle(cornerRadius: 25)
-//                                        .stroke(Color.mainColor, lineWidth: 1)
-//                                )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        .alert(isPresented: $isCheckInitialTwice) {
-//            let firstButton = Alert.Button.destructive(Text("취소")) {
-//                isCheckInitialTwice = false
-//            }
-//            let secondButton = Alert.Button.default(Text("사용")) {
-//                Task {
-//                    await userVM.updateUserInitialCheck(to: -1)
-//                }
-//                chosung = ChosungCheck(word: selectAlarm.sendUserName)
-//            }
-//            return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
-//                         message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
-//                         primaryButton: firstButton, secondaryButton: secondButton)
-//        }
+        .cashAlert(isPresented: $isNudgingOn,
+                   imageTitle: "point",
+                   title: "\(chosung)님을 찌르시겠습니까 ?",
+                   content: "\(chosung)님을 찌르시겠습니까 ?",
+                   primaryButtonTitle: "확인") {
+            Task {
+                await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
+            }
+        }
+    }
+    
+    private func sendNudgeNotification(receiveUserID: String) async {
+        let receiveUser = try? await userVM.fetchUser(withUid: receiveUserID)
+        if receiveUser != nil {
+            await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
+        } else {
+            // 유저가 없다는 팝업창
+            isNoneUser = true
+        }
     }
 }
 
