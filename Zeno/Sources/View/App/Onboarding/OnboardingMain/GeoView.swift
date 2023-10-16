@@ -21,17 +21,17 @@ struct GeoView: View {
         GeometryReader { geometry in
             ZStack {
                 Rectangle().foregroundColor(Color(color))
-                    .cornerRadius(75)
+                    .cornerRadius(85)
                     .frame(width: isExpanded ? max(geometry.size.width, geometry.size.height) * 1.5 : 200,
                            height: isExpanded ? max(geometry.size.width, geometry.size.height) * 1.5 : 200)
                 
                 if !isExpanded {
                     HStack {
                         Text(text)
-                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                            .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 25))
                         Image(systemName: "arrow.right")
                             .bold()
-                            .font(.system(size: 20))
+                            .font(.system(size: 25))
                     }
                     .foregroundColor(.white)
                 }
@@ -40,7 +40,7 @@ struct GeoView: View {
             .offset(x: isExpanded ? -250 : 40, y: isExpanded ? -150 : 20)
         }
         .onTapGesture {
-            withAnimation(.spring(response: 0.9, dampingFraction: 0.8)) {
+            withAnimation(.spring(response: 1, dampingFraction: 0.7)) {
                 if shouldToggleExpand {
                     isExpanded .toggle()
                 } else {

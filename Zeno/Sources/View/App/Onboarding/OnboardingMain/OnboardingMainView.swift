@@ -18,7 +18,7 @@ struct OnboardingMainView: View {
     var body: some View {
         ZStack {
             LottieView(lottieFile: "bubbles")
-            VStack {
+            VStack(alignment: .center) {
             Spacer()
                 Group {
                     LottieView(lottieFile: "nudgeDevil")
@@ -41,7 +41,6 @@ struct OnboardingMainView: View {
                     )
                     .offset(y: -40)
             Spacer()
-                
             }
             OnboardingFirstView(showNextView: $showSview)
             OnboardingSecondView(showNextView: $showTview)
@@ -49,7 +48,7 @@ struct OnboardingMainView: View {
             OnboardingLastView(showNextView: $showTview)
                 .modifier(ViewAnimation(isShow: showTview))
         }
-        .onAppear{
+        .onAppear {
             HapticManager.instance.impact(style: .rigid)
         }
     }

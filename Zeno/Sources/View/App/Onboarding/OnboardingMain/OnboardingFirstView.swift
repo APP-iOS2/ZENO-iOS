@@ -20,10 +20,29 @@ struct OnboardingFirstView: View {
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")
-                Text("제노에는 내가 추가한 \n친구들만 등장해요")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
+                VStack(alignment: .leading, spacing: 0) {
+                    Spacer()
+                    Text("제노에는")
+                        .padding(.leading, 40)
+                        .padding(.bottom, 10)
+                        .opacity(0.8)
+                    Text("내가 추가한 친구들만")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 35))
+                        .frame(width: .screenWidth)
+                        .padding(.bottom, 10)
+                    Text("등장해요")
+                        .padding(.leading, 40)
+                        .opacity(0.8)
+                    Spacer()
+                    Image("addFriend")
+                        .resizable()
+                        .frame(width: .screenWidth, height: .screenHeight * 0.1)
+                    Spacer()
+                }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 33))
                     .foregroundColor(.white)
-                    .padding(40)
+                    
+                // TODO: 제노 사진 넣기
             }
             .opacity(isExpanded ? 1 : 0 )
             .scaleEffect(isExpanded ? 1 : 0)
@@ -38,5 +57,4 @@ struct OnboardingFirstView_Previews: PreviewProvider {
         OnboardingFirstView(showNextView: .constant(false))
     }
 }
-
 

@@ -22,8 +22,8 @@ struct OnboardingLastView: View {
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")
-                Text("제노를 즐기러 가볼까요?")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
+                Text("제노를 \n즐기러 \n가볼까요?")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 40))
                     .foregroundColor(.white)
                     .padding(40)
             }
