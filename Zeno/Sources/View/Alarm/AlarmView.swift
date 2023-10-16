@@ -119,8 +119,10 @@ struct AlarmView: View {
                             })
                         .usingAlert(
                             isPresented: $usingCoin,
-                            imageName: "dollar-coin",
-                            content: "코인") {
+                            imageName: "c.circle",
+                            content: "코인",
+                            quantity: userViewModel.currentUser?.coin ?? 0,
+                            usingGoods: 60) {
                                 isShowInitialView.toggle()
                                 Task {
                                     await userViewModel.updateUserCoin(to: -60)
@@ -129,14 +131,15 @@ struct AlarmView: View {
                             }
                         .usingAlert(
                             isPresented: $usingInitialTicket,
-                            imageName: "",
-                            content: "초성 확인권") {
+                            imageName: "ticket",
+                            content: "초성 확인권",
+                            quantity: userViewModel.currentUser?.showInitial ?? 0,
+                            usingGoods: 1) {
                                 isShowInitialView.toggle()
                                 Task {
                                     await userViewModel.updateUserInitialCheck(to: -1)
                                 }
-                                usingInitialTicket = false
-                            }
+                        }
                         .cashAlert(
                             isPresented: $isLackingCoin,
                             title: "코인이 부족합니다.",

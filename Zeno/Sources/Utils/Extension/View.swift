@@ -57,6 +57,8 @@ extension View {
         isPresented: Binding<Bool>,
         imageName: String,
         content: String,
+        quantity: Int,
+        usingGoods: Int,
         primaryAction1: @escaping () -> Void
     ) -> some View {
         return modifier(
@@ -64,6 +66,8 @@ extension View {
                 isPresented: isPresented,
                 imageName: imageName,
                 content: content,
+                quantity: quantity,
+                usingGoods: usingGoods,
                 primaryAction1: primaryAction1
             )
         )
