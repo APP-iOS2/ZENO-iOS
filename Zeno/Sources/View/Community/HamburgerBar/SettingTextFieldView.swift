@@ -39,6 +39,7 @@ struct SettingTextFieldView: View {
                         } label: {
                             Text("확인")
                                 .font(.bold(16))
+								.tint(.mainColor)
                         }
                         .disabled(!isValidGroupName || fixedText.isEmpty || !isValueChanged)
 					}
