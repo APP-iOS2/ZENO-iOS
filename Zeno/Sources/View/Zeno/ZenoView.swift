@@ -19,6 +19,8 @@ struct ZenoView: View {
     @State private var answer: [Alarm] = []
     @State private var isAnimation: Bool = true
     
+    @Environment(\.colorScheme) var colorScheme
+    
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
@@ -102,7 +104,7 @@ struct ZenoView: View {
                                         .clipShape(Circle())
                                         .foregroundColor(.primary)
                                     Text(user.name)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.black)
                                 }
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)

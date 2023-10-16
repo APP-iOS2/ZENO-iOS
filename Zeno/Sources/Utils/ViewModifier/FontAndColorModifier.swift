@@ -10,12 +10,14 @@ import Foundation
 import SwiftUI
 
 struct BlueAndBMfont: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+
     func body(content: Content) -> some View {
         content
             .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
             .font(.largeTitle)
             .fontWeight(.semibold)
-            .foregroundColor(.ggullungColor)
+            .foregroundColor(colorScheme == .light ? .ggullungColor : .gray2)
             .lineLimit(1)
             .minimumScaleFactor(0.1)
             .offset(y: -.screenHeight * 0.2)
