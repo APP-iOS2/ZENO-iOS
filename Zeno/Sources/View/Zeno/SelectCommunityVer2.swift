@@ -100,6 +100,7 @@ struct SelectCommunityVer2: View {
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
+                        try? await commViewModel.fetchAllComm()
                     }
                     currentIndex = 0
                     selected = ""

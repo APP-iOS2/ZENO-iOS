@@ -43,11 +43,6 @@ struct FinishZenoView: View {
         .onReceive(timerViewModel.timer) {_ in
             timerViewModel.updateTimeRemaining()
         }
-        .onDisappear {
-            // 타이머
-            print("FinishZenoView - OnDisappear")
-//            timerViewModel.timer
-        }
         .navigationBarBackButtonHidden()
     }
 }

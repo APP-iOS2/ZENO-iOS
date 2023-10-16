@@ -37,7 +37,7 @@ struct AlarmEmptyView: View {
             LottieView(lottieFile: "click")
                 .frame(width: 100, height: 100)
                 .rotationEffect(.degrees(150))
-                .offset(x: .screenWidth * 0.1, y: .screenHeight * 0.4)
+                .offset(x: .screenWidth * 0.1, y: .screenHeight * 0.38)
                 .opacity(isPresented ? 1 : 0)
         }
         
