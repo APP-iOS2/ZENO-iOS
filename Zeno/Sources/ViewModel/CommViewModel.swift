@@ -452,7 +452,7 @@ class CommViewModel: ObservableObject {
     }
     /// [가입신청] 그룹에 가입신청 보내는 함수
     @MainActor
-    func requestJoinComm(comm: Community) async {
+    func requestJoinComm(comm: Community) async throws {
         guard let currentUser else { return }
         guard !comm.waitApprovalMemberIDs.contains(currentUser.id) else { return }
 		let newComm = comm.waitApprovalMemberIDs + [currentUser.id]

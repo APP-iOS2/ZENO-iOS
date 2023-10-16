@@ -52,7 +52,7 @@ struct CommRequestView: View {
 					Button {
 						Task {
 							do {
-								await commViewModel.requestJoinComm(comm: comm)
+								try await commViewModel.requestJoinComm(comm: comm)
 								try await userViewModel.addRequestComm(comm: comm)
 								self.showingAlert = true
 								self.aplicationStatus = true
