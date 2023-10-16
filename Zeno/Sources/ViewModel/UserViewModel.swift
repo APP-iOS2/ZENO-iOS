@@ -33,7 +33,7 @@ class UserViewModel: ObservableObject {
         Task {
             try? await loadUserData() // currentUser Value 가져오기 서버에서
             if self.currentUser != nil {
-                await self.getSignStatus() // currentUser의 값이 nil이 아닐때만 상태값 가져오기.
+                self.getSignStatus() // currentUser의 값이 nil이 아닐때만 상태값 가져오기.
             } else {
                 isNeedLogin = true
             }

@@ -10,7 +10,6 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
-@MainActor
 final class MypageViewModel: ObservableObject {
     /// 파베가져오기
     private let firebaseManager = FirebaseManager.shared
@@ -37,6 +36,7 @@ final class MypageViewModel: ObservableObject {
     @Published var allAlarmData: [Alarm] = []
     
     /// User 객체값 가져오기
+    @MainActor
     func getUserInfo() {
         if let currentUser = Auth.auth().currentUser?.uid {
             db.collection("User").document(currentUser).getDocument { document, error in
@@ -82,12 +82,16 @@ final class MypageViewModel: ObservableObject {
             if document.exists {
                 let data = document.data()
                 do {
-                    let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                    let user = try JSONDecoder().decode(User.self, from: jsonData)
-                    self.groupList = user.commInfoList
-                    self.groupIDList = self.groupList?.compactMap { $0.id }
-                    self.friendIDList = self.groupList?.flatMap { $0.buddyList }
-                    return true
+                    if let data {
+                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                        let user = try JSONDecoder().decode(User.self, from: jsonData)
+                        self.groupList = user.commInfoList
+                        self.groupIDList = self.groupList?.compactMap { $0.id }
+                        self.friendIDList = self.groupList?.flatMap { $0.buddyList }
+                        return true
+                    } else {
+                        return false
+                    }
                 } catch {
                     print("JSON parsing Error \(error.localizedDescription)")
                     return false
@@ -160,6 +164,7 @@ final class MypageViewModel: ObservableObject {
     }
     
     /// BuddyList에서 친구 객체 정보 반환 함수
+    @MainActor
     func returnFriendInfo(selectedGroupID: String) {
         for friend in self.returnBuddyList(selectedGroupID: selectedGroupID) {
             db.collection("User").document(friend).getDocument { document, error in
@@ -181,6 +186,7 @@ final class MypageViewModel: ObservableObject {
     }
     
     /// user가 속한 community 객체의 정보 값 가져오는 함수
+    @MainActor
     func getCommunityInfo() async {
         guard let groupIDList = self.groupIDList else { return }
         self.commArray = []
@@ -205,7 +211,7 @@ final class MypageViewModel: ObservableObject {
             }
         }
     }
-    
+        
     /// Alarm 문서 모두 패치해서 가져오기
 //    func fetchAllAlarmData() async {
 //        db.collection("User").document(currentUser).getDocument { document, error in

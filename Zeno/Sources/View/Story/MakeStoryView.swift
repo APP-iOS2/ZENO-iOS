@@ -76,7 +76,9 @@ struct MakeStoryView: View {
                 }
             }
             .overlay(
-                ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
+                ImageMenuView(title: "스토리 사진 등록",
+                              isPresented: $isImagePicker,
+                              selectedImage: $selectedImage)
             )
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

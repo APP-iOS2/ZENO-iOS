@@ -16,8 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Firebase 설정
-//        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
-        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info-2", ofType: "plist"),
+        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+//        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info-2", ofType: "plist"),
               let options = FirebaseOptions(contentsOfFile: filePath)
         else { return true }
         

@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct ImageMenuView: View {
+    let title: String
     @Binding var isPresented: Bool
     @Binding var selectedImage: UIImage?
     
@@ -22,7 +23,7 @@ struct ImageMenuView: View {
                     isPresented = false
                 }
             VStack(alignment: .leading, spacing: 30) {
-                Text("프로필 사진 등록")
+                Text(title)
                     .font(.headline)
                 ForEach(ImageBtn.allCases) { btn in
                     Button {
@@ -76,6 +77,7 @@ struct ImageMenuView: View {
 
 struct ImageMenuView_Preview: PreviewProvider {
     static var previews: some View {
-        ImageMenuView(isPresented: .constant(true), selectedImage: .constant(nil))
+        ImageMenuView(title: "프로필 사진 등록",
+            isPresented: .constant(true), selectedImage: .constant(nil))
     }
 }
