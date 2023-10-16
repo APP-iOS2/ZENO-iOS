@@ -27,6 +27,7 @@ struct CommSideMenuView: View {
                     Color.primary
                         .edgesIgnoringSafeArea(.bottom)
                         .colorInvert()
+						.padding(.top, 35)
                     CommSideBarView(isPresented: $isPresented)
                 }
                 .frame(width: geometry.size.width * 0.8)

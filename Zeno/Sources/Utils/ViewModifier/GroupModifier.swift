@@ -15,7 +15,7 @@ struct GroupCellModifier: ViewModifier {
             .padding()
             .background(.background)
             .cornerRadius(10)
-            .shadow(color: .ggullungColor, radius: 1)
+            .shadow(color: .mainColor, radius: 1)
     }
 }
 
