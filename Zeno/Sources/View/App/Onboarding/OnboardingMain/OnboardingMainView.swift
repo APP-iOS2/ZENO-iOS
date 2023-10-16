@@ -17,20 +17,40 @@ struct OnboardingMainView: View {
     
     var body: some View {
         ZStack {
-            LottieView(lottieFile: "nudgeDevil")
-                .frame(width: 80, height: 80)
-                .offset(y: -180) // 브이스택 안에 넣겟습니당 나중에 ㅎ하ㅏ하
+            LottieView(lottieFile: "bubbles")
+            VStack {
+            Spacer()
+                Group {
+                    LottieView(lottieFile: "nudgeDevil")
+                        .frame(width: 80, height: 80)
+                    
+                    Text("누가 나를 선택했는지 \n확인할 수 있어요")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
+                        .foregroundColor(.gray4)
+                }
+            Spacer()
             
-            Text("누가 나를 선택했는지 \n확인할 수 있어요")
-                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
-                .offset(y: -100) // ㅎㅎㅎ;;
-                .padding(.leading, 8)
-            
+            AlarmCellView()
+                    .background(
+                        Rectangle()
+                        .fill(Color(uiColor: .systemGray6))
+                        .frame(height: .screenHeight * 0.2)
+                        .cornerRadius(10)
+                        .padding(10)
+                        .shadow(radius: 1)
+                    )
+                    .offset(y: -40)
+            Spacer()
+                
+            }
             OnboardingFirstView(showNextView: $showSview)
             OnboardingSecondView(showNextView: $showTview)
                 .modifier(ViewAnimation(isShow: showSview))
             OnboardingLastView(showNextView: $showTview)
                 .modifier(ViewAnimation(isShow: showTview))
+        }
+        .onAppear{
+            HapticManager.instance.impact(style: .rigid)
         }
     }
 }

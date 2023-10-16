@@ -17,9 +17,11 @@ struct OnboardingSecondView: View {
         ZStack {
             GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "mainPurple2", showNextView: $showNextView)
             
-            VStack(alignment: .leading) {
-                Text("커뮤니티를 만들거나 등록해 \n더 많은 사람들과 즐겨보세요")
+            ZStack(alignment: .leading) {
+                LottieView(lottieFile: "bubbles")
+                Text("커뮤니티를 \n만들거나 등록해 \n더 많은 사람들과 즐겨보세요")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
+                    .padding(40)
             }
             .opacity(isExpanded ? 1 : 0 )
             .scaleEffect(isExpanded ? 1 : 0)

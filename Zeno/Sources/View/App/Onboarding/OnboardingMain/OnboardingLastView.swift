@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct OnboardingLastView: View {    
+struct OnboardingLastView: View {
     @Environment(\.dismiss) var dismiss
 
     @Binding var showNextView: Bool
@@ -20,9 +20,15 @@ struct OnboardingLastView: View {
         ZStack {
             GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainColor", text: "Start", shouldToggleExpand: false)
             
-            VStack(alignment: .leading) {
-                Text("제노를 즐기러 \n가볼까요?")
+            ZStack(alignment: .leading) {
+                LottieView(lottieFile: "bubbles")
+                Text("제노를 즐기러 가볼까요?")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
+                    .foregroundColor(.white)
+                    .padding(40)
+            }
+            .onTapGesture {
+                dismiss()
             }
             .opacity(isExpanded ? 1 : 0 )
             .scaleEffect(isExpanded ? 1 : 0)
