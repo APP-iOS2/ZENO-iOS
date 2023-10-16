@@ -33,6 +33,7 @@ struct GeoView: View {
                             .bold()
                             .font(.system(size: 25))
                     }
+                    .accessibilityHint("누르면 다음 페이지로 넘어가요")
                     .foregroundColor(.white)
                 }
             }
