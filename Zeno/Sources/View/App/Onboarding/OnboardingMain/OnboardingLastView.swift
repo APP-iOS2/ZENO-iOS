@@ -8,7 +8,9 @@
 
 import SwiftUI
 
-struct OnboardingLastView: View {
+struct OnboardingLastView: View {    
+    @Environment(\.dismiss) var dismiss
+
     @Binding var showNextView: Bool
     
     @State var isExpanded = false

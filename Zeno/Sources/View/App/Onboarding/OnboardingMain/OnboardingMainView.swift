@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+// 회원 가입 하고 나서, 딱 한번
+
 struct OnboardingMainView: View {
     @State private var showSview = false
     @State private var showTview = false
