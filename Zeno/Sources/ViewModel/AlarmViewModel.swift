@@ -12,6 +12,8 @@ import FirebaseFirestoreSwift
 
 class AlarmViewModel: ObservableObject {
     @Published var alarmArray: [Alarm] = []
+    @Published var isFetchComplete: Bool = false
+    
     var dummyAlarmArray: [Alarm] = [
         Alarm(sendUserID: "aa", sendUserName: "보내는유저1", sendUserFcmToken: "sendToken", sendUserGender: .female, receiveUserID: "bb", receiveUserName: "받는유저1", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "1234", zenoID: "dd", zenoString: "놀이공원에서 같이 교복입고 돌아다니면 재밌을 거 같은 사람", createdAt: 91842031),
         Alarm(sendUserID: "aa", sendUserName: "보내는유저2", sendUserFcmToken: "sendToken", sendUserGender: .male, receiveUserID: "bb", receiveUserName: "받는유저2", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "12342", zenoID: "dd", zenoString: "공포영화 못볼거 같은 사람", createdAt: 91842031)
@@ -44,10 +46,10 @@ class AlarmViewModel: ObservableObject {
         }
     }
     /// Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
-    @MainActor
-    func pushNudgeAlarm(nudgeAlarm: Alarm) async {
-        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
-    }
+//    @MainActor
+//    func pushNudgeAlarm(nudgeAlarm: Alarm) async {
+//        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
+//    }
     
     /// 찌르기 기능시 사용, Firebase Alarm Collection 에 데이터 추가, push notification zeno 질문 메세지로 receive 유저에게 보냄
     @MainActor
@@ -57,12 +59,6 @@ class AlarmViewModel: ObservableObject {
         await createAlarm(alarm: alarm)
         
         PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: alarm.zenoString)
-        
-//        if let token = receiveUser.fcmToken, let alert = receiveUser.commInfoList.first(where: { $0.id == community.id })?.alert {
-//            if alert == true {
-//                PushNotificationManager.shared.sendPushNotification(toFCMToken: token, title: "Zeno", body: zeno.question)
-//            }
-//        }
     }
     
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
@@ -85,6 +81,8 @@ class AlarmViewModel: ObservableObject {
             .whereField("showUserID", isEqualTo: showUserID)
 //            .order(by: "createdAt", descending: true)
         do {
+            isFetchComplete = false
+            
             let querySnapShot = try await alarmRef.getDocuments()
             self.alarmArray.removeAll()
             
@@ -94,6 +92,8 @@ class AlarmViewModel: ObservableObject {
                 self.alarmArray.append(tempAlarm)
             }
             alarmArray.sort { $0.createdAt > $1.createdAt }
+            
+            isFetchComplete = true
         } catch {
             print("== fetchAlarm : \(error)")
         }
@@ -119,5 +119,39 @@ class AlarmViewModel: ObservableObject {
         }
     }
     
-    // 필터링용
+    /// 그룹에서 나가는 경우, 해당 그룹 알람 중 로그인된 유저에게 보여주던 알람 firestore 에서 제거
+    @MainActor
+    func deleteAlarmWhenLeavingCommunity(communityID: String?, loginUserID: String?) async {
+        guard let userID = loginUserID, let communityID else {
+            print("deleteAlarm When [ LeavingCommunity ] : loginUserID or communityID is nil")
+            return
+        }
+        
+        let deleteUserAlarm = alarmArray.filter { $0.showUserID == userID && $0.communityID == communityID }
+        do {
+            for alarm in deleteUserAlarm {
+                try await FirebaseManager.shared.delete(data: alarm)
+            }
+            alarmArray.removeAll { $0.showUserID == userID && $0.communityID == communityID }
+        } catch {
+            print("deleteAlarm When [ LeavingCommunity ] : \(error)")
+        }
+    }
+    
+    /// 회원 탈퇴 시 해당 회원에게 보여주던 알람 정보 firestore 에서 삭제
+    func deleteAlarmWhenDeleteUser(userID: String?) async {
+        guard let userID = userID else {
+            print("deleteAlarm When [ DeleteUser ] : userID is nil")
+            return
+        }
+        
+        let deleteUserAlarm = alarmArray.filter { $0.showUserID == userID }
+        do {
+            for alarm in deleteUserAlarm {
+                try await FirebaseManager.shared.delete(data: alarm)
+            }
+        } catch {
+            print("deleteAlarm When [ DeleteUser ] : \(error)")
+        }
+    }
 }
