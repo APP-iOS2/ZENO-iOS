@@ -60,18 +60,24 @@ struct CommListView: View {
                                                     .clipShape(Circle())
                                             )
 										VStack(alignment: .leading, spacing: 4) {
-                                            Text("\(comm.name)")
-                                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-											if !comm.description.isEmpty {
+											HStack {
+												Text("\(comm.name)")
+													.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+													.lineLimit(1)
+												Spacer()
+												HStack(spacing: 1) {
+													Image(systemName: "person.2.fill")
+													Text("\(comm.joinMembers.count)")
+												}
+												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
+												.foregroundColor(Color(uiColor: .systemGray3))
+												
+											}
 												Text("\(comm.description)")
 													.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
 													.foregroundColor(.gray)
 													.lineLimit(1)
-											}
-											Text("\(comm.joinMembers.count)명 참여중")
-												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 10))
-												.foregroundColor(Color(uiColor: .systemGray4))
-												.padding(.top, 2)
+											
                                         }
                                         .padding(.leading, 4)
                                         Spacer()
