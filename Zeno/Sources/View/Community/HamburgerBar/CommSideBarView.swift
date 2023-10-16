@@ -43,7 +43,7 @@ struct CommSideBarView: View {
                             case .memberMGMT:
                                 isSelectContent.toggle()
                             case .inviteComm:
-                                    commViewModel.shareText()
+                                    commViewModel.kakao()
                             case .delegateManager:
                                 if commViewModel.isCurrentCommManager {
                                     isDelegateManagerView = true
@@ -155,6 +155,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
+                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }

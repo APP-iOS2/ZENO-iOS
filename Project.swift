@@ -77,6 +77,9 @@ let project = Project(
                 .package(product: "KakaoSDKUser"),
                 .package(product: "KakaoSDKAuth"),
                 .package(product: "KakaoSDKCommon"),
+                .package(product: "KakaoSDKTalk"),
+                .package(product: "KakaoSDKTemplate"),
+                .package(product: "KakaoSDKShare"),
                 .package(product: "Lottie"),
                 .package(product: "Kingfisher")
             ],
