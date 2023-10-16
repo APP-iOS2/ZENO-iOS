@@ -18,9 +18,7 @@ struct ZenoView: View {
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     @State private var isAnimation: Bool = true
-    
-    @Environment(\.colorScheme) var colorScheme
-    
+        
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
@@ -60,7 +58,6 @@ struct ZenoView: View {
                         .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
                                , height: .screenHeight * 0.32)
             
-
                     Spacer()
                     
                     /// 친구들 버튼 창
@@ -119,9 +116,9 @@ struct ZenoView: View {
                         }
                     }
                     /// 버튼 클릭 바뀌는 것 때문에 애니메이션 제어했음.
-//                    .transaction { view in
-//                        view.disablesAnimations = isAnimation
-//                    }
+                    .transaction { view in
+                        view.disablesAnimations = isAnimation
+                    }
                     
                     /// 리셋 버튼
                     Button {

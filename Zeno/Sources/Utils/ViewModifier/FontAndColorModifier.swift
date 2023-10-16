@@ -14,18 +14,14 @@ struct BlueAndBMfont: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .font(ZenoFontFamily.BMDoHyeonOTF.regular.swiftUIFont(size: 20))
-            .font(.largeTitle)
-            .fontWeight(.semibold)
+            .font(.bold(20))
             .foregroundColor(colorScheme == .light ? .ggullungColor : .gray2)
-            .lineLimit(1)
-            .minimumScaleFactor(0.1)
-            .offset(y: -.screenHeight * 0.2)
+            .offset(y: -100)
     }
 }
 
 extension View {
-    func blueAndBMfont() -> some View {
+    func boldAndOffset40() -> some View {
         modifier(BlueAndBMfont())
     }
 }
