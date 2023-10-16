@@ -23,6 +23,8 @@ struct CommSettingView: View {
     @State private var isGroupDescription: Bool = false
     @State private var isImagePicker: Bool = false
     @State private var selectedImage: UIImage?
+	
+	private let throttle: Throttle = .init(delay: 1.0)
     
     var body: some View {
         ScrollView {
@@ -37,20 +39,27 @@ struct CommSettingView: View {
                     } tailingLabel: {
                         HStack {
                             Text("\(editMode.title)")
+								.font(.regular(16))
                             Spacer()
-                            Button("완료") {
-                                Task {
-                                    switch editMode {
-                                    case .addNew:
-                                        await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-                                        await userViewModel.joinNewGroup(newID: emptyComm.id)
-                                    case .edit:
-                                        await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
-                                    }
-                                    dismiss()
-                                }
-                            }
+							Button {
+								throttle.run {
+									Task {
+										switch editMode {
+										case .addNew:
+											await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+											await userViewModel.joinNewGroup(newID: emptyComm.id)
+										case .edit:
+											await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+										}
+										dismiss()
+									}
+								}
+							} label: {
+								Text("완료")
+									.font(.bold(16))
+							}
                             .disabled(emptyComm.name.isEmpty || !isValueChanged)
+							.tint(Color("MainColor"))
                         }
                     }
                 }
@@ -74,6 +83,7 @@ struct CommSettingView: View {
                                 .font(.title)
                                 .tint(.gray)
                         }
+						.shadow(radius: 3)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -125,6 +135,7 @@ struct CommSettingView: View {
                 backActionWarning = false
                 dismiss()
             }
+			.font(.regular(15))
         }
         .interactiveDismissDisabled()
     }
@@ -135,38 +146,42 @@ struct CommSettingView: View {
         case 0:
             VStack(alignment: .leading, spacing: 10) {
                 Text("그룹 이름")
+					.font(.regular(16))
                 if emptyComm.name.isEmpty {
                     Text("그룹 이름을 입력하세요")
-                        .font(.callout)
+						.font(.regular(15))
                         .foregroundStyle(.gray)
                 } else {
                     Text(emptyComm.name)
-                        .font(.callout)
+                        .font(.regular(15))
                         .foregroundStyle(.gray)
                 }
             }
         case 1:
             VStack(alignment: .leading, spacing: 0) {
                 Toggle("검색 허용", isOn: $emptyComm.isSearchable)
+					.font(.regular(16))
                 Text("그룹 이름과 소개를 검색할 수 있게 합니다.")
-                    .font(.caption)
+					.font(.thin(13))
             }
         case 2:
             VStack(alignment: .leading, spacing: 10) {
                 Text("그룹 소개")
+					.font(.regular(16))
                 if emptyComm.description.isEmpty {
                     Text("그룹 소개를 입력하세요")
-                        .font(.callout)
+						.font(.regular(15))
                         .foregroundStyle(.gray)
                 } else {
                     Text(emptyComm.description)
-                        .font(.callout)
+						.font(.regular(15))
                         .foregroundStyle(.gray)
                 }
             }
         case 3:
             HStack {
                 Text("그룹 정원")
+					.font(.regular(16))
                 Spacer()
                 Picker("groupNum", selection: $emptyComm.personnel) {
                     // 최소 6명 최대 50명
@@ -176,6 +191,7 @@ struct CommSettingView: View {
                         }
                     }
                 }
+				.font(.regular(15))
             }
         default:
             EmptyView()
