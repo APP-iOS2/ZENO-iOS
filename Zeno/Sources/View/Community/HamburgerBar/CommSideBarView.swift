@@ -71,10 +71,13 @@ struct CommSideBarView: View {
                                 }
                             }
                         }
-						.foregroundColor(.primary)
-						.font(.regular(14))
+                    }
+                    Button("시뮬레이터용 초대버튼") {
+                        commViewModel.shareText()
                     }
                 }
+                .foregroundColor(.primary)
+                .font(.regular(14))
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
