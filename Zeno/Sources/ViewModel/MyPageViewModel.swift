@@ -10,6 +10,11 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
+struct DataForAlarm {
+    let receiveUserID: String
+    let zenoString: String
+}
+
 @MainActor
 final class MypageViewModel: ObservableObject {
     /// 파베가져오기
@@ -33,14 +38,68 @@ final class MypageViewModel: ObservableObject {
     @Published var groupFirendList: [String] = []
     /// 친구들의 정보를 담을 유저 데이터
     @Published var friendInfo: [User?] = []
+    /// 모든 알람 문서 ID값을 담을 데이터
+    @Published var zenoStringAll: [String] = []
     /// 모든 알람 문서 가져와서 담을 데이터
     @Published var allAlarmData: [Alarm] = []
+
+    var itemFrequency = [String: Int]()
+    // 각 항목의 비율 계산
+    var itemRatios = [String: Double]()
     
-    /// User 객체값 가져오기
-    func getUserInfo() {
+    func zenoStringCalculator() {
+        // 각 항목의 빈도수 계산
+        for item in zenoStringAll {
+            if let count = itemFrequency[item] {
+                itemFrequency[item] = count + 1
+            } else {
+                itemFrequency[item] = 1
+            }
+        }
+
+        for (item, count) in itemFrequency {
+            let ratio = Double(count) / Double(zenoStringAll.removeDuplicates().count)
+//            let changePercent = ratio * 100
+            self.itemRatios[item] = ratio * 100
+        }
+        
+        // 결과 출력
+        for (item, ratio) in itemRatios {
+            let percentage = ratio * 100
+            print("💰💰 \(item): \(percentage)%")
+            print("💰💰💰💰 \(self.itemRatios)")
+        }
+    }
+    
+    @MainActor
+    func fetchAllAlarmData() async {
+        print("fetchAllAlarmData fetchAllAlarmData fetchAllAlarmData!!!")
         if let currentUser = Auth.auth().currentUser?.uid {
-            db.collection("User").document(currentUser).getDocument { document, error in
-                if let document = document, document.exists {
+            print("fetchAllAlarmData !!!! \(currentUser)")
+            let results = await firebaseManager.readDocumentsWithIDs(type: Alarm.self, whereField: "receiveUserID", ids: [currentUser])
+            print("🔺 result : \(results)")
+            self.allAlarmData.removeAll()   // 배열 초기화
+            
+            for result in results {
+                switch result {
+                case .success(let alarm):
+                    self.allAlarmData.append(alarm)
+                case .failure(let error):
+                    print("🔺\(error.localizedDescription)")
+                }
+            }
+        }
+        
+        self.zenoStringAll = self.allAlarmData.map { $0.zenoString }
+    }
+     
+    /// User 객체값 가져오기
+    func getUserInfo() async {
+        self.groupIDList = []
+        if let currentUser = Auth.auth().currentUser?.uid {
+            do {
+                let document = try await db.collection("User").document(currentUser).getDocument()
+                if document.exists {
                     let data = document.data()
                     do {
                         if let data = data {
@@ -56,6 +115,8 @@ final class MypageViewModel: ObservableObject {
                 } else {
                     print("[Error]! getUserInfo 함수 에러 발생")
                 }
+            } catch {
+                print("Firebase document 가져오기 오류: \(error.localizedDescription)")
             }
         }
     }
@@ -93,7 +154,7 @@ final class MypageViewModel: ObservableObject {
                     return false
                 }
             } else {
-                print("Firebase document 존재 오류")
+                print("[UserFirendIDList] Firebase document 존재 오류")
                 return false
             }
         } catch {
@@ -137,24 +198,28 @@ final class MypageViewModel: ObservableObject {
     /// "전체" 그룹에 해당하는 전체 친구의 객체를 가져오는 함수
     @MainActor
     func getAllFriends() async {
+        print("💭 [getallfriends의 친구 list] \(self.groupFirendList)")
         for friend in self.groupFirendList {
             do {
                 let document = try await db.collection("User").document(friend).getDocument()
                 if document.exists {
+                    print("❤️‍🩹document!!!!!!")
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-                        self.allMyPageFriendInfo.append(user)
-//                        print("💙[allFriendInfo] \(self.allMyPageFriendInfo)")
+                        if let data = data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(User.self, from: jsonData)
+                            self.allMyPageFriendInfo.append(user)
+                            dump("💙❤️‍🩹 [allFriendInfo] \(self.allMyPageFriendInfo.count)")
+                        }
                     } catch {
-                        print("json parsing Error \(error.localizedDescription)")
+                        print("💙 json parsing Error \(error.localizedDescription)")
                     }
                 } else {
-                    print("firebase document 존재 오류")
+                    print("💙[getAllFriends] firebase document 존재 오류")
                 }
             } catch {
-                print("getAllFriends Error!! \(error.localizedDescription)")
+                print("💙 getAllFriends Error!! \(error.localizedDescription)")
             }
         }
     }
@@ -169,12 +234,12 @@ final class MypageViewModel: ObservableObject {
                         let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                         let user = try JSONDecoder().decode(User.self, from: jsonData)
                         self.friendInfo.append(user)
-//                        print("💙[friendInfo] \(self.friendInfo)")
+                        print("💙[friendInfo] \(self.friendInfo)")
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
                 } else {
-                    print("firebase document 존재 오류")
+                    print("[returnFriendInfo] firebase document 존재 오류")
                 }
             }
         }
@@ -198,33 +263,11 @@ final class MypageViewModel: ObservableObject {
                         print("json parsing Error \(error.localizedDescription)")
                     }
                 } else {
-                    print("firebase document 존재 오류")
+                    print("[getCommunityInfo] firebase document 존재 오류")
                 }
             } catch {
                 print("getCommunityInfo Error!! \(error.localizedDescription)")
             }
         }
     }
-    
-    /// Alarm 문서 모두 패치해서 가져오기
-//    func fetchAllAlarmData() async {
-//        db.collection("User").document(currentUser).getDocument { document, error in
-//            if let document = document, document.exists {
-//                let data = document.data()
-//                do {
-//                    if let data = data {
-//                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-//                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-//                        self.groupList = user.commInfoList
-//                        self.groupIDList = self.groupList?.compactMap { $0.id }
-//                        self.userInfo = user
-//                    }
-//                } catch {
-//                    print("json parsing Error \(error.localizedDescription)")
-//                }
-//            } else {
-//                print("[Error]! getUserInfo 함수 에러 발생")
-//            }
-//        }
-//    }
 }

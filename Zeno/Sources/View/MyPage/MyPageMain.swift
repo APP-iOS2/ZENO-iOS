@@ -112,36 +112,22 @@ struct MyPageMain: View {
                     }
                     .frame(maxHeight: 120)
                     .foregroundColor(.primary)
-                    
+                    .onAppear {
+//                        mypageViewModel.fetchAllAlarmData()
+                    }
                     /// 유저 재화 정보 뷰
                     UserMoneyView()
                         .frame(minHeight: UIScreen.main.bounds.height/9)
                         .padding(.horizontal, 17)
-                    
-                    //                    /// 재화정보 스크롤뷰
-                    //                    ScrollView(.horizontal, showsIndicators: false) {
-                    //                        HStack(spacing: 0) {
-                    //                            if isShowingZenoCoin {
-                    //                                coinView
-                    //                            } else {
-                    //                                megaphoneView
-                    //                            }
-                    //                        }
-                    //                        .frame(width: UIScreen.main.bounds.width, height: 60)
-                    //                    }
-                    //                    .background(Color.black)
-                    //                    .onAppear {
-                    //                        startTimer()
-                    //                    }
-                    //                    .onDisappear {
-                    //                        print("⏰ 타이머 끝")
-                    //                        stopTimer()
-                    //                    }
                     GroupSelectView()
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
+                await mypageViewModel.fetchAllAlarmData()
+                print("⏰⏰ \(mypageViewModel.allAlarmData)")
+                print("😈😈 \(mypageViewModel.zenoStringAll)")
+                mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)
