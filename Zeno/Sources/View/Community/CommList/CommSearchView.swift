@@ -15,6 +15,9 @@ struct CommSearchView: View {
 	@Binding var isShowingSearchCommSheet: Bool
 	@State private var currentViewSerachTerm = ""
 	@FocusState private var isFocusedKeyboard: Bool
+	@State private var duplicationState: DuplicationState = .none
+	
+	private let debouncer: Debouncer = .init(delay: 0.5)
 	
 	var body: some View {
 		NavigationStack {
@@ -24,16 +27,21 @@ struct CommSearchView: View {
 					searchBar
 						.focused($isFocusedKeyboard)
 					
-					if commViewModel.commSearchTerm.isEmpty {
-						// 최근 검색
+					switch duplicationState {
+					case .none:
 						recentSearch
 							.onAppear {
 								commViewModel.commSearchTerm = ""
 							}
-					} else {
+					case .checking:
+						ProgressView()
+							.foregroundColor(.primary)
+					case .done:
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-								CommListCell(comm: item)
+								CommListCell(comm: item) {
+									commViewModel.addSearchTerm(currentViewSerachTerm)
+								}
 							}
 						}
 						.scrollDismissesKeyboard(.immediately)
@@ -77,8 +85,18 @@ extension CommSearchView {
 				.foregroundColor(Color(uiColor: .gray))
 				.textInputAutocapitalization(.never)
 				.autocorrectionDisabled()
+				.onChange(of: currentViewSerachTerm) { _ in
+					guard !currentViewSerachTerm.isEmpty else {
+						duplicationState = .none
+						return
+					}
+					duplicationState = .checking
+					debouncer.run {
+						commViewModel.commSearchTerm = currentViewSerachTerm
+						duplicationState = .done
+					}
+				}
 				.onSubmit {
-					commViewModel.commSearchTerm = currentViewSerachTerm
 					commViewModel.addSearchTerm(currentViewSerachTerm)
 				}
 				
@@ -145,5 +163,11 @@ extension CommSearchView {
 			Spacer()
 		}
 		.padding(.leading, 25)
+	}
+	
+	enum DuplicationState: String {
+		case none
+		case checking
+		case done
 	}
 }
