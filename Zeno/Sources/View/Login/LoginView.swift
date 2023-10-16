@@ -30,27 +30,27 @@ struct LoginView: View {
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
                         .foregroundColor(.white)
                         .opacity(0.6)
+                        .padding(.bottom, 100)
                 }
-                .offset(y: -50)
-                
-                VStack {
-                    Spacer()
-                    Button {
-                        Task {
-                            await userViewModel.startWithKakao()
+                .overlay {
+                    VStack {
+                        Spacer()
+                        Button {
+                            Task {
+                                await userViewModel.startWithKakao()
+                            }
+                        } label: {
+                            loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
                         }
-                    } label: {
-                        loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                        NavigationLink {
+                            EmailLoginView()
+                        } label: {
+                            loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
+                        }
+                        .padding(.bottom, CGFloat.screenHeight == 667 ? 30 : 50)
                     }
-                    
-                    NavigationLink {
-                        EmailLoginView()
-                    } label: {
-                        loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
-                    }
-                    Spacer().frame(height: 20)
+                    .frame(width: .screenWidth, height: .screenHeight)
                 }
-                .offset(y: -30)
             }
             .ignoresSafeArea()
         }

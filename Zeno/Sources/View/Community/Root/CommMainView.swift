@@ -77,7 +77,7 @@ struct CommMainView: View {
                 CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
             }
             .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
-                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.filterDeeplinkComm)
+                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView)
             }
             .navigationDestination(isPresented: $isPresentedAddCommView) {
                 CommSettingView(editMode: .addNew)

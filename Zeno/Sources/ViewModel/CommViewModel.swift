@@ -101,15 +101,9 @@ class CommViewModel: ObservableObject {
         return searchCom
     }
 	/// 딥링크로 초대받은 커뮤니티 ID
-    @Published var commIDInDeepLink: String = ""
+    @Published var deepLinkTargetComm: Community = .emptyComm
     /// 딥링크 수신 정상 처리에 따라 가입하는 View를 보여주는 Bool
     @Published var isJoinWithDeeplinkView: Bool = false
-    /// 딥링크로 초대받은 Community
-    var filterDeeplinkComm: Community {
-        guard let index = allComm.firstIndex(where: { $0.id == commIDInDeepLink }) else { return .emptyComm }
-        return allComm[index]
-    }
-    
     init() {
         Task {
             await fetchAllComm()
@@ -186,7 +180,6 @@ class CommViewModel: ObservableObject {
     /// 딥링크 url의 정보를 구분해 초대받은 커뮤니티에 가입되어 있다면 해당 커뮤니티를 보여주고 가입되어 있지 않다면 가입할 수 있는 Modal View를 띄워주는 함수
     @MainActor
     func handleInviteURL(_ url: URL) async {
-        await fetchAllComm()
         guard url.scheme == "zenoapp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
@@ -196,7 +189,6 @@ class CommViewModel: ObservableObject {
             print("유효하지 않은 URL action")
             return
         }
-        
         guard let commID = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
             print("유효하지 않은 URL value")
             return
@@ -206,21 +198,28 @@ class CommViewModel: ObservableObject {
             guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
             setCurrentID(id: comm.id)
         } else {
-            commIDInDeepLink = commID
-            isJoinWithDeeplinkView = true
+            Task {
+                let result = await firebaseManager.read(type: Community.self, id: commID)
+                switch result {
+                case let .success(success):
+                    deepLinkTargetComm = success
+                    isJoinWithDeeplinkView = true
+                case .failure:
+                    // TODO: 딥링크가 유효하지 않음을 처리할 로직
+                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(deepLinkTargetComm.id)")
+                }
+            }
         }
     }
     /// 딥링크로 초대된 커뮤니티에 가입하는 함수
     @MainActor
-    func joinCommWithDeeplink(commID: String) async {
-        guard let currentUser,
-              let willJoinComm = allComm.first(where: { $0.id == commID })
-        else { return }
+    func joinCommWithDeeplink() async {
+        guard let currentUser else { return }
         let newMember = Community.Member(id: currentUser.id, joinedAt: Date().timeIntervalSince1970)
-        let newCommMembers = willJoinComm.joinMembers + [newMember]
+        let newCommMembers = deepLinkTargetComm.joinMembers + [newMember]
         do {
-            try await firebaseManager.update(data: willJoinComm, value: \.joinMembers, to: newCommMembers)
-            guard let index = allComm.firstIndex(where: { $0.id == willJoinComm.id }) else { return }
+            try await firebaseManager.update(data: deepLinkTargetComm, value: \.joinMembers, to: newCommMembers)
+            guard let index = allComm.firstIndex(where: { $0.id == deepLinkTargetComm.id }) else { return }
             allComm[index].joinMembers = newCommMembers
         } catch {
             print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
@@ -348,10 +347,11 @@ class CommViewModel: ObservableObject {
     }
     /// 새로운 커뮤니티를 생성하는 함수
     @MainActor
-    func createComm(comm: Community, image: UIImage?) async {
-        guard let currentUser else { return }
+    func createComm(comm: Community, image: UIImage?) async -> Community? {
+        guard let currentUser else { return nil }
         let createAt = Date().timeIntervalSince1970
         var newComm = comm
+        newComm.id = UUID().uuidString
         newComm.managerID = currentUser.id
         newComm.createdAt = createAt
         newComm.joinMembers = [.init(id: currentUser.id, joinedAt: createAt)]
@@ -364,8 +364,10 @@ class CommViewModel: ObservableObject {
             allComm.append(newComm)
             joinedComm.append(newComm)
             setCurrentID(id: newComm.id)
+            return newComm
         } catch {
             print(#function + "새 Community Collection에 추가 실패")
+            return nil
         }
     }
     /// 선택된 커뮤니티에 가입된 유저, 가입신청된 유저를 받아오는 함수
