@@ -56,6 +56,9 @@ struct GroupSelectView: View {
                 if userSelected.rawValue == "친구 목록" {
                     MypageFriendListView()
                         .environmentObject(mypageViewModel)
+                } else {
+                    BadgeView()
+                        .environmentObject(mypageViewModel)
                 }
                 Spacer()
             }

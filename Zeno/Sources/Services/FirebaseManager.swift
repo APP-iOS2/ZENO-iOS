@@ -91,28 +91,28 @@ final class FirebaseManager {
         }
     }
     
-    func readDocumentsWithIDs<T>(type: T.Type, ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
-        var results: [Result<T, FirebaseError>] = []
-        let collectionRef = db.collection("\(type)")
-        var values: [String]
-        switch ids.isEmpty {
-        case true:
-            values = ["empty"]
-        case false:
-            values = ids
-        }
-        let query = collectionRef.whereField("id", in: values)
-        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
-        for item in snapshot.documents {
-            do {
-                let result = try item.data(as: T.self)
-                results.append(.success(result))
-            } catch {
-                results.append(.failure(FirebaseError.documentToData))
+    func readDocumentsWithIDs<T>(type: T.Type, whereField: String = "id", ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
+            var results: [Result<T, FirebaseError>] = []
+            let collectionRef = db.collection("\(type)")
+            var values: [String]
+            switch ids.isEmpty {
+            case true:
+                values = ["empty"]
+            case false:
+                values = ids
             }
+            let query = collectionRef.whereField(whereField, in: values)
+            guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+            for item in snapshot.documents {
+                do {
+                    let result = try item.data(as: T.self)
+                    results.append(.success(result))
+                } catch {
+                    results.append(.failure(FirebaseError.documentToData))
+                }
+            }
+            return results
         }
-        return results
-    }
     
     func readAllCollection<T>(type: T.Type) async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
