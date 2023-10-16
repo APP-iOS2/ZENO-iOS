@@ -16,10 +16,9 @@ struct OnboardingFirstView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainColor", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainPink1", showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
-                LottieView(lottieFile: "bubbles")
                 VStack(alignment: .leading, spacing: 0) {
                     Spacer()
                     Text("제노에는")

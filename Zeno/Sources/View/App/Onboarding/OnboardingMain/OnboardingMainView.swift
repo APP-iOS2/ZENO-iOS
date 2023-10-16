@@ -14,35 +14,41 @@ struct OnboardingMainView: View {
     @State private var showSview = false
     @State private var showTview = false
     @State private var showFview = false
+    @State private var showZview = false
     
+    // '제노'는 익명으로 마음을 전달하는 퀴즈에요!
+
     var body: some View {
         ZStack {
-            LottieView(lottieFile: "bubbles")
-            VStack(alignment: .center) {
-            Spacer()
-                Group {
-                    LottieView(lottieFile: "nudgeDevil")
-                        .frame(width: 80, height: 80)
+            ZStack {
+                LottieView(lottieFile: "bubbles")
+              
+                VStack(alignment: .leading) {
+                    Spacer()
                     
-                    Text("누가 나를 선택했는지 \n확인할 수 있어요")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
-                        .foregroundColor(.gray4)
+                    Text("제노는")
+                        .font(.bold(38))
+                    Text("익명으로")
+                        .font(.bold(35))
+                    Text("마음을 전달하는")
+                        .font(.bold(33))
+                    Text("퀴즈에요")
+                        .font(.bold(38))
+                    
+                    Spacer()
+                    Spacer()
+                    LottieView(lottieFile: "beforeZeno")
+                        .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.2)
+                        .offset(x: -100, y: 70)
                 }
-            Spacer()
-            
-            AlarmCellView()
-                    .background(
-                        Rectangle()
-                        .fill(Color(uiColor: .systemGray6))
-                        .frame(height: .screenHeight * 0.2)
-                        .cornerRadius(10)
-                        .padding(10)
-                        .shadow(radius: 1)
-                    )
-                    .offset(y: -40)
-            Spacer()
             }
+            .foregroundColor(.ggullungColor)
+            .opacity(0.9)
+            .font(.bold(35))
+         
+            OnboardingZenoExView(showNextView: $showZview)
             OnboardingFirstView(showNextView: $showSview)
+                .modifier(ViewAnimation(isShow: showZview))
             OnboardingSecondView(showNextView: $showTview)
                 .modifier(ViewAnimation(isShow: showSview))
             OnboardingLastView(showNextView: $showTview)
