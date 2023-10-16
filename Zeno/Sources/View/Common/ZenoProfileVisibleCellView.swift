@@ -18,19 +18,18 @@ struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
         HStack(alignment: .center) {
             Circle()
                 .stroke()
-                .frame(width: 30, height: 30)
+                .frame(width: 35, height: 35)
                 .background(
                     ZenoKFImageView(item)
                         .clipShape(Circle())
                 )
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("\(item.name)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                    .padding(.bottom, 1)
                 if !item.description.isEmpty {
                     Text("\(item.description)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
-                        .foregroundColor(Color(uiColor: .systemGray4))
+                        .foregroundColor(Color(uiColor: .systemGray2))
                         .lineLimit(1)
                 }
             }

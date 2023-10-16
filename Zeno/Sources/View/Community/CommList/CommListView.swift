@@ -56,7 +56,7 @@ struct CommListView: View {
                                     HStack(alignment: .center) {
                                         Circle()
                                             .stroke()
-                                            .frame(width: 40, height: 40)
+                                            .frame(width: 35, height: 35)
                                             .background(
                                                 ZenoKFImageView(comm)
                                                     .clipShape(Circle())
@@ -82,7 +82,7 @@ struct CommListView: View {
 													.lineLimit(1)
 											}
                                         }
-                                        .padding(.leading, 4)
+                                        .padding(.leading, 5)
                                         Spacer()
                                         Image(systemName: "chevron.forward")
                                             .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
