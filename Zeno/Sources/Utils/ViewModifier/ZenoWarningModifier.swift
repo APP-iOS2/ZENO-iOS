@@ -51,17 +51,19 @@ struct ZenoWarningView: View {
             Text(message)
                 .font(.bold(22))
                 .padding(.top, 20)
-            Button("확인") {
+            Button {
                 isPresented = false
+            } label: {
+                Text("확인")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
+                    .foregroundColor(.white)
+                    .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.07)
+                    .background(
+                        Color.mainColor
+                            .shadow(radius: 3)
+                    )
+                    .cornerRadius(15)
             }
-            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
-            .foregroundColor(.white)
-            .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.07)
-            .background(
-                Color.mainColor
-                    .shadow(radius: 3)
-            )
-            .cornerRadius(15)
         }
         .multilineTextAlignment(.center)
         .padding(.horizontal, 24)
