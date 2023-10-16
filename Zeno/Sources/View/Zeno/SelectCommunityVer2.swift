@@ -94,6 +94,7 @@ struct SelectCommunityVer2: View {
                                 .opacity(0.9)
                                 .edgesIgnoringSafeArea(.bottom)
                         }
+                        .offset(y: CGFloat.screenHeight == 667 ? -10 : 0)
                     }
                 }
                 .onAppear {
