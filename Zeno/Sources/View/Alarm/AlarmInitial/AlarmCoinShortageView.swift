@@ -35,6 +35,7 @@ struct AlarmCoinShortageView: View {
                     .padding(.top, 30)
                 
                 Text(title)
+                    .foregroundColor(.black)
                     .font(.title2)
                     .bold()
                 
@@ -44,6 +45,7 @@ struct AlarmCoinShortageView: View {
                     Text(content)
                 }
                 .bold()
+                .foregroundColor(.black)
                 
                 Button {
                     primaryAction()

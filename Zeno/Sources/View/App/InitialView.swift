@@ -49,6 +49,7 @@ struct InitialView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 withAnimation(.easeInOut(duration: 0.8)) {
                     isLoading = false
+                    userViewModel.isNeedLogin = true
                 }
                 if !isnickNameChanged {
                     isNickChangeSheet = true

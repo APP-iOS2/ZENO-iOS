@@ -12,6 +12,8 @@ struct AlarmAlertBtnModifier: ViewModifier {
     @Binding var isPresented: Bool
     let imageName: String
     let content: String
+    let quantity: Int
+    let usingGoods: Int
     let primaryAction1: () -> Void
     
     func body(content: Content) -> some View {
@@ -32,6 +34,8 @@ struct AlarmAlertBtnModifier: ViewModifier {
                         isPresented: self.$isPresented,
                         imageName: self.imageName,
                         content: self.content,
+                        quantity: self.quantity,
+                        usingGoods: self.usingGoods,
                         primaryAction1: self.primaryAction1
                     )
                     .transition(.move(edge: .bottom).combined(with: .opacity))

@@ -56,6 +56,11 @@ struct AlarmView: View {
                                           .padding(.bottom, 4)
                                           .padding(.horizontal)
                                   }
+                                  .navigationDestination(isPresented: $isShowInitialView) {
+                                      if let selectAlarm {
+                                          AlarmChangingView(selectAlarm: selectAlarm)
+                                      }
+                                  }
                               }
                             // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
                             Color.clear.frame(height: 80)
@@ -105,8 +110,10 @@ struct AlarmView: View {
                         })
                     .usingAlert(
                         isPresented: $usingCoin,
-                        imageName: "dollar-coin",
-                        content: "코인") {
+                        imageName: "c.circle",
+                        content: "코인",
+                        quantity: userViewModel.currentUser?.coin ?? 0,
+                        usingGoods: 60) {
                             isShowInitialView.toggle()
                             Task {
                                 await userViewModel.updateUserCoin(to: -60)
@@ -115,8 +122,10 @@ struct AlarmView: View {
                         }
                     .usingAlert(
                         isPresented: $usingInitialTicket,
-                        imageName: "",
-                        content: "초성 확인권") {
+                        imageName: "ticket",
+                        content: "초성 확인권",
+                        quantity: userViewModel.currentUser?.showInitial ?? 0,
+                        usingGoods: 1) {
                             isShowInitialView.toggle()
                             Task {
                                 await userViewModel.updateUserInitialCheck(to: -1)
