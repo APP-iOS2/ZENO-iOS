@@ -28,8 +28,10 @@ struct OnboardingZenoExView: View {
                         VStack(alignment: .leading) {
                             Text("누가 나를 선택했는지")
                                 .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 32))
+                                .accessibilityLabel("누가 나를 선택했는지")
                             Text("확인할 수 있어요")
                                 .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 39))
+                                .accessibilityLabel("확인할 수 있어요")
                         }
                         .multilineTextAlignment(.center)
                         .foregroundColor(.white)

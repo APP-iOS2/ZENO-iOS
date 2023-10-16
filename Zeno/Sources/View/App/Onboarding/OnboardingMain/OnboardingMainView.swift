@@ -28,12 +28,17 @@ struct OnboardingMainView: View {
                     
                     Text("제노는")
                         .font(.bold(38))
+                        .accessibilityLabel("제노는")
                     Text("익명으로")
                         .font(.bold(35))
+                        .accessibilityLabel("익명으로")
                     Text("마음을 전달하는")
                         .font(.bold(33))
+                        .accessibilityLabel("마음을 전달하는")
                     Text("퀴즈에요")
                         .font(.bold(38))
+                        .accessibilityLabel("퀴즈예요")
+                        
                     
                     Spacer()
                     Spacer()

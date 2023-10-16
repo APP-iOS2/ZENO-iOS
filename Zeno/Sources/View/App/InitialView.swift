@@ -19,6 +19,7 @@ struct InitialView: View {
                 case .unSign:
                     if userViewModel.isNeedLogin {
                         LoginView()
+                            .accessibilityHint("로그인 화면으로 진입했어요")
                             .environmentObject(EmailLoginViewModel())
                             .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
                     } else {
@@ -31,6 +32,7 @@ struct InitialView: View {
             // 런치스크린
             if isLoading && !isnickNameChanged {
                 InitView()
+                    .accessibilityHint("제노가 시작하고 있어요")
                     .transition(.opacity).zIndex(1)
             }
         }
