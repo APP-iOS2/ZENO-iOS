@@ -22,8 +22,8 @@ struct InitView: View {
             }
             Image("ZenoPng")
                 .resizable()
-                .frame(width: 300, height: 300)
-                .offset(y: -250)
+                .frame(width: CGFloat.screenHeight == 667 ? 250 : 300, height: CGFloat.screenHeight == 667 ? 250 : 300)
+                .offset(y: CGFloat.screenHeight == 667 ? -230 : -250)
             Spacer()
             VStack {
                 if firstGroupVisible {
