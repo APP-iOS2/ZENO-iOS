@@ -31,6 +31,10 @@ struct AlarmView: View {
                 isLackingCoin || isLackingInitialTicket
     }
     
+    private var filterAlarmByCommunity: [Alarm] {
+        return alarmViewModel.alarmArray.filter({ selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId })
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -48,10 +52,10 @@ struct AlarmView: View {
                         
                         ScrollView {
                             // MARK: 10.15 추가, 해당 커뮤니티에 알림이 없을 경우
-                            if alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }.isEmpty {
+                            if filterAlarmByCommunity.isEmpty {
                                   AlarmListEmptyView()
                               } else {
-                                  ForEach(alarmViewModel.alarmArray.filter { selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId }) { alarm in
+                                  ForEach(filterAlarmByCommunity) { alarm in
                                       AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                                           .padding(.bottom, 4)
                                           .padding(.horizontal)
