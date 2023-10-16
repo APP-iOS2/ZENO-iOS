@@ -45,23 +45,26 @@ struct AlarmView: View {
                         AlarmEmptyView()
                     } else {
                         VStack {
-                            Text("홈")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
-                                .foregroundColor(.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                            
-                            AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                            
                             ScrollView {
+                                Text("홈")
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
                                 if filterAlarmByCommunity.isEmpty {
+                                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
                                     AlarmListEmptyView()
                                 } else {
-                                    LazyVStack {
-                                        ForEach(filterAlarmByCommunity) { alarm in
-                                            AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                                                .padding(.bottom, 4)
-                                                .padding(.horizontal)
+                                    LazyVStack(pinnedViews: .sectionHeaders) {
+                                        Section {
+                                            ForEach(filterAlarmByCommunity) { alarm in
+                                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                    .padding(.bottom, 4)
+                                                    .padding(.horizontal)
+                                            }
+                                        } header: {
+                                            AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
+                                                .background(.background)
                                         }
                                         .navigationDestination(isPresented: $isShowInitialView) {
                                             if let selectAlarm {
@@ -83,7 +86,6 @@ struct AlarmView: View {
                                 }
                             }
                         }
-                        
                         //                    .shadow(color: .ggullungColor.opacity(0.4), radius: 5, y: 3)
                         .blur(radius: isBlur ? 1.5 : 0)
                         .goodsAlert(
@@ -163,6 +165,12 @@ struct AlarmView: View {
                             })
                         
                         VStack {
+                            GeometryReader { reader in
+                                Color.primary
+                                    .colorInvert()
+                                    .frame(height: reader.safeAreaInsets.top, alignment: .top)
+                                    .ignoresSafeArea()
+                            }
                             Spacer()
                             
                             Button(action: {
