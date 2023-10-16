@@ -308,9 +308,11 @@ class UserViewModel: ObservableObject {
     }
     
     @MainActor
-    func joinNewGroup(newID: String) async {
-        guard var currentUser else { return }
-        currentUser.commInfoList.append(.init(id: newID, buddyList: [], alert: true))
+    func joinNewGroup(newComm: Community?) async {
+        guard var currentUser,
+              let newComm
+        else { return }
+        currentUser.commInfoList.append(.init(id: newComm.id, buddyList: [], alert: true))
         do {
             try await firebaseManager.create(data: currentUser)
             self.currentUser = currentUser

@@ -10,34 +10,33 @@ import SwiftUI
 
 struct CommJoinWithDeeplinkView: View {
     @Binding var isPresented: Bool
-    let comm: Community
     
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
     
     var body: some View {
         VStack(spacing: 5) {
-            Text(comm.name)
+            Text(commViewModel.deepLinkTargetComm.name)
                 .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
-            Text("\(comm.joinMembers.count)명 참여중")
+            Text("\(commViewModel.deepLinkTargetComm.joinMembers.count)명 참여중")
                 .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                 .padding(.top, 10)
             Circle()
                 .stroke()
                 .background(
-                    ZenoKFImageView(comm)
+                    ZenoKFImageView(commViewModel.deepLinkTargetComm)
                 )
                 .frame(width: .screenWidth * 0.6, height: .screenHeight / 2)
                 .clipShape(Circle())
-            Text(comm.description)
+            Text(commViewModel.deepLinkTargetComm.description)
                 .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
                 .padding(.vertical)
             ForEach(Btn.allCases) { btn in
                 Button {
                     if btn == .join {
                         Task {
-                            await commViewModel.joinCommWithDeeplink(commID: comm.id)
-                            await userViewModel.joinCommWithDeeplink(comm: comm)
+                            await commViewModel.joinCommWithDeeplink()
+                            await userViewModel.joinCommWithDeeplink(comm: commViewModel.deepLinkTargetComm)
                             try? await userViewModel.loadUserData()
                         }
                     }
@@ -89,7 +88,8 @@ struct CommJoinWithDeeplinkView: View {
 
 struct CommJoinWithDeeplinkView_Previews: PreviewProvider {
     static var previews: some View {
-        CommJoinWithDeeplinkView(isPresented: .constant(true), comm: .dummy[0])
+        CommJoinWithDeeplinkView(isPresented: .constant(true))
             .environmentObject(CommViewModel())
+            .environmentObject(UserViewModel())
     }
 }

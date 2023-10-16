@@ -46,8 +46,8 @@ struct CommSettingView: View {
 									Task {
 										switch editMode {
 										case .addNew:
-											await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-											await userViewModel.joinNewGroup(newID: emptyComm.id)
+                                            let newComm = await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+                                            await userViewModel.joinNewGroup(newComm: newComm)
 										case .edit:
 											await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
 										}
@@ -124,7 +124,7 @@ struct CommSettingView: View {
         .onAppear {
             switch editMode {
             case .addNew:
-                break
+                emptyComm.id == UUID().uuidString
             case .edit:
                 guard let currentComm = commViewModel.currentComm else { return }
                 emptyComm = currentComm
