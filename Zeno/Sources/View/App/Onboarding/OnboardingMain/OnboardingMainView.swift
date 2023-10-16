@@ -17,11 +17,13 @@ struct OnboardingMainView: View {
         ZStack {
             LottieView(lottieFile: "nudgeDevil")
                 .frame(width: 80, height: 80)
-                .offset(y: -130) // 브이스택 안에 넣겟습니당 나중에 ㅎ하ㅏ하
-            Text("누가 나를 선택했는지 \n 확인할 수 있어요")
-                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 25))
+                .offset(y: -180) // 브이스택 안에 넣겟습니당 나중에 ㅎ하ㅏ하
+            
+            Text("누가 나를 선택했는지 \n확인할 수 있어요")
+                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
                 .offset(y: -100) // ㅎㅎㅎ;;
                 .padding(.leading, 8)
+            
             OnboardingFirstView(showNextView: $showSview)
             OnboardingSecondView(showNextView: $showTview)
                 .modifier(ViewAnimation(isShow: showSview))
@@ -39,6 +41,7 @@ struct OnboardingMainView_Previews: PreviewProvider {
 
 struct ViewAnimation: ViewModifier {
     var isShow: Bool
+    
     func body(content: Content) -> some View {
         content
             .offset(x: isShow ? 0 : 200)

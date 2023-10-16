@@ -11,15 +11,15 @@ import SwiftUI
 struct OnboardingSecondView: View {
     @Binding var showNextView: Bool
     @State var isExpanded = false
-    @State var startTyping = false
     @State var showtext = false
+    
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, startTyping: $startTyping, showtext: $showtext, color: "MainPink1", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "mainPurple2", showNextView: $showNextView)
             
             VStack(alignment: .leading) {
-                Text("커뮤니티를 만들거나 등록해 더 많은 사람들과 즐겨보세요")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 25))
+                Text("커뮤니티를 만들거나 등록해 \n더 많은 사람들과 즐겨보세요")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
             }
             .opacity(isExpanded ? 1 : 0 )
             .scaleEffect(isExpanded ? 1 : 0)
