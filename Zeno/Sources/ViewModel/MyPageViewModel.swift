@@ -42,12 +42,20 @@ final class MypageViewModel: ObservableObject {
     @Published var zenoStringAll: [String] = []
     /// 모든 알람 문서 가져와서 담을 데이터
     @Published var allAlarmData: [Alarm] = []
-
+    /// zenoString에 따른 이미지를 받을 데이터
+    @Published var zenoStringImage: [String] = []
+    /// 비율 항목 계산을 위한 일반 변수
     var itemFrequency = [String: Int]()
     // 각 항목의 비율 계산
     var itemRatios = [String: Double]()
     
+    /// zenoString들의 뱃지를 위한 비율을 계산하는 함수 (항목 / 전체 zenoString 개수)
     func zenoStringCalculator() {
+        print("😡 \(self.zenoStringAll)")
+        print("😡 \(self.zenoStringAll.count)")
+        self.itemRatios = [:]
+        self.itemFrequency = [:]
+        
         // 각 항목의 빈도수 계산
         for item in zenoStringAll {
             if let count = itemFrequency[item] {
@@ -58,7 +66,7 @@ final class MypageViewModel: ObservableObject {
         }
 
         for (item, count) in itemFrequency {
-            let ratio = Double(count) / Double(zenoStringAll.removeDuplicates().count)
+            let ratio = Double(count) / Double(zenoStringAll.count)
 //            let changePercent = ratio * 100
             self.itemRatios[item] = ratio * 100
         }
@@ -67,10 +75,30 @@ final class MypageViewModel: ObservableObject {
         for (item, ratio) in itemRatios {
             let percentage = ratio * 100
             print("💰💰 \(item): \(percentage)%")
-            print("💰💰💰💰 \(self.itemRatios)")
+            print("🦁 \(self.itemRatios)")
         }
     }
     
+    /// zenoString == zeno.question으로 사진 찾는 함수
+    func findZenoImage(forQuestion question: String, in zenoQuestions: [Zeno]) -> String? {
+        for zeno in zenoQuestions {
+            if zeno.question == question {
+                return zeno.zenoImage
+            }
+        }
+        return nil
+    }
+//
+//    /// zenoString 사진 배열
+//    func zenoImageArray() {
+//        print("zenoStringAll \(self.zenoStringAll)")
+//        for zeno in self.zenoStringAll {
+//            if let zenoImage = findZenoImage(forQuestion: zeno, in: Zeno.ZenoQuestions) {
+//                self.zenoStringImage.append(zenoImage)
+//            }
+//        }
+//    }
+
     @MainActor
     func fetchAllAlarmData() async {
         print("fetchAllAlarmData fetchAllAlarmData fetchAllAlarmData!!!")

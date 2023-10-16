@@ -22,18 +22,6 @@ struct MyPageMain: View {
     let coinView = CoinView()
     let megaphoneView = MegaphoneView()
     
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { _ in
-            withAnimation {
-                isShowingZenoCoin.toggle()
-            }
-        }
-    }
-    
-    private func stopTimer() {
-        timer?.invalidate()
-    }
-    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -113,7 +101,8 @@ struct MyPageMain: View {
                     .frame(maxHeight: 120)
                     .foregroundColor(.primary)
                     .onAppear {
-//                        mypageViewModel.fetchAllAlarmData()
+//                        mypageViewModel.zenoImageArray()
+                        print("💟 \(mypageViewModel.zenoStringImage)")
                     }
                     /// 유저 재화 정보 뷰
                     UserMoneyView()
