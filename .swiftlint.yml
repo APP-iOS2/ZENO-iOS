@@ -1,4 +1,6 @@
 disabled_rules: # 사용하지 않는 룰
+    # 배열의 마지막의 comma에 대한 경고
+    - trailing_comma
     # 라인의 마지막에는 빈 여백이 있으면 안 됨
     - trailing_whitespace
 
@@ -21,7 +23,19 @@ disabled_rules: # 사용하지 않는 룰
 
     # 중첩 구문 지양
     - nesting
-
+    # todo알람 지우기
+    - todo
+    # 파일 줄번호 제한
+    - file_length
+    # 파라미터 갯수 제한
+    - function_parameter_count
+    # 옵셔널 배열을 제한
+    - discouraged_optional_collection
+#    # 닫는 중괄호 앞에 세로 공백(빈 줄)을 포함하지 마세요.
+#    - vertical_whitespace_closing_braces
+#    # 여는 중괄호 뒤에 세로 공백(빈 줄)을 포함하지 마세요
+#    - vertical_whitespace_opening_braces
+    
 analyzer_rules:
     # 모든 선언은 한 번 이상 사용되어야 함
     - unused_declaration
@@ -38,9 +52,6 @@ opt_in_rules: # 명시적 룰 활성화
 
     # type name은 영숫자만 포함, 대문자로 시작해 3-40자 사이어야 함
     - type_name
-
-    # AnyObject 대신 class 키워드를 사용함
-    - anyobject_protocol
 
     # delegate protocol은 class-only로 참조해 weak로 참조되도록 권장
     - class_delegate_protocol
@@ -128,4 +139,5 @@ excluded:
     - Tuist
     - Frameworks
     - Project
+    - ./**/ZenoApp.swift
 reporter: "xcode"
