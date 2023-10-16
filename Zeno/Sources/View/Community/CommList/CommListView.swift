@@ -15,13 +15,11 @@ struct CommListView: View {
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
-    @State private var isShowingSearchCommSheet: Bool = false
-	
 	var body: some View {
 		NavigationStack {
 			VStack {
 				Button {
-					isShowingSearchCommSheet = true
+                    commViewModel.isShowingSearchCommSheet = true
 					commViewModel.commSearchTerm = .init()
 				} label: {
 					searchBar
@@ -122,8 +120,8 @@ struct CommListView: View {
 				}
 			}
 		}
-        .fullScreenCover(isPresented: $isShowingSearchCommSheet) {
-            CommSearchView(isShowingSearchCommSheet: $isShowingSearchCommSheet)
+        .fullScreenCover(isPresented: $commViewModel.isShowingSearchCommSheet) {
+            CommSearchView(isShowingSearchCommSheet: $commViewModel.isShowingSearchCommSheet)
         }
 	}
 }
