@@ -12,7 +12,7 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     let user: [User]
-    private let debouncer: Debouncer = .init(delay: 0.5)
+    private let debouncer: Debouncer = .init(delay: 0.35)
     
     @State private var myFriends: [User] = []
     @State private var selected: Int = 0
@@ -57,7 +57,7 @@ struct ZenoView: View {
                         .scaledToFit()
                         .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
                                , height: .screenHeight * 0.32)
-                        .animation(.interpolatingSpring(stiffness: 0.1, damping: 0.1), value: isAnimation)
+            
 
                     Spacer()
                     
