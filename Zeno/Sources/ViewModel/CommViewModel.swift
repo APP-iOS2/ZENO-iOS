@@ -7,6 +7,10 @@
 //
 
 import SwiftUI
+import KakaoSDKCommon
+import KakaoSDKTalk
+import KakaoSDKTemplate
+import KakaoSDKShare
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
@@ -104,10 +108,13 @@ class CommViewModel: ObservableObject {
     @Published var deepLinkTargetComm: Community = .emptyComm
     /// 딥링크 수신 정상 처리에 따라 가입하는 View를 보여주는 Bool
     @Published var isJoinWithDeeplinkView: Bool = false
+    @Published var isDeepLinkExpired: Bool = false
+    @Published var isShowingSearchCommSheet: Bool = false
+    @Published var isShowingCommListSheet: Bool = false
+    
     init() {
         Task {
             await fetchAllComm()
-            await fetchCurrentCommMembers()
         }
 		loadRecentSearches() // 최근검색어 불러오기
     }
@@ -128,14 +135,6 @@ class CommViewModel: ObservableObject {
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
         currentCommID = id
-    }
-    /// db에서 fetch한 모든 커뮤니티 중 currentUser가 속한 커뮤니티를 찾아 joinedComm을 업데이트함
-    @MainActor
-    func filterJoinedComm() {
-        guard let currentUser else { return }
-        let commIDs = currentUser.commInfoList.map { $0.id }
-        let communities = allComm.filter { commIDs.contains($0.id) }
-        self.joinedComm = communities
     }
     
     func getCommunityByID(_ id: String) -> Community? {
@@ -180,12 +179,13 @@ class CommViewModel: ObservableObject {
     /// 딥링크 url의 정보를 구분해 초대받은 커뮤니티에 가입되어 있다면 해당 커뮤니티를 보여주고 가입되어 있지 않다면 가입할 수 있는 Modal View를 띄워주는 함수
     @MainActor
     func handleInviteURL(_ url: URL) async {
-        guard url.scheme == "zenoapp" else { return }
+        guard let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String else { return }
+        guard url.scheme == "kakao\(kakaoKey)" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
             return
         }
-        guard let action = components.host, action == "invite" else {
+        guard let action = components.host, action == "kakaolink" else {
             print("유효하지 않은 URL action")
             return
         }
@@ -194,6 +194,8 @@ class CommViewModel: ObservableObject {
             return
         }
         guard let currentUser else { return }
+        isShowingSearchCommSheet = false
+        isShowingCommListSheet = false
         if currentUser.commInfoList.contains(where: { $0.id == commID }) {
             guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
             setCurrentID(id: comm.id)
@@ -205,8 +207,8 @@ class CommViewModel: ObservableObject {
                     deepLinkTargetComm = success
                     isJoinWithDeeplinkView = true
                 case .failure:
-                    // TODO: 딥링크가 유효하지 않음을 처리할 로직
-                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(deepLinkTargetComm.id)")
+                    isDeepLinkExpired = true
+                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
                 }
             }
         }
@@ -220,7 +222,7 @@ class CommViewModel: ObservableObject {
         do {
             try await firebaseManager.update(data: deepLinkTargetComm, value: \.joinMembers, to: newCommMembers)
             guard let index = allComm.firstIndex(where: { $0.id == deepLinkTargetComm.id }) else { return }
-            allComm[index].joinMembers = newCommMembers
+            allComm[index].joinMembers = newCommMembers 
         } catch {
             print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
         }
@@ -252,9 +254,9 @@ class CommViewModel: ObservableObject {
                 await waitResults.asyncForEach { [weak self] result in
                     switch result {
                     case .success(let user):
-                        let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
+                        let removedRequests = user.requestComm.filter { $0 != currentComm.id }
                         do {
-                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: removedCommInfo)
+                            try await self?.firebaseManager.update(data: user, value: \.requestComm, to: removedRequests)
                         } catch {
                             print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
                         }
@@ -262,8 +264,10 @@ class CommViewModel: ObservableObject {
                         print(#function + "삭제 된 커뮤니티의 waitApprovalMembers의 id가 User Collection에서 Document 찾기 실패함")
                     }
                 }
-                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id })
+                else { return }
                 allComm.remove(at: commIndex)
+                joinedComm = allComm.filterJoined(user: currentUser)
             } catch {
                 print(#function + "그룹 삭제 실패")
             }
@@ -282,9 +286,15 @@ class CommViewModel: ObservableObject {
                 try await firebaseManager.update(data: currentComm, value: \.waitApprovalMemberIDs, to: updatedWaitList)
                 do {
                     try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: updatedCurrentMembers)
-                    guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                    allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
-                    allComm[commIndex].joinMembers = updatedCurrentMembers
+                    do {
+                        let newCommInfo = user.commInfoList + [.init(id: currentComm.id, buddyList: [], alert: true)]
+                        try await firebaseManager.update(data: user, value: \.commInfoList, to: newCommInfo)
+                        guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
+                        allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
+                        allComm[commIndex].joinMembers = updatedCurrentMembers
+                    } catch {
+                        print(#function + "가입한 유저 Document에 commInfoList 업데이트 실패")
+                    }
                 } catch {
                     print(#function + "커뮤니티 Document에 waitApprovalMemberIDs 업데이트 실패")
                 }
@@ -393,29 +403,36 @@ class CommViewModel: ObservableObject {
                 .filter { currentWaitMemberIDs.contains($0.id) }
         }
     }
+    /*
+     1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
+     2. [ ] currentUser의 commInfoList에서 해당 currentComm정보지우기
+     3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
+     4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
+     5. [ ] 로컬 업데이트
+     */
     /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수
     @MainActor
     func leaveComm() async {
         guard let currentComm,
               let currentUser
         else { return }
-        let memberIDs = currentComm.joinMembers.map { $0.id }
         let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         do {
             try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
-            let results = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: memberIDs)
+            let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                     ids: changedMembers.map({ $0.id }))
             await results.asyncForEach { [weak self] result in
                 switch result {
-                case .success(let user):
-                    guard var updatedCommInfo = user.commInfoList
+                case .success(let success):
+                    guard var updatedCommInfo = success.commInfoList
                         .first(where: { $0.id == currentComm.id }) else { return }
                     if updatedCommInfo.buddyList.contains(currentUser.id) {
                         do {
                             updatedCommInfo.buddyList = updatedCommInfo.buddyList.filter({ $0 != currentUser.id })
-                            guard let index = user.commInfoList.firstIndex(where: { $0.id == updatedCommInfo.id }) else { return }
-                            var updatedCommInfolist = user.commInfoList
+                            guard let index = success.commInfoList.firstIndex(where: { $0.id == updatedCommInfo.id }) else { return }
+                            var updatedCommInfolist = success.commInfoList
                             updatedCommInfolist[index] = updatedCommInfo
-                            try await self?.firebaseManager.update(data: user, value: \.commInfoList, to: updatedCommInfolist)
+                            try await self?.firebaseManager.update(data: success, value: \.commInfoList, to: updatedCommInfolist)
                         } catch {
                             print(#function + "탈퇴한 유저를 buddyList에 가진 User의 commInfoList 업데이트 실패")
                         }
@@ -424,6 +441,7 @@ class CommViewModel: ObservableObject {
                     break
                 }
             }
+            // 로컬 업데이트
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
             joinedComm.remove(at: index)
             guard let firstComm = joinedComm.first else { return }
@@ -448,6 +466,51 @@ class CommViewModel: ObservableObject {
             print(#function + "그룹에 가입신청 실패")
         }
     }
+    /// 카카오톡앱에 currentComm 초대링크 공유
+    func kakao() {
+        guard let currentComm,
+              let currentUser
+        else { return }
+        let link = Link(iosExecutionParams: ["commID": "\(currentCommID)"])
+        
+        // 버튼들 입니다.
+        let webButton = Button(title: "제노앱에서 보기", link: link)
+        
+        guard let zenoImgURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/zeno-8cf4b.appspot.com/o/ZenoAppIcon.png?alt=media&token=267e57e0-bbf4-4864-874d-e79c61770fe2&_gl=1*14qx05*_ga*MTM1OTM4NTAwNi4xNjkyMzMxODc2*_ga_CW55HF8NVT*MTY5NzQ2MDgyMS4xMDIuMS4xNjk3NDYwODc2LjUuMC4w") else { return }
+        let content = Content(title: currentComm.name,
+                              imageUrl: zenoImgURL,
+                              description: "\(currentUser.name)님이 \(currentComm.name)에 초대했어요!",
+                              link: link)
+        let template = FeedTemplate(content: content, buttons: [webButton])
+        // 메시지 템플릿 encode
+        if let templateJsonData = (try? SdkJSONEncoder.custom.encode(template)) {
+            // 생성한 메시지 템플릿 객체를 jsonObject로 변환
+            if let templateJsonObject = SdkUtils.toJsonObject(templateJsonData) {
+                // 카카오톡 앱이 있는지 체크합니다.
+                if ShareApi.isKakaoTalkSharingAvailable() {
+                    ShareApi.shared.shareDefault(templateObject: templateJsonObject) { linkResult, error in
+                        if let error {
+                            print("error : \(error)")
+                        } else {
+                            print("defaultLink(templateObject:templateJsonObject) success.")
+                            guard let linkResult = linkResult else { return }
+                            UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
+                        }
+                    }
+                } else {
+                    // 없을 경우 카카오톡 앱스토어로 이동합니다. (이거 하려면 URL Scheme에 itms-apps 추가 해야함)
+                    let url = "itms-apps://itunes.apple.com/app/362057947"
+                    if let url = URL(string: url), UIApplication.shared.canOpenURL(url) {
+                        if #available(iOS 10.0, *) {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        } else {
+                            UIApplication.shared.openURL(url)
+                        }
+                    }
+                }
+            }
+        }
+    }
     /// ShareSheet 올리기
     func shareText() {
         guard let commID = currentComm?.id else { return }
@@ -463,7 +526,7 @@ class CommViewModel: ObservableObject {
                     activityVC,
                     animated: true,
                     completion: {
-                        print("공유창 나타나면서 할 작업들?")
+//                        print("공유창 나타나면서 할 작업들?")
                     }
                 )
             }

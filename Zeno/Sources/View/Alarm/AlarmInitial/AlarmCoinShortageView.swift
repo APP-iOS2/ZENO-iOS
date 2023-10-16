@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AlarmCoinShortageView: View {
     @Binding var isPresented: Bool
+    var imageTitle: String? = nil
     let title: String
     let content: String
     let primaryButtonTitle: String
@@ -28,13 +29,21 @@ struct AlarmCoinShortageView: View {
                 .padding(.trailing, 16)
             
             VStack(spacing: 22) {
-                Image("caution")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40)
-                    .padding(.top, 30)
-                
+                if imageTitle != nil {
+                    Image(imageTitle!)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40)
+                        .padding(.top, 30)
+                } else {
+                    Image("caution")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40)
+                        .padding(.top, 30)
+                }
                 Text(title)
+                    .foregroundColor(.black)
                     .font(.title2)
                     .bold()
                 
@@ -44,6 +53,7 @@ struct AlarmCoinShortageView: View {
                     Text(content)
                 }
                 .bold()
+                .foregroundColor(.black)
                 
                 Button {
                     primaryAction()
@@ -73,14 +83,15 @@ struct AlarmCoinShortageView: View {
 
 struct AlarmCoinShortageView_Previews: PreviewProvider {
     static var previews: some View {
-      Text("알러트 테스트")
-        .modifier(
-          CashAlertModifier(
-            isPresented: .constant(true),
-            title: "제목",
-            content: "내용",
-            primaryButtonTitle: "버튼 이름",
-            primaryAction: { })
-        )
+        Text("알러트 테스트")
+            .modifier(
+                CashAlertModifier(
+                    isPresented: .constant(true),
+                    imageTitle: nil,
+                    title: "제목",
+                    content: "내용",
+                    primaryButtonTitle: "버튼 이름",
+                    primaryAction: { })
+            )
     }
 }

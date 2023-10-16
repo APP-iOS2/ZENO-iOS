@@ -20,9 +20,9 @@ struct CommEmptyView: View {
                     .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.2)
                     .overlay {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray4)
-                            .offset(x: .screenWidth * 0.17, y: .screenHeight * 0.07)
+                            .font(.system(size: 35))
+							.foregroundColor(Color("mainPurple2"))
+                            .offset(x: .screenWidth * 0.15, y: .screenHeight * 0.07)
                 }
             }
             

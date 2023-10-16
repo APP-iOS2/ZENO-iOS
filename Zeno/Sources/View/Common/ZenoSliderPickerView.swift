@@ -59,6 +59,15 @@ struct ZenoSliderPickerView<Item: SliderPickerProtocol>: View {
                     }
                 }
             }
+            .overlay {
+                GeometryReader { proxy in
+                    RoundedRectangle(cornerRadius: 3)
+                        .frame(width: items.count < maxItemRatio ? .screenWidth / CGFloat(items.count) : .screenWidth / CGFloat(maxItemRatio), height: proxy.size.height)
+                        .offset(x: proxy.frame(in: .global).width / CGFloat(items.count) * volume, y: proxy.frame(in: .local).minY)
+                        .foregroundColor(.purple2)
+                        .opacity(0.4)
+                }
+            }
             GeometryReader { proxy in
                 Capsule()
                     .frame(width: items.count < maxItemRatio ? .screenWidth / CGFloat(items.count) : .screenWidth / CGFloat(maxItemRatio), height: 3)
@@ -76,8 +85,9 @@ struct ZenoSliderPickerView<Item: SliderPickerProtocol>: View {
 
 struct ZenoSliderPickerView_Previews: PreviewProvider {
     static var previews: some View {
-        ZenoSliderPickerView(items: SliderTest.allCases) { _ in
-            
+        ScrollView(.horizontal) {
+            ZenoSliderPickerView(items: SliderTest.allCases) { _ in  
+            }
         }
     }
 }

@@ -49,18 +49,6 @@ struct MyPageMain: View {
         }
     }
     
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { _ in
-            withAnimation {
-                isShowingZenoCoin.toggle()
-            }
-        }
-    }
-    
-    private func stopTimer() {
-        timer?.invalidate()
-    }
-    
     private func getUserData() {
         self.name = mypageViewModel.userInfo?.name ?? ""
         self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
@@ -135,37 +123,26 @@ struct MyPageMain: View {
                     }
                     .frame(maxHeight: 120)
                     .foregroundColor(.primary)
-                    
+                    .onAppear {
+//                        mypageViewModel.zenoImageArray()
+                        print("💟 \(mypageViewModel.zenoStringImage)")
+                    }
                     /// 유저 재화 정보 뷰
                     UserMoneyView()
                         .frame(minHeight: UIScreen.main.bounds.height/9)
                         .padding(.horizontal, 17)
-                    
-//                    /// 재화정보 스크롤뷰
-//                    ScrollView(.horizontal, showsIndicators: false) {
-//                        HStack(spacing: 0) {
-//                            if isShowingZenoCoin {
-//                                coinView
-//                            } else {
-//                                megaphoneView
-//                            }
-//                        }
-//                        .frame(width: UIScreen.main.bounds.width, height: 60)
-//                    }
-//                    .background(Color.black)
-//                    .onAppear {
-//                        startTimer()
-//                    }
-//                    .onDisappear {
-//                        print("⏰ 타이머 끝")
-//                        stopTimer()
-//                    }
+                  
                     GroupSelectView()
+                  
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
                 getUserData()
+                await mypageViewModel.fetchAllAlarmData()
+                print("⏰⏰ \(mypageViewModel.allAlarmData)")
+                print("😈😈 \(mypageViewModel.zenoStringAll)")
+                mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)

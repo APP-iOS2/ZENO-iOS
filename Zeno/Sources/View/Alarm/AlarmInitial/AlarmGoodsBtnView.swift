@@ -41,9 +41,9 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    Image("dollar-coin")
+                    Image(systemName: "c.circle")
                         .resizable()
-                        .frame(width: .screenWidth * 0.07, height: .screenWidth * 0.06)
+                        .frame(width: .screenWidth * 0.06, height: .screenWidth * 0.06)
                     Text(primaryButtonTitle1)
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .bold()
@@ -59,6 +59,7 @@ struct AlarmGoodsBtnView: View {
                 HStack {
                     Image(systemName: "ticket")
                         .resizable()
+//                        .scaledToFit()
                         .frame(width: .screenWidth * 0.08, height: .screenWidth * 0.06)
                     
                     Text(primaryButtonTitle2)

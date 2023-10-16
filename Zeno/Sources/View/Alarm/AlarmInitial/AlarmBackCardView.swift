@@ -15,12 +15,10 @@ struct AlarmBackCardView: View {
     let selectAlarm: Alarm
     
     @Binding var isFlipped: Bool
+    @Binding var chosung: String
     
     @State private var isNudgingOn: Bool = false
-    @State private var isCheckInitialTwice: Bool = false
-    @State private var chosung: String = ""
-    
-    let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+    @State private var isNoneUser: Bool = false
     
     var body: some View {
         VStack {
@@ -70,8 +68,15 @@ struct AlarmBackCardView: View {
                             }
                         }
                         .padding(.bottom, 20)
+                        .alert("찌르기가 허용되지 않는 유저입니다. ", isPresented: $isNoneUser) {
+                            Button {
+                                isNoneUser = false
+                            } label: {
+                                Text("확인")
+                            }
+                        }
                     }
-                        .padding(10)
+                    .padding(10)
                 )
                 .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
                 .offset(y: -40)
@@ -79,71 +84,25 @@ struct AlarmBackCardView: View {
         }
         .scaleEffect(x: isFlipped ? 1.0 : -1.0, y: 1.0)
         .rotation3DEffect(.degrees(isFlipped ? 0 : 180), axis: (x: 0, y: 0.1, z: 0))
-        .alert("\(chosung)님 찌르기 성공", isPresented: $isNudgingOn) {
-            Button {
-                // TODO: 찌른 알람을 보내는 함수 호출(push noti 어쩌구) / 찌르기 전용 알람 보내기 - AlarmVM
-                isNudgingOn.toggle()
-            } label: {
-                Text("확인")
+        .cashAlert(isPresented: $isNudgingOn,
+                   imageTitle: "point",
+                   title: "\(chosung)님을 찌르시겠습니까 ?",
+                   content: "\(chosung)님을 찌르시겠습니까 ?",
+                   primaryButtonTitle: "확인") {
+            Task {
+                await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
             }
-        }
-        .task {
-            chosung = ChosungCheck(word: selectAlarm.sendUserName)
-        }
-        .toolbar {
-            ToolbarItem {
-                if userVM.currentUser?.showInitial ?? 0 > 0 {
-                    Button {
-                        isCheckInitialTwice = true
-                    } label: {
-                        Text("다시 확인")
-                            .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                            .foregroundColor(Color.primary)
-                            .background(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.mainColor, lineWidth: 1)
-                            )
-                    }
-                }
-            }
-        }
-        .alert(isPresented: $isCheckInitialTwice) {
-            let firstButton = Alert.Button.destructive(Text("취소")) {
-                isCheckInitialTwice = false
-            }
-            let secondButton = Alert.Button.default(Text("사용")) {
-                Task {
-                    await userVM.updateUserInitialCheck(to: -1)
-                }
-                chosung = ChosungCheck(word: selectAlarm.sendUserName)
-            }
-            return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
-                         message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
-                         primaryButton: firstButton, secondaryButton: secondButton)
         }
     }
-    /// 초성 확인 로직
-    private func ChosungCheck(word: String) -> String {
-        var initialResult = ""
-        // 문자열하나씩 짤라서 확인
-        for char in word {
-            let octal = char.unicodeScalars[char.unicodeScalars.startIndex].value
-            if 44032...55203 ~= octal { // 유니코드가 한글값 일때만 분리작업
-                let index = (octal - 0xac00) / 28 / 21
-                initialResult += hangul[Int(index)]
-            }
+    
+    private func sendNudgeNotification(receiveUserID: String) async {
+        let receiveUser = try? await userVM.fetchUser(withUid: receiveUserID)
+        if receiveUser != nil {
+            await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
+        } else {
+            // 유저가 없다는 팝업창
+            isNoneUser = true
         }
-        var nameArray = Array(initialResult)
-        // 하나의 문자를 제외하고 나머지를 "X"로 바꿈
-        if nameArray.count > 1 {
-            let randomIndex = Int.random(in: 0..<nameArray.count)
-            for i in 0..<nameArray.count where i != randomIndex {
-                nameArray[i] = "X"
-            }
-        }
-        // 문자 배열을 다시 문자열로 합쳐서 반환
-        let result1 = String(nameArray)
-        return result1
     }
 }
 
@@ -161,7 +120,8 @@ struct AlarmBackCardView_Previews: PreviewProvider {
                                              zenoID: "dd",
                                              zenoString: "자꾸 눈이 마주치는 사람",
                                              createdAt: 91842031),
-                          isFlipped: .constant(true))
+                          isFlipped: .constant(true),
+                          chosung: .constant(""))
         .environmentObject(AlarmViewModel())
         .environmentObject(UserViewModel())
     }

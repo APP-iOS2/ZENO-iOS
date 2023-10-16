@@ -40,7 +40,7 @@ struct UserMoneyView: View {
             .frame(maxWidth: .infinity/3)
             
             /// 지목 받은 제노
-            VStack(spacing: 3){
+            VStack(spacing: 3) {
                 Text("\(mypageViewModel.userInfo?.commInfoList.count ?? 0)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
