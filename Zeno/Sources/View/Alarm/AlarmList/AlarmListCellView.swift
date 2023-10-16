@@ -12,13 +12,21 @@ import Kingfisher
 struct AlarmListCellView: View {
     @Binding var selectAlarm: Alarm?
     @EnvironmentObject var communityViewModel: CommViewModel
+    @Environment(\.colorScheme) var colorScheme
     let alarm: Alarm
     
-    var getCommunity: (name: String, imageURL: String?) {
+    private var getCommunity: (name: String, imageURL: String?) {
         if let community = communityViewModel.getCommunityByID(alarm.communityID) {
             return (community.name, community.imageURL)
         }
         return ("error", nil)
+    }
+    
+    private var getFontColor: Color {
+            if alarm.id == selectAlarm?.id || colorScheme == .dark {
+                return Color.white
+            }
+            return Color.gray4
     }
         
     var body: some View {
@@ -98,7 +106,7 @@ struct AlarmListCellView: View {
                 Spacer()
             }
         }
-        .foregroundStyle(alarm.id == selectAlarm?.id ? .white : .gray4)
+        .foregroundStyle(getFontColor)
         .padding()
         .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray5))
         .clipped()
