@@ -11,7 +11,6 @@ struct ZenoApp: App {
     
     init() {
         let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY")
-//        print("kakaoKey = \(kakaoKey)")
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: kakaoKey as? String ?? "")
     }
