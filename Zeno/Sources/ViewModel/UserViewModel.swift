@@ -13,7 +13,7 @@ import FirebaseFirestoreSwift
 
 final class UserViewModel: ObservableObject, LoginStatusDelegate {
     func logout() async { }
-    func memberRemove() async { }
+    func memberRemove() async -> Bool { return false }
     
     /// 파이어베이스 Auth의 User
     @Published var userSession: FirebaseAuth.User?
@@ -55,7 +55,6 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
             self.userSession = result.user
             try? await loadUserData()
             print("🔵 로그인 성공")
-            
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
             case .wrongPassword:  // 잘못된 비밀번호

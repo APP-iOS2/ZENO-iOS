@@ -38,7 +38,7 @@ struct LoginView: View {
                         Button {
                             Task {
 //                                await userViewModel.startWithKakao()
-                                await LoginViewModel(delegate: userViewModel).login()
+                                await LoginManager(delegate: userViewModel).login()
                             }
                         } label: {
                             loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)

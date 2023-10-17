@@ -31,7 +31,7 @@ struct MypageSettingView: View {
                 
                 Button {
                     Task {
-                        await LoginViewModel(delegate: mypageVM).logout()
+                        await LoginManager(delegate: mypageVM).logout()
                     }
                 } label: {
                     HStack {
@@ -46,8 +46,7 @@ struct MypageSettingView: View {
                 Divider()
                 Button {
                     Task {
-                        await LoginViewModel(delegate: mypageVM).logout()
-
+                        await LoginManager(delegate: mypageVM).logout()
                     }
                 } label: {
                     HStack {
@@ -62,8 +61,7 @@ struct MypageSettingView: View {
                 Divider()
                 Button {
                     Task {
-                        await LoginViewModel(delegate: mypageVM).memberRemove()
-
+                        await LoginManager(delegate: mypageVM).memberRemove()
                     }
                 } label: {
                     Text("회원탈퇴")
