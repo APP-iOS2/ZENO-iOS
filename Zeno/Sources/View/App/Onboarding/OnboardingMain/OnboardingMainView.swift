@@ -16,6 +16,8 @@ struct OnboardingMainView: View {
     @State private var showFview = false
     @State private var showZview = false
     
+    @Environment(\.colorScheme) var colorScheme
+
     // '제노'는 익명으로 마음을 전달하는 퀴즈에요!
 
     var body: some View {
@@ -39,7 +41,6 @@ struct OnboardingMainView: View {
                         .font(.bold(38))
                         .accessibilityLabel("퀴즈예요")
                         
-                    
                     Spacer()
                     Spacer()
                     LottieView(lottieFile: "beforeZeno")
@@ -47,7 +48,7 @@ struct OnboardingMainView: View {
                         .offset(x: -100, y: 70)
                 }
             }
-            .foregroundColor(.ggullungColor)
+            .foregroundColor(colorScheme == .light ? .ggullungColor : .white)
             .opacity(0.9)
             .font(.bold(35))
          

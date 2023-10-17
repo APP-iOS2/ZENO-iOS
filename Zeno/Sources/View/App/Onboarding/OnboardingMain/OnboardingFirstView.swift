@@ -59,4 +59,3 @@ struct OnboardingFirstView_Previews: PreviewProvider {
         OnboardingFirstView(showNextView: .constant(false))
     }
 }
-

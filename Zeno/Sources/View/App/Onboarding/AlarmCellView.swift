@@ -24,20 +24,20 @@ struct AlarmCellView: View {
                 VStack(alignment: .leading) {
                     Text("\(commName)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.primary)
                     Text("\(gender)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
                         .font(.caption)
                     Text("20초 전")
                         .font(.caption)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.primary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "square.and.arrow.up")
                     .frame(width: 40, height: 40)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .offset(y: -18)
             }
             .padding(.vertical)
@@ -65,7 +65,7 @@ struct AlarmCellView: View {
                 Spacer()
             }
             .offset(y: -10)
-            .foregroundStyle(.black)
+            .foregroundStyle(.primary)
             .padding(.bottom)
         }
         .padding(40)
