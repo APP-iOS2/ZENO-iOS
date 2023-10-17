@@ -44,7 +44,7 @@ struct PurchaseCellView: View {
                     .frame(height: .screenHeight * 0.1)
                 
                 Spacer()
-
+                
                 VStack(alignment: .center) {
                     Text("\(itemDescription)")
                         .font(.regular(10))
@@ -78,9 +78,8 @@ struct PurchaseCellView: View {
         .frame(width: .screenWidth, height: .screenHeight * 0.17)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]),
-                                    center: .topLeading,
-                                    angle: .degrees(180 + 55)))                .shadow(radius: 3)
+                .fill(AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]), center: .topLeading, angle: .degrees(180 + 55)))
+                .shadow(radius: 3)
         )
     }
 }
