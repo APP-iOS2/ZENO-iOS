@@ -33,7 +33,7 @@ struct AlarmChangingView: View {
                     .opacity(isFlipped ? 0 : 1)
                 
                 LottieView(lottieFile: "click")
-                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
+                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.9)
                     .offset(x: .screenWidth/3, y: .screenHeight/4)
                     .opacity(isFlipped ? 0 : 1)
                 
@@ -44,6 +44,7 @@ struct AlarmChangingView: View {
             }
             .onTapGesture {
                 withAnimation {
+                    HapticManager.instance.impact(style: .rigid)
                     isFlipped = true
                 }
             }

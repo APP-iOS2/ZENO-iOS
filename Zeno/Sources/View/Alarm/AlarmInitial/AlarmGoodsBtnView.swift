@@ -11,6 +11,7 @@ import SwiftUI
 struct AlarmGoodsBtnView: View {
     // MARK: - Properties
     @Binding var isPresented: Bool
+    @State private var rotation: CGFloat = 0.0
     
     let content1: String
     let content2: String
@@ -27,13 +28,25 @@ struct AlarmGoodsBtnView: View {
     // MARK: - View
     var body: some View {
         VStack {
+            HStack {
+                Spacer()
+                Button {
+                    primaryAction3()
+                    isPresented = false
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                        .foregroundColor(.black)
+                }
+            }
+            
             VStack(alignment: .center) {
                 Text(content1)
                 Text(content2)
             }
             .foregroundColor(.black)
             .padding([.bottom, .top], 50)
-            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
             .bold()
             
             Button {
@@ -41,44 +54,49 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    Image(systemName: "c.circle")
-                        .resizable()
-                        .frame(width: .screenWidth * 0.06, height: .screenWidth * 0.06)
                     Text(primaryButtonTitle1)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .hex("FFCD4A"))
+            .initialButtonBackgroundModifier(fontColor: .white, color: .black)
             
             Button {
                 primaryAction2()
                 isPresented = false
             } label: {
                 HStack {
-                    Image(systemName: "ticket")
-                        .resizable()
-//                        .scaledToFit()
-                        .frame(width: .screenWidth * 0.08, height: .screenWidth * 0.06)
-                    
                     Text(primaryButtonTitle2)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
                         .frame(maxWidth: .infinity)
                 }
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
-            
-            Button {
-                primaryAction3()
-                isPresented = false
-            } label: {
-                Text(primaryButtonTitle3)
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
-                    .frame(maxWidth: .infinity)
+            .padding()
+            .foregroundColor(.white)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .frame(width: 250)
+                        .foregroundColor(.purple3)
+                        .shadow(radius: 2)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill()
+                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .mainColor.opacity(0.7), .mainColor.opacity(0.4), .white.opacity(0.4), .white, .white.opacity(0.4), .mainColor.opacity(0.6), .mainColor.opacity(0.7), .mainColor]), startPoint: .top, endPoint: .bottom))
+                        .rotationEffect(.degrees(rotation))
+                        .mask {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(lineWidth: 4)
+                                .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
+                        }
+                }
+            )
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                rotation = 360
             }
-            .initialButtonBackgroundModifier(fontColor: .black, color: .hex("D9D9D9"))
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 18)

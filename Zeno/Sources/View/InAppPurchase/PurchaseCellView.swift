@@ -21,50 +21,71 @@ struct PurchaseCellView: View {
     
     var body: some View {
         VStack {
-            Text("\(itemTitle)")
-                .bold()
-                .font(.system(size: 27))
-                .padding(.bottom, 8)
             HStack {
+                Spacer()
+                
                 VStack(alignment: .leading) {
-                    Text("\(itemPrice)")
-                        .font(.system(size: 20))
+                    Text("$\(itemPrice)")
+                        .font(.extraBold(30))
+                        .shadow(radius: 2)
+                        .padding(.trailing, 1)
+                        .overlay {
+                            LottieView(lottieFile: "dollar")
+                                .frame(width: .screenWidth * 0.1, height: .screenHeight * 0.1)
+                                .offset(x: -.screenWidth * 0.15, y: -.screenWidth * 0.1)
+                        }
                     Text("/ \(itemQuantity)회")
-                        .font(.caption2)
+                        .font(.regular(10))
                 }
-                .bold()
-                Spacer(minLength: 2)
-                VStack(alignment: .leading, spacing: 8) {
+                
+                Spacer()
+                
+                Divider()
+                    .foregroundColor(.black)
+                    .frame(height: .screenHeight * 0.1)
+                
+                Spacer()
+
+                VStack(alignment: .center) {
                     Text("\(itemDescription)")
+                        .font(.regular(10))
+                        .padding(.bottom, 1)
                     Text("\(itemFeature1)")
-                    Text("\(itemFeature2)")
+                        .font(.extraBold(24))
+                        .offset(y: -2)
+                        .shadow(radius: 2)
+                    
+                    Button {
+                        purchaseAction()
+                    } label: {
+                        Text("결제하기")
+                            .font(.bold(14))
+                            .foregroundColor(.white)
+                            .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 30)
+                            .fill(Color.black)
+                            .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.04)
+                            .shadow(radius: 2)
+                    )
                 }
                 Spacer()
             }
-            Button {
-                purchaseAction()
-            } label: {
-                Text("결제하기")
-                    .foregroundColor(.white)
-                    .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-            }
-            .background(
-                RoundedRectangle(cornerRadius: 30)
-                    .fill(Color.purple2)
-                    .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.04)
-            )
         }
+        .foregroundColor(.white)
         .padding()
-        .frame(width: .screenWidth)
+        .frame(width: .screenWidth, height: .screenHeight * 0.17)
         .background(
-            RoundedRectangle(cornerRadius: 5)
-                .stroke(Color.black, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 18)
+                .foregroundColor(.mainColor)
+                .shadow(radius: 3)
         )
     }
 }
 
 struct PurchaseCellView_Previews: PreviewProvider {
     static var previews: some View {
-        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "당신을 제노한 사람의 초성이 궁금하신가요 ?", itemFeature1: "초성 확인", itemFeature2: "찌르기", itemPrice: "1.99", purchaseAction: { })
+        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "코인 없이 빠르게 초성을 확인할 수 있어요!", itemFeature1: "10회 초성 확인권", itemFeature2: "찌르기", itemPrice: "1.99", purchaseAction: { })
     }
 }

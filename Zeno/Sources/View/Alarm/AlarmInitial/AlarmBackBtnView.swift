@@ -31,10 +31,11 @@ struct AlarmBackBtnView: View {
                     isPresented = false
                 } label: {
                     Text("취소")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
+                        .foregroundColor(.white) // 삭제해야할 수도
                         .frame(maxWidth: .infinity)
                 }
-                .initialButtonBackgroundModifier(fontColor: .red, color: .gray2)
+                .initialButtonBackgroundModifier(fontColor: .red, color: .gray3)
                 
                 Button {
                     primaryAction1()
@@ -43,10 +44,10 @@ struct AlarmBackBtnView: View {
                     Text("돌아가기")
                         .minimumScaleFactor(0.2)
                         .lineLimit(1)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 13))
                         .frame(maxWidth: .infinity)
                 }
-                .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
+                .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
             }
         }
         .padding(.horizontal, 24)
@@ -66,7 +67,7 @@ struct AlarmBackBtnView: View {
 struct AlarmBackBtnView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmBackBtnView(isPresented: .constant(true),
-                         title: "이 화면을 나가면 다시 돌아올 수 없습니다.",
+                         title: "초성을 한 번 더 확인하시려면 확인권을 사용해야합니다",
                          subTitle: "돌아가시겠습니까 ?",
                          primaryAction1: {
         })
