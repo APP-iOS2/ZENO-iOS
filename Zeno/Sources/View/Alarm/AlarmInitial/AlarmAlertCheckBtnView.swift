@@ -19,8 +19,8 @@ struct AlarmAlertCheckBtnView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VStack(spacing: 26) {
-                LottieView(lottieFile: "Coin")
+            VStack(alignment: .center, spacing: 26) {
+                LottieView(lottieFile: "shine")
                     .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.1)
                 
                 Text("\(content)을 사용하시겠습니까 ?")

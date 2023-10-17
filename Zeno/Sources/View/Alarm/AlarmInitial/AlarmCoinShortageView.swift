@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AlarmCoinShortageView: View {
     @Binding var isPresented: Bool
-    var imageTitle: String? = nil
+    var imageTitle: String?
     let title: String
     let content: String
     let primaryButtonTitle: String

@@ -383,7 +383,6 @@ struct NickNameRegistView: View {
     }
 }
 
-
 struct NickNameRegistView_Previews: PreviewProvider {
     static var previews: some View {
         NickNameRegistView()

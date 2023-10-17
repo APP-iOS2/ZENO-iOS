@@ -48,8 +48,6 @@ struct AlarmSelectCommunityView: View {
             RoundedRectangle(cornerRadius: 15)
                 .stroke(.clear)
         )
-//        .shadow(radius: 5)
-//        .padding(.horizontal)
     }
 }
 
