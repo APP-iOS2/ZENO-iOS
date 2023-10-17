@@ -11,8 +11,8 @@ import SwiftUI
 struct PurchaseView: View {
     @EnvironmentObject var iAPVM: IAPStore
     @EnvironmentObject var userVM: UserViewModel
+
     @Environment(\.dismiss) private var dismiss
-    @State private var purchaseAlert: Bool = false
     
     var body: some View {
         VStack {
@@ -24,16 +24,18 @@ struct PurchaseView: View {
                                         angle: .degrees(180 + 55)))
                     .frame(width: .screenWidth, height: .screenHeight * 0.4)
                     .offset(y: -350)
-                VStack(alignment: .center, spacing: 10) {
-                    Image(systemName: "heart")
+                VStack(alignment: .center, spacing: 0) {
+                    Image(systemName: "heart.fill")
                         .resizable()
                         .frame(width: 25, height: 25)
                     Text("See who likes you!")
                         .bold()
                         .font(.title)
+                        .padding(10)
                     Text("View the members")
                     Text("that want to connect with you")
                 }
+                .font(.thin(15))
                 .foregroundColor(.white)
                 .offset(y: -280)
                 PurchaseCellView(itemQuantity: 10,
@@ -64,18 +66,6 @@ struct PurchaseView: View {
                         }
                     }
                 })
-            }
-            .alert(isPresented: $purchaseAlert) {
-                let firstButton = Alert.Button.destructive(Text("취소")) {
-                    purchaseAlert = false
-                }
-                let secondButton = Alert.Button.default(Text("돌아가기")) {
-                    dismiss()
-                    purchaseAlert = false
-                }
-                return Alert(title: Text("이 화면을 나가시면 다시 들어올 수 없습니다."),
-                             message: Text("돌아가시겠습니까 ?"),
-                             primaryButton: firstButton, secondaryButton: secondButton)
             }
         }
     }

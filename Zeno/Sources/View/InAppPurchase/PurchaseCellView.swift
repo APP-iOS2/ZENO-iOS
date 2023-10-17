@@ -61,10 +61,11 @@ struct PurchaseCellView: View {
                             .font(.bold(14))
                             .foregroundColor(.white)
                             .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                            .shadow(color: .mainColor, radius: 3)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 30)
-                            .fill(Color.black)
+                            .fill(Color.ggullungColor)
                             .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.04)
                             .shadow(radius: 2)
                     )
@@ -77,8 +78,9 @@ struct PurchaseCellView: View {
         .frame(width: .screenWidth, height: .screenHeight * 0.17)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .foregroundColor(.mainColor)
-                .shadow(radius: 3)
+                .fill(AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]),
+                                    center: .topLeading,
+                                    angle: .degrees(180 + 55)))                .shadow(radius: 3)
         )
     }
 }
