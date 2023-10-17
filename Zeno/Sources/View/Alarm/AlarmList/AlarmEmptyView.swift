@@ -9,8 +9,10 @@
 import SwiftUI
 
 struct AlarmEmptyView: View {
-    @EnvironmentObject var commViewModel: CommViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
+    
+    @EnvironmentObject var commViewModel: CommViewModel
     @State private var isPresented: Bool = true
     
     var body: some View {
@@ -21,7 +23,7 @@ struct AlarmEmptyView: View {
                     .ignoresSafeArea()
                     .onTapGesture {
                         isPresented = false
-                    }
+                }
             }
             
             VStack {
@@ -30,7 +32,7 @@ struct AlarmEmptyView: View {
                 
                 Text("가입된 커뮤니티가 없습니다")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                    .foregroundColor(.ggullungColor)
+                    .foregroundColor(colorScheme == light? .ggullungColor : .white)
                     .padding(.top, 10)
             }
             
