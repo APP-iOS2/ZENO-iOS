@@ -125,16 +125,20 @@ class AlarmViewModel: ObservableObject {
         }
     }
     
+    /// TabBarView 에서 앱 켜질 때 emptyView 대신 fetch 하는 동안 ProgressView() 보이게 만드는 함수, 한 번만 실행함
     @MainActor
     func fetchAlarmPagenation(showUserID: String) async {
+        isFetchComplete = false
+        
+        defer {
+            isFetchComplete = true
+        }
         // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
         let alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
             .order(by: "createdAt", descending: true)
-            .limit(to: 10)
+            .limit(to: 7)
         do {
-            isFetchComplete = false
-            
             let querySnapShot = try await alarmRef.getDocuments()
             self.alarmArray.removeAll()
             
@@ -144,16 +148,53 @@ class AlarmViewModel: ObservableObject {
                 self.lastVisible = queryDocumentSnapshot
                 self.alarmArray.append(tempAlarm)
             }
-//            alarmArray.sort { $0.createdAt > $1.createdAt }
-            isFetchComplete = true
         } catch {
-            print("== fetchAlarm : \(error)")
+            print("== fetchAlarmPagenation : \(error)")
         }
     }
     
+    /// 홈 탭에서 커뮤니티 선택할 때마다 호출, 페이지네이션으로 가져오기 전 7개 데이터 한 번 가져오는 함수
+    @MainActor
+    func fetchAlarmPagenation2(showUserID: String, communityID: String? = nil) async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
+        var alarmRef = Firestore.firestore().collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            
+        if let communityID {
+            alarmRef = alarmRef.whereField("communityID", isEqualTo: communityID)
+        }
+        alarmRef = alarmRef.limit(to: 7)
+        do {
+            let querySnapShot = try await alarmRef.getDocuments()
+            self.alarmArray.removeAll()
+            
+            // 하나의 형태를 temp로 받아서 반복문을 통해 전체를 받아옴, removeAll을 통해 전체를 지우고 다시 받아오는 것.
+            try querySnapShot.documents.forEach { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                self.alarmArray.append(tempAlarm)
+            }
+        } catch {
+            print("== fetchAlarmPagenation2 : \(error)")
+            isFetchComplete = true
+        }
+    }
+    
+    /// 무한 스크롤 시 알람 추가 데이터 가져오는 함수
     @MainActor
     func loadMoreData(showUserID: String) async {
         isLoading = true
+        
+        defer {
+            isLoading = false
+        }
         
         guard let lastVisible = lastVisible else {
             isPagenationLast = true
@@ -175,8 +216,6 @@ class AlarmViewModel: ObservableObject {
                 self.lastVisible = queryDocumentSnapshot
                 return tempAlarm
             }
-            
-            isLoading = false
         } catch {
             print("AlarmLoadMoreData : \(error)")
         }
