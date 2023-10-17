@@ -58,9 +58,3 @@ struct GeoView: View {
         }
     }
 }
-
-//struct GeoView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        GeoView()
-//    }
-//}

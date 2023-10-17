@@ -37,6 +37,7 @@ struct AlarmFrontCardView: View {
         )
         .offset(y: -40)
         .opacity(isFlipped ? 0 : 1)
+        .shadow(radius: 3, x: 5, y: 5)
     }
 }
 

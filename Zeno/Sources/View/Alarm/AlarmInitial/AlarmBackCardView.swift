@@ -26,6 +26,7 @@ struct AlarmBackCardView: View {
         VStack {
             RoundedRectangle(cornerRadius: 10)
                 .foregroundColor(.mainColor)
+                .shadow(radius: 3, x: 5, y: 5)
                 .overlay(
                     VStack(alignment: .center, spacing: 20) {
                         Spacer()
@@ -134,4 +135,3 @@ struct AlarmBackCardView_Previews: PreviewProvider {
         .environmentObject(UserViewModel())
     }
 }
-
