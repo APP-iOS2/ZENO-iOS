@@ -53,8 +53,17 @@ struct CommUserMgmtView: View {
                     ForEach(MGMTSection.allCases) { section in
                         switch section {
                         case .wait:
-                            ZenoProfileFoldableListView(isListFold: $isWaitListFold, list: commViewModel.currentWaitApprovalMembers) {
-                                Text("\(section.header) \(commViewModel.currentWaitApprovalMembers.count)")
+                            ZenoProfileFoldableListView(isListFold: $isWaitListFold,
+														list: commViewModel.currentWaitApprovalMembers) {
+								HStack(alignment: .top) {
+									Text("\(section.header) \(commViewModel.currentWaitApprovalMembers.count)")
+									if !commViewModel.currentWaitApprovalMembers.isEmpty {
+										Circle()
+											.fill(Color.red)
+											.frame(width: 5, height: 5)
+											.offset(x: -3)
+									}
+								}
                             } btnLabel: {
                                 HStack(alignment: .bottom, spacing: 2) {
                                     Image(systemName: "person.crop.circle.badge.plus")
@@ -68,7 +77,7 @@ struct CommUserMgmtView: View {
                             }
                         case .general:
                             ZenoProfileFoldableListView(isListFold: $isCurrentListFold, list: commViewModel.currentCommMembers) {
-                                Text("\(section.header) \(commViewModel.currentCommMembers.count)")
+									Text("\(section.header) \(commViewModel.currentCommMembers.count)")
                             } btnLabel: {
                                 HStack(alignment: .bottom, spacing: 2) {
                                     Image(systemName: "person.crop.circle.badge.minus")
