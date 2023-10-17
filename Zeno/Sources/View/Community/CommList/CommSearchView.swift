@@ -39,9 +39,7 @@ struct CommSearchView: View {
 					case .done:
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-								CommListCell(comm: item) {
-									commViewModel.addSearchTerm(currentViewSerachTerm)
-								}
+								CommListCell(comm: item) { }
 							}
 						}
 						.scrollDismissesKeyboard(.immediately)
@@ -114,7 +112,7 @@ extension CommSearchView {
 				Spacer()
 			}
 			.frame(maxWidth: .infinity)
-			.padding(.horizontal)
+			.padding(.leading)
 			.padding(.vertical, 11)
 			.background(Color(uiColor: .systemGray6))
 			.cornerRadius(10)

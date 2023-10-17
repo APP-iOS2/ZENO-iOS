@@ -152,7 +152,11 @@ class CommViewModel: ObservableObject {
 		guard !term.isEmpty else { return }
 		guard !term.allSatisfy({ $0 == " " }) else { return }
 		recentSearches = recentSearches.filter { $0 != term }
+		if recentSearches.count > 10 {
+			recentSearches.removeLast()
+		}
 		recentSearches.insert(term, at: 0)
+		
 		saveRecentSearches()
 	}
 	
