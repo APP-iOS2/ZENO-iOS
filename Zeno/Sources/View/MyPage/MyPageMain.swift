@@ -38,14 +38,20 @@ struct MyPageMain: View {
                     Image(asset: ZenoAsset.Assets.zenoIcon)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
+                        .frame(width: 120, alignment: .center)
                 }
-                .frame(width: 150, alignment: .center)
+                .frame(width: 120, alignment: .center)
                 .aspectRatio(contentMode: .fit)
+                .clipShape(Circle())
+                .padding(.leading, 18)
         } else {
             ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                             ratio: .fit,
                             isRandom: false)
-            .frame(width: 150, alignment: .center)
+            .frame(width: 120, alignment: .center)
+            .aspectRatio(contentMode: .fit)
+            .clipShape(Circle())
+            .padding(.leading, 18)
         }
     }
     
@@ -53,14 +59,14 @@ struct MyPageMain: View {
         self.name = mypageViewModel.userInfo?.name ?? "박서연"
         self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
         self.gender = mypageViewModel.userInfo?.gender ?? .male
-        self.description = mypageViewModel.userInfo?.description ?? "한줄소개테스트입니당 안녕하세요 여러분 여러줄이면 💟💙💖"
+        self.description = mypageViewModel.userInfo?.description ?? "한줄소개테스트입니당 여러줄이면 어떻게 되는지 모르겠어요. 글자수 제한은 50자로 해도 될것 같아요!"
         self.showInitial = mypageViewModel.userInfo?.showInitial ?? 0
     }
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Text("마이페이지")
                             .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
@@ -77,63 +83,41 @@ struct MyPageMain: View {
                     .foregroundColor(.primary)
                     .padding(.horizontal, 15)
                     
-                    HStack {
+                    HStack(spacing: 2) {
                         // 유저 프로필 이미지 설정
                         profileImage
-                            .modifier(TextModifier())
-                        
-                        VStack(alignment: .leading, spacing: 18) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(spacing: 10) {
-                                    NavigationLink {
-                                        UserProfileEdit()
-                                    } label: {
-                                        HStack {
-                                            Text(name)
-                                                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
-                                                .fontWeight(.semibold)
-                                            Image(systemName: "chevron.right")
-                                        }
-                                    }
-                                }
-                                
-                                Text(description)
-                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                                    .lineSpacing(4)
-                            }
-                            HStack(spacing: 4) {
-                                Button {
-                                    print("Z 버튼 눌림 기능미정")
-                                } label: {
-                                    HStack(spacing: 3) {
-                                        Text("Z")
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                                            .foregroundColor(Color.mainColor)
-                                        Text("\(showInitial)회")
-                                            .foregroundColor(.primary)
-                                    }.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                                }
-                                Button {
-                                    print("info button tapped!")
-                                } label: {
-                                    InformationButtonView()
+                        /// 유저 재화 정보 뷰
+                        UserMoneyView()
+                            .frame(minHeight: UIScreen.main.bounds.height/9)
+                    }
+                    .frame(height: 150)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // 유저 이름
+                        HStack(spacing: 10) {
+                            NavigationLink {
+                                UserProfileEdit()
+                            } label: {
+                                HStack {
+                                    Text(name)
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
+                                        .fontWeight(.semibold)
+                                    Image(systemName: "chevron.right")
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                                 }
                             }
                         }
-                        Spacer()
+                        // 유저 한줄소개
+                        Text(description)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                            .lineSpacing(6)
                     }
-                    .frame(maxHeight: 120)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
                     .foregroundColor(.primary)
                     .onAppear {
-//                        mypageViewModel.zenoImageArray()
                         print("💟 \(mypageViewModel.zenoStringImage)")
                     }
                     .padding(.bottom, 3)
-                    /// 유저 재화 정보 뷰
-                    UserMoneyView()
-                        .frame(minHeight: UIScreen.main.bounds.height/9)
-                        .padding(.horizontal, 17)
-                  
                     GroupSelectView()
                 }
             }
@@ -163,13 +147,5 @@ struct MyPageMain_Previews: PreviewProvider {
             MyPageMain()
                 .environmentObject(MypageViewModel()) // MypageViewModel 환경 객체 제공
         }
-    }
-}
-
-struct TextModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .frame(width: 150, alignment: .center)
-            .clipShape(Circle())
     }
 }

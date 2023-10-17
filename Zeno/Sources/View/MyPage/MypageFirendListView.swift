@@ -13,7 +13,6 @@ import FirebaseFirestoreSwift
 import Kingfisher
 
 struct MypageFriendListView: View {
-    let db = Firestore.firestore()
     @EnvironmentObject private var mypageViewModel: MypageViewModel
     @State private var selectedGroup = "all"
     /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
@@ -60,7 +59,6 @@ struct MypageFriendListView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: 70, height: 70)
-//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
                                     .clipShape(Circle())
                                     .padding(8)
                             } else {
@@ -68,11 +66,10 @@ struct MypageFriendListView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: 70, height: 70)
-//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
                                     .clipShape(Circle())
                                     .padding(8)
                             }
-                            VStack(alignment: .leading, spacing: 20) {
+                            VStack(alignment: .leading, spacing: 10) {
                                 Text(friendInfo.name)
                                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -82,12 +79,8 @@ struct MypageFriendListView: View {
                             }
                             .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
-//                            .background(.blue)
                             Spacer()
                         }
-//                        .background(.purple)
-//                        .padding(5)
-//                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.7))
                         Divider()
                     }
                 }
