@@ -51,8 +51,6 @@ struct TabBarView: View {
         .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
         .task {
             if let loginUser = userViewModel.currentUser {
-//                print("fetch alarm and update user fcmtoken")
-//                await alarmViewModel.fetchAlarm(showUserID: loginUser.id)
                 await alarmViewModel.fetchAlarmPagenation(showUserID: loginUser.id)
                 await userViewModel.updateUserFCMToken(fcmToken)
             }

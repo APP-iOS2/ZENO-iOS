@@ -51,9 +51,14 @@ struct AlarmView: View {
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding()
+                                
                                 if filterAlarmByCommunity.isEmpty {
                                     AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                                    AlarmListEmptyView()
+                                    if alarmViewModel.isLoading {
+                                        ProgressView()
+                                    } else {
+                                        AlarmListEmptyView()
+                                    }
                                 } else {
                                     LazyVStack(pinnedViews: .sectionHeaders) {
                                         Section {
@@ -61,6 +66,16 @@ struct AlarmView: View {
                                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                                                     .padding(.bottom, 4)
                                                     .padding(.horizontal)
+                                                    .onAppear {
+                                                        Task {
+                                                            if isLastItem(alarm) {
+                                                                if let currentUser = userViewModel.currentUser {
+                                                                    await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                    print("======alarmViewModel.loadMoreData")
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                             }
                                         } header: {
                                             AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
@@ -72,20 +87,13 @@ struct AlarmView: View {
                                             }
                                         }
                                         
-                                        if alarmViewModel.isLoading == false {
+                                        if alarmViewModel.isLoading {
                                             ProgressView()
-                                                .onAppear {
-                                                    Task {
-                                                        if let currentUser = userViewModel.currentUser {
-                                                            await alarmViewModel.loadMoreData(showUserID: currentUser.id)
-                                                        }
-                                                    }
-                                                }
                                         }
                                     }
                                 }
-                                // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
-                                Color.clear.frame(height: 80)
+                                // 버튼에 하위 셀이 가려지는 경우 or 데이터 없는 경우 refreshable 동작을 위해 추가
+//                                Color.clear.frame(height: 80)
                             }
                             .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
                             .refreshable {
@@ -198,8 +206,25 @@ struct AlarmView: View {
             }
         }
         .onChange(of: selectedCommunityId) { _ in
+            if let currentUser = userViewModel.currentUser {
+                Task {
+                    if selectedCommunityId.isEmpty {
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
+                    } else {
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                    }
+                }
+            }
+            alarmViewModel.isPagenationLast = false
             selectAlarm = nil
         }
+    }
+    
+    private func isLastItem(_ alarm: Alarm) -> Bool {
+        if let lastAlarm = alarmViewModel.alarmArray.last {
+            return lastAlarm.id == alarm.id
+        }
+        return false
     }
 }
 
