@@ -83,7 +83,7 @@ struct AlarmGoodsBtnView: View {
                         .shadow(radius: 2)
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill()
-                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.white, .white.opacity(0.4), .white, .white.opacity(0.4)]), startPoint: .top, endPoint: .bottom))
+                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .mainColor.opacity(0.7), .mainColor.opacity(0.4), .white.opacity(0.4), .white, .white.opacity(0.4), .mainColor.opacity(0.6), .mainColor.opacity(0.7), .mainColor]), startPoint: .top, endPoint: .bottom))
                         .rotationEffect(.degrees(rotation))
                         .mask {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
