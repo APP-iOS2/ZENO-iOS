@@ -41,7 +41,7 @@ struct UserMoneyView: View {
             
             /// 지목 받은 제노
             VStack(spacing: 3) {
-                Text("\(mypageViewModel.userInfo?.commInfoList.count ?? 0)")
+                Text("\(mypageViewModel.allAlarmData.count)")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                     .fontWeight(.semibold)
                 Text("득표수")
