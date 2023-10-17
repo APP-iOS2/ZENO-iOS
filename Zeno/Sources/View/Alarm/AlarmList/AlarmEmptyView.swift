@@ -32,7 +32,7 @@ struct AlarmEmptyView: View {
                 
                 Text("가입된 커뮤니티가 없습니다")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                    .foregroundColor(colorScheme == .light ? .ggullungColor : .white)
+                    .foregroundColor(colorScheme == .light ? .ggullungColor : .gray2)
                     .padding(.top, 10)
             }
             

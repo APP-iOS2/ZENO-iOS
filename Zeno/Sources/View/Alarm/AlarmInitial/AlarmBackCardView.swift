@@ -19,11 +19,12 @@ struct AlarmBackCardView: View {
     
     @State private var isNudgingOn: Bool = false
     @State private var isNoneUser: Bool = false
+    @State private var counter: Int = 0
     
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray, lineWidth: 3)
+                .foregroundColor(.mainColor)
                 .overlay(
                     VStack(alignment: .center, spacing: 20) {
                         Spacer()
@@ -32,23 +33,27 @@ struct AlarmBackCardView: View {
                             .resizable()
                             .frame(width: .screenWidth * 0.3, height: .screenWidth * 0.3)
                             .padding(.bottom, 20)
+                            .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
                         
-                        VStack(spacing: 20) {
+                        VStack(spacing: 3) {
                             Text("\(selectAlarm.receiveUserName)님을")
-                            Text("\"\(selectAlarm.zenoString)\"")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16))
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
+                            Text(selectAlarm.zenoString)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
                                 .multilineTextAlignment(.center)
+                                .shadow(radius: 2)
                             Text("으로 선택한 사람은 ?")
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 17))
                         }
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-                        .padding(.bottom, 10)
+                        .foregroundColor(.white)
                         
                         // 초성은 조금 더 크게 보여줘야 하지 않을까 ?
                         Text(chosung)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
                             .background(
                                 RoundedRectangle(cornerRadius: 30)
-                                    .stroke(.primary, lineWidth: 1)
+                                    .foregroundColor(.white)
+                                    .shadow(radius: 3)
                                     .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.04)
                             )
                             .padding(.top, 10)
@@ -57,14 +62,16 @@ struct AlarmBackCardView: View {
                         
                         Button {
                             isNudgingOn = true
+                            counter += 1
                         } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
                                     .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.05)
-                                    .foregroundColor(.purple2)
+                                    .foregroundColor(.white)
                                     .shadow(radius: 1)
                                 Text("찌르기")
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.mainColor)
+                                    .font(.extraBold(15))
                             }
                         }
                         .padding(.bottom, 20)
@@ -78,7 +85,7 @@ struct AlarmBackCardView: View {
                     }
                     .padding(10)
                 )
-                .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.6)
+                .frame(width: .screenWidth * 0.85, height: .screenHeight * 0.63)
                 .offset(y: -40)
                 .padding(10)
         }

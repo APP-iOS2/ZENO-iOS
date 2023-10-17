@@ -19,26 +19,13 @@ struct AlarmAlertCheckBtnView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            Image(systemName: "xmark.circle")
-                .onTapGesture {
-                    isPresented = false
-                }
-                .foregroundStyle(.black)
-                .frame(width: 300, alignment: .trailing)
-                .zIndex(/*@START_MENU_TOKEN@*/1.0/*@END_MENU_TOKEN@*/)
-                .padding(.top, 16)
-                .padding(.trailing, 16)
-            
             VStack(spacing: 26) {
-                Image(systemName: imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30)
-                    .padding(.top, 30)
+                LottieView(lottieFile: "ticket")
+                    .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.1)
                 
                 Text("\(content)을 사용하시겠습니까 ?")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-                
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
+                    .offset(y: -20)
                 Divider()
                 
                 Text("잔여 \(content) : \(quantity)개")
@@ -46,14 +33,14 @@ struct AlarmAlertCheckBtnView: View {
                     .padding(.bottom, -10)
                 
                 Text("사용 : \(usingGoods)개")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
                 
                 HStack {
                     Button {
                         isPresented = false
                     } label: {
                         Text("취소")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                             .frame(maxWidth: .infinity)
                     }
                     .initialButtonBackgroundModifier(fontColor: .white, color: .gray)
@@ -68,7 +55,7 @@ struct AlarmAlertCheckBtnView: View {
                             .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                             .frame(maxWidth: .infinity)
                     }
-                    .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
+                    .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
                 }
             }
             .padding(.horizontal, 24)
@@ -95,7 +82,7 @@ struct AlarmAlertCheckBtnView_Previews: PreviewProvider {
             quantity: 20,
             usingGoods: 1
         ) {
-                // 아아
-            }
+            // 아아
+        }
     }
 }
