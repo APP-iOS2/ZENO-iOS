@@ -50,6 +50,7 @@ struct ZenoView: View {
                         .frame(width: .screenWidth * 0.88,
                                height: .screenHeight * 0.13)
                         .opacityAndWhite()
+                        .shadow(radius: 3)
                         
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
@@ -110,6 +111,7 @@ struct ZenoView: View {
                                     RoundedRectangle(cornerRadius: 30)
                                         .foregroundColor(.white)
                                         .opacity(0.6)
+                                        .shadow(radius: 3)
                                 )
                             }
                             .offset(y: -20)
