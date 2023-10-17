@@ -12,7 +12,7 @@ struct InformationButtonView: View {
     @State var isButtonTapped: Bool = false
     
     var body: some View {
-        HStack(spacing: 1) {
+        HStack(spacing: 3) {
             Button {
                 isButtonTapped.toggle()
             } label: {
@@ -24,16 +24,15 @@ struct InformationButtonView: View {
             if isButtonTapped {
                 HStack(spacing: 2) {
                     Text("제노 초성 확인권 잔여 횟수")
-                        .foregroundColor(Color.black)
-                        .font(.system(size: 10, weight: .thin))
+                        .foregroundColor(.primary)
                     Button {
                         isButtonTapped.toggle()
                     } label: {
                         Image(systemName: "x.circle")
-                            .font(.system(size: 10, weight: .thin))
-                            .foregroundColor(.black)
                     }
                 }
+                .font(.system(size: 10, weight: .thin))
+                .foregroundColor(.primary)
             }
         }
     }

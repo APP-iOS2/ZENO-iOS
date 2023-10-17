@@ -16,11 +16,12 @@ struct AlarmBackCardView: View {
     
     @Binding var isFlipped: Bool
     @Binding var chosung: String
-    
+
     @State private var isNudgingOn: Bool = false
     @State private var isNoneUser: Bool = false
     @State private var counter: Int = 0
-    
+    @State private var isDisabledNudge: Bool = false
+
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 10)
@@ -67,10 +68,10 @@ struct AlarmBackCardView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
                                     .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.05)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(isDisabledNudge ? .gray2 : .white)
                                     .shadow(radius: 1)
                                 Text("찌르기")
-                                    .foregroundColor(.mainColor)
+                                    .foregroundColor(isDisabledNudge ? .white: .mainColor)
                                     .font(.extraBold(15))
                             }
                         }
@@ -133,3 +134,4 @@ struct AlarmBackCardView_Previews: PreviewProvider {
         .environmentObject(UserViewModel())
     }
 }
+
