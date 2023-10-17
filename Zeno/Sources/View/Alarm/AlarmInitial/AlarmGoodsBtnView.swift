@@ -108,7 +108,7 @@ struct AlarmGoodsBtnView: View {
                 .background(
                     RoundedRectangle(cornerRadius: 30)
                         .fill(.white)
-                )
+            )
         )
     }
 }

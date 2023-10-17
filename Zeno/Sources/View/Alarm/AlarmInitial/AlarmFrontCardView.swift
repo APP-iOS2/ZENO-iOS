@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AlarmFrontCardView: View {
     @Binding var isFlipped: Bool
+    @State private var rotation: CGFloat = 0
     
     var body: some View {
         VStack {
@@ -31,14 +32,20 @@ struct AlarmFrontCardView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.purple3)
+                .fill(AngularGradient(gradient: Gradient(colors: [.mainColor, Color.ggullungColor]), center: .topLeading, angle: .degrees(180 + 20)))
                 .contentShape(Rectangle())
                 .frame(width: .screenWidth * 0.85, height: .screenHeight * 0.63)
                 .shadow(radius: 3, x: 5, y: 5)
         )
+        .rotationEffect(.degrees(rotation))
         .offset(y: -40)
         .opacity(isFlipped ? 0 : 1)
         .shadow(radius: 3)
+        .onAppear {
+            withAnimation(.spring().repeatForever(autoreverses: true)) {
+                rotation = 2
+            }
+        }
     }
 }
 
