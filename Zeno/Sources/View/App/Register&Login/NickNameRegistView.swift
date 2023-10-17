@@ -177,12 +177,8 @@ struct NickNameRegistView: View {
                         Spacer()
                         
                         /// 이용약관 보러가기
-                        Button {
-                            // 이용약관 뷰
-                        } label: {
-                            Image(systemName: "chevron.forward")
-                                .foregroundColor(.mainColor)
-                        }
+                        linkView("이용약관", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
+                        
                     }
                     .padding(.bottom,10)
                     /// 개인정보 처리방침 동의
@@ -203,18 +199,12 @@ struct NickNameRegistView: View {
                         Spacer()
                         
                         /// 개인정보처리방침 보러가기
-                        Button {
-                            // 개인정보 처리방침 동의
-                        } label: {
-                            Image(systemName: "chevron.forward")
-                                .foregroundColor(.mainColor)
-                        }
+                        linkView("개인정보처리방침", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
                     }
                     
                     Spacer()
 
                     /// 확인버튼
-                    ///
                     Button {
                         if koreaLangCheck(nameText) {
                             if nameText.count >= 2 {
@@ -241,7 +231,6 @@ struct NickNameRegistView: View {
             }
             .padding(.horizontal)
             Spacer()
-            
         }
         .contentShape(Rectangle())
         .hideKeyboardOnTap()
@@ -373,7 +362,27 @@ struct NickNameRegistView: View {
             print(#function, "이름변경 Update 실패했음. 다시 시도시키기\n\(error.localizedDescription)")
         }
     }
+    
+    private func rowView(_ label: String) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundColor(.mainColor)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
+    private func linkView(_ label: String, _ url: String) -> some View {
+        if let url = URL(string: url) {
+            Link(destination: url) {
+                rowView(label)
+            }
+        }
+    }
 }
+
 
 struct NickNameRegistView_Previews: PreviewProvider {
     static var previews: some View {
