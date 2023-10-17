@@ -34,10 +34,11 @@ struct AlarmFrontCardView: View {
                 .fill(Color.purple3)
                 .contentShape(Rectangle())
                 .frame(width: .screenWidth * 0.85, height: .screenHeight * 0.63)
+                .shadow(radius: 3, x: 5, y: 5)
         )
         .offset(y: -40)
         .opacity(isFlipped ? 0 : 1)
-        .shadow(radius: 3, x: 5, y: 5)
+        .shadow(radius: 3)
     }
 }
 
