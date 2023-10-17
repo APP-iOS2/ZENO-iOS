@@ -178,7 +178,7 @@ struct AlarmView: View {
                         )
                         .sheet(isPresented: $isPurchaseSheet, content: {
                             PurchaseView()
-                                .presentationDetents([.fraction(0.75)])
+                                .presentationDetents([.fraction(0.45)])
                                 .presentationDragIndicator(.visible)
                             })
                         

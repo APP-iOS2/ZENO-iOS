@@ -31,7 +31,6 @@ struct FinishZenoView: View {
                     } label: {
                         WideButton(buttonName: "제노하러가기", isplay: true)
                     }
-                    
                 } else {
                     Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
                         .boldAndOffset40()

@@ -60,7 +60,7 @@ struct AlarmGoodsBtnView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
+            .initialButtonBackgroundModifier(fontColor: .white, color: .purple2)
             
             Button {
                 primaryAction2()
@@ -70,7 +70,7 @@ struct AlarmGoodsBtnView: View {
                     Text(primaryButtonTitle2)
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
-                        .shadow(color: .purple, radius: 4)
+                        .shadow(color: .purple, radius: 3)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -88,7 +88,7 @@ struct AlarmGoodsBtnView: View {
                         .rotationEffect(.degrees(rotation))
                         .mask {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(lineWidth: 2)
+                                .stroke(lineWidth: 2.5)
                                 .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
                     }
                 }
@@ -116,8 +116,8 @@ struct AlarmGoodsBtnView: View {
 struct AlarmGoodsBtnView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmGoodsBtnView(isPresented: .constant(false),
-                          content1: "당신을 제노한 사람의 초성을",
-                          content2: "확인하시겠습니까 ?",
+                          content1: "당신을 답변으로 지목한 ",
+                          content2: "사람의 초성을 확인하시겠습니까 ?",
                           primaryButtonTitle1: "코인 사용",
                           primaryAction1: {},
                           primaryButtonTitle2: "초성 확인권 사용",

@@ -18,7 +18,7 @@ struct AlarmCoinShortageView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            Image(systemName: "xmark.circle")
+            Image(systemName: "xmark")
                 .onTapGesture {
                     isPresented = false
                 }
@@ -44,15 +44,14 @@ struct AlarmCoinShortageView: View {
                 }
                 Text(title)
                     .foregroundColor(.black)
-                    .font(.title2)
-                    .bold()
+                    .font(.extraBold(19))
                 
                 Divider()
                 
                 VStack {
                     Text(content)
                 }
-                .bold()
+                .font(.regular(13))
                 .foregroundColor(.black)
                 
                 Button {
@@ -60,8 +59,7 @@ struct AlarmCoinShortageView: View {
                     isPresented = false
                 } label: {
                     Text(primaryButtonTitle)
-                        .font(.title3)
-                        .bold()
+                        .font(.bold(14))
                         .frame(maxWidth: .infinity)
                 }
                 .initialButtonBackgroundModifier(fontColor: .white, color: .hex("6E5ABD"))
