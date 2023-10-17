@@ -97,7 +97,7 @@ struct AlarmChangingView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.mainColor, lineWidth: 1)
-                                )
+                            )
                         }
                     }
                 }
