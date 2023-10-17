@@ -29,7 +29,7 @@ struct TabBarView: View {
                 Spacer()
                 CustomTabView()
                     .frame(width: .screenWidth)
-                    .offset(y: CGFloat.screenHeight == 667 ? 20 : 0)
+                    .offset(y: .isIPhoneSE ? 20 : 0)
             }
         }
         .environmentObject(tabBarViewModel)
@@ -49,10 +49,10 @@ struct TabBarView: View {
             commViewModel.isJoinWithDeeplinkView = false
         }
         .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
+		.zenoWarning("성공적으로 매니저를 위임했습니다.", isPresented: $commViewModel.managerChangeWarning)
         .task {
             if let loginUser = userViewModel.currentUser {
-                print("fetch alarm and update user fcmtoken")
-                await alarmViewModel.fetchAlarm(showUserID: loginUser.id)
+                await alarmViewModel.fetchAlarmPagenation(showUserID: loginUser.id)
                 await userViewModel.updateUserFCMToken(fcmToken)
             }
         }

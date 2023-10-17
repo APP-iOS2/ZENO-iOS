@@ -39,42 +39,59 @@ struct CommSideBarView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 30) {
                     ForEach(SideMenu.allCases) { item in
-                        Button {
-                            isPresented = false
-                            switch item {
-                            case .memberMGMT:
-                                isSelectContent.toggle()
-                            case .inviteComm:
+                        if item == .inviteComm {
+                            Button {
+                                isPresented = false
+                                switch item {
+                                case .memberMGMT:
+                                    isSelectContent.toggle()
+                                case .inviteComm:
                                     commViewModel.kakao()
-                            case .delegateManager:
-                                if commViewModel.isCurrentCommManager {
-                                    isDelegateManagerView = true
+                                case .delegateManager:
+                                    if commViewModel.isCurrentCommManager {
+                                        isDelegateManagerView = true
+                                    }
                                 }
-                            }
-                        } label: {
-                            if item == .inviteComm {
+                            } label: {
                                 HStack {
                                     Text(item.title)
                                     Spacer()
                                     Image(systemName: "chevron.right")
-										.foregroundColor(.gray)
+                                        .foregroundColor(.gray)
                                 }
-                            } else {
-                                if commViewModel.isCurrentCommManager {
+                            }
+                        } else {
+                            if commViewModel.isCurrentCommManager {
+                                Button {
+                                    isPresented = false
+                                    switch item {
+                                    case .memberMGMT:
+                                        isSelectContent.toggle()
+                                    case .inviteComm:
+                                        commViewModel.kakao()
+                                    case .delegateManager:
+                                        if commViewModel.isCurrentCommManager {
+                                            isDelegateManagerView = true
+                                        }
+                                    }
+                                } label: {
                                     HStack {
                                         Text(item.title)
-										Spacer()
+                                        Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
-											.foregroundColor(.gray)
+                                            .foregroundColor(.gray)
                                     }
                                 }
                             }
                         }
-						.foregroundColor(.primary)
-						.font(.regular(14))
+                    }
+                    Button("시뮬레이터용 초대버튼") {
+                        commViewModel.shareText()
                     }
                 }
+                .foregroundColor(.primary)
+                .font(.regular(14))
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
@@ -125,7 +142,7 @@ struct CommSideBarView: View {
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
-            .padding(.bottom, CGFloat.screenHeight == 667 ? 10 : 0)
+            .padding(.bottom, .isIPhoneSE ? 10 : 0)
             .background(Color.purple2.opacity(0.4))
         }
         .fullScreenCover(isPresented: $isSettingPresented) {

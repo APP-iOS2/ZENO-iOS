@@ -26,9 +26,11 @@ struct AlarmView: View {
     @State private var usingCoin: Bool = false
     @State private var usingInitialTicket: Bool = false
     
+    @State private var topSafeArea: CGFloat = 0
+    
     var isBlur: Bool {
         return isShowPaymentSheet || usingCoin ||  usingInitialTicket ||
-                isLackingCoin || isLackingInitialTicket
+        isLackingCoin || isLackingInitialTicket
     }
     
     private var filterAlarmByCommunity: [Alarm] {
@@ -37,54 +39,91 @@ struct AlarmView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .top) {
                 if alarmViewModel.isFetchComplete == false {
                     ProgressView()
                 } else {
                     if commViewModel.joinedComm.isEmpty {
                         AlarmEmptyView()
                     } else {
-                        VStack {
-                            Text("홈")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
-                                .foregroundColor(.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                            
-                            AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                            
-                            ScrollView {
+                        ScrollView {
+                            VStack {
+                                Text("홈")
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                                    .foregroundColor(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                                    .zIndex(1000)
+                                    .clipped()
+                                GeometryReader { proxy in
+                                    let minY = proxy.frame(in: .global).minY
+                                    let offsetY = minY < topSafeArea ? minY > 0 ? topSafeArea - minY : topSafeArea + -minY : 0
+                                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
+                                        .zIndex(98)
+                                        .background(.background)
+                                        .offset(y: offsetY)
+                                }
+                                .shadow(color: .primary.opacity(0.1), radius: 3, y: 5)
                                 if filterAlarmByCommunity.isEmpty {
-                                    AlarmListEmptyView()
+                                    Spacer()
+                                        .frame(width: .screenWidth, height: .screenHeight * 0.9)
                                 } else {
-                                    LazyVStack {
-                                        ForEach(filterAlarmByCommunity) { alarm in
-                                            AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                                                .padding(.bottom, 4)
-                                                .padding(.horizontal)
-                                        }
-                                        .navigationDestination(isPresented: $isShowInitialView) {
-                                            if let selectAlarm {
-                                                AlarmChangingView(selectAlarm: selectAlarm)
+                                    VStack {
+                                        Spacer()
+                                            .frame(height: 115)
+                                        LazyVStack {
+                                            ForEach(filterAlarmByCommunity) { alarm in
+                                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                    .padding(.bottom, 4)
+                                                    .padding(.horizontal)
+                                                    .onAppear {
+                                                        Task {
+                                                            if isLastItem(alarm) {
+                                                                if let currentUser = userViewModel.currentUser {
+                                                                    await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                    print("======alarmViewModel.loadMoreData")
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                            }
+                                            .navigationDestination(isPresented: $isShowInitialView) {
+                                                if let selectAlarm {
+                                                    AlarmChangingView(selectAlarm: selectAlarm)
+                                                }
                                             }
                                         }
+                                        Spacer()
                                     }
-                                }
-                                // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
-                                Color.clear.frame(height: 80)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
-                            .refreshable {
-                                if let currentUser = userViewModel.currentUser {
-                                    Task {
-                                        //                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
-                                        await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                    // 스크린 높이 - 그룹셀 이미지높이 - topSafeArea - 그룹텍스트 - 그 외 여백 예상높이
+                                    .frame(
+                                        minHeight:
+                                            Bool.isIPhoneSE ?
+                                            .screenHeight - 60 - topSafeArea - 7 :
+                                                .screenHeight - 60 - topSafeArea - 10 - (.screenHeight * 0.035)
+                                    )
+                                    .zIndex(-99)
+                                    if alarmViewModel.isLoading {
+                                        ProgressView()
                                     }
                                 }
                             }
                         }
-                        
-                        //                    .shadow(color: .ggullungColor.opacity(0.4), radius: 5, y: 3)
+                        .background {
+                            if filterAlarmByCommunity.isEmpty {
+                                VStack(alignment: .center) {
+                                    AlarmListEmptyView()
+                                        .offset(y: -.screenHeight * 0.05)
+                                }
+                            }
+                        }
+                        .refreshable {
+                            if let currentUser = userViewModel.currentUser {
+                                Task {
+                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                }
+                            }
+                        }
                         .blur(radius: isBlur ? 1.5 : 0)
                         .goodsAlert(
                             isPresented: $isShowPaymentSheet,
@@ -158,21 +197,29 @@ struct AlarmView: View {
                         )
                         .sheet(isPresented: $isPurchaseSheet, content: {
                             PurchaseView()
-                                .presentationDetents([.fraction(0.75)])
+                                .presentationDetents([.fraction(0.4)])
                                 .presentationDragIndicator(.visible)
                             })
-                        
                         VStack {
+                            GeometryReader { proxy in
+                                Color.primary
+                                    .colorInvert()
+                                    .frame(height: proxy.safeAreaInsets.top, alignment: .top)
+                                    .ignoresSafeArea()
+                                    .onAppear {
+                                        topSafeArea = proxy.safeAreaInsets.top
+                                    }
+                            }
                             Spacer()
                             
                             Button(action: {
-                                if selectAlarm != nil {
+                                if selectAlarm != nil && selectAlarm?.zenoID != "nudge" {
                                     isShowPaymentSheet = true
                                 }
                             }, label: {
-                                WideButton(buttonName: "초성확인하기", systemImage: "", isplay: selectAlarm != nil ? true : false)
+                                WideButton(buttonName: "초성확인하기", systemImage: "", isplay: selectAlarm != nil && selectAlarm?.zenoID != "nudge" ? true : false)
                             })
-                            .disabled(selectAlarm == nil || isBlur ? true : false)
+                            .disabled(selectAlarm?.zenoID == "nudge" || selectAlarm == nil || isBlur ? true : false)
                             .blur(radius: isBlur ? 1.5 : 0)
                         }
                     }
@@ -180,8 +227,25 @@ struct AlarmView: View {
             }
         }
         .onChange(of: selectedCommunityId) { _ in
+            if let currentUser = userViewModel.currentUser {
+                Task {
+                    if selectedCommunityId.isEmpty {
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
+                    } else {
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                    }
+                }
+            }
+            alarmViewModel.isPagenationLast = false
             selectAlarm = nil
         }
+    }
+    
+    private func isLastItem(_ alarm: Alarm) -> Bool {
+        if let lastAlarm = alarmViewModel.alarmArray.last {
+            return lastAlarm.id == alarm.id
+        }
+        return false
     }
 }
 

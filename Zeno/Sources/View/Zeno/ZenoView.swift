@@ -50,13 +50,13 @@ struct ZenoView: View {
                         .frame(width: .screenWidth * 0.88,
                                height: .screenHeight * 0.13)
                         .opacityAndWhite()
+                        .shadow(radius: 3)
                         
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
-                               , height: .screenHeight * 0.32)
+                        .frame(width: .screenWidth * 0.95, height: .screenHeight * 0.32)
             
                     Spacer()
                     
@@ -64,7 +64,6 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(myFriends) { user in
                             Button {
-                                isAnimation.toggle()
                                 /// 진동
                                 HapticManager.instance.impact(style: .soft)
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
@@ -110,6 +109,7 @@ struct ZenoView: View {
                                     RoundedRectangle(cornerRadius: 30)
                                         .foregroundColor(.white)
                                         .opacity(0.6)
+                                        .shadow(radius: 3)
                                 )
                             }
                             .offset(y: -20)

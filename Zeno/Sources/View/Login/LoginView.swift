@@ -48,7 +48,7 @@ struct LoginView: View {
                         } label: {
                             loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
                         }
-                        .padding(.bottom, CGFloat.screenHeight == 667 ? 30 : 50)
+                        .padding(.bottom, .isIPhoneSE ? 30 : 50)
                     }
                     .frame(width: .screenWidth, height: .screenHeight)
                 }

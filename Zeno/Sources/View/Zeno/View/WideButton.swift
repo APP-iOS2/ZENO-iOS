@@ -30,7 +30,7 @@ struct WideButton: View {
         .cornerRadius(15)
         .shadow(radius: 1)
         .padding(.bottom, 20)
-        .padding(.bottom, CGFloat.screenHeight == 667 ? 10 : 0)
+        .padding(.bottom, .isIPhoneSE ? 10 : 0)
     }
 }
 

@@ -9,13 +9,15 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
+import FirebaseFirestore
+
 
 final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     // LoginStatusDelegate 프로토콜 메서드. -> 여기선 사용안함.
     func login() async -> Bool {
         return false
     }
-    
+  
     /// 파이어베이스 Auth의 User
     /// private let userSession = Auth.auth().currentUser
     /// 지금 로그인중인 firebase Auth에 해당 하는 유저의 User 객체 정보 가져오기
@@ -254,7 +256,8 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// BuddyList에서 친구 객체 정보 반환 함수
     @MainActor
     func returnFriendInfo(selectedGroupID: String) {
-        for friend in self.returnBuddyList(selectedGroupID: selectedGroupID) {
+        self.friendInfo = []
+        for friend in self.returnBuddyList(selectedGroupID: selectedGroupID).removeDuplicates() {
             db.collection("User").document(friend).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()

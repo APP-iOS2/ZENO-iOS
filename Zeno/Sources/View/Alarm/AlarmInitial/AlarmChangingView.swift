@@ -33,7 +33,7 @@ struct AlarmChangingView: View {
                     .opacity(isFlipped ? 0 : 1)
                 
                 LottieView(lottieFile: "click")
-                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
+                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.9)
                     .offset(x: .screenWidth/3, y: .screenHeight/4)
                     .opacity(isFlipped ? 0 : 1)
                 
@@ -44,6 +44,7 @@ struct AlarmChangingView: View {
             }
             .onTapGesture {
                 withAnimation {
+                    HapticManager.instance.impact(style: .rigid)
                     isFlipped = true
                 }
             }
@@ -82,18 +83,6 @@ struct AlarmChangingView: View {
                             Text("Back")
                         }
                     }
-//                    .alert(isPresented: $backAlert) {
-//                        let firstButton = Alert.Button.destructive(Text("취소")) {
-//                            backAlert = false
-//                        }
-//                        let secondButton = Alert.Button.default(Text("돌아가기")) {
-//                            dismiss()
-//                            backAlert = false
-//                        }
-//                        return Alert(title: Text("이 화면을 나가면 다시 들어올 수 없습니다."),
-//                                     message: Text("돌아가시겠습니까 ?"),
-//                                     primaryButton: firstButton, secondaryButton: secondButton)
-//                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -108,7 +97,7 @@ struct AlarmChangingView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.mainColor, lineWidth: 1)
-                                )
+                            )
                         }
                     }
                 }

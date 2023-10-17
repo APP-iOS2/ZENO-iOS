@@ -53,7 +53,7 @@ struct PurchaseCellSndView: View {
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.purple3)
+                            .fill(Color.white)
                             .frame(width: .screenWidth * 0.4, height: .screenWidth * 0.1)
                     )
                 }
@@ -63,7 +63,7 @@ struct PurchaseCellSndView: View {
         .frame(width: .screenWidth, height: .screenHeight * 0.3)
         .background(
             RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.primary, lineWidth: 2)
+                .foregroundColor(.mainColor)
         )
     }
 }

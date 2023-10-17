@@ -14,40 +14,56 @@ struct CommListCell: View {
 	
 	let comm: Community
 	
+	let action: () -> Void
+	
 	@State private var isShowingCommRequestView = false
 	
 	var body: some View {
-		VStack {
-			HStack {
-				VStack {
-					// MARK: - 이미지 수정해야함
-					Image("yagom")
-						.resizable()
-						.frame(width: 70, height: 70)
-						.overlay(
-							RoundedRectangle(cornerRadius: 6)
-								.stroke(Color(uiColor: .systemGray6), lineWidth: 1)
-						)
-				}
-				.padding(.trailing)
-				VStack(alignment: .leading, spacing: 2) {
-					Text("\(comm.name)")
-						.lineLimit(1)
-					Text("\(comm.description)")
-						.lineLimit(1)
-						.font(.footnote)
-						.foregroundColor(.gray)
-					Text("\(comm.joinMembers.count) / \(comm.personnel)")
-						.font(.caption)
-						.foregroundColor(.gray)
-				}
-				Spacer()
-			}
-			.padding()
-			Divider()
-		}
-		.onTapGesture {
+		Button {
+			action()
+			commViewModel.addSearchTerm(comm.name)
 			isShowingCommRequestView = true
+		} label: {
+			VStack {
+					HStack(alignment: .center) {
+						Circle()
+							.stroke()
+							.frame(width: 35, height: 35)
+							.background(
+								ZenoKFImageView(comm)
+									.clipShape(Circle())
+							)
+						VStack(alignment: .leading, spacing: 4) {
+							HStack(alignment: .center) {
+								Text("\(comm.name)")
+									.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+									.lineLimit(1)
+									.foregroundColor(.primary)
+								HStack(alignment: .lastTextBaseline, spacing: 1) {
+									Image(systemName: "person.2.fill")
+										.font(.regular(11))
+									Text("\(comm.joinMembers.count)")
+								}
+								.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
+								.foregroundColor(Color(uiColor: .systemGray3))
+							}
+							if !comm.description.isEmpty {
+								Text("\(comm.description)")
+									.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+									.foregroundColor(.gray)
+									.lineLimit(1)
+							}
+						}
+						.padding(.leading, 5)
+						Spacer()
+						Image(systemName: "chevron.forward")
+							.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+							.foregroundColor(.gray)
+					}
+					.groupCell()
+					.padding(.horizontal)
+					.padding(.top, 2)
+			}
 		}
 		.fullScreenCover(isPresented: $isShowingCommRequestView) {
 			CommRequestView(isShowingCommRequestView: $isShowingCommRequestView,

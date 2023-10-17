@@ -25,6 +25,10 @@ struct NickNameRegistView: View {
     @State private var isConfirmSheet: Bool = false
     @State private var nextNavigation: Bool = false
     
+    // MARK: 10.17 추가
+    @State private var 이용약관: Bool = false
+    @State private var 개인정보처리방침: Bool = false
+  
     private var checkingText: String {
         if nameText.count >= 2 {
             return "한글로 입력바랍니다. 영어이름인경우 발음대로 입력. 공백없이 입력."
@@ -63,23 +67,10 @@ struct NickNameRegistView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 30) {
-                Text("Zeno에 오신걸 환영합니다.")
+                Text("제노 회원가입")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
                 Spacer()
-                Button {
-                    if koreaLangCheck(nameText) {
-                        if nameText.count >= 2 {
-                            isConfirmSheet.toggle()
-
-                        } else {
-                            isChecking.toggle()
-                        }
-                    }
-                } label: {
-                    Text("확인")
-                }
-                .disabled(nameText.isEmpty)
             }
-            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
             .padding()
             .tint(.black)
             
@@ -104,14 +95,21 @@ struct NickNameRegistView: View {
                 .onTapGesture {
                     isImagePicker.toggle()
                 }
-            
+            HStack {
+                Spacer()
+                Text("필수")
+                    .font(.thin(10))
+                    .foregroundColor(.red)
+                    .padding(.trailing)
+                    .offset(y: 5)
+            }
             RegistCustomTF(titleText: "* 이름",
                            placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
                            customText: $nameText,
                            isNotHanguel: $isChecking,
                            textMaxCount: 5,
                            isFocusing: true)
-            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+            .font(.regular(16))
             
             if isChecking {
                 Text(checkingText)
@@ -120,28 +118,118 @@ struct NickNameRegistView: View {
                     .padding(.horizontal)
             }
             
+            HStack {
+                Text("* 성별")
+                    .frame(width: 60, alignment: .leading)
+                    .font(.regular(16))
+                Picker("Gender", selection: $gender) {
+                    ForEach(Gender.allCases, id: \.self) { gd in
+                        Text(gd.toString)
+                            .font(.regular(12))
+                            .tag(gd)
+                    }
+                }
+                .tint(.black)
+                Spacer()
+                Text("필수")
+                    .font(.thin(10))
+                    .foregroundColor(.red)
+            }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+            .padding()
+            
             RegistCustomTF(titleText: "한줄소개",
                            placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
                            customText: $descriptionText,
                            isNotHanguel: .constant(false),
                            textMaxCount: 50,
                            isFocusing: false)
-            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+            .font(.regular(13))
             
-            HStack {
-                Text("* 성별")
-                    .frame(width: 60, alignment: .leading)
-                Picker("Gender", selection: $gender) {
-                    ForEach(Gender.allCases, id: \.self) { gd in
-                        Text(gd.toString)
-                            .tag(gd)
-                    }
+            Spacer()
+            
+            // MARK: 10.17 추가
+            Group {
+                Spacer()
+                
+                HStack {
+                    Text("회원가입을 위해 아래의 이용약관과 개인정보 처리방침에 동의해주세요")
+                        .font(.thin(13))
                 }
-                .tint(.black)
+                Divider()
+                    .padding()
+                
+                VStack(alignment: .leading) {
+                    /// 이용약관 동의
+                    HStack {
+                        Button {
+                            이용약관.toggle()
+                        } label: {
+                            HStack {
+                                Image(systemName: 이용약관 ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(.mainColor)
+                                Text("이용약관")
+                                Text("(필수)")
+                                    .foregroundColor(.red)
+                            }
+                            .foregroundColor(.primary)
+                        }
+                        Spacer()
+                        
+                        /// 이용약관 보러가기
+                        linkView("이용약관", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
+                        
+                    }
+                    .padding(.bottom,10)
+                    /// 개인정보 처리방침 동의
+                    HStack {
+                        Button {
+                            개인정보처리방침.toggle()
+                        } label: {
+                            HStack {
+                                Image(systemName: 개인정보처리방침 ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(.mainColor)
+                                Text("개인정보 처리방침")
+                                Text("(필수)")
+                                    .foregroundColor(.red)
+                            }
+                            .foregroundColor(.primary)
+                        }
+                        
+                        Spacer()
+                        
+                        /// 개인정보처리방침 보러가기
+                        linkView("개인정보처리방침", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
+                    }
+                    
+                    Spacer()
+
+                    /// 확인버튼
+                    Button {
+                        if koreaLangCheck(nameText) {
+                            if nameText.count >= 2 {
+                                isConfirmSheet.toggle()
+                            } else {
+                                isChecking.toggle()
+                            }
+                        }
+                    } label: {
+                        Rectangle()
+                            .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray2 : .mainColor)
+                            .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.06)
+                            .cornerRadius(10)
+                            .overlay {
+                                Text("회원가입")
+                                    .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray3 : .white)
+                                    .font(.bold(17))
+                        }
+                    }
+                    .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
+                    .padding(.top,30)
+                }
+                .font(.thin(16))
             }
-            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
-            .padding()
-            
+            .padding(.horizontal)
             Spacer()
         }
         .contentShape(Rectangle())
@@ -272,6 +360,25 @@ struct NickNameRegistView: View {
         } catch {
             // toast를 띄워주면 될듯.
             print(#function, "이름변경 Update 실패했음. 다시 시도시키기\n\(error.localizedDescription)")
+        }
+    }
+    
+    private func rowView(_ label: String) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundColor(.mainColor)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
+    private func linkView(_ label: String, _ url: String) -> some View {
+        if let url = URL(string: url) {
+            Link(destination: url) {
+                rowView(label)
+            }
         }
     }
 }

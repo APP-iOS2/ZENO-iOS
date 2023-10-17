@@ -113,7 +113,6 @@ struct CommListView: View {
                         }
                         .groupCell()
 						.tint(.mainColor)
-						.shadow(color: .mainColor, radius: 1)
                         .padding(2)
                     }
                     .padding()
@@ -137,7 +136,7 @@ extension CommListView {
 		.frame(maxWidth: .infinity)
 		.padding(.horizontal)
 		.padding(.vertical, 11)
-		.background(Color(uiColor: .systemGray6))
+        .background(HierarchicalShapeStyle.quaternary)
 		.cornerRadius(10)
 		.padding(.horizontal)
 		.padding(.top)
