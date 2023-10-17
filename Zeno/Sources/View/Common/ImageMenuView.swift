@@ -22,6 +22,7 @@ struct ImageMenuView: View {
                 .onTapGesture {
                     isPresented = false
                 }
+				.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 30) {
                 Text(title)
                     .font(.headline)
