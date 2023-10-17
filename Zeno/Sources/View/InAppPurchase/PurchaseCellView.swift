@@ -28,6 +28,12 @@ struct PurchaseCellView: View {
                     Text("$\(itemPrice)")
                         .font(.extraBold(30))
                         .shadow(radius: 2)
+                        .padding(.trailing, 1)
+                        .overlay {
+                            LottieView(lottieFile: "dollar")
+                                .frame(width: .screenWidth * 0.1, height: .screenHeight * 0.1)
+                                .offset(x: -.screenWidth * 0.15, y: -.screenWidth * 0.1)
+                        }
                     Text("/ \(itemQuantity)회")
                         .font(.regular(10))
                 }
