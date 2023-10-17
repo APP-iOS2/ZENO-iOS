@@ -13,7 +13,6 @@ struct MypageSettingView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
 
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             ScrollView(showsIndicators: false) {
@@ -33,20 +32,6 @@ struct MypageSettingView: View {
                     linkView("알림 설정", UIApplication.openSettingsURLString)
                 }
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
-                
-                Button {
-                    Task {
-                        await LoginManager(delegate: mypageVM).logout()
-                    }
-                } label: {
-                    HStack {
-                        Text("로그아웃")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Image(systemName: "chevron.right")
-                    }
-                }
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
-                .padding()
                 
                 Divider()
               
@@ -71,11 +56,11 @@ struct MypageSettingView: View {
                 } label: {
                     Text("회원탈퇴")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.red)
-                    Image(systemName: "chevron.right")
+                        .foregroundStyle(Color.red)
                 }
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
-                .padding()
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
+                .padding(.horizontal)
+                .padding(.top, 10)
             }
             .foregroundColor(.primary)
             .alert(isPresented: $showAlert) {
@@ -87,13 +72,13 @@ struct MypageSettingView: View {
                             print("회원 로그아웃됨")
                             Task {
                                 await LoginManager(delegate: mypageVM).logout()                               
-                                userViewModel.isNeedLogin = true
+                                SignStatusObserved.shared.isNeedLogin = true
                             }
                         } else if alertMessage == "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다." {
                             print("회원탈퇴됨")
                             Task {
                                 await LoginManager(delegate: mypageVM).memberRemove()
-                                userViewModel.isNeedLogin = true
+                                SignStatusObserved.shared.isNeedLogin = true
                             }
                         }
                     },

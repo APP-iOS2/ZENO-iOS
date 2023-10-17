@@ -178,9 +178,8 @@ struct NickNameRegistView: View {
                         
                         /// 이용약관 보러가기
                         linkView("이용약관", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
-                        
                     }
-                    .padding(.bottom,10)
+                    .padding(.bottom, 10)
                     /// 개인정보 처리방침 동의
                     HStack {
                         Button {
@@ -225,13 +224,14 @@ struct NickNameRegistView: View {
                         }
                     }
                     .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
-                    .padding(.top,30)
+                    .padding(.top, 30)
                 }
                 .font(.thin(16))
             }
             .padding(.horizontal)
             Spacer()
         }
+        .opacity(nextNavigation ? 0.0 : 1.0)
         .contentShape(Rectangle())
         .hideKeyboardOnTap()
         .overlay(
@@ -257,6 +257,10 @@ struct NickNameRegistView: View {
                 .padding(.top, 40)
             }
             .opacity(isProgressLoading ? 1.0 : 0.0)
+        )
+        .overlay(
+            OnboardingMainView()
+                .opacity(nextNavigation ? 1.0 : 0.0)
         )
         .sheet(isPresented: $isConfirmSheet, content: {
             VStack(alignment: .leading, spacing: 20) {
@@ -294,7 +298,11 @@ struct NickNameRegistView: View {
                         Task {
                             isConfirmSheet.toggle()
                             await dataUpdate()
-                            dismiss()
+                            withAnimation(.easeOut(duration: 2.0)) {
+                                nextNavigation = true
+                            }
+//                            OnboardingMainView에서 dismiss해준다.
+//                            dismiss()
                         }
                     } label: {
                         Text("확인")
@@ -317,9 +325,6 @@ struct NickNameRegistView: View {
         })
         .onAppear {
             getUserData()
-        }
-        .navigationDestination(isPresented: $nextNavigation) {
-            OnboardingMainView()
         }
     }
     
