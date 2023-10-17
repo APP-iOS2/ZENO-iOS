@@ -56,8 +56,7 @@ struct ZenoView: View {
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
-                               , height: .screenHeight * 0.32)
+                        .frame(width: .screenWidth * 0.95, height: .screenHeight * 0.32)
             
                     Spacer()
                     
@@ -65,7 +64,6 @@ struct ZenoView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(myFriends) { user in
                             Button {
-                                isAnimation.toggle()
                                 /// 진동
                                 HapticManager.instance.impact(style: .soft)
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함

@@ -19,13 +19,15 @@ struct AlarmAlertCheckBtnView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VStack(spacing: 26) {
-                LottieView(lottieFile: "Coin")
+            VStack(alignment: .center, spacing: 26) {
+                LottieView(lottieFile: "shine")
                     .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.1)
                 
                 Text("\(content)을 사용하시겠습니까 ?")
+                    .multilineTextAlignment(.center)
                     .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
                     .offset(y: -20)
+                
                 Divider()
                 
                 Text("잔여 \(content) : \(quantity)개")
