@@ -54,10 +54,17 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    Text(primaryButtonTitle1)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
-                        .bold()
-                        .frame(maxWidth: .infinity)
+                    HStack {
+                        Image("pointCoin")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .offset(x: .screenWidth * 0.1)
+                        Text(primaryButtonTitle1)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                    }
                 }
             }
             .initialButtonBackgroundModifier(fontColor: .white, color: .purple2)

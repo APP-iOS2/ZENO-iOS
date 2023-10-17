@@ -9,7 +9,6 @@
 import SwiftUI
 import ConfettiSwiftUI
 
-// MARK: ZVM에 넣어야함
 enum PlayStatus {
     case success
     case lessThanFour
@@ -17,6 +16,7 @@ enum PlayStatus {
 }
 
 struct SelectCommunityVer2: View {
+    
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject private var zenoViewModel = ZenoViewModel()
@@ -30,6 +30,7 @@ struct SelectCommunityVer2: View {
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
     @State private var dragWidth: CGFloat = 0
+    @State private var firstSelected: Bool = false
     
     var body: some View {
         if commViewModel.joinedComm.isEmpty {
@@ -46,8 +47,8 @@ struct SelectCommunityVer2: View {
                                 .onChange(of: currentIndex) { _ in
                                     withAnimation {
                                         ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                    }
                                 }
+                            }
                         }
                     }
                     .frame(height: .screenHeight * 0.35)

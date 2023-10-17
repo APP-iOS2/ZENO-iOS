@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct OnboardingZenoExView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     @Binding var showNextView: Bool
     
     @State var isExpanded = false

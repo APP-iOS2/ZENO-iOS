@@ -76,6 +76,7 @@ struct AlarmBackCardView: View {
                                     .font(.extraBold(15))
                             }
                         }
+                        .disabled(isDisabledNudge)
                         .padding(.bottom, 20)
                         .alert("찌르기가 허용되지 않는 유저입니다. ", isPresented: $isNoneUser) {
                             Button {
@@ -101,6 +102,7 @@ struct AlarmBackCardView: View {
             Task {
                 await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
             }
+            isDisabledNudge = true
         }
     }
     

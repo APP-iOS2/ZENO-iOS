@@ -10,7 +10,7 @@ import SwiftUI
 
 enum UserChoice: String, CaseIterable {
     case firends = "친구 목록"
-    case badge = "득표 현황"
+    case badge = "뱃지 현황"
 }
 
 struct GroupSelectView: View {
@@ -31,7 +31,6 @@ struct GroupSelectView: View {
                                         .frame(minWidth: UIScreen.main.bounds.width / 2)
                                 }
                                 .frame(height: 40)
-//                                .font(.system(size: 15, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
                                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
                                 .fontWeight(choiced.rawValue == userSelected.rawValue ? .bold : .thin)
                                 .foregroundColor(.primary)
