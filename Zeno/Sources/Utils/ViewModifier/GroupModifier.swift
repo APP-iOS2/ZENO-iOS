@@ -15,7 +15,10 @@ struct GroupCellModifier: ViewModifier {
             .padding()
             .background(.background)
             .cornerRadius(10)
-            .shadow(color: .mainColor, radius: 1)
+			.overlay(RoundedRectangle(cornerRadius: 10)
+				.stroke(Color.mainColor.opacity(0.9), lineWidth: 1)
+				  )
+			.shadow(color: .gray, radius: 1)
     }
 }
 

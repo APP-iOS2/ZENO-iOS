@@ -23,33 +23,36 @@ struct CommRequestView: View {
 	var body: some View {
 		NavigationStack {
 			VStack {
-				Image("yagom")
-					.resizable()
-					.frame(maxWidth: UIScreen.main.bounds.width,
-						   maxHeight: UIScreen.main.bounds.width)
-					.overlay(
-						RoundedRectangle(cornerRadius: 6)
-							.stroke(Color(uiColor: .systemGray6), lineWidth: 1)
-					)
-					.padding()
-					.padding(.vertical)
-				VStack(alignment: .leading, spacing: 3) {
+				Spacer()
+				Spacer()
+				// 이미지
+				ZenoKFImageView(comm)
+					.frame(maxWidth: .screenWidth * 0.8, maxHeight: .screenWidth * 0.8)
+					.clipShape(Circle())
+					.overlay {
+						Circle().stroke(.gray, lineWidth: 2)
+					}
+					.shadow(radius: 7)
+					.padding(20)
+				// 커뮤니티 설명
+				Spacer()
+				VStack(alignment: .leading, spacing: 7) {
 					Text(comm.name)
-						.font(.title2)
-						.fontWeight(.semibold)
+						.font(.extraBold(24))
 						.lineLimit(2)
-						.padding(.horizontal)
-					Text(comm.description)
-						.lineLimit(nil)
-						.padding(.horizontal)
-						.padding(.top)
-					Text("\(comm.joinMembers.count) / \(comm.personnel) | 개설일 \(comm.createdAt.convertDate)")
-						.font(.footnote)
-						.foregroundColor(.gray)
-						.padding(.horizontal)
+						.padding(.vertical, 20)
+					Section {
+						Text(comm.description)
+							.lineLimit(nil)
+							.font(.regular(18))
+						Text("\(comm.joinMembers.count) / \(comm.personnel) | 개설일 \(comm.createdAt.convertDate)")
+							.font(.thin(14))
+							.foregroundColor(.gray)
+					}
 				}
 				.frame(maxWidth: .infinity, alignment: .leading)
-				Spacer()
+				.padding(20)
+				
 				Button {
 					throttle.run {
 						Task {
@@ -69,8 +72,8 @@ struct CommRequestView: View {
 						Rectangle()
 							.frame(width: .screenWidth * 0.9, height: .screenHeight * 0.07)
 							.cornerRadius(15)
-							.foregroundColor(aplicationStatus ? .gray : .purple2)
-							.opacity(0.5)
+							.foregroundColor(aplicationStatus ? .gray : .mainColor)
+							.opacity(0.8)
 							.shadow(radius: 3)
 						Image(systemName: "paperplane")
 							.font(.system(size: 21))
@@ -81,6 +84,7 @@ struct CommRequestView: View {
 							.foregroundColor(aplicationStatus ? .gray : .white)
 					}
 					.offset(y: -20)
+					.padding(.top, 30)
 				}
 				.disabled(aplicationStatus)
 			}
@@ -91,6 +95,7 @@ struct CommRequestView: View {
 						isShowingCommRequestView = false
 					} label: {
 						Image(systemName: "xmark")
+							.foregroundColor(.primary)
 					}
 				}
 			}
@@ -101,7 +106,7 @@ struct CommRequestView: View {
 struct CommReqestView_Previews: PreviewProvider {
 	static var previews: some View {
 		CommRequestView(isShowingCommRequestView: .constant(true), aplicationStatus: true, comm: Community.dummy[0])
-            .environmentObject(UserViewModel())
-            .environmentObject(CommViewModel())
+			.environmentObject(UserViewModel())
+			.environmentObject(CommViewModel())
 	}
 }
