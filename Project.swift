@@ -18,6 +18,8 @@ let infoPlist: [String: InfoPlist.Value] = [
         "kakaolink",
         "kakao$(KAKAO_APP_KEY)"
     ],
+    "NSCameraUsageDescription": "사진 및 동영상 촬영을 위한 카메라 사용 권한",
+    "NSPhotoLibraryUsageDescription": "사진 및 동영상 첨부를 위한 앨범 사용 권한",
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
