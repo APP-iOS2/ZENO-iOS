@@ -50,24 +50,27 @@ struct PurchaseView: View {
                              itemPrice: "1.99",
                              purchaseAction: {
                 Task {
-                    do {
-                        let product = iAPVM.products[0]
-                        let purchaseResult = try await iAPVM.purchase(product)
-                        
-                        if await purchaseResult?.finish() != nil {
-                            switch purchaseResult?.productID {
-                            case "initialCheck":
-                                await userVM.updateUserInitialCheck(to: 10)
-                                dismiss()
-                            case "megaphone":
-                                await userVM.updateUserMegaphone(to: 1)
-                                dismiss()
-                            default:
-                                break
+                    if let product = iAPVM.products.last ?? iAPVM.products.first {
+                        do {
+                            let purchaseResult = try await iAPVM.purchase(product)
+                            
+                            if await purchaseResult?.finish() != nil {
+                                switch purchaseResult?.productID {
+                                case "initialCheck":
+                                    await userVM.updateUserInitialCheck(to: 10)
+                                    dismiss()
+                                case "megaphone":
+                                    await userVM.updateUserMegaphone(to: 1)
+                                    dismiss()
+                                default:
+                                    break
+                                }
                             }
+                        } catch {
+                            print(error)
                         }
-                    } catch {
-                        print(error)
+                    } else {
+                        print("Products not available")
                     }
                 }
             })
