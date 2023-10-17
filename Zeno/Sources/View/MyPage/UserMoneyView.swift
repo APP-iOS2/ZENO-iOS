@@ -54,13 +54,6 @@ struct UserMoneyView: View {
             .frame(maxWidth: .infinity/3)
         }
         .padding(10)
-//        .background(Color.purple2)
-//        .overlay(
-//            RoundedRectangle(cornerRadius: 6)
-//                .stroke(Color.purple2, lineWidth: 1)
-//        )
-        
-//        .clipShape(RoundedRectangle(cornerRadius: 10))
         .foregroundColor(.primary)
     }
 }

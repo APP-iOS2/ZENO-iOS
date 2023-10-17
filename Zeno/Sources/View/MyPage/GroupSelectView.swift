@@ -31,7 +31,6 @@ struct GroupSelectView: View {
                                         .frame(minWidth: UIScreen.main.bounds.width / 2)
                                 }
                                 .frame(height: 40)
-//                                .font(.system(size: 15, weight: choiced.rawValue == userSelected.rawValue ? .bold : .thin))
                                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
                                 .fontWeight(choiced.rawValue == userSelected.rawValue ? .bold : .thin)
                                 .foregroundColor(.primary)

@@ -56,10 +56,10 @@ struct MyPageMain: View {
     }
     
     private func getUserData() {
-        self.name = mypageViewModel.userInfo?.name ?? "박서연"
+        self.name = mypageViewModel.userInfo?.name ?? ""
         self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
         self.gender = mypageViewModel.userInfo?.gender ?? .male
-        self.description = mypageViewModel.userInfo?.description ?? "한줄소개테스트입니당 여러줄이면 어떻게 되는지 모르겠어요. 글자수 제한은 50자로 해도 될것 같아요!"
+        self.description = mypageViewModel.userInfo?.description ?? ""
         self.showInitial = mypageViewModel.userInfo?.showInitial ?? 0
     }
     
@@ -125,8 +125,8 @@ struct MyPageMain: View {
                 await mypageViewModel.getUserInfo()
                 getUserData()
                 await mypageViewModel.fetchAllAlarmData()
-                print("⏰⏰ \(mypageViewModel.allAlarmData)")
-                print("😈😈 \(mypageViewModel.zenoStringAll)")
+//                print("⏰⏰ \(mypageViewModel.allAlarmData)")
+//                print("😈😈 \(mypageViewModel.zenoStringAll)")
                 mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)
@@ -135,6 +135,8 @@ struct MyPageMain: View {
                 Task {
                     await mypageViewModel.getUserInfo()
                     getUserData()
+                    await mypageViewModel.fetchAllAlarmData()
+                    mypageViewModel.zenoStringCalculator()
                 }
             }
         }
