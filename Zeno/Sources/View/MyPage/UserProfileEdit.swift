@@ -139,7 +139,7 @@ struct UserProfileEdit: View {
                     Text("확인")
                 }
                 .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
-                .tint(.black)
+                .tint(.primary)
             }
         }
         .overlay(

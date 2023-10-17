@@ -9,9 +9,10 @@
 import SwiftUI
 
 struct MypageSettingView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject var mypageVM: MypageViewModel
     @State private var showAlert = false
     @State private var alertMessage = ""
+
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -33,14 +34,25 @@ struct MypageSettingView: View {
                 }
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
                 
-                Divider()
                 Button {
                     Task {
-//                        await userViewModel.logoutWithKakao()
-//                        userViewModel.isNeedLogin = true
-                        showAlert = true
-                        alertMessage = "로그아웃하시겠습니까?"
+                        await LoginManager(delegate: mypageVM).logout()
                     }
+                } label: {
+                    HStack {
+                        Text("로그아웃")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.right")
+                    }
+                }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                .padding()
+                
+                Divider()
+              
+                Button {
+                        showAlert = true
+                        alertMessage = "로그아웃하시겠습니까?"                    
                 } label: {
                     HStack {
                         Text("로그아웃")
@@ -52,13 +64,10 @@ struct MypageSettingView: View {
                 }
                 
                 Divider()
+                      
                 Button {
-                    Task {
-//                        await userViewModel.deleteUser()
-//                        userViewModel.isNeedLogin = true
-                        showAlert = true
-                        alertMessage = "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다."
-                    }
+                      showAlert = true
+                      alertMessage = "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다."                    
                 } label: {
                     Text("회원탈퇴")
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -77,13 +86,13 @@ struct MypageSettingView: View {
                         if alertMessage == "로그아웃하시겠습니까?" {
                             print("회원 로그아웃됨")
                             Task {
-                                await userViewModel.logoutWithKakao()
+                                await LoginManager(delegate: mypageVM).logout()                               
                                 userViewModel.isNeedLogin = true
                             }
                         } else if alertMessage == "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다." {
                             print("회원탈퇴됨")
                             Task {
-                                await userViewModel.deleteUser()
+                                await LoginManager(delegate: mypageVM).memberRemove()
                                 userViewModel.isNeedLogin = true
                             }
                         }
@@ -116,5 +125,6 @@ struct MypageSettingView: View {
 struct MypageSettingView_Previews: PreviewProvider {
     static var previews: some View {
         MypageSettingView()
+            .environmentObject(MypageViewModel())
     }
 }
