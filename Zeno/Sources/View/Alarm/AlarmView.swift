@@ -71,6 +71,17 @@ struct AlarmView: View {
                                                 AlarmChangingView(selectAlarm: selectAlarm)
                                             }
                                         }
+                                        
+                                        if alarmViewModel.isLoading == false {
+                                            ProgressView()
+                                                .onAppear {
+                                                    Task {
+                                                        if let currentUser = userViewModel.currentUser {
+                                                            await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                        }
+                                                    }
+                                                }
+                                        }
                                     }
                                 }
                                 // 버튼에 하위 셀이 가려지는 경우, 데이터 없는 경우 refreshable 동작을 위해 추가
@@ -80,7 +91,6 @@ struct AlarmView: View {
                             .refreshable {
                                 if let currentUser = userViewModel.currentUser {
                                     Task {
-                                        //                                    await alarmViewModel.fetchAlarm(showUserID: currentUser.id)
                                         await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
                                     }
                                 }

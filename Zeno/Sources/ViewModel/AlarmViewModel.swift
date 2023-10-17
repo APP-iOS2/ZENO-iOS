@@ -45,7 +45,7 @@ class AlarmViewModel: ObservableObject {
             }
         }
     }
-    /// Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
+    // Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
 //    @MainActor
 //    func pushNudgeAlarm(nudgeAlarm: Alarm) async {
 //        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
@@ -99,23 +99,86 @@ class AlarmViewModel: ObservableObject {
         }
     }
     
+    @Published var isLoading: Bool = false
+    @Published var lastVisible: DocumentSnapshot?
+    @Published var isPagenationLast: Bool = false
+    
     /// 로컬에서 마지막 알람 이후 Firestore 에 저장된 알람 데이터를 가져옴
     @MainActor
     func fetchLastestAlarm(showUserID: String) async {
         let alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
             .whereField("createdAt", isGreaterThan: self.alarmArray.first?.createdAt ?? 0)
+//            .limit(to: 10)
         do {
             let querySnapShot = try await alarmRef.getDocuments()
             
             try querySnapShot.documents.forEach { queryDocumentSnapshot in
                 let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
                 self.alarmArray.append(tempAlarm)
+                lastVisible = queryDocumentSnapshot
             }
             
             alarmArray.sort { $0.createdAt > $1.createdAt }
         } catch {
             print("== fetchLastestAlarm : \(error)")
+        }
+    }
+    
+    @MainActor
+    func fetchAlarmPagenation(showUserID: String) async {
+        // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
+        let alarmRef = Firestore.firestore().collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            .limit(to: 10)
+        do {
+            isFetchComplete = false
+            
+            let querySnapShot = try await alarmRef.getDocuments()
+            self.alarmArray.removeAll()
+            
+            // 하나의 형태를 temp로 받아서 반복문을 통해 전체를 받아옴, removeAll을 통해 전체를 지우고 다시 받아오는 것.
+            try querySnapShot.documents.forEach { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                self.alarmArray.append(tempAlarm)
+            }
+//            alarmArray.sort { $0.createdAt > $1.createdAt }
+            isFetchComplete = true
+        } catch {
+            print("== fetchAlarm : \(error)")
+        }
+    }
+    
+    @MainActor
+    func loadMoreData(showUserID: String) async {
+        isLoading = true
+        
+        guard let lastVisible = lastVisible else {
+            isPagenationLast = true
+            return // No more data to load
+        }
+        
+        let db = Firestore.firestore()
+        let query = db.collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            .start(afterDocument: lastVisible)
+            .limit(to: 10)
+        
+        do {
+            let querySnapShot = try await query.getDocuments()
+            
+            alarmArray += try querySnapShot.documents.compactMap { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                return tempAlarm
+            }
+            
+            isLoading = false
+        } catch {
+            print("AlarmLoadMoreData : \(error)")
         }
     }
     
