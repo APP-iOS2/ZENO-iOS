@@ -9,9 +9,11 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
+import FirebaseFirestore
 
 final class MypageViewModel: ObservableObject {
     /// 파베가져오기
+    let db = Firestore.firestore()
     private let firebaseManager = FirebaseManager.shared
     /// 파이어베이스 Auth의 User
     /// private let userSession = Auth.auth().currentUser
@@ -23,7 +25,6 @@ final class MypageViewModel: ObservableObject {
     @Published var groupIDList: [String]?
     /// User의 전체 친구 id값
     @Published var friendIDList: [User.ID]?
-    let db = Firestore.firestore()
     /// User의 commInfo 안의 community id에 해당하는 community를 담을 객체
     @Published var commArray: [Community] = []
     /// User의 각 그룹별 buddylist의 친구 객체 정보는 담을 객체
@@ -254,7 +255,8 @@ final class MypageViewModel: ObservableObject {
     /// BuddyList에서 친구 객체 정보 반환 함수
     @MainActor
     func returnFriendInfo(selectedGroupID: String) {
-        for friend in self.returnBuddyList(selectedGroupID: selectedGroupID) {
+        self.friendInfo = []
+        for friend in self.returnBuddyList(selectedGroupID: selectedGroupID).removeDuplicates() {
             db.collection("User").document(friend).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()
