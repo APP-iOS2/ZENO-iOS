@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+/// 실사용 안함. 테스트용 
 struct KakaoLoginView: View {
     @EnvironmentObject private var userModel: UserViewModel
     
@@ -27,7 +28,7 @@ struct KakaoLoginView: View {
             
             Button {
                 Task {
-                    await userModel.logoutWithKakao()
+//                    await userModel.logoutWithKakao()
                 }
             } label: {
                 Text("로그아웃")

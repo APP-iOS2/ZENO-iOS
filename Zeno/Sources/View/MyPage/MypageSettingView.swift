@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MypageSettingView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject var mypageVM: MypageViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -31,7 +31,7 @@ struct MypageSettingView: View {
                 
                 Button {
                     Task {
-                        await userViewModel.logoutWithKakao()
+                        await LoginViewModel(delegate: mypageVM).logout()
                     }
                 } label: {
                     HStack {
@@ -46,8 +46,8 @@ struct MypageSettingView: View {
                 Divider()
                 Button {
                     Task {
-                        await userViewModel.logoutWithKakao()
-                        userViewModel.isNeedLogin = true
+                        await LoginViewModel(delegate: mypageVM).logout()
+
                     }
                 } label: {
                     HStack {
@@ -62,8 +62,8 @@ struct MypageSettingView: View {
                 Divider()
                 Button {
                     Task {
-                        await userViewModel.deleteUser()
-                        userViewModel.isNeedLogin = true
+                        await LoginViewModel(delegate: mypageVM).memberRemove()
+
                     }
                 } label: {
                     Text("회원탈퇴")
@@ -99,5 +99,6 @@ struct MypageSettingView: View {
 struct MypageSettingView_Previews: PreviewProvider {
     static var previews: some View {
         MypageSettingView()
+            .environmentObject(MypageViewModel())
     }
 }

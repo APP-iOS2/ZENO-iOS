@@ -10,7 +10,11 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
-final class MypageViewModel: ObservableObject {
+final class MypageViewModel: ObservableObject, LoginStatusDelegate {
+    func login() async -> Bool {
+        return false
+    }
+    
     /// 파베가져오기
     private let firebaseManager = FirebaseManager.shared
     /// 파이어베이스 Auth의 User
@@ -42,7 +46,7 @@ final class MypageViewModel: ObservableObject {
     var itemFrequency = [String: Int]()
     // 각 항목의 비율 계산
     var itemRatios = [String: Double]()
-    
+        
     /// zenoString들의 뱃지를 위한 비율을 계산하는 함수 (항목 / 전체 zenoString 개수)
     func zenoStringCalculator() {
         print("😡 \(self.zenoStringAll)")
@@ -75,10 +79,8 @@ final class MypageViewModel: ObservableObject {
     
     /// zenoString == zeno.question으로 사진 찾는 함수
     func findZenoImage(forQuestion question: String, in zenoQuestions: [Zeno]) -> String? {
-        for zeno in zenoQuestions {
-            if zeno.question == question {
-                return zeno.zenoImage
-            }
+        for zeno in zenoQuestions where zeno.question == question {
+            return zeno.zenoImage
         }
         return nil
     }
@@ -259,10 +261,12 @@ final class MypageViewModel: ObservableObject {
                 if let document = document, document.exists {
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-                        self.friendInfo.append(user)
-                        print("💙[friendInfo] \(self.friendInfo)")
+                        if let data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(User.self, from: jsonData)
+                            self.friendInfo.append(user)
+                            print("💙[friendInfo] \(self.friendInfo)")
+                        }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
@@ -284,10 +288,12 @@ final class MypageViewModel: ObservableObject {
                 if document.exists {
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(Community.self, from: jsonData)
-                        self.commArray.append(user)
-//                        print("💙[commArray] \(self.commArray)")
+                        if let data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(Community.self, from: jsonData)
+                            self.commArray.append(user)
+//                            print("💙[commArray] \(self.commArray)")
+                        }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
@@ -299,4 +305,69 @@ final class MypageViewModel: ObservableObject {
             }
         }
     }
+
+    /// 로그아웃
+    @MainActor
+    func logout() async {
+        try? Auth.auth().signOut()
+        await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+    }
+    
+    /// 회원탈퇴
+    @MainActor
+    func memberRemove() async {
+        do {
+            if let userInfo {
+                print(#function, "✔️\(userInfo)")
+                // 파베인증삭제 -> user컬렉션 문서 삭제 -> 로그아웃with 카카오토큰삭제 -> 유저디폴트 삭제 ->
+                try await Auth.auth().currentUser?.delete()
+                print("✔️회원탈퇴 성공. 1회차")
+                try? await firebaseManager.delete(data: userInfo)
+                print("✔️User데이터Delete 성공.")
+                await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+                print("✔️카카오 토큰 삭제")
+            }
+        } catch let error as NSError {
+            print("✔️로그아웃 오류: \(error.localizedDescription)")
+            
+            if AuthErrorCode.Code(rawValue: error.code) == .requiresRecentLogin {
+                let result = await KakaoAuthService.shared.fetchUserInfo()
+                switch result {
+                case .success(let (user, _)):
+                    if let user {
+                        let credential = EmailAuthProvider.credential(withEmail: user.kakaoAccount?.email ?? "",
+                                                                      password: String(describing: user.id))
+                        do {
+                            if let userInfo {
+                                try await Auth.auth().currentUser?.reauthenticate(with: credential) // 재인증
+                                try? await Auth.auth().currentUser?.delete()
+                                print("✔️회원탈퇴 성공. 2회차")
+                                try? await firebaseManager.delete(data: userInfo)
+                                print("✔️User데이터Delete 성공. 2회차")
+                                await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+                                print("✔️카카오 토큰 삭제 2회차")
+                            }
+                        } catch {
+                            print("✔️재인증실패 : \(error.localizedDescription)")
+                        }
+                    }
+                case .failure(let err):
+                    print("✔️카카오유저값 못가져옴 :\(err.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    /// 회원탈퇴시
+    private func removeUserData() {
+        // 0. Community컬렉션에서 managerID가 탈퇴한 User인것을 찾고 회원탈퇴하려면 manager위임하고 오라고 하는 부분 필요!!! 임의로 위임해주면 위임받은 사람한테 알림도 가야되고 이것저것 로직이 너무 복잡해짐.
+        
+        
+        // 1. Alarm컬렉션 showUserID가 탈퇴한 User인것의 문서자체를 제거
+        // 2. Community컬렉션 joinMembers배열의 id값이 삭제 userid인것을 찾아서 배열 value 제거
+        // 3. User컬렉션 buddyList배열의 userid를 찾아서 배열value 제거
+        
+         
+    }
+    
 }

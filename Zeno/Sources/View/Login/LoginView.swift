@@ -24,7 +24,7 @@ struct LoginView: View {
                     Text("zeno")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 80))
                         .foregroundColor(.white)
-                    .opacity(0.6)
+                        .opacity(0.6)
                     
                     Text("제노는어쩌구저쩌구야")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
@@ -37,7 +37,8 @@ struct LoginView: View {
                         Spacer()
                         Button {
                             Task {
-                                await userViewModel.startWithKakao()
+//                                await userViewModel.startWithKakao()
+                                await LoginViewModel(delegate: userViewModel).login()
                             }
                         } label: {
                             loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
