@@ -23,82 +23,90 @@ struct CommSettingView: View {
     @State private var isGroupDescription: Bool = false
     @State private var isImagePicker: Bool = false
     @State private var selectedImage: UIImage?
+	@State private var iscompletionBtn: Bool = false
 	
-	private let throttle: Throttle = .init(delay: 1.0)
+	private let throttle: Throttle = .init(delay: 5.0)
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    ZenoNavigationBackBtn {
-                        if isValueChanged {
-                            backActionWarning = true
-                        } else {
-                            dismiss()
-                        }
-                    } tailingLabel: {
-                        HStack {
-                            Text("\(editMode.title)")
-								.font(.regular(16))
-                            Spacer()
-							Button {
-								throttle.run {
-									Task {
-										switch editMode {
-										case .addNew:
-                                            let newComm = await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-                                            await userViewModel.joinNewGroup(newComm: newComm)
-										case .edit:
-											await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
-										}
-										dismiss()
-									}
-								}
-							} label: {
-								Text("완료")
-									.font(.bold(16))
+			ZStack {
+				if iscompletionBtn {
+					ProgressView()
+				}
+				VStack(alignment: .leading, spacing: 0) {
+					HStack {
+						ZenoNavigationBackBtn {
+							if isValueChanged {
+								backActionWarning = true
+							} else {
+								dismiss()
 							}
-                            .disabled(emptyComm.name.isEmpty || !isValueChanged)
-							.tint(Color("MainColor"))
-                        }
-                    }
-                }
-                Button {
-                    isImagePicker.toggle()
-                } label: {
-                    Circle()
-                        .frame(width: 150, alignment: .center)
-                        .foregroundColor(.clear)
-                        .background(
-                            commImage
-                                .frame(width: 150)
-                                .clipShape(Circle())
-                        )
-                        .background {
-                            Circle()
-                                .stroke(.gray.opacity(5.0))
-                        }
-                        .overlay(alignment: .bottomTrailing) {
-                            Image(systemName: "camera.circle.fill")
-                                .font(.title)
-                                .tint(.gray)
-                        }
-						.shadow(radius: 3)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                Spacer()
-                    .frame(height: 30)
-                ForEach(Array(
-                    zip($isSelectItem, isSelectItem.indices)
-                ), id: \.1) { $item, index in
-                    commSettingItem(index: index)
-                        .customTappedViewDesign(isTapped: $item) {
-                            commSettingItemAction(index: index)()
-                        }
-                }
-                Spacer()
-            }
+						} tailingLabel: {
+							HStack {
+								Text("\(editMode.title)")
+									.font(.regular(16))
+								Spacer()
+								Button {
+									iscompletionBtn = true
+									throttle.run {
+										Task {
+											switch editMode {
+											case .addNew:
+												let newComm = await commViewModel.createComm(comm: emptyComm, image: selectedImage)
+												await userViewModel.joinNewGroup(newComm: newComm)
+											case .edit:
+												await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
+											}
+											dismiss()
+										}
+									}
+								} label: {
+									Text("완료")
+										.font(.bold(16))
+								}
+								.disabled(emptyComm.name.isEmpty || !isValueChanged || iscompletionBtn)
+								.tint(Color("MainColor"))
+							}
+						}
+					}
+					Button {
+						isImagePicker.toggle()
+					} label: {
+						Circle()
+							.frame(width: 150, alignment: .center)
+							.foregroundColor(.clear)
+							.background(
+								commImage
+									.frame(width: 150)
+									.clipShape(Circle())
+							)
+							.background {
+								Circle()
+									.stroke(.gray.opacity(5.0))
+							}
+							.overlay(alignment: .bottomTrailing) {
+								Image(systemName: "camera.circle.fill")
+									.font(.title)
+									.tint(.gray)
+							}
+							.shadow(radius: 3)
+					}
+					.frame(maxWidth: .infinity)
+					.padding()
+					Spacer()
+						.frame(height: 30)
+					ForEach(Array(
+						zip($isSelectItem, isSelectItem.indices)
+					), id: \.1) { $item, index in
+						commSettingItem(index: index)
+							.customTappedViewDesign(isTapped: $item) {
+								commSettingItemAction(index: index)()
+							}
+					}
+					Spacer()
+				}
+			}
+            
         }
 		.tint(.mainColor)
         .navigationBarBackButtonHidden()
