@@ -192,13 +192,13 @@ struct AlarmView: View {
                             Spacer()
                             
                             Button(action: {
-                                if selectAlarm != nil {
+                                if selectAlarm != nil && selectAlarm?.zenoID != "nudge" {
                                     isShowPaymentSheet = true
                                 }
                             }, label: {
-                                WideButton(buttonName: "초성확인하기", systemImage: "", isplay: selectAlarm != nil ? true : false)
+                                WideButton(buttonName: "초성확인하기", systemImage: "", isplay: selectAlarm != nil && selectAlarm?.zenoID != "nudge" ? true : false)
                             })
-                            .disabled(selectAlarm == nil || isBlur ? true : false)
+                            .disabled(selectAlarm?.zenoID == "nudge" || selectAlarm == nil || isBlur ? true : false)
                             .blur(radius: isBlur ? 1.5 : 0)
                         }
                     }
