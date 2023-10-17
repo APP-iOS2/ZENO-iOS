@@ -142,7 +142,7 @@ struct CommSideBarView: View {
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
-            .padding(.bottom, CGFloat.screenHeight == 667 ? 10 : 0)
+            .padding(.bottom, .isIPhoneSE ? 10 : 0)
             .background(Color.purple2.opacity(0.4))
         }
         .fullScreenCover(isPresented: $isSettingPresented) {

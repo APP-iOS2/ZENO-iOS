@@ -29,7 +29,7 @@ struct TabBarView: View {
                 Spacer()
                 CustomTabView()
                     .frame(width: .screenWidth)
-                    .offset(y: CGFloat.screenHeight == 667 ? 20 : 0)
+                    .offset(y: .isIPhoneSE ? 20 : 0)
             }
         }
         .environmentObject(tabBarViewModel)
