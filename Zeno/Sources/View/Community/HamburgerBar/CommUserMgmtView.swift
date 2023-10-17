@@ -19,14 +19,36 @@ struct CommUserMgmtView: View {
     
     var body: some View {
             VStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
-                } tailingLabel: {
-                    HStack {
-                        Text("구성원 관리")
-                        Spacer()
-                    }
-                }
+				HStack(alignment: .center) {
+					ZenoNavigationBackBtn {
+						dismiss()
+					} tailingLabel: {
+						HStack {
+							Text("구성원 관리")
+								.font(.regular(16))
+							Spacer()
+						}
+					}
+					Spacer()
+					Button {
+						Task {
+							await commViewModel.fetchCurrentCommMembers()
+						}
+					} label: {
+						HStack(alignment: .bottom, spacing: 2) {
+							Image(systemName: "arrow.triangle.2.circlepath")
+							Text("새로고침")
+						}
+						.font(.thin(11))
+						.foregroundColor(.white)
+						.padding(5)
+						.background(Color.mainColor)
+						.cornerRadius(10)
+						.padding(.trailing, 14)
+						.shadow(color: .gray, radius: 1)
+					}
+				}
+                
                 ScrollView(showsIndicators: false) {
                     ForEach(MGMTSection.allCases) { section in
                         switch section {
@@ -37,6 +59,7 @@ struct CommUserMgmtView: View {
                                 HStack(alignment: .bottom, spacing: 2) {
                                     Image(systemName: "person.crop.circle.badge.plus")
                                     Text("가입수락")
+										.font(.thin(12))
                                 }
                             } interaction: { user in
                                 Task {
@@ -50,6 +73,7 @@ struct CommUserMgmtView: View {
                                 HStack(alignment: .bottom, spacing: 2) {
                                     Image(systemName: "person.crop.circle.badge.minus")
                                     Text("추방하기")
+										.font(.thin(12))
                                 }
                             } interaction: { user in
                                 deportUser = user

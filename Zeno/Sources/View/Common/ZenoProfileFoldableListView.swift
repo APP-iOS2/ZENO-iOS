@@ -38,7 +38,6 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
                     }
                 }
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-                .font(.footnote)
             }
         }
         .modifier(HomeListModifier())

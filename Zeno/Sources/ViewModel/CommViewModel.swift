@@ -39,6 +39,8 @@ class CommViewModel: ObservableObject {
     @Published var currentWaitApprovalMembers: [User] = []
 	/// [커뮤니티최근검색] 최근 검색된 검색어들
 	@Published var recentSearches: [String] = []
+	/// [매니저 위임] 매니저 바뀌었을 때 알람
+	@Published var managerChangeWarning: Bool = false
     /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
     var recentlyJoinedMembers: [User] {
         guard let currentComm else { return [] }
@@ -386,32 +388,43 @@ class CommViewModel: ObservableObject {
     }
     /// 선택된 커뮤니티에 가입된 유저, 가입신청된 유저를 받아오는 함수
     @MainActor
-    func fetchCurrentCommMembers() async {
-        guard let currentCommMemberIDs = currentComm?.joinMembers.map({ $0.id }),
-              let currentWaitMemberIDs = currentComm?.waitApprovalMemberIDs
-        else { return }
-        let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
-                                                                 ids: currentCommMemberIDs + currentWaitMemberIDs)
-        let currentUsers = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
-        self.currentCommMembers = exceptCurrentUser(users: currentUsers)
-            .filter { currentCommMemberIDs.contains($0.id) }
-        if isCurrentCommManager {
-            self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
-                .filter { currentWaitMemberIDs.contains($0.id) }
-        }
+	func fetchCurrentCommMembers() async {
+		// 1. 파베에서 현재 그룹 정보 불러오기
+		let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
+		
+		do {
+			let fetchComm = try resultComm.get()
+			// 2. 현재 그룹 유저 ID 나누기
+			let currentCommMemberIDs = fetchComm.joinMembers.map { $0.id }
+			let currentWaitMemberIDs = fetchComm.waitApprovalMemberIDs
+			// 3. 유저 ID로 유저객체값 받기
+			let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+																	 ids: currentCommMemberIDs + currentWaitMemberIDs)
+			// 4. result의 유저객체값 분류
+			let currentUsers = results.compactMap {
+				switch $0 {
+				case .success(let success):
+					return success
+				case .failure:
+					return nil
+				}
+			}
+			// 5. 현재 그룹의 유저정보에 뿌려주기
+			self.currentCommMembers = exceptCurrentUser(users: currentUsers)
+				.filter { currentCommMemberIDs.contains($0.id) }
+			if isCurrentCommManager {
+				self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
+					.filter { currentWaitMemberIDs.contains($0.id) }
+			}
+		} catch {
+			print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
+		}
     }
     /*
      1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
      2. [ ] currentUser의 commInfoList에서 해당 currentComm정보지우기
      3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
-     4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
+     4. [V] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
      5. [ ] 로컬 업데이트
      */
     /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수

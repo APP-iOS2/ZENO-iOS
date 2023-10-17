@@ -106,7 +106,6 @@ struct CommSettingView: View {
 					Spacer()
 				}
 			}
-            
         }
 		.tint(.mainColor)
         .navigationBarBackButtonHidden()

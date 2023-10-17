@@ -52,6 +52,7 @@ struct SettingTextFieldView: View {
 						  text: $fixedText,
 						  prompt: Text(title))
 				.font(.regular(16))
+				.textInputAutocapitalization(.never)
 				.focused($isTextFocused)
 				.onChange(of: fixedText) { newValue in
 					// 텍스트 필드가 비었을 때
