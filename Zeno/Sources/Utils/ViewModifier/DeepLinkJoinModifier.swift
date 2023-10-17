@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct DeepLinkJoinModifier: ViewModifier {
     @Binding var isPresented: Bool
@@ -88,15 +89,22 @@ struct JoinWithDeepLinkView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 18)
         .frame(width: 300)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.mainColor)
-                .shadow(color: .red, radius: 15)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(.background)
-                )
-        )
+        .background {
+            ZStack {
+                ZenoKFImageView(comm)
+                Color.primary.colorInvert()
+                    .opacity(0.4)
+                Blur(style: .light)
+            }
+            .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.75)
+            .clipped()
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.mainColor)
+            )
+            .shadow(color: .mainColor.opacity(0.4), radius: 15)
+        }
     }
     
     private enum Btn: CaseIterable, Identifiable {
