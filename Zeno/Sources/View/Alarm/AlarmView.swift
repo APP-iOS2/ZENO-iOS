@@ -26,9 +26,11 @@ struct AlarmView: View {
     @State private var usingCoin: Bool = false
     @State private var usingInitialTicket: Bool = false
     
+    @State private var commSelecterTop: CGFloat = 0
+    
     var isBlur: Bool {
         return isShowPaymentSheet || usingCoin ||  usingInitialTicket ||
-                isLackingCoin || isLackingInitialTicket
+        isLackingCoin || isLackingInitialTicket
     }
     
     private var filterAlarmByCommunity: [Alarm] {
@@ -37,31 +39,41 @@ struct AlarmView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .top) {
                 if alarmViewModel.isFetchComplete == false {
                     ProgressView()
                 } else {
                     if commViewModel.joinedComm.isEmpty {
                         AlarmEmptyView()
                     } else {
-                        VStack {
-                            ScrollView {
+                        ScrollView {
+                            VStack {
                                 Text("홈")
                                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding()
-                                
-                                if filterAlarmByCommunity.isEmpty {
-                                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                                    if alarmViewModel.isLoading {
-                                        ProgressView()
-                                    } else {
-                                        AlarmListEmptyView()
+                                    .zIndex(1000)
+                                    .clipped()
+                                GeometryReader { proxy in
+                                    let minY = proxy.frame(in: .global).minY
+                                    let offsetY = minY < commSelecterTop ? minY > 0 ? commSelecterTop - minY : commSelecterTop + -minY : 0
+                                    VStack {
+                                        AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
+                                            .zIndex(98)
+                                            .background(.background)
+                                            .offset(y: offsetY)
                                     }
+                                }
+                                .shadow(color: .primary.opacity(0.1), radius: 3, y: 5)
+                                if filterAlarmByCommunity.isEmpty {
+                                    Spacer()
+                                        .frame(width: .screenWidth, height: .screenHeight * 0.9)
                                 } else {
-                                    LazyVStack(pinnedViews: .sectionHeaders) {
-                                        Section {
+                                    VStack {
+                                        Spacer()
+                                            .frame(height: 100)
+                                        LazyVStack {
                                             ForEach(filterAlarmByCommunity) { alarm in
                                                 AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
                                                     .padding(.bottom, 4)
@@ -77,34 +89,37 @@ struct AlarmView: View {
                                                         }
                                                     }
                                             }
-                                        } header: {
-                                            AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                                                .background(.background)
-                                        }
-                                        .navigationDestination(isPresented: $isShowInitialView) {
-                                            if let selectAlarm {
-                                                AlarmChangingView(selectAlarm: selectAlarm)
+                                            .navigationDestination(isPresented: $isShowInitialView) {
+                                                if let selectAlarm {
+                                                    AlarmChangingView(selectAlarm: selectAlarm)
+                                                }
                                             }
                                         }
-                                        
-                                        if alarmViewModel.isLoading {
-                                            ProgressView()
-                                        }
+                                        Spacer()
                                     }
-                                }
-                                // 버튼에 하위 셀이 가려지는 경우 or 데이터 없는 경우 refreshable 동작을 위해 추가
-//                                Color.clear.frame(height: 80)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .screenHeight * 1.2)
-                            .refreshable {
-                                if let currentUser = userViewModel.currentUser {
-                                    Task {
-                                        await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                    .frame(minHeight: CGFloat.screenHeight == 667 ? CGFloat.screenHeight * 0.85 : .screenHeight * 0.8)
+                                    .zIndex(-99)
+                                    if alarmViewModel.isLoading {
+                                        ProgressView()
                                     }
                                 }
                             }
                         }
-                        //                    .shadow(color: .ggullungColor.opacity(0.4), radius: 5, y: 3)
+                        .background {
+                            if filterAlarmByCommunity.isEmpty {
+                                VStack(alignment: .center) {
+                                    AlarmListEmptyView()
+                                        .offset(y: -.screenHeight * 0.05)
+                                }
+                            }
+                        }
+                        .refreshable {
+                            if let currentUser = userViewModel.currentUser {
+                                Task {
+                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                }
+                            }
+                        }
                         .blur(radius: isBlur ? 1.5 : 0)
                         .goodsAlert(
                             isPresented: $isShowPaymentSheet,
@@ -178,16 +193,18 @@ struct AlarmView: View {
                         )
                         .sheet(isPresented: $isPurchaseSheet, content: {
                             PurchaseView()
-                                .presentationDetents([.fraction(0.45)])
+                                .presentationDetents([.fraction(0.4)])
                                 .presentationDragIndicator(.visible)
                             })
-                        
                         VStack {
-                            GeometryReader { reader in
+                            GeometryReader { proxy in
                                 Color.primary
                                     .colorInvert()
-                                    .frame(height: reader.safeAreaInsets.top, alignment: .top)
+                                    .frame(height: proxy.safeAreaInsets.top, alignment: .top)
                                     .ignoresSafeArea()
+                                    .onAppear {
+                                        commSelecterTop = proxy.safeAreaInsets.top
+                                    }
                             }
                             Spacer()
                             

@@ -517,8 +517,10 @@ class CommViewModel: ObservableObject {
     }
     /// ShareSheet 올리기
     func shareText() {
-        guard let commID = currentComm?.id else { return }
-        let deepLink = "zenoapp://invite?commID=\(commID)"
+        guard let commID = currentComm?.id,
+              let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String
+        else { return }
+        let deepLink = "kakaod\(kakaoKey)://kakaolink=\(commID)"
         let activityVC = UIActivityViewController(
             activityItems: [deepLink],
             applicationActivities: [KakaoActivity(), IGActivity()]
