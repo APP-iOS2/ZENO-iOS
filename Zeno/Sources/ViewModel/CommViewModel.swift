@@ -415,6 +415,7 @@ class CommViewModel: ObservableObject {
 			if isCurrentCommManager {
 				self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
 					.filter { currentWaitMemberIDs.contains($0.id) }
+				print(#function + "🔵 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
 			}
 		} catch {
 			print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
@@ -471,17 +472,18 @@ class CommViewModel: ObservableObject {
     @MainActor
     func requestJoinComm(comm: Community) async throws {
         guard let currentUser else { return }
-        guard !comm.waitApprovalMemberIDs.contains(currentUser.id) else { return }
-		let newComm = comm.waitApprovalMemberIDs + [currentUser.id]
-        do {
-            try await firebaseManager.update(data: comm.self,
-                                             value: \.waitApprovalMemberIDs,
-                                             to: newComm)
+		do {
+			let result = try await firebaseManager.read(type: Community.self, id: comm.id).get()
+			let newComm = result.waitApprovalMemberIDs + [currentUser.id]
+			
+			try await firebaseManager.update(data: comm.self,
+											 value: \.waitApprovalMemberIDs,
+											 to: newComm)
 			guard let index = allComm.firstIndex(where: { $0.id == comm.id }) else { return }
 			allComm[index].waitApprovalMemberIDs = newComm
-        } catch {
-            print(#function + "그룹에 가입신청 실패")
-        }
+		} catch {
+			print(#function + "🔴 그룹 가입 신청 실패")
+		}
     }
     /// 카카오톡앱에 currentComm 초대링크 공유
     func kakao() {
@@ -551,4 +553,9 @@ class CommViewModel: ObservableObject {
             }
         }
     }
+	/// [그룹 메인 뷰] 현재 커뮤니티의 매니저인지 확인
+	func checkManagerUser(user: User) -> Bool {
+		guard let managerID = currentComm?.managerID.description else { return false }
+		return managerID == user.id
+	}
 }
