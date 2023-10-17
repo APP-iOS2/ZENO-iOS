@@ -14,7 +14,6 @@ struct PurchaseCellView: View {
     let itemTitle: String
     let itemDescription: String
     let itemFeature1: String
-    let itemFeature2: String
     let itemPrice: String
     
     var purchaseAction: () -> Void
@@ -86,6 +85,6 @@ struct PurchaseCellView: View {
 
 struct PurchaseCellView_Previews: PreviewProvider {
     static var previews: some View {
-        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "코인 없이 빠르게 초성을 확인할 수 있어요!", itemFeature1: "10회 초성 확인권", itemFeature2: "찌르기", itemPrice: "1.99", purchaseAction: { })
+        PurchaseCellView(itemQuantity: 10, itemTitle: "초성 확인권", itemDescription: "코인 없이 빠르게 초성을 확인할 수 있어요!", itemFeature1: "10회 초성 확인권", itemPrice: "1.99", purchaseAction: { })
     }
 }
