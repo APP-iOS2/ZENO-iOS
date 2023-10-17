@@ -25,7 +25,8 @@ struct AlarmBackCardView: View {
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(.mainColor)
+                .fill(AngularGradient(gradient: Gradient(colors: [.mainColor, Color.ggullungColor]), center: .topLeading, angle: .degrees(180 + 20)))
+                .shadow(radius: 3, x: 5, y: 5)
                 .overlay(
                     VStack(alignment: .center, spacing: 20) {
                         Spacer()
@@ -71,7 +72,7 @@ struct AlarmBackCardView: View {
                                     .foregroundColor(isDisabledNudge ? .gray2 : .white)
                                     .shadow(radius: 1)
                                 Text("찌르기")
-                                    .foregroundColor(isDisabledNudge ? .white: .mainColor)
+                                    .foregroundColor(isDisabledNudge ? .white: .ggullungColor)
                                     .font(.extraBold(15))
                             }
                         }
@@ -134,4 +135,3 @@ struct AlarmBackCardView_Previews: PreviewProvider {
         .environmentObject(UserViewModel())
     }
 }
-

@@ -13,7 +13,7 @@ import SwiftUI
 struct AnimationExView: View {
     @State private var imgAnimation = false
     @State private var isAnimation = [false, false, false, false]
-    var imfine: [String] = ["user1","user2","user3", "user4"]
+    var imfine: [String] = ["user1", "user2", "user3", "user4"]
     var rows = [GridItem(), GridItem()]
     var body: some View {
         VStack {
