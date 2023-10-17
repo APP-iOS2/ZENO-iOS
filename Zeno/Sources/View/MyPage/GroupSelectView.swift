@@ -10,7 +10,7 @@ import SwiftUI
 
 enum UserChoice: String, CaseIterable {
     case firends = "친구 목록"
-    case badge = "득표 현황"
+    case badge = "뱃지 현황"
 }
 
 struct GroupSelectView: View {
