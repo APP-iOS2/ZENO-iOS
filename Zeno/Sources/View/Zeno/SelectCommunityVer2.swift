@@ -94,13 +94,13 @@ struct SelectCommunityVer2: View {
                                 .opacity(0.9)
                                 .edgesIgnoringSafeArea(.bottom)
                         }
-                        .offset(y: CGFloat.screenHeight == 667 ? -10 : 0)
+                        .offset(y: .isIPhoneSE ? -10 : 0)
                     }
                 }
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
-                        try? await commViewModel.fetchAllComm()
+                        await commViewModel.fetchAllComm()
                     }
                     currentIndex = 0
                     selected = ""
