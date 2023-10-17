@@ -50,10 +50,10 @@ struct MyPageMain: View {
     }
     
     private func getUserData() {
-        self.name = mypageViewModel.userInfo?.name ?? ""
+        self.name = mypageViewModel.userInfo?.name ?? "박서연"
         self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
         self.gender = mypageViewModel.userInfo?.gender ?? .male
-        self.description = mypageViewModel.userInfo?.description ?? ""
+        self.description = mypageViewModel.userInfo?.description ?? "한줄소개테스트입니당 안녕하세요 여러분 여러줄이면 💟💙💖"
         self.showInitial = mypageViewModel.userInfo?.showInitial ?? 0
     }
     
@@ -82,35 +82,36 @@ struct MyPageMain: View {
                         profileImage
                             .modifier(TextModifier())
                         
-                        VStack(alignment: .leading, spacing: 15) {
-                            HStack(spacing: 10) {
-                                NavigationLink {
-                                    UserProfileEdit()
-                                } label: {
-                                    HStack {
-                                        Text(name)
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 19))
-                                            .fontWeight(.semibold)
-                                        Image(systemName: "chevron.right")
+                        VStack(alignment: .leading, spacing: 18) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack(spacing: 10) {
+                                    NavigationLink {
+                                        UserProfileEdit()
+                                    } label: {
+                                        HStack {
+                                            Text(name)
+                                                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+                                                .fontWeight(.semibold)
+                                            Image(systemName: "chevron.right")
+                                        }
                                     }
                                 }
+                                
+                                Text(description)
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
+                                    .lineSpacing(4)
                             }
-                            
-                            Text(description)
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                            
-                            HStack {
+                            HStack(spacing: 4) {
                                 Button {
                                     print("Z 버튼 눌림 기능미정")
                                 } label: {
                                     HStack(spacing: 3) {
                                         Text("Z")
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
                                             .foregroundColor(Color.mainColor)
-                                            .fontWeight(.bold)
                                         Text("\(showInitial)회")
                                             .foregroundColor(.primary)
-                                    }.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                    }.font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
                                 }
                                 Button {
                                     print("info button tapped!")
@@ -127,13 +128,13 @@ struct MyPageMain: View {
 //                        mypageViewModel.zenoImageArray()
                         print("💟 \(mypageViewModel.zenoStringImage)")
                     }
+                    .padding(.bottom, 3)
                     /// 유저 재화 정보 뷰
                     UserMoneyView()
                         .frame(minHeight: UIScreen.main.bounds.height/9)
                         .padding(.horizontal, 17)
                   
                     GroupSelectView()
-                  
                 }
             }
             .task {
