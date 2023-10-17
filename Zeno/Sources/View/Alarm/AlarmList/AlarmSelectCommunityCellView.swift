@@ -34,8 +34,10 @@ struct AlarmSelectCommunityCellView: View {
                         selectedCommunityId = community.id
                     }
             } else {
-                Circle()
-                    .frame(width: 60)
+                Image("ZenoIcon")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
                     .overlay(
                         Circle()
                             .strokeBorder(

@@ -26,8 +26,6 @@ struct GroupSelectView: View {
                             VStack {
                                 Button {
                                     userSelected = choiced
-                                    print("userSelected : \(userSelected)")
-                                    print("choiced : \(choiced)")
                                 } label: {
                                     Text("\(choiced.rawValue)")
                                         .frame(minWidth: UIScreen.main.bounds.width / 2)
@@ -40,7 +38,7 @@ struct GroupSelectView: View {
                                 
                                 if choiced.rawValue == userSelected.rawValue {
                                     Capsule()
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                         .frame(height: 3)
                                 } else {
                                     Capsule()
@@ -55,6 +53,9 @@ struct GroupSelectView: View {
                 
                 if userSelected.rawValue == "친구 목록" {
                     MypageFriendListView()
+                        .environmentObject(mypageViewModel)
+                } else {
+                    BadgeView()
                         .environmentObject(mypageViewModel)
                 }
                 Spacer()

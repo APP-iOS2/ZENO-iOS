@@ -98,8 +98,12 @@ struct MypageFriendListView: View {
                 if await mypageViewModel.userFriendIDList() {
                     print("💡 [MyPage] 유저 친구값 가져오기 성공")
                     guard let groupFriendID = mypageViewModel.friendIDList else { return }
-                    mypageViewModel.groupFirendList = groupFriendID
+                    print("💭 [groupFriendID] : \(groupFriendID)")
+                    mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
+                    mypageViewModel.allMyPageFriendInfo = []
+                    print("❤️‍🩹💙\(mypageViewModel.allMyPageFriendInfo.count)")
                     await mypageViewModel.getAllFriends()
+                    
                     mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
                 }
                 await mypageViewModel.getCommunityInfo() // 유저가 속한 전체 그룹의 이가져오는 함수 실행

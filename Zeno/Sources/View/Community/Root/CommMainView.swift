@@ -13,7 +13,6 @@ struct CommMainView: View {
     @EnvironmentObject var commViewModel: CommViewModel
     @EnvironmentObject var tabBarViewModel: TabBarViewModel
     
-    @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
     @State private var isPresentedAddCommView = false
@@ -33,7 +32,7 @@ struct CommMainView: View {
                         .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
                         if commViewModel.currentCommMembers.isEmpty {
                             Button {
-                                commViewModel.shareText()
+                                commViewModel.kakao()
                             } label: {
                                 VStack {
                                     LottieView(lottieFile: "invitePeople")
@@ -56,7 +55,7 @@ struct CommMainView: View {
                 } else {
 					// 가입된 커뮤니티가 없을 때
 					CommEmptyView {
-						isShowingCommListSheet.toggle()
+                        commViewModel.isShowingCommListSheet.toggle()
 					}
                 }
             }
@@ -74,11 +73,8 @@ struct CommMainView: View {
                     hamburgerToolbarItem
                 }
             }
-            .sheet(isPresented: $isShowingCommListSheet) {
-                CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
-            }
-            .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
-                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView)
+            .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
+                CommListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
             }
             .navigationDestination(isPresented: $isPresentedAddCommView) {
                 CommSettingView(editMode: .addNew)
@@ -107,7 +103,7 @@ struct CommMainView: View {
     var groupNameToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-                isShowingCommListSheet.toggle()
+                commViewModel.isShowingCommListSheet.toggle()
             } label: {
                 HStack {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")

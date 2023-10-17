@@ -46,9 +46,10 @@ struct AlarmListCellView: View {
                                 )
                         )
                 } else {
-                    Circle()
-                        .frame(width: 50)
-                        .foregroundStyle(.gray)
+                    Image("ZenoIcon")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
                         .overlay(
                             Circle()
                                 .strokeBorder(

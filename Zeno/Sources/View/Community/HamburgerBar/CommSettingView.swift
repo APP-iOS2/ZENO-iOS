@@ -103,7 +103,9 @@ struct CommSettingView: View {
 		.tint(.mainColor)
         .navigationBarBackButtonHidden()
         .overlay(
-            ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
+            ImageMenuView(title: "그룹 사진 등록",
+                          isPresented: $isImagePicker,
+                          selectedImage: $selectedImage)
         )
         .fullScreenCover(isPresented: $isGroupName) {
             SettingTextFieldView(title: "그룹 이름", value: $emptyComm.name)

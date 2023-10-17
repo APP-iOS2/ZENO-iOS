@@ -22,6 +22,7 @@ struct NickNameRegistView: View {
     @State private var selectedImage: UIImage?
     @State private var isImagePicker: Bool = false
     @State private var isProgressLoading: Bool = false
+    @State private var isConfirmSheet: Bool = false
     @State private var nextNavigation: Bool = false
     
     private var checkingText: String {
@@ -33,11 +34,12 @@ struct NickNameRegistView: View {
     }
     
     @ViewBuilder
-    var profileImage: some View {
+    private var profileImage: some View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .frame(width: 150, alignment: .center)
+                .aspectRatio(contentMode: .fit)
         } else {
             if profileImageURL != KakaoAuthService.shared.noneImageURL {
                 KFImage(URL(string: profileImageURL))
@@ -47,10 +49,13 @@ struct NickNameRegistView: View {
                         Image(asset: ZenoAsset.Assets.zenoIcon)
                             .resizable()
                     }
-                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 150, alignment: .center)
+                    .aspectRatio(contentMode: .fit)
             } else {
                 ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
-                isRandom: false)
+                                ratio: .fit,
+                                isRandom: false)
+                .frame(width: 150, alignment: .center)
             }
         }
     }
@@ -63,11 +68,8 @@ struct NickNameRegistView: View {
                 Button {
                     if koreaLangCheck(nameText) {
                         if nameText.count >= 2 {
-                            Task {
-                                await dataConfirm()
-                                nextNavigation.toggle()
-                                dismiss()
-                            }
+                            isConfirmSheet.toggle()
+
                         } else {
                             isChecking.toggle()
                         }
@@ -77,6 +79,7 @@ struct NickNameRegistView: View {
                 }
                 .disabled(nameText.isEmpty)
             }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
             .padding()
             .tint(.black)
             
@@ -108,6 +111,7 @@ struct NickNameRegistView: View {
                            isNotHanguel: $isChecking,
                            textMaxCount: 5,
                            isFocusing: true)
+            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
             
             if isChecking {
                 Text(checkingText)
@@ -122,6 +126,7 @@ struct NickNameRegistView: View {
                            isNotHanguel: .constant(false),
                            textMaxCount: 50,
                            isFocusing: false)
+            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
             
             HStack {
                 Text("* 성별")
@@ -134,6 +139,7 @@ struct NickNameRegistView: View {
                 }
                 .tint(.black)
             }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
             .padding()
             
             Spacer()
@@ -141,11 +147,14 @@ struct NickNameRegistView: View {
         .contentShape(Rectangle())
         .hideKeyboardOnTap()
         .overlay(
-            ImageMenuView(isPresented: $isImagePicker, selectedImage: $selectedImage)
+            ImageMenuView(title: "프로필 사진 등록",
+                          isPresented: $isImagePicker,
+                          selectedImage: $selectedImage)
         )
         .overlay(
             ZStack {
                 Color.black.opacity(0.25)
+                    .edgesIgnoringSafeArea(.all)
                 VStack {
                     Text("Zeno에 입장중이에요~!\n잠시만 기다려주세요 ^.^")
                         .font(.callout)
@@ -154,12 +163,70 @@ struct NickNameRegistView: View {
                         .multilineTextAlignment(.center)
                     ProgressView()
                         .tint(Color.purple)
+                        .bold()
                     Spacer()
                 }
-                .padding(.top, 50)
+                .padding(.top, 40)
             }
             .opacity(isProgressLoading ? 1.0 : 0.0)
         )
+        .sheet(isPresented: $isConfirmSheet, content: {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("한번 더 확인해주세요!!")
+                        .bold()
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 25))
+                    Text("아래정보들은 가입 후에 더이상 수정하실 수가 없습니다.")
+                        .font(.footnote)
+                        .foregroundStyle(Color.red)
+                }
+                .padding(.top, 30)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("이름 : \(nameText)")
+                    Text("성별 : \(gender.toString)")
+                }
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
+                .padding(.bottom, 20)
+                
+                HStack(spacing: 50) {
+                    Button {
+                        isConfirmSheet.toggle()
+                    } label: {
+                        Text("취소")
+                            .foregroundStyle(Color.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.red.opacity(0.9))
+                    }
+                    
+                    Button {
+                        Task {
+                            isConfirmSheet.toggle()
+                            await dataUpdate()
+                            dismiss()
+                        }
+                    } label: {
+                        Text("확인")
+                            .foregroundStyle(Color.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color.purple2)
+                    }
+                }
+                .padding(.horizontal, 5)
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .font(.title2)
+            .presentationDetents([.fraction(0.3)])
+        })
         .onAppear {
             getUserData()
         }
@@ -168,13 +235,14 @@ struct NickNameRegistView: View {
         }
     }
     
+    /// 유저정보 가져와서 세팅.
     private func getUserData() {
         self.gender = userVM.currentUser?.gender ?? .female
         self.profileImageURL = userVM.currentUser?.imageURL ?? ""
 //        print("이미지 : \(profileImageURL)")
     }
     
-    private func dataConfirm() async {
+    private func dataUpdate() async {
         do {
             if let user = userVM.currentUser {
                 isProgressLoading = true

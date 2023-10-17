@@ -16,6 +16,7 @@ struct RegistCustomTF: View {
     @Binding var isNotHanguel: Bool
     let textMaxCount: Int
     let isFocusing: Bool
+    var isDelBtnAppear: Bool = true
     @FocusState var isTextFocused: Bool // ios 15이상에서만 동작
     var debouncer: Debouncer = .init(delay: 0.6)
     
@@ -51,7 +52,7 @@ struct RegistCustomTF: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(Color.gray)
-                        .opacity(customText.isEmpty ? 0 : 1.0)
+                        .opacity(isDelBtnAppear ? customText.isEmpty ? 0 : 1.0 : 0.0)
                 }
                 
                 Text("\(customText.count)/\(textMaxCount)")

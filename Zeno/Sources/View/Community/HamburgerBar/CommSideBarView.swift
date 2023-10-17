@@ -45,7 +45,7 @@ struct CommSideBarView: View {
                             case .memberMGMT:
                                 isSelectContent.toggle()
                             case .inviteComm:
-                                    commViewModel.shareText()
+                                    commViewModel.kakao()
                             case .delegateManager:
                                 if commViewModel.isCurrentCommManager {
                                     isDelegateManagerView = true
@@ -71,10 +71,13 @@ struct CommSideBarView: View {
                                 }
                             }
                         }
-						.foregroundColor(.primary)
-						.font(.regular(14))
+                    }
+                    Button("시뮬레이터용 초대버튼") {
+                        commViewModel.shareText()
                     }
                 }
+                .foregroundColor(.primary)
+                .font(.regular(14))
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
@@ -163,6 +166,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
+                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }

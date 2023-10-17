@@ -19,6 +19,7 @@ struct AlarmBackCardView: View {
     
     @State private var isNudgingOn: Bool = false
     @State private var isNoneUser: Bool = false
+    @State private var isDisabledNudge: Bool = false
     
     var body: some View {
         VStack {
@@ -61,12 +62,13 @@ struct AlarmBackCardView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
                                     .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.05)
-                                    .foregroundColor(.purple2)
+                                    .foregroundColor(isDisabledNudge ? .gray2 : .purple2)
                                     .shadow(radius: 1)
                                 Text("찌르기")
                                     .foregroundColor(.white)
                             }
                         }
+                        .disabled(isDisabledNudge)
                         .padding(.bottom, 20)
                         .alert("찌르기가 허용되지 않는 유저입니다. ", isPresented: $isNoneUser) {
                             Button {
@@ -92,6 +94,7 @@ struct AlarmBackCardView: View {
             Task {
                 await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
             }
+            isDisabledNudge = true
         }
     }
     
