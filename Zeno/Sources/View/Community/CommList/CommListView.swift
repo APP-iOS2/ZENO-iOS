@@ -113,7 +113,6 @@ struct CommListView: View {
                         }
                         .groupCell()
 						.tint(.mainColor)
-						.shadow(color: .mainColor, radius: 1)
                         .padding(2)
                     }
                     .padding()

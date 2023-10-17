@@ -14,9 +14,9 @@ struct CommListCell: View {
 	
 	let comm: Community
 	
-	@State private var isShowingCommRequestView = false
-	
 	let action: () -> Void
+	
+	@State private var isShowingCommRequestView = false
 	
 	var body: some View {
 		Button {
