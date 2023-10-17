@@ -60,7 +60,7 @@ struct AlarmGoodsBtnView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .black)
+            .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
             
             Button {
                 primaryAction2()
@@ -70,6 +70,7 @@ struct AlarmGoodsBtnView: View {
                     Text(primaryButtonTitle2)
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
+                        .shadow(color: .purple, radius: 4)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -79,17 +80,17 @@ struct AlarmGoodsBtnView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .frame(width: 250)
-                        .foregroundColor(.purple3)
-                        .shadow(radius: 2)
+                        .foregroundColor(.black.opacity(0.9))
+                        .shadow(color: .purple, radius: 2)
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill()
-                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .mainColor.opacity(0.7), .mainColor.opacity(0.4), .white.opacity(0.4), .white, .white.opacity(0.4), .mainColor.opacity(0.6), .mainColor.opacity(0.7), .mainColor]), startPoint: .top, endPoint: .bottom))
+                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .purple3]), startPoint: .top, endPoint: .bottom))
                         .rotationEffect(.degrees(rotation))
                         .mask {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(lineWidth: 4)
+                                .stroke(lineWidth: 2)
                                 .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
-                        }
+                    }
                 }
             )
         }
