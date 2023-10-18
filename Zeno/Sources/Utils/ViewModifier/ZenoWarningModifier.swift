@@ -49,22 +49,13 @@ struct ZenoWarningView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
             Text(message)
-<<<<<<< Updated upstream
-                .font(.bold(21))
-=======
-                .font(.regular(15))
->>>>>>> Stashed changes
+                .font(.regular(16))
                 .padding(.top, 25)
             Button {
                 isPresented = false
             } label: {
                 Text("확인")
-<<<<<<< Updated upstream
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
-=======
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15
-                                                                                ))
->>>>>>> Stashed changes
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
                     .foregroundColor(.white)
                     .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.05)
                     .background(
@@ -81,7 +72,6 @@ struct ZenoWarningView: View {
         .background(
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.mainColor)
-                .shadow(color: .red, radius: 15)
                 .background(
                     RoundedRectangle(cornerRadius: 15)
                         .fill(.background)

@@ -24,9 +24,9 @@ struct LoginView: View {
                     Text("zeno")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 80))
                         .foregroundColor(.white)
-                    .opacity(0.6)
+                        .opacity(0.6)
                     
-                    Text("제노는어쩌구저쩌구야")
+                    Text("제노로 마음 전달하기")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
                         .foregroundColor(.white)
                         .opacity(0.6)
@@ -37,7 +37,8 @@ struct LoginView: View {
                         Spacer()
                         Button {
                             Task {
-                                await userViewModel.startWithKakao()
+//                                await userViewModel.startWithKakao()
+                                await LoginManager(delegate: userViewModel).login()
                             }
                         } label: {
                             loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
@@ -47,7 +48,7 @@ struct LoginView: View {
                         } label: {
                             loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
                         }
-                        .padding(.bottom, CGFloat.screenHeight == 667 ? 30 : 50)
+                        .padding(.bottom, .isIPhoneSE ? 30 : 50)
                     }
                     .frame(width: .screenWidth, height: .screenHeight)
                 }

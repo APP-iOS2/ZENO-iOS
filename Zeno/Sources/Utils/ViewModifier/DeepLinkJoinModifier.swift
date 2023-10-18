@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct DeepLinkJoinModifier: ViewModifier {
     @Binding var isPresented: Bool
@@ -53,16 +54,23 @@ struct JoinWithDeepLinkView: View {
         VStack(alignment: .center, spacing: 10) {
             Text(comm.name)
                 .font(.extraBold(22))
-            Text("\(comm.joinMembers.count)명 참여중")
-                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
-                .padding(.top, 10)
+            
             ZenoKFImageView(comm, ratio: .fit)
                 .clipShape(Circle())
                 .frame(width: .screenWidth * 0.6)
                 .padding(.vertical, 10)
+            
+            HStack {
+                Image(systemName: "person.2.fill")
+                Text("\(comm.joinMembers.count)명")
+            }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+            .padding(.bottom, 2)
+            
             Text(comm.description)
-                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-                .padding(.vertical)
+                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                .padding(.bottom)
+            
             ForEach(Btn.allCases) { btn in
                 Button {
                     if btn == .join {
@@ -72,31 +80,34 @@ struct JoinWithDeepLinkView: View {
                 } label: {
                     HStack {
                         Text(btn.title)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
-                            .foregroundColor(.white)
-                            .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.07)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16))
+                            .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.05)
                             .background(
                                 btn.background
                                     .shadow(radius: 3)
                             )
-                            .cornerRadius(15)
+                            .cornerRadius(10)
                     }
                 }
             }
         }
+        .foregroundColor(.white.opacity(0.8))
         .multilineTextAlignment(.center)
         .padding(.horizontal, 24)
         .padding(.vertical, 18)
         .frame(width: 300)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.mainColor)
-                .shadow(color: .red, radius: 15)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(.background)
-                )
-        )
+        .background {
+            ZStack {
+                ZenoKFImageView(comm)
+                Color.primary.colorInvert()
+                    .opacity(0.4)
+                Blur(style: .dark)
+            }
+            .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.75)
+            .clipped()
+            .cornerRadius(10)
+            .shadow(radius: 1, y: 2)
+        }
     }
     
     private enum Btn: CaseIterable, Identifiable {
@@ -105,9 +116,9 @@ struct JoinWithDeepLinkView: View {
         var title: String {
             switch self {
             case .join:
-                return "가입 하기"
+                return "Join"
             case .cancel:
-                return "취소"
+                return "Cancel"
             }
         }
         

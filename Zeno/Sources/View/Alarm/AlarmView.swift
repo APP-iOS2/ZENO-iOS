@@ -26,7 +26,7 @@ struct AlarmView: View {
     @State private var usingCoin: Bool = false
     @State private var usingInitialTicket: Bool = false
     
-    @State private var commSelecterTop: CGFloat = 0
+    @State private var topSafeArea: CGFloat = 0
     
     var isBlur: Bool {
         return isShowPaymentSheet || usingCoin ||  usingInitialTicket ||
@@ -57,37 +57,51 @@ struct AlarmView: View {
                                     .clipped()
                                 GeometryReader { proxy in
                                     let minY = proxy.frame(in: .global).minY
-                                    let offsetY = minY < commSelecterTop ? minY > 0 ? commSelecterTop - minY : commSelecterTop + -minY : 0
-                                    VStack {
-                                        AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
-                                            .zIndex(98)
-                                            .background(.background)
-                                            .offset(y: offsetY)
-                                    }
+                                    let offsetY = minY < topSafeArea ? minY > 0 ? topSafeArea - minY : topSafeArea + -minY : 0
+                                    AlarmSelectCommunityView(selectedCommunityId: $selectedCommunityId)
+                                        .zIndex(98)
+                                        .background(.background)
+                                        .offset(y: offsetY)
                                 }
-                                .shadow(color: .primary.opacity(0.1), radius: 3, y: 5)
+                                .shadow(color: .primary.opacity(0.1), radius: 2, y: 2)
                                 if filterAlarmByCommunity.isEmpty {
                                     Spacer()
                                         .frame(width: .screenWidth, height: .screenHeight * 0.9)
                                 } else {
                                     VStack {
                                         Spacer()
-                                            .frame(height: 100)
+                                            .frame(height: 115)
                                         LazyVStack {
                                             ForEach(filterAlarmByCommunity) { alarm in
-                                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                                                    .padding(.bottom, 4)
-                                                    .padding(.horizontal)
-                                                    .onAppear {
-                                                        Task {
-                                                            if isLastItem(alarm) {
-                                                                if let currentUser = userViewModel.currentUser {
-                                                                    await alarmViewModel.loadMoreData(showUserID: currentUser.id)
-                                                                    print("======alarmViewModel.loadMoreData")
+                                                if alarm.zenoID == "nudge" {
+                                                    AlarmNudgeCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                        .padding(.bottom, 4)
+                                                        .padding(.horizontal)
+                                                        .onAppear {
+                                                            Task {
+                                                                if isLastItem(alarm) {
+                                                                    if let currentUser = userViewModel.currentUser {
+                                                                        await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                        print("======alarmViewModel.loadMoreData")
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                    }
+                                                } else {
+                                                    AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                        .padding(.bottom, 4)
+                                                        .padding(.horizontal)
+                                                        .onAppear {
+                                                            Task {
+                                                                if isLastItem(alarm) {
+                                                                    if let currentUser = userViewModel.currentUser {
+                                                                        await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                        print("======alarmViewModel.loadMoreData")
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                }
                                             }
                                             .navigationDestination(isPresented: $isShowInitialView) {
                                                 if let selectAlarm {
@@ -97,7 +111,13 @@ struct AlarmView: View {
                                         }
                                         Spacer()
                                     }
-                                    .frame(minHeight: CGFloat.screenHeight == 667 ? CGFloat.screenHeight * 0.85 : .screenHeight * 0.8)
+                                    // 스크린 높이 - 그룹셀 이미지높이 - topSafeArea - 그룹텍스트 - 그 외 여백 예상높이
+                                    .frame(
+                                        minHeight:
+                                            Bool.isIPhoneSE ?
+                                            .screenHeight - 60 - topSafeArea - 7 :
+                                                .screenHeight - 60 - topSafeArea - 10 - (.screenHeight * 0.035)
+                                    )
                                     .zIndex(-99)
                                     if alarmViewModel.isLoading {
                                         ProgressView()
@@ -116,7 +136,11 @@ struct AlarmView: View {
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
-                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                    if selectedCommunityId.isEmpty {
+                                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
+                                    } else {
+                                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                                    }
                                 }
                             }
                         }
@@ -203,7 +227,7 @@ struct AlarmView: View {
                                     .frame(height: proxy.safeAreaInsets.top, alignment: .top)
                                     .ignoresSafeArea()
                                     .onAppear {
-                                        commSelecterTop = proxy.safeAreaInsets.top
+                                        topSafeArea = proxy.safeAreaInsets.top
                                     }
                             }
                             Spacer()

@@ -22,21 +22,23 @@ struct AlarmAlertCheckBtnView: View {
             VStack(alignment: .center, spacing: 26) {
                 LottieView(lottieFile: "shine")
                     .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.1)
-                
-                Text("\(content)을 사용하시겠습니까 ?")
-                    .multilineTextAlignment(.center)
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
-                    .offset(y: -20)
-                
-                Divider()
-                
-                Text("잔여 \(content) : \(quantity)개")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
-                    .padding(.bottom, -10)
-                
-                Text("사용 : \(usingGoods)개")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
-                
+                Group {
+                    Text("\(content)을 사용하시겠습니까 ?")
+                        .multilineTextAlignment(.center)
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 20))
+                        .offset(y: -20)
+                    
+                    Divider()
+                    
+                    Text("잔여 \(content) : \(quantity)개")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                        .padding(.bottom, -10)
+                    
+                    Text("사용 : \(usingGoods)개")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                }
+                .foregroundColor(.black)
+
                 HStack {
                     Button {
                         isPresented = false

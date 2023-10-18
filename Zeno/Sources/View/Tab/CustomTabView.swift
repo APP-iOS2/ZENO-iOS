@@ -39,9 +39,9 @@ struct CustomTabView: View {
         .frame(width: .screenWidth, height: 70)
         .padding(.bottom, 15)
         .background(
-            Color.mainColor
+            RoundedCorners(tl: .isIPhoneSE ? 20 : 30, tr: .isIPhoneSE ? 20 : 30, bl: 0, br: 0)
+                .fill(Color.mainColor)
         )
-        .cornerRadius(CGFloat.screenHeight == 667 ? 20 : 30)
         .clipped()
         .shadow(radius: 5)
     }

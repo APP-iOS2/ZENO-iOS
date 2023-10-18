@@ -52,6 +52,7 @@ struct AlarmBackCardView: View {
                         // 초성은 조금 더 크게 보여줘야 하지 않을까 ?
                         Text(chosung)
                             .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                            .foregroundColor(.black)
                             .background(
                                 RoundedRectangle(cornerRadius: 30)
                                     .foregroundColor(.white)

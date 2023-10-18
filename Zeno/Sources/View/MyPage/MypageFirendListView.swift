@@ -13,15 +13,13 @@ import FirebaseFirestoreSwift
 import Kingfisher
 
 struct MypageFriendListView: View {
-    let db = Firestore.firestore()
     @EnvironmentObject private var mypageViewModel: MypageViewModel
-    @State private var selectedGroup = "all"
     /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
-    @State private var selectedGroupID = ""
+    @State private var selectedGroupID = "all"
     
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
-            Picker("그룹선택", selection: $selectedGroup) {
+            Picker("그룹선택", selection: $selectedGroupID) {
                 Text("전체").tag("all")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                 ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
@@ -31,7 +29,7 @@ struct MypageFriendListView: View {
                 }
             }
             .tint(.primary)
-            .onChange(of: selectedGroup) { newValue in
+            .onChange(of: selectedGroupID) { newValue in
                 self.selectedGroupID = newValue
                 mypageViewModel.friendInfo = []
                 mypageViewModel.allMyPageFriendInfo = []
@@ -40,73 +38,89 @@ struct MypageFriendListView: View {
                         await mypageViewModel.getAllFriends()
                         mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
                     }
+                } else {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                    }
                 }
-                mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
             }
             
             VStack(alignment: .leading) {
                 Text("친구 \(mypageViewModel.friendInfo.count)명")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
                     .foregroundColor(.primary)
-                ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
-                    if let friendInfo = friend {
-                        HStack {
-                            if let imageURLString = friendInfo.imageURL,
-                               let imageURL = URL(string: imageURLString) {
-                                KFImage(imageURL)
-                                    .placeholder {
-                                        ProgressView()
-                                    }
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 70, height: 70)
-//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                                    .clipShape(Circle())
-                                    .padding(8)
-                            } else {
-                                Image("ZenoIcon")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 70, height: 70)
-//                                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                                    .clipShape(Circle())
-                                    .padding(8)
+                if mypageViewModel.friendInfo.isEmpty {
+                    VStack {
+                        LottieView(lottieFile: "friendNone")
+                            .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.2)
+                            .opacity(0.7)
+                        Text("아직 추가된 친구가 없어요!")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
+                        Text("그룹에서 친구를 추가해보세요.")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 13))
+                    }
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity)
+                } else {
+                    ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
+                        if let friendInfo = friend {
+                            HStack {
+                                if let imageURLString = friendInfo.imageURL,
+                                   let imageURL = URL(string: imageURLString) {
+                                    KFImage(imageURL)
+                                        .placeholder {
+                                            ProgressView()
+                                        }
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 70, height: 70)
+                                        .clipShape(Circle())
+                                        .padding(8)
+                                } else {
+                                    ZenoKFImageView(User(name: "", gender: friendInfo.gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []), ratio: .fit, isRandom: false)
+                                        .frame(width: 70, height: 70)
+                                        .clipShape(Circle())
+                                        .padding(8)
+                                }
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(friendInfo.name)
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(friendInfo.description)
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity)
+                                Spacer()
                             }
-                            VStack(alignment: .leading, spacing: 20) {
-                                Text(friendInfo.name)
-                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(friendInfo.description)
-                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity)
-//                            .background(.blue)
-                            Spacer()
+                            Divider()
                         }
-//                        .background(.purple)
-//                        .padding(5)
-//                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 0.7))
-                        Divider()
                     }
                 }
             }
             .padding(.horizontal, 20)
             .task {
-                /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
-                if await mypageViewModel.userFriendIDList() {
-                    print("💡 [MyPage] 유저 친구값 가져오기 성공")
-                    guard let groupFriendID = mypageViewModel.friendIDList else { return }
-                    print("💭 [groupFriendID] : \(groupFriendID)")
-                    mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
-                    mypageViewModel.allMyPageFriendInfo = []
-                    print("❤️‍🩹💙\(mypageViewModel.allMyPageFriendInfo.count)")
-                    await mypageViewModel.getAllFriends()
-                    
-                    mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
-                }
+                /// 유저의 gorupList, groupIDList, userInfo, friendIDList 가져오기
+                await mypageViewModel.getUserInfo()
+                guard let groupFriendID = mypageViewModel.friendIDList else { return }
+                mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
+                mypageViewModel.allMyPageFriendInfo = []
                 await mypageViewModel.getCommunityInfo() // 유저가 속한 전체 그룹의 이가져오는 함수 실행
+                mypageViewModel.friendInfo = []
+                mypageViewModel.allMyPageFriendInfo = []
+                if selectedGroupID == "all" {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+                    }
+                } else {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                    }
+                }
             }
             Spacer()
         }

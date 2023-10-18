@@ -13,15 +13,28 @@ struct ImageMenuView: View {
     @Binding var isPresented: Bool
     @Binding var selectedImage: UIImage?
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     @State private var isImagePicker: Bool = false
     @State private var isCameraPicker: Bool = false
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.2)
-                .onTapGesture {
-                    isPresented = false
+            Group {
+                switch colorScheme {
+                case .light:
+                    Color.black
+                case .dark:
+                    Color.gray3
+                @unknown default:
+                    EmptyView()
                 }
+            }
+            .opacity(0.2)
+            .onTapGesture {
+                isPresented = false
+            }
+            .ignoresSafeArea()
             VStack(alignment: .leading, spacing: 30) {
                 Text(title)
                     .font(.headline)
@@ -55,7 +68,7 @@ struct ImageMenuView: View {
         }
         .fullScreenCover(isPresented: $isCameraPicker) {
             // TODO: 카메라 띄우기
-            CommCameraPicker()
+            CommCameraPicker(selectedImage: $selectedImage)
         }
     }
     
