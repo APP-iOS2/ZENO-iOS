@@ -11,6 +11,7 @@ import SwiftUI
 struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
+	@EnvironmentObject private var userViewModel: UserViewModel
     
     @State private var deportUser = User.emptyUser
     @State private var isDeportAlert = false
@@ -32,6 +33,7 @@ struct CommUserMgmtView: View {
 					Spacer()
 					Button {
 						Task {
+							guard let comm = commViewModel.currentComm else { return }
 							await commViewModel.fetchCurrentCommMembers()
 						}
 					} label: {
@@ -72,7 +74,9 @@ struct CommUserMgmtView: View {
                                 }
                             } interaction: { user in
                                 Task {
+									guard let currentComm = commViewModel.currentComm else { return }
                                     await commViewModel.acceptMember(user: user)
+									try await userViewModel.removeRequestComm(comm: currentComm, user: user)
                                 }
                             }
                         case .general:
