@@ -186,7 +186,46 @@ class CommViewModel: ObservableObject {
     @MainActor
     func handleInviteURL(_ url: URL) async {
         guard let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String else { return }
-        guard url.scheme == "kakao\(kakaoKey)" else { return }
+        guard url.scheme == "kakao\(kakaoKey)" else {
+            await tempHandleInviteURL(url)
+            return
+        }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            print("유효하지 않은 URL")
+            return
+        }
+        guard let action = components.host, action == "kakaolink" else {
+            print("유효하지 않은 URL action")
+            return
+        }
+        guard let commID = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
+            print("유효하지 않은 URL value")
+            return
+        }
+        guard let currentUser else { return }
+        isShowingSearchCommSheet = false
+        isShowingCommListSheet = false
+        if currentUser.commInfoList.contains(where: { $0.id == commID }) {
+            guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
+            setCurrentID(id: comm.id)
+        } else {
+            Task {
+                let result = await firebaseManager.read(type: Community.self, id: commID)
+                switch result {
+                case let .success(success):
+                    deepLinkTargetComm = success
+                    isJoinWithDeeplinkView = true
+                case .failure:
+                    isDeepLinkExpired = true
+                    print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func tempHandleInviteURL(_ url: URL) async {
+        guard url.scheme == "zenoapp" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             print("유효하지 않은 URL")
             return
@@ -532,10 +571,8 @@ class CommViewModel: ObservableObject {
     }
     /// ShareSheet 올리기
     func shareText() {
-        guard let commID = currentComm?.id,
-              let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY") as? String
-        else { return }
-        let deepLink = "kakaod\(kakaoKey)://kakaolink=\(commID)"
+        guard let commID = currentComm?.id else { return }
+        let deepLink = "zenoapp://kakaolink?commID=\(commID)"
         let activityVC = UIActivityViewController(
             activityItems: [deepLink],
             applicationActivities: [KakaoActivity(), IGActivity()]
