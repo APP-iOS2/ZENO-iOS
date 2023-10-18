@@ -18,7 +18,7 @@ struct BadgeView: View {
                 VStack {
                     LottieView(lottieFile: "noneVote")
                         .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.15)
-//                        .background(.red)
+                        .opacity(0.7)
                     Text("아직 획득한 뱃지가 없어요!")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 15))
                         .foregroundColor(.primary)
