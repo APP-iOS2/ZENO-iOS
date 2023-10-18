@@ -77,6 +77,12 @@ struct CommSideBarView: View {
                                 } label: {
                                     HStack {
                                         Text(item.title)
+                                        if !commViewModel.currentWaitApprovalMembers.isEmpty && item == .memberMGMT {
+                                            Circle()
+                                                .fill(Color.red)
+                                                .frame(width: 5, height: 5)
+                                                .offset(x: -3)
+                                        }
                                         Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
@@ -180,7 +186,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
-                    try? await userViewModel.loadUserData()
+//                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }

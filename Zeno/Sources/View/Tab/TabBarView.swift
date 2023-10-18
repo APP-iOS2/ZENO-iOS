@@ -40,7 +40,6 @@ struct TabBarView: View {
         .joinWithDeepLink(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.deepLinkTargetComm) {
             Task {
                 await commViewModel.joinCommWithDeeplink()
-                await userViewModel.joinCommWithDeeplink(comm: commViewModel.deepLinkTargetComm)
             }
             commViewModel.isJoinWithDeeplinkView = false
         }

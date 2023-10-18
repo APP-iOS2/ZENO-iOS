@@ -39,7 +39,7 @@ final class FirebaseManager {
             throw FirebaseError.failToCreate
         }
     }
-    
+    @discardableResult
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
     ) async throws -> T where T: Encodable, T: ZenoProfileVisible {
