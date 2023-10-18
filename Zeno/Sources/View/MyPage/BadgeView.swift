@@ -25,7 +25,7 @@ struct BadgeView: View {
                 }.frame(maxWidth: .infinity)
             } else {
                 LazyVGrid(columns: Array(repeating: GridItem(), count: 2), spacing: 12) {
-                    ForEach(mypageViewModel.itemRatios.sorted(by: { $0.value > $1.value }).prefix(10), id: \.key) { item, ratio in
+                    ForEach(mypageViewModel.itemRatios.sorted(by: { $0.key > $1.key }).sorted(by: { $0.value > $1.value }).prefix(10), id: \.key) { item, ratio in
                         VStack {
                             if let image = mypageViewModel.findZenoImage(forQuestion: item, in: Zeno.ZenoQuestions) {
                                 Image("\(image)")
