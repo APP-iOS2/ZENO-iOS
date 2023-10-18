@@ -136,7 +136,11 @@ struct AlarmView: View {
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
-                                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                                    if selectedCommunityId.isEmpty {
+                                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
+                                    } else {
+                                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                                    }
                                 }
                             }
                         }
