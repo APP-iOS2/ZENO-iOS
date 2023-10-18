@@ -183,7 +183,6 @@ struct NickNameRegistView: View {
                                     
                                     /// 이용약관 보러가기
                                     linkView("", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
-                                        
                                 }
                                 .padding(.bottom, 10)
                                 /// 개인정보 처리방침 동의
@@ -279,13 +278,18 @@ struct NickNameRegistView: View {
                             .font(.footnote)
                             .foregroundStyle(Color.red)
                     }
+                    .padding(.horizontal, 12)
                     .padding(.top, 30)
+                    
                     VStack(alignment: .leading, spacing: 10) {
                         Text("이름 : \(nameText)")
                         Text("성별 : \(gender.toString)")
                     }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
+                    .padding(.horizontal, 12)
                     .padding(.bottom, 20)
+                    
+                    Spacer().frame(height: 30)
                     
                     HStack(spacing: 50) {
                         Button {

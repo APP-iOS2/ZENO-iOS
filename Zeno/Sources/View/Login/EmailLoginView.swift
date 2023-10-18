@@ -36,11 +36,9 @@ struct EmailLoginView: View {
                 emailLoginViewModel.password = self.password
                 
                 Task {
+                    // MARK: 닉네임 변경창 열렸었는지 판단. 여기서 초기설정해줌. -> 이메일회원가입은 이거 하지말장..
+                    UserDefaults.standard.set(true, forKey: "nickNameChanged")
                     await LoginManager(delegate: emailLoginViewModel).login()
-//                    await userViewModel.login(
-//                        email: emailLoginViewModel.email,
-//                        password: emailLoginViewModel.password
-//                    )
                 }
             } label: {
                 loginButtonLabel(

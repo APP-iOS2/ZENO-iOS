@@ -60,6 +60,11 @@ extension UserViewModel {
                     } catch let error as NSError {
                         switch AuthErrorCode.Code(rawValue: error.code) {
                         case .emailAlreadyInUse: // 이메일 이미 가입되어 있음 -> 이메일, 비번을 활용하여 재로그인
+                            print("✔️여기여기!!")
+                            UserDefaults.standard.set(true, forKey: "nickNameChanged") // 로그인 = 이미 회원가입이 되어있음으로 인식.
+                            await MainActor.run {
+                                isNickNameRegistViewPop = false // 회원가입창이 열려있다면 닫기.
+                            }
                             await self.login(email: user.kakaoAccount?.email ?? "",
                                              password: String(describing: user.id))
                             return true

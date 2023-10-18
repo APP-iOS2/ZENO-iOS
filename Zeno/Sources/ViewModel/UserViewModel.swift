@@ -18,8 +18,9 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
     /// 파이어베이스 Auth의 User
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
-    @Published var currentUser: User?    
-    @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
+    @Published var currentUser: User?
+    /// 회원가입창 열림 여부
+    @Published var isNickNameRegistViewPop: Bool = false
     /* userViewModel의 currentUser가 변경되었지만 alarmViewModel의 정보가 변경되기 이전에 isNeedLogin이 변경되어
     AlarmView에 순간적으로 가입된 커뮤니티가 없습니다가 뜨는 버그있음 */
 
