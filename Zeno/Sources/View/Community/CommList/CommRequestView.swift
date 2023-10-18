@@ -66,7 +66,7 @@ struct CommRequestView: View {
                         Task {
                             do {
                                 try await commViewModel.requestJoinComm(comm: comm)
-                                try await userViewModel.addRequestComm(comm: comm)
+//                                try await userViewModel.addRequestComm(comm: comm)
                                 self.showingAlert = true
                                 self.aplicationStatus = true
                                 print("성공\(self.showingAlert)")
