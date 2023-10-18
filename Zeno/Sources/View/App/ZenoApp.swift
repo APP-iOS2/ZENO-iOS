@@ -31,7 +31,20 @@ struct ZenoApp: App {
 							await alarmViewModel.fetchAlarmPagenation(showUserID: newValue.id)
 						}
 					}
-                    commViewModel.updateCurrentUser(user: newValue)
+                    // userViewModel의 currentUser가 있을 때
+                    if newValue != nil {
+                        // commViewModel의 currentUser가 없을 때
+                        if commViewModel.currentUser == nil {
+                            guard let newValue else { return }
+                            // snapshot 연결
+                            commViewModel.login(id: newValue.id)
+                        }
+                    // userViewModel의 currentUser가 없을 때
+                    } else {
+                        // snapshot 해제
+                        commViewModel.logout()
+                    }
+//                    commViewModel.updateCurrentUser(user: newValue)
                 }
                 .onOpenURL { url in
                     if (AuthApi.isKakaoTalkLoginUrl(url)) {  // 딥링크 연결
