@@ -8,6 +8,8 @@ struct ZenoApp: App {
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var commViewModel = CommViewModel()
     @StateObject private var mypageViewModel = MypageViewModel()
+	@StateObject private var alarmViewModel: AlarmViewModel = AlarmViewModel()
+	@StateObject private var iAPStore: IAPStore = IAPStore()
     
     init() {
         let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY")
@@ -21,7 +23,14 @@ struct ZenoApp: App {
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(mypageViewModel)
+				.environmentObject(alarmViewModel)
+				.environmentObject(iAPStore)
                 .onChange(of: userViewModel.currentUser) { newValue in
+					Task {
+						if let newValue {
+							await alarmViewModel.fetchAlarmPagenation(showUserID: newValue.id)
+						}
+					}
                     commViewModel.updateCurrentUser(user: newValue)
                 }
                 .onOpenURL { url in
