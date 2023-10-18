@@ -43,7 +43,7 @@ struct InitialView: View {
         .onReceive(userViewModel.$isNickNameRegistViewPop) { chg in
             // isNickNameRegistViewPop을 true로 바꿔주는 시점이 onAppear가 끝난 시점이라서 onReceive에서 받아서 처리.
             print("🦕chg : \(chg.description)")
-            if chg { isNickChangeSheet = true }
+            isNickChangeSheet = chg ? true : false
         }
         .onAppear {
             print("✔️nick : \(isnickNameChanged.description)")

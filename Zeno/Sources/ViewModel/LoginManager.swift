@@ -84,6 +84,9 @@ final class LoginManager {
         SignStatusObserved.shared.signStatus = .unSign
         SignStatus.unSign.saveStatus()
         SignStatusObserved.shared.isNeedLogin = true
+        UserDefaults.standard.set(true, forKey: "nickNameChanged") // 회원가입 여부 -> 로그아웃시에는 무조건 true로 바꿔주자.
+                                                                   // 왜냐면, 로그아웃버튼을 누른다는건 회원가입이 된 유저가 로그아웃을 누른다는것이기때문 (또 view가 열릴필요가 없다)
+                                                                  // creatUser를 하는 경우에 다시 false로 set을 해주고 있기때문에 상관없음.!
         print(#function, "✔️unSign으로 값 변경됨.")
     }
     
@@ -100,7 +103,7 @@ final class LoginManager {
             print(#function, "✔️sign상태, 회원가입상태 remove")
             SignStatusObserved.shared.isNeedLogin = true
         } else {
-            // 삭제 못했을경우 어떻게 할까
+            // TODO: 삭제 못했을경우 어떻게 할까
         }
     }
 }
