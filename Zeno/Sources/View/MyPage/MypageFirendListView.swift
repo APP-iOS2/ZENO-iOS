@@ -56,11 +56,11 @@ struct MypageFriendListView: View {
                     VStack {
                         LottieView(lottieFile: "friendNone")
                             .frame(width: .screenWidth * 0.5, height: .screenHeight * 0.2)
-                            .foregroundColor(.primary)
-                        Text("아직 추가된 친구가 없습니다!")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                            .opacity(0.7)
+                        Text("아직 추가된 친구가 없어요!")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
                         Text("그룹에서 친구를 추가해보세요.")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 13))
                     }
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
@@ -107,18 +107,22 @@ struct MypageFriendListView: View {
                 self.selectedGroup = "all"
             }
             .task {
-                /// 유저의 commInfo의 id값 가져오기 (유저가 속한 그룹의 id값)
-                if await mypageViewModel.userFriendIDList() {
-                    print("💡 [MyPage] 유저 친구값 가져오기 성공")
-                    guard let groupFriendID = mypageViewModel.friendIDList else { return }
-                    print("💭 [groupFriendID] : \(groupFriendID)")
-                    mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
-                    mypageViewModel.allMyPageFriendInfo = []
-                    print("❤️‍🩹💙\(mypageViewModel.allMyPageFriendInfo.count)")
-                    await mypageViewModel.getAllFriends()
-                    
-                    mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
-                }
+                /// 유저의 gorupList, groupIDList, userInfo, friendIDList 가져오기
+                await mypageViewModel.getUserInfo()
+                print("💡 [MyPage] 유저 친구값 가져오기 성공")
+                guard let groupFriendID = mypageViewModel.friendIDList else { return }
+                print("💭 [groupFriendID] : \(groupFriendID)")
+                mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
+                print("❤️‍🩹💙mypageViewModel.groupFirendList : \(mypageViewModel.groupFirendList)")
+                print("❤️‍🩹💙mypageViewModel.allMyPageFriendInfo : \(mypageViewModel.allMyPageFriendInfo)")
+                mypageViewModel.allMyPageFriendInfo = []
+                print("❤️‍🩹💙\(mypageViewModel.allMyPageFriendInfo.count)")
+                await mypageViewModel.getAllFriends()
+                
+                mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+//                if await mypageViewModel.userFriendIDList() {
+//
+//                }
                 await mypageViewModel.getCommunityInfo() // 유저가 속한 전체 그룹의 이가져오는 함수 실행
             }
             Spacer()
