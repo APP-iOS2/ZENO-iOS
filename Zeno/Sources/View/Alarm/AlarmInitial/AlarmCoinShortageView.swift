@@ -76,6 +76,8 @@ struct AlarmCoinShortageView: View {
                     )
             )
         }
+        .foregroundColor(.black)
+            
     }
 }
 

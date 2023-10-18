@@ -13,6 +13,7 @@ struct AlarmNudgeCellView: View {
     @Binding var selectAlarm: Alarm?
     @EnvironmentObject var communityViewModel: CommViewModel
     @Environment(\.colorScheme) var colorScheme
+    
     let alarm: Alarm
     
     private var getCommunity: (name: String, imageURL: String?) {
@@ -116,7 +117,7 @@ struct AlarmNudgeCellView: View {
         }
         .foregroundStyle(getFontColor)
         .padding()
-        .background(alarm.id == selectAlarm?.id ? .purple2 : Color.hex("F7F3FF"))
+        .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray5))
         .clipped()
         .cornerRadius(20)
         .shadow(color: .mainColor, radius: 1, y: 1)

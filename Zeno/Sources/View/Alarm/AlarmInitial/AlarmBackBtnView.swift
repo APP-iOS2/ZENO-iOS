@@ -52,6 +52,7 @@ struct AlarmBackBtnView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 18)
+        .foregroundColor(.black)
         .frame(width: 300)
         .background(
             RoundedRectangle(cornerRadius: 30)
