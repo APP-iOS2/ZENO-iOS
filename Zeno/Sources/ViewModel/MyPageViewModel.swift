@@ -11,14 +11,18 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-final class MypageViewModel: ObservableObject {
-    /// 파베가져오기
-    let db = Firestore.firestore()
-    private let firebaseManager = FirebaseManager.shared
+
+final class MypageViewModel: ObservableObject, LoginStatusDelegate {
+    // LoginStatusDelegate 프로토콜 메서드. -> 여기선 사용안함.
+    func login() async -> Bool {
+        return false
+    }
+  
     /// 파이어베이스 Auth의 User
     /// private let userSession = Auth.auth().currentUser
     /// 지금 로그인중인 firebase Auth에 해당 하는 유저의 User 객체 정보 가져오기
     @Published var userInfo: User?
+    
     /// User의 joinedCommInfo 정보
     @Published var groupList: [User.joinedCommInfo]?
     /// User의 그룹 id값만 배열로 담은 값
@@ -39,10 +43,20 @@ final class MypageViewModel: ObservableObject {
     @Published var allAlarmData: [Alarm] = []
     /// zenoString에 따른 이미지를 받을 데이터
     @Published var zenoStringImage: [String] = []
+    
+    @Published var isCommunityManagerAlert: Bool = false
+    @Published var isUserDataDeleteFailAlert: Bool = false
+    
     /// 비율 항목 계산을 위한 일반 변수
-    var itemFrequency = [String: Int]()
+    private var itemFrequency = [String: Int]()
     // 각 항목의 비율 계산
     var itemRatios = [String: Double]()
+    
+    /// 파베가져오기
+    private let firebaseManager = FirebaseManager.shared
+    
+    /// FIrebase DB
+    private let db = Firestore.firestore()
     
     /// zenoString들의 뱃지를 위한 비율을 계산하는 함수 (항목 / 전체 zenoString 개수)
     func zenoStringCalculator() {
@@ -76,10 +90,8 @@ final class MypageViewModel: ObservableObject {
     
     /// zenoString == zeno.question으로 사진 찾는 함수
     func findZenoImage(forQuestion question: String, in zenoQuestions: [Zeno]) -> String? {
-        for zeno in zenoQuestions {
-            if zeno.question == question {
-                return zeno.zenoImage
-            }
+        for zeno in zenoQuestions where zeno.question == question {
+            return zeno.zenoImage
         }
         return nil
     }
@@ -119,28 +131,17 @@ final class MypageViewModel: ObservableObject {
     /// User 객체값 가져오기
     @MainActor
     func getUserInfo() async {
-        self.groupIDList = []
+        self.groupIDList = [] // 배열 초기화
         if let currentUser = Auth.auth().currentUser?.uid {
-            do {
-                let document = try await db.collection("User").document(currentUser).getDocument()
-                if document.exists {
-                    let data = document.data()
-                    do {
-                        if let data = data {
-                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                            let user = try JSONDecoder().decode(User.self, from: jsonData)
-                            self.groupList = user.commInfoList
-                            self.groupIDList = self.groupList?.compactMap { $0.id }
-                            self.userInfo = user
-                        }
-                    } catch {
-                        print("json parsing Error \(error.localizedDescription)")
-                    }
-                } else {
-                    print("[Error]! getUserInfo 함수 에러 발생")
-                }
-            } catch {
-                print("Firebase document 가져오기 오류: \(error.localizedDescription)")
+            let result = await firebaseManager.read(type: User.self, id: currentUser)
+            switch result {
+            case .success(let user):
+                self.groupList = user.commInfoList
+                self.groupIDList = self.groupList?.compactMap { $0.id }
+                self.userInfo = user
+                
+            case .failure(let error):
+                print(#function, "\(error.localizedDescription)")
             }
         }
     }
@@ -261,10 +262,12 @@ final class MypageViewModel: ObservableObject {
                 if let document = document, document.exists {
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(User.self, from: jsonData)
-                        self.friendInfo.append(user)
-                        print("💙[friendInfo] \(self.friendInfo)")
+                        if let data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(User.self, from: jsonData)
+                            self.friendInfo.append(user)
+                            print("💙[friendInfo] \(self.friendInfo)")
+                        }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
@@ -286,10 +289,12 @@ final class MypageViewModel: ObservableObject {
                 if document.exists {
                     let data = document.data()
                     do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        let user = try JSONDecoder().decode(Community.self, from: jsonData)
-                        self.commArray.append(user)
-//                        print("💙[commArray] \(self.commArray)")
+                        if let data {
+                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                            let user = try JSONDecoder().decode(Community.self, from: jsonData)
+                            self.commArray.append(user)
+//                            print("💙[commArray] \(self.commArray)")
+                        }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
@@ -298,6 +303,224 @@ final class MypageViewModel: ObservableObject {
                 }
             } catch {
                 print("getCommunityInfo Error!! \(error.localizedDescription)")
+            }
+        }
+    }
+
+    /// 로그아웃
+    @MainActor
+    func logout() async {
+        try? Auth.auth().signOut()
+        await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+    }
+    
+    /// 회원탈퇴
+    @MainActor
+    func memberRemove() async -> Bool {
+        let removeResult = await removeUserRelateData()
+        
+        switch removeResult {
+        case .dataDeleteComplete:
+            do {
+                if let userInfo {
+                    print(#function, "✔️\(userInfo)")
+                    // 파베인증삭제 -> user컬렉션 문서 삭제 -> 로그아웃with 카카오토큰삭제 -> 유저디폴트 삭제
+                    try await Auth.auth().currentUser?.delete()
+                    print("✔️회원탈퇴 성공. 1회차")
+                    try? await firebaseManager.delete(data: userInfo)
+                    print("✔️User데이터Delete 성공.")
+                    await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+                    print("✔️카카오 토큰 삭제")
+                }
+            } catch let error as NSError {
+                print("✔️로그아웃 오류: \(error.localizedDescription)")
+                
+                if AuthErrorCode.Code(rawValue: error.code) == .requiresRecentLogin {
+                    let result = await KakaoAuthService.shared.fetchUserInfo()
+                    switch result {
+                    case .success(let (user, _)):
+                        if let user {
+                            let credential = EmailAuthProvider.credential(withEmail: user.kakaoAccount?.email ?? "",
+                                                                          password: String(describing: user.id))
+                            do {
+                                if let userInfo {
+                                    try await Auth.auth().currentUser?.reauthenticate(with: credential) // 재인증
+                                    try? await Auth.auth().currentUser?.delete()
+                                    print("✔️회원탈퇴 성공. 2회차")
+                                    try? await firebaseManager.delete(data: userInfo)
+                                    print("✔️User데이터Delete 성공. 2회차")
+                                    await KakaoAuthService.shared.logoutUserKakao() // 카카오 로그아웃 (토큰삭제)
+                                    print("✔️카카오 토큰 삭제 2회차")
+                                }
+                            } catch {
+                                print("✔️재인증실패 : \(error.localizedDescription)")
+                            }
+                        }
+                    case .failure(let err):
+                        print("✔️카카오유저값 못가져옴 :\(err.localizedDescription)")
+                    }
+                }
+            }
+            return true
+        case .communityExists:
+            // 커뮤니티 alert 열기 (그룹장으로 존재하는 그룹이 존재합니다. 그룹탭에서 처리바랍니다.( 그룹탭가는길 상세히 알려주기 )
+            self.isCommunityManagerAlert = true
+            return false
+        default:
+            // 일반 alert 열기 ( 회원탈퇴시 오류가 발생하였습니다. 앱을 종료 후 재시도바랍니다. )
+            self.isUserDataDeleteFailAlert = true
+            print(#function, "📝✔️\(removeResult.toString())") // 이걸 어디에 저장해둘곳이 없을까..
+            return false
+        }
+    }
+    
+    // TODO: - 트랜잭션 추가하기>>>>!!!! 전체구문 모두 트랜잭션안에 넣고 처리하면 될듯??
+    /// 회원탈퇴시
+    private func removeUserRelateData() async -> RemoveFailReason {
+        let currentUserID = Auth.auth().currentUser?.uid
+        // 0. Community컬렉션에서 managerID가 탈퇴한 User인것을 찾고 회원탈퇴하려면 manager위임하고 오라고 하는 부분 필요!!! 임의로 위임해주면 위임받은 사람한테 알림도 가야되고 이것저것 로직이 너무 복잡해짐. 해당기능이 구현되어있는 곳에서 처리후 오는게 좋을듯.
+        
+        if let currentUserID {
+            let resultComms = await firebaseManager.readDocumentsWithIDs(type: Community.self,
+                                                                         whereField: "managerID",
+                                                                         ids: [currentUserID])
+            
+            let resultCommDatas: [Community] = resultComms.compactMap { reu in
+                switch reu {
+                case .success(let community):
+                    return community
+                case .failure(let error):
+                    print(#function, "\(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            if !resultCommDatas.isEmpty {
+                // 매니저 위임하고 오셈ㅋ
+                return .communityExists
+            }
+            
+            // 1. Alarm컬렉션 showUserID가 탈퇴한 User인것의 문서자체를 제거
+            let resultAlarms = await firebaseManager.readDocumentsWithIDs(type: Alarm.self,
+                                                                          whereField: "showUserID",
+                                                                          ids: [currentUserID])
+            
+            let resultAlarmDatas: [Alarm] = resultAlarms.compactMap { reu in
+                switch reu {
+                case .success(let alarm):
+                    return alarm
+                case .failure(let error):
+                    print(#function, "\(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            var alarmDelCnt: Int = 0
+            // 만약에 알람데이터가 100개  50개 지우다가 51개째 지울때 오류나면 다시 시도시키기
+            for alarm in resultAlarmDatas {
+                do {
+                    try await firebaseManager.delete(data: alarm)
+                } catch {
+                    print(#function, "\(error.localizedDescription)")
+                    alarmDelCnt += 1
+                    break // TODO: - 지금 break해놓은이유는 트랜잭션을 걸것이기 때문에 걸어둠. 만약에 트랜잭션으로 처리 못하면 break 빼기. 23.10.18
+                }
+            }
+            
+            // 알람데이터가 못지운게 있으면 return
+            if alarmDelCnt > 0 { return .alarmDataExists }
+            
+            // 2. Community컬렉션 joinMembers배열의 id값이 삭제할userid인것을 찾아서 배열 value 제거
+            let commJoinResults = await firebaseManager.readDocumentsArrayWithID(type: Community.self,
+                                                                                 whereField: "joinMembers",
+                                                                                 id: currentUserID)
+            
+            let commJoinResultDatas: [Community] = commJoinResults.compactMap { comm in
+                switch comm {
+                case .success(let comm):
+                    return comm
+                case .failure(let error):
+                    print(#function, "\(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            var commDelCnt: Int = 0
+            for commJoin in commJoinResultDatas {
+                var joins = commJoin.joinMembers
+                joins = joins.filter { $0.id != currentUserID }
+                do {
+                    try await firebaseManager.update(data: commJoin, value: \.joinMembers, to: joins)
+                } catch {
+                    print(#function, "✔️\(error.localizedDescription)")
+                    commDelCnt += 1
+                    break
+                }
+            }
+            
+            if commDelCnt > 0 { return .commDataExists }
+            
+            // 3. User컬렉션 buddyList배열의 userid를 찾아서 배열value 제거
+            let userInfos = await firebaseManager.readDocumentsArrayWithID(type: User.self, id: currentUserID)
+            
+            let userInfoDatas: [User] = userInfos.compactMap { info in
+                switch info {
+                case .success(let user):
+                    return user
+                case .failure(let error):
+                    print(#function, "\(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            var userDelCnt: Int = 0
+            for userData in userInfoDatas {
+                let newCommInfo = userData.commInfoList.compactMap { comm in
+                    var chgComm = comm
+                    var buddys = chgComm.buddyList
+                    buddys = buddys.filter { buddyID in
+                        buddyID != currentUserID
+                    }
+                    
+                    chgComm.buddyList = buddys
+                    return chgComm
+                }
+                
+                do {
+                    try await firebaseManager.update(data: userData, value: \.commInfoList, to: newCommInfo)
+                } catch {
+                    print(#function, "✔️\(error.localizedDescription)")
+                    userDelCnt += 1
+                    break
+                }
+            }
+            
+            if userDelCnt > 0 { return .userDataDelError }
+        }
+        
+        return .dataDeleteComplete
+    }
+    
+    /// 삭제불가이유
+    enum RemoveFailReason {
+        case communityExists
+        case alarmDataExists
+        case commDataExists
+        case dataDeleteComplete
+        case userDataDelError
+        
+        func toString() -> String {
+            switch self {
+            case .communityExists:
+                return "커뮤니티의 매니저로 존재함."
+            case .alarmDataExists:
+                return "알람데이터가 전부다 지워지지않음."
+            case .commDataExists:
+                return "커뮤니티 업데이트 오류"
+            case .dataDeleteComplete:
+                return "데이터 삭제완료"
+            case .userDataDelError:
+                return "유저BuddyList업데이트 오류"
             }
         }
     }
