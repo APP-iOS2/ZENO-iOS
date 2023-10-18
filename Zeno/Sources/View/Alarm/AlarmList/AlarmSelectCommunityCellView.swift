@@ -21,6 +21,7 @@ struct AlarmSelectCommunityCellView: View {
                     .cacheOriginalImage()
                     .resizable()
                     .frame(width: 60, height: 60)
+                    .aspectRatio(contentMode: .fit)
                     .clipShape(Circle())
                     .shadow(color: .ggullungColor.opacity(0.3), radius: 3)
                     .overlay(
