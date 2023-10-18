@@ -266,10 +266,22 @@ class CommViewModel: ObservableObject {
         let newCommMembers = deepLinkTargetComm.joinMembers + [newMember]
         do {
             try await firebaseManager.update(data: deepLinkTargetComm, value: \.joinMembers, to: newCommMembers)
+            
+            let result = await firebaseManager.read(type: User.self, id: deepLinkTargetComm.managerID)
+            switch result {
+            case .success(let success):
+                PushNotificationManager.shared.sendPushNotification(
+                    toFCMToken: success.fcmToken,
+                    title: "\(deepLinkTargetComm.name)",
+                    body: "\(currentUser.name) 님이 그룹에 링크로 가입했어요!"
+                )
+            case .failure:
+                print("딥링크 가입시 매니저 정보 불러오기 실패")
+            }
             guard let index = allComm.firstIndex(where: { $0.id == deepLinkTargetComm.id }) else { return }
             allComm[index].joinMembers = newCommMembers 
         } catch {
-            print(#function + "커뮤니티 딥링크로 가입 시 커뮤니티의 joinMembers 업데이트 실패")
+            print(#function + "딥링크 가입시 커뮤니티의 joinMembers 업데이트 실패")
         }
     }
     /// 매니저가 커뮤니티를 제거하고 가입, 가입신청된 User의 commInfoList에서 커뮤니티 정보를 제거하는  함수
@@ -334,6 +346,11 @@ class CommViewModel: ObservableObject {
                     do {
                         let newCommInfo = user.commInfoList + [.init(id: currentComm.id, buddyList: [], alert: true)]
                         try await firebaseManager.update(data: user, value: \.commInfoList, to: newCommInfo)
+                        PushNotificationManager.shared.sendPushNotification(
+                            toFCMToken: user.fcmToken,
+                            title: "\(currentComm.name)",
+                            body: "\(currentComm.name)의 가입신청이 수락됐어요!"
+                        )
                         guard let commIndex = allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
                         allComm[commIndex].waitApprovalMemberIDs = updatedWaitList
                         allComm[commIndex].joinMembers = updatedCurrentMembers
@@ -521,6 +538,17 @@ class CommViewModel: ObservableObject {
 			try await firebaseManager.update(data: comm.self,
 											 value: \.waitApprovalMemberIDs,
 											 to: newComm)
+            let managerInfoResult = await firebaseManager.read(type: User.self, id: comm.managerID)
+            switch managerInfoResult {
+            case .success(let success):
+                PushNotificationManager.shared.sendPushNotification(
+                    toFCMToken: success.fcmToken,
+                    title: "\(deepLinkTargetComm.name)",
+                    body: "\(currentUser.name) 님이 그룹에 가입신청했어요!"
+                )
+            case .failure:
+                print("딥링크 가입시 매니저 정보 불러오기 실패")
+            }
 			guard let index = allComm.firstIndex(where: { $0.id == comm.id }) else { return }
 			allComm[index].waitApprovalMemberIDs = newComm
 		} catch {
