@@ -14,13 +14,12 @@ import Kingfisher
 
 struct MypageFriendListView: View {
     @EnvironmentObject private var mypageViewModel: MypageViewModel
-    @State private var selectedGroup = "all"
     /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
-    @State private var selectedGroupID = ""
+    @State private var selectedGroupID = "all"
     
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
-            Picker("그룹선택", selection: $selectedGroup) {
+            Picker("그룹선택", selection: $selectedGroupID) {
                 Text("전체").tag("all")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                 ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
@@ -30,7 +29,7 @@ struct MypageFriendListView: View {
                 }
             }
             .tint(.primary)
-            .onChange(of: selectedGroup) { newValue in
+            .onChange(of: selectedGroupID) { newValue in
                 self.selectedGroupID = newValue
                 mypageViewModel.friendInfo = []
                 mypageViewModel.allMyPageFriendInfo = []
@@ -39,13 +38,12 @@ struct MypageFriendListView: View {
                         await mypageViewModel.getAllFriends()
                         mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
                     }
-                } // else {
-//                    Task {
-//                        mypageViewModel.friendInfo = []
-//                        mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
-//                    }
-//                }
-                mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                } else {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                    }
+                }
             }
             
             VStack(alignment: .leading) {
@@ -103,27 +101,26 @@ struct MypageFriendListView: View {
                 }
             }
             .padding(.horizontal, 20)
-            .onAppear {
-                self.selectedGroup = "all"
-            }
             .task {
                 /// 유저의 gorupList, groupIDList, userInfo, friendIDList 가져오기
                 await mypageViewModel.getUserInfo()
-                print("💡 [MyPage] 유저 친구값 가져오기 성공")
                 guard let groupFriendID = mypageViewModel.friendIDList else { return }
-                print("💭 [groupFriendID] : \(groupFriendID)")
                 mypageViewModel.groupFirendList = groupFriendID.removeDuplicates()
-                print("❤️‍🩹💙mypageViewModel.groupFirendList : \(mypageViewModel.groupFirendList)")
-                print("❤️‍🩹💙mypageViewModel.allMyPageFriendInfo : \(mypageViewModel.allMyPageFriendInfo)")
                 mypageViewModel.allMyPageFriendInfo = []
-                print("❤️‍🩹💙\(mypageViewModel.allMyPageFriendInfo.count)")
-                await mypageViewModel.getAllFriends()
-                
-                mypageViewModel.friendInfo =  mypageViewModel.allMyPageFriendInfo.removeDuplicates()
-//                if await mypageViewModel.userFriendIDList() {
-//
-//                }
                 await mypageViewModel.getCommunityInfo() // 유저가 속한 전체 그룹의 이가져오는 함수 실행
+                mypageViewModel.friendInfo = []
+                mypageViewModel.allMyPageFriendInfo = []
+                if selectedGroupID == "all" {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+                    }
+                } else {
+                    Task {
+                        await mypageViewModel.getAllFriends()
+                        mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                    }
+                }
             }
             Spacer()
         }
