@@ -12,33 +12,33 @@ struct EmailRegistrationView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @State private var isCompleteAlert: Bool = false
+    @Binding var registEmail: String
+    @Binding var registPassword: String
     
     var body: some View {
         VStack {
-            TextField("이메일을 입력해주세요.", text: $emailLoginViewModel.registrationEmail)
+            TextField("이메일을 입력해주세요.", text: $registEmail)
                 .modifier(LoginTextFieldModifier())
             // 6자리 이상 입력해야 함
-            SecureField("비밀번호를 입력해주세요.", text: $emailLoginViewModel.registrationPassword)
+            SecureField("비밀번호를 입력해주세요.", text: $registPassword)
                 .modifier(LoginTextFieldModifier())
             TextField("이름을 입력해주세요.", text: $emailLoginViewModel.registrationName)
                 .modifier(LoginTextFieldModifier())
 //            TextField("성별을 입력해주세요.", text: $emailLoginViewModel.registrationGender)
 //                .modifier(LoginTextFieldModifier())
-            TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
-                .modifier(LoginTextFieldModifier())
+//            TextField("한줄소개 입력해주세요.", text: $emailLoginViewModel.registrationDescription)
+//                .modifier(LoginTextFieldModifier())
             Button {
                 Task {
                     do {
+                        // MARK: 이메일 가입기능은 추후 없음.
                         try await userViewModel.createUser(
-                            email: emailLoginViewModel.registrationEmail,
-                            passwrod: emailLoginViewModel.registrationPassword,
+                            email: registEmail,
+                            passwrod: registPassword,
                             name: emailLoginViewModel.registrationName,
-                            gender: emailLoginViewModel.registrationGender,
-                            description: emailLoginViewModel.registrationDescription,
+                            gender: .male,
+                            description: "",
                             imageURL: "")
-                        
-                        emailLoginViewModel.email = emailLoginViewModel.registrationEmail
-                        emailLoginViewModel.password = emailLoginViewModel.registrationPassword
                         
                         isCompleteAlert.toggle()
                     } catch {
@@ -59,6 +59,8 @@ struct EmailRegistrationView: View {
 
 struct EmailRegistrationView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailRegistrationView().environmentObject(EmailLoginViewModel())
+        EmailRegistrationView(registEmail: .constant(""),
+                              registPassword: .constant(""))
+            .environmentObject(EmailLoginViewModel())
     }
 }

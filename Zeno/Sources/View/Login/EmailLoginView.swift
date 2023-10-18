@@ -11,6 +11,9 @@ import SwiftUI
 struct EmailLoginView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
 //    @EnvironmentObject var userViewModel: UserViewModel
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var isRegistPage: Bool = false
     
     var body: some View {
         VStack {
@@ -24,11 +27,14 @@ struct EmailLoginView: View {
                     endPoint: .trailing
                 ))
             Spacer()
-            TextField("이메일을 입력해 주세요.", text: $emailLoginViewModel.email)
+            TextField("이메일을 입력해 주세요.", text: $email)
                 .modifier(LoginTextFieldModifier())
-            SecureField("비밀번호를 입력해 주세요.", text: $emailLoginViewModel.password)
+            SecureField("비밀번호를 입력해 주세요.", text: $password)
                 .modifier(LoginTextFieldModifier())
             Button {
+                emailLoginViewModel.email = self.email
+                emailLoginViewModel.password = self.password
+                
                 Task {
                     await LoginManager(delegate: emailLoginViewModel).login()
 //                    await userViewModel.login(
@@ -44,21 +50,23 @@ struct EmailLoginView: View {
             }
             HStack {
                 Spacer()
-                NavigationLink {
-                    EmailRegistrationView()
-                        .environmentObject(emailLoginViewModel)
+                Button {
+                    self.email = ""
+                    self.password = ""
+                    isRegistPage.toggle()
                 } label: {
                     Text("이메일로 회원가입")
                         .font(.caption)
                         .underline()
                 }
                 .padding(.horizontal)
+                .navigationDestination(isPresented: $isRegistPage) {
+                    EmailRegistrationView(registEmail: $email, registPassword: $password)
+                        .environmentObject(emailLoginViewModel)
+                }
             }
             Spacer()
             Spacer()
-        }
-        .onAppear {
-            print("🍎")
         }
     }
 }
