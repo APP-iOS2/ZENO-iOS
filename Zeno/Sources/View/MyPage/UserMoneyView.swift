@@ -10,12 +10,14 @@ import SwiftUI
 
 struct UserMoneyView: View {
     @EnvironmentObject private var mypageViewModel: MypageViewModel
+    @State private var isPurchaseSheet: Bool = false
     
     var body: some View {
         HStack {
             VStack(spacing: 3) {
                 Button {
                     print("구매 페이지로 연결!!!")
+                    isPurchaseSheet.toggle()
                 } label: {
                     VStack(spacing: 3) {
                         Text("\(mypageViewModel.userInfo?.showInitial ?? 0)")
@@ -30,6 +32,11 @@ struct UserMoneyView: View {
                         }
                     }
                 }
+                .sheet(isPresented: $isPurchaseSheet, content: {
+                    PurchaseView()
+                        .presentationDetents([.fraction(0.4)])
+                        .presentationDragIndicator(.visible)
+                })
             }
             .frame(maxWidth: .infinity/3)
             
