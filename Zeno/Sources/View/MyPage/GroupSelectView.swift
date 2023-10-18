@@ -60,6 +60,7 @@ struct GroupSelectView: View {
                 Spacer()
             }
         }
+        
     }
 }
 struct GroupSelectView_Previews: PreviewProvider {

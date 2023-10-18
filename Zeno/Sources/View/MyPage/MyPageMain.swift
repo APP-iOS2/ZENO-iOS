@@ -33,23 +33,29 @@ struct MyPageMain: View {
         if profileImageURL != KakaoAuthService.shared.noneImageURL {
             KFImage(URL(string: profileImageURL))
                 .cacheOriginalImage()
-                .resizable()
                 .placeholder {
                     Image(asset: ZenoAsset.Assets.zenoIcon)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 120, alignment: .center)
+                        .frame(width: 120, height: 120, alignment: .center)
                 }
+                .resizable()
                 .frame(width: 120, alignment: .center)
                 .aspectRatio(contentMode: .fit)
                 .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .strokeBorder(
+                            Color(uiColor: .systemGray6), lineWidth: 1
+                        )
+                )
                 .padding(.leading, 18)
         } else {
             ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                             ratio: .fit,
                             isRandom: false)
-            .frame(width: 120, alignment: .center)
             .aspectRatio(contentMode: .fit)
+            .frame(width: 120, alignment: .center)
             .clipShape(Circle())
             .padding(.leading, 18)
         }
