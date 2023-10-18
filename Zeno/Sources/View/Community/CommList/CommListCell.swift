@@ -28,7 +28,7 @@ struct CommListCell: View {
 					HStack(alignment: .center) {
 						Circle()
 							.stroke()
-							.frame(width: 35, height: 35)
+							.frame(width: 40, height: 40)
 							.background(
 								ZenoKFImageView(comm)
 									.clipShape(Circle())

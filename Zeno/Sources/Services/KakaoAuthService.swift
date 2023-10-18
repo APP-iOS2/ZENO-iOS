@@ -22,26 +22,6 @@ extension KakaoSDKUser.Gender {
     }
 }
 
-/// 로그인 여부 UserDefault에 저장
-enum SignStatus: String {
-    case signIn, unSign
-    
-    /// 로그인상태 저장.
-    func saveStatus() {
-        UserDefaults.standard.set(self.rawValue, forKey: "KakaoSignStatus")
-    }
-
-    /// 상태 가져오기
-    static func getStatus() -> Self {
-        if let statusString = UserDefaults.standard.string(forKey: "KakaoSignStatus"),
-           let status = SignStatus(rawValue: statusString) {
-            return status
-        } else {
-            return .unSign
-        }
-    }
-}
-
 /// 카카오인증 서비스 싱글톤
 final class KakaoAuthService {
     static let shared = KakaoAuthService()

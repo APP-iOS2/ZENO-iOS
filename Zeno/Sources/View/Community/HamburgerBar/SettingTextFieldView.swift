@@ -52,6 +52,7 @@ struct SettingTextFieldView: View {
 						  text: $fixedText,
 						  prompt: Text(title))
 				.font(.regular(16))
+				.textInputAutocapitalization(.never)
 				.focused($isTextFocused)
 				.onChange(of: fixedText) { newValue in
 					// 텍스트 필드가 비었을 때
@@ -98,7 +99,7 @@ struct SettingTextFieldView: View {
 					Text("사용 가능 여부 확인중...")
 						.foregroundColor(.primary)
 				case .possibility:
-					Text("사용 가능한 그룹명 입니다.")
+					Text("사용 가능한 \(title) 입니다.")
 						.foregroundColor(.blue)
 				case .badWord:
 					Text("적절하지 않은 문자가 포함되어 있습니다.")

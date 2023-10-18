@@ -103,7 +103,7 @@ struct NickNameRegistView: View {
                     .padding(.trailing)
                     .offset(y: 5)
             }
-            RegistCustomTF(titleText: "* 이름",
+            RegistCustomTF(titleText: "이름",
                            placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
                            customText: $nameText,
                            isNotHanguel: $isChecking,
@@ -119,7 +119,7 @@ struct NickNameRegistView: View {
             }
             
             HStack {
-                Text("* 성별")
+                Text("성별")
                     .frame(width: 60, alignment: .leading)
                     .font(.regular(16))
                 Picker("Gender", selection: $gender) {
@@ -177,14 +177,10 @@ struct NickNameRegistView: View {
                         Spacer()
                         
                         /// 이용약관 보러가기
-                        Button {
-                            // 이용약관 뷰
-                        } label: {
-                            Image(systemName: "chevron.forward")
-                                .foregroundColor(.mainColor)
-                        }
+                        linkView("이용약관", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
+                            .border(.black)
                     }
-                    .padding(.bottom,10)
+                    .padding(.bottom, 10)
                     /// 개인정보 처리방침 동의
                     HStack {
                         Button {
@@ -203,18 +199,13 @@ struct NickNameRegistView: View {
                         Spacer()
                         
                         /// 개인정보처리방침 보러가기
-                        Button {
-                            // 개인정보 처리방침 동의
-                        } label: {
-                            Image(systemName: "chevron.forward")
-                                .foregroundColor(.mainColor)
-                        }
+                        linkView("개인정보처리방침", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
+                            .border(.black)
                     }
                     
                     Spacer()
 
                     /// 확인버튼
-                    ///
                     Button {
                         if koreaLangCheck(nameText) {
                             if nameText.count >= 2 {
@@ -235,14 +226,14 @@ struct NickNameRegistView: View {
                         }
                     }
                     .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
-                    .padding(.top,30)
+                    .padding(.top, 30)
                 }
                 .font(.thin(16))
             }
             .padding(.horizontal)
             Spacer()
-            
         }
+        .opacity(nextNavigation ? 0.0 : 1.0)
         .contentShape(Rectangle())
         .hideKeyboardOnTap()
         .overlay(
@@ -268,6 +259,10 @@ struct NickNameRegistView: View {
                 .padding(.top, 40)
             }
             .opacity(isProgressLoading ? 1.0 : 0.0)
+        )
+        .overlay(
+            OnboardingMainView()
+                .opacity(nextNavigation ? 1.0 : 0.0)
         )
         .sheet(isPresented: $isConfirmSheet, content: {
             VStack(alignment: .leading, spacing: 20) {
@@ -305,7 +300,11 @@ struct NickNameRegistView: View {
                         Task {
                             isConfirmSheet.toggle()
                             await dataUpdate()
-                            dismiss()
+                            withAnimation(.easeOut(duration: 2.0)) {
+                                nextNavigation = true
+                            }
+//                            OnboardingMainView에서 dismiss해준다.
+//                            dismiss()
                         }
                     } label: {
                         Text("확인")
@@ -328,9 +327,6 @@ struct NickNameRegistView: View {
         })
         .onAppear {
             getUserData()
-        }
-        .navigationDestination(isPresented: $nextNavigation) {
-            OnboardingMainView()
         }
     }
     
@@ -371,6 +367,25 @@ struct NickNameRegistView: View {
         } catch {
             // toast를 띄워주면 될듯.
             print(#function, "이름변경 Update 실패했음. 다시 시도시키기\n\(error.localizedDescription)")
+        }
+    }
+    
+    private func rowView(_ label: String) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundColor(.mainColor)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
+    private func linkView(_ label: String, _ url: String) -> some View {
+        if let url = URL(string: url) {
+            Link(destination: url) {
+                rowView(label)
+            }
         }
     }
 }

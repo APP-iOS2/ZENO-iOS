@@ -53,11 +53,11 @@ struct CommListView: View {
                                 } label: {
                                     HStack(alignment: .center) {
                                         Circle()
-                                            .stroke()
-                                            .frame(width: 35, height: 35)
+											.stroke()
+                                            .frame(width: 40, height: 40)
                                             .background(
                                                 ZenoKFImageView(comm)
-                                                    .clipShape(Circle())
+													.clipShape(Circle())
                                             )
 										VStack(alignment: .leading, spacing: 4) {
 											HStack(alignment: .center) {
@@ -97,14 +97,13 @@ struct CommListView: View {
                         } label: {
                             HStack {
                                 Circle()
-                                    .stroke()
-                                    .frame(width: 35, height: 35)
+									.stroke(.primary, lineWidth: 2)
+                                    .frame(width: 40, height: 40)
                                     .background(
                                         Image(systemName: "plus")
                                             .clipShape(Circle())
                                             .bold()
                                     )
-									.bold()
                                 Text("새로운 그룹 만들기")
                                 Spacer()
                             }

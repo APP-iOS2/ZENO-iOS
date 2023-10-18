@@ -22,6 +22,7 @@ struct ImageMenuView: View {
                 .onTapGesture {
                     isPresented = false
                 }
+				.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 30) {
                 Text(title)
                     .font(.headline)
@@ -55,7 +56,7 @@ struct ImageMenuView: View {
         }
         .fullScreenCover(isPresented: $isCameraPicker) {
             // TODO: 카메라 띄우기
-            CommCameraPicker()
+            CommCameraPicker(selectedImage: $selectedImage)
         }
     }
     

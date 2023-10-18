@@ -79,25 +79,3 @@ func checkPhotoLibraryAuthorizationStatus() {
         break
     }
 }
-
-/// 카메라 켜기
-struct CommCameraPicker: UIViewControllerRepresentable {
-    func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> UIImagePickerController {
-        // UIImagePickerController 인스턴스 반환
-        let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = .camera    // 이미지 소스 선택
-        imagePicker.allowsEditing = false    // 이미지 편집기능 여부
-        
-        return imagePicker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<Self>) {
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        return Coordinator()
-    }
-    
-    final class Coordinator: NSObject, UIImagePickerControllerDelegate {
-    }
-}
