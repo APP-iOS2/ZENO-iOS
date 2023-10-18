@@ -142,6 +142,7 @@ class CommViewModel: ObservableObject {
     }
     
     func addCurrentCommSnapshot() {
+		guard !currentCommID.isEmpty else { return }
         commListener = Firestore.firestore().collection("Community").document(currentCommID)
             .addSnapshotListener { [weak self] snapshot, _ in
                 self?.currentComm = try? snapshot?.data(as: Community.self)
@@ -700,6 +701,7 @@ class CommViewModel: ObservableObject {
 	}
     
     func login(id: String) {
+		guard !id.isEmpty else { return }
         userListener = Firestore.firestore().collection("User").document(id).addSnapshotListener { [weak self] snapshot, _ in
             self?.updateCurrentUser(user: try? snapshot?.data(as: User.self))
         }
