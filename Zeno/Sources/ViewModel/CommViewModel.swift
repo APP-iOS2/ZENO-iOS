@@ -462,6 +462,9 @@ class CommViewModel: ObservableObject {
             // 로컬 업데이트
             guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
             joinedComm.remove(at: index)
+			
+			print("👩🏻‍🤝‍👨🏼현재 joinedComm: \(joinedComm)")
+			print("👩🏻‍🤝‍👨🏼현재 currentComm: \(currentComm)")
             guard let firstComm = joinedComm.first else { return }
             setCurrentID(id: firstComm.id)
         } catch {

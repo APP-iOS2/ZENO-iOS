@@ -25,6 +25,7 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                         placeholderImg
                             .resizable()
                             .opacity(0.8)
+							.background(.background)
                     }
             } else {
                 placeholderImg
