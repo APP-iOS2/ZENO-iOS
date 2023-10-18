@@ -11,12 +11,12 @@ import SwiftUI
 struct GroupCellModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-			.frame(maxHeight: 40)
+			.frame(height: 45)
             .padding()
             .background(.background)
             .cornerRadius(10)
 			.overlay(RoundedRectangle(cornerRadius: 10)
-				.stroke(Color.mainColor.opacity(0.9), lineWidth: 1)
+				.stroke(Color.mainColor.opacity(0.7), lineWidth: 1)
 				  )
 			.shadow(color: .gray, radius: 1)
     }
