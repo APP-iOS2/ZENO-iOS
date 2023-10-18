@@ -103,7 +103,7 @@ struct NickNameRegistView: View {
                     .padding(.trailing)
                     .offset(y: 5)
             }
-            RegistCustomTF(titleText: "* 이름",
+            RegistCustomTF(titleText: "이름",
                            placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
                            customText: $nameText,
                            isNotHanguel: $isChecking,
@@ -119,7 +119,7 @@ struct NickNameRegistView: View {
             }
             
             HStack {
-                Text("* 성별")
+                Text("성별")
                     .frame(width: 60, alignment: .leading)
                     .font(.regular(16))
                 Picker("Gender", selection: $gender) {
@@ -178,6 +178,7 @@ struct NickNameRegistView: View {
                         
                         /// 이용약관 보러가기
                         linkView("이용약관", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
+                            .border(.black)
                     }
                     .padding(.bottom, 10)
                     /// 개인정보 처리방침 동의
@@ -199,6 +200,7 @@ struct NickNameRegistView: View {
                         
                         /// 개인정보처리방침 보러가기
                         linkView("개인정보처리방침", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
+                            .border(.black)
                     }
                     
                     Spacer()

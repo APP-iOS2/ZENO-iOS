@@ -10,7 +10,7 @@ import SwiftUI
 
 struct EmailLoginView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
-    @EnvironmentObject var userViewModel: UserViewModel
+//    @EnvironmentObject var userViewModel: UserViewModel
     
     var body: some View {
         VStack {
@@ -30,10 +30,11 @@ struct EmailLoginView: View {
                 .modifier(LoginTextFieldModifier())
             Button {
                 Task {
-                    await userViewModel.login(
-                        email: emailLoginViewModel.email,
-                        password: emailLoginViewModel.password
-                    )
+                    await LoginManager(delegate: emailLoginViewModel).login()
+//                    await userViewModel.login(
+//                        email: emailLoginViewModel.email,
+//                        password: emailLoginViewModel.password
+//                    )
                 }
             } label: {
                 loginButtonLabel(
@@ -56,13 +57,18 @@ struct EmailLoginView: View {
             Spacer()
             Spacer()
         }
+        .onAppear {
+            print("🍎")
+        }
     }
 }
 
 struct EmailLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailLoginView()
-            .environmentObject(EmailLoginViewModel())
-            .environmentObject(UserViewModel())
+        NavigationStack {
+            EmailLoginView()
+                .environmentObject(EmailLoginViewModel())
+                .environmentObject(UserViewModel())
+        }
     }
 }

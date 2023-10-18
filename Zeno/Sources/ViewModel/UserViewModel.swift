@@ -22,8 +22,7 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
     @Published var isNickNameRegistViewPop: Bool = false   // 회원가입창 열림 여부
     /* userViewModel의 currentUser가 변경되었지만 alarmViewModel의 정보가 변경되기 이전에 isNeedLogin이 변경되어
     AlarmView에 순간적으로 가입된 커뮤니티가 없습니다가 뜨는 버그있음 */
-//    @Published var isNeedLogin: Bool = false
-    
+
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     

@@ -11,6 +11,7 @@ import SwiftUI
 struct EmailRegistrationView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject var userViewModel: UserViewModel
+    @State private var isCompleteAlert: Bool = false
     
     var body: some View {
         VStack {
@@ -35,6 +36,11 @@ struct EmailRegistrationView: View {
                             gender: emailLoginViewModel.registrationGender,
                             description: emailLoginViewModel.registrationDescription,
                             imageURL: "")
+                        
+                        emailLoginViewModel.email = emailLoginViewModel.registrationEmail
+                        emailLoginViewModel.password = emailLoginViewModel.registrationPassword
+                        
+                        isCompleteAlert.toggle()
                     } catch {
                         print("회원가입 실패 \(error.localizedDescription)")
                     }
@@ -44,6 +50,9 @@ struct EmailRegistrationView: View {
                                  tintColor: .white,
                                  backgroundColor: ZenoAsset.Assets.mainPurple1.swiftUIColor)
             }
+        }
+        .alert("회원가입 성공\n뒤로가서 로그인바랍니다.", isPresented: $isCompleteAlert) {
+//            Text("회원가입 성공")
         }
     }
 }
