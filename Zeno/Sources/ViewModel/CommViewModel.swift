@@ -14,6 +14,7 @@ import KakaoSDKShare
 import Firebase
 import FirebaseFirestoreSwift
 
+// TODO: 추방당하면 그룹 안보이게해야함
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let commRepo = CommRepository.shared
@@ -93,7 +94,17 @@ class CommViewModel: ObservableObject {
             return currentCommMembers.filter { $0.name.contains(userSearchTerm) }
         }
     }
-	
+    
+    func searchUser() {
+        let result = Firestore.firestore().collection("Community").whereField("name", isLessThanOrEqualTo: commSearchTerm)
+        result.getDocuments { snapshot, error in
+            if let error {
+                print(error.localizedDescription)
+                return
+            }
+            guard let comms = snapshot?.documents.compactMap({ try? $0.data(as: Community.self) }) else { return }
+        }
+    }
     /// [커뮤니티 검색] 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
     var searchedComm: [Community] {
         var searchCom = allComm
@@ -119,9 +130,6 @@ class CommViewModel: ObservableObject {
     @Published var isShowingCommListSheet: Bool = false
     
     init() {
-        Task {
-            await fetchAllComm()
-        }
 		loadRecentSearches() // 최근검색어 불러오기
     }
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
@@ -135,28 +143,23 @@ class CommViewModel: ObservableObject {
     }
     // userViewModel.currentUser변경 -> commViewModel.currentUser변경 -> joinedComm변경 -> currentComm변경
     func updateCurrentUser(user: User?) {
+        if currentUser == nil {
+            currentUser = user
+            addCurrentCommSnapshot()
+            return
+        }
+        if let user,
+           user.commInfoList.isEmpty {
+            currentCommID.removeAll()
+        }
         currentUser = user
+    }
+    
+    func updateCurrentComm(comm: Community?) {
+        currentComm = comm
         Task {
             await fetchJoinedComm()
         }
-    }
-    
-    func addCurrentCommSnapshot() {
-		guard !currentCommID.isEmpty else { return }
-        commListener = Firestore.firestore().collection("Community").document(currentCommID)
-            .addSnapshotListener { [weak self] snapshot, _ in
-                self?.currentComm = try? snapshot?.data(as: Community.self)
-                Task {
-                    await self?.fetchWaitedMembers()
-                    await self?.fetchCurrentCommMembers()
-                }
-        }
-    }
-    
-    func removeCurrentCommSnapshot() {
-        commListener?.remove()
-        commListener = nil
-        currentComm = nil
     }
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
@@ -424,7 +427,6 @@ class CommViewModel: ObservableObject {
     /// user정보로 커뮤니티를 받아오는 함수
     @MainActor
     func fetchJoinedComm() async {
-        let user = await firebaseManager.read(type: User.self, id: "")
         guard let currentUser else { return }
         let results = await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: currentUser.commInfoList.map({ $0.id }))
         let joinedComm = results.compactMap {
@@ -564,8 +566,10 @@ class CommViewModel: ObservableObject {
               let currentUser
         else { return }
         let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
+        let changedUserCommList = currentUser.commInfoList.filter({ $0.id != currentComm.id })
         do {
             try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedUserCommList)
             let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
                                                                      ids: changedMembers.map({ $0.id }))
             await results.asyncForEach { [weak self] result in
@@ -699,18 +703,61 @@ class CommViewModel: ObservableObject {
 		guard let managerID = currentComm?.managerID.description else { return false }
 		return managerID == user.id
 	}
-    
+    // MARK: Snapshot
     func login(id: String) {
-		guard !id.isEmpty else { return }
-        userListener = Firestore.firestore().collection("User").document(id).addSnapshotListener { [weak self] snapshot, _ in
-            self?.updateCurrentUser(user: try? snapshot?.data(as: User.self))
+        guard !id.isEmpty else { return }
+        userListener = Firestore.firestore().collection("User").document(id).addSnapshotListener { [weak self] snapshot, error in
+            if let error {
+                print(error.localizedDescription)
+                return
+            }
+            let user = try? snapshot?.data(as: User.self)
+            self?.updateCurrentUser(user: user)
         }
-        addCurrentCommSnapshot()
     }
     
     func logout() {
         userListener?.remove()
         userListener = nil
         currentUser = nil
+        removeCurrentCommSnapshot()
+        currentCommID.removeAll()
+    }
+    
+    func addCurrentCommSnapshot() {
+        guard let currentUser else { return }
+        if currentCommID.isEmpty {
+            guard let defaultComm = currentUser.commInfoList.first
+            else { return }
+            currentCommID = defaultComm.id
+        }
+        
+        commListener = Firestore.firestore().collection("Community").document(currentCommID)
+            .addSnapshotListener { [weak self] snapshot, error in
+                if let error {
+                    print(error.localizedDescription)
+                    return
+                }
+                guard let currentUser = self?.currentUser,
+                      let comm = try? snapshot?.data(as: Community.self)
+                else { return }
+                if currentUser.commInfoList.contains(where: { $0.id == comm.id }) {
+                    self?.currentCommID = comm.id
+                    self?.updateCurrentComm(comm: comm)
+                } else {
+                    self?.currentCommID.removeAll()
+                    self?.updateCurrentComm(comm: nil)
+                }
+                Task {
+                    await self?.fetchWaitedMembers()
+                    await self?.fetchCurrentCommMembers()
+                }
+        }
+    }
+    
+    func removeCurrentCommSnapshot() {
+        commListener?.remove()
+        commListener = nil
+        currentComm = nil
     }
 }

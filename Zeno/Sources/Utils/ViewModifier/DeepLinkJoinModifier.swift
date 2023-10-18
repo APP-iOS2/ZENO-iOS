@@ -79,16 +79,30 @@ struct JoinWithDeepLinkView: View {
                     isPresented = false
                 } label: {
                     HStack {
-                        Text(btn.title)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16))
-                            .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.05)
-                            .background(
-                                btn.background
-                                    .shadow(radius: 3)
-                            )
-                            .cornerRadius(10)
+                        Group {
+                            if comm.personnel > comm.joinMembers.count && btn == .join {
+                                Text(comm.personnel > comm.joinMembers.count ? btn.title : "인원이 꽉 찼습니다")
+                            } else {
+                                Text(btn.title)
+                            }
+                        }
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+                        .foregroundColor(.white)
+                        .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.05)
+                        .background(
+                            Group {
+                                if comm.personnel > comm.joinMembers.count {
+                                    btn.background
+                                } else {
+                                    Btn.cancel.background
+                                }
+                            }
+                                .shadow(radius: 3)
+                        )
+                        .cornerRadius(10)
                     }
                 }
+                .disabled(comm.personnel <= comm.joinMembers.count && btn == .join)
             }
         }
         .foregroundColor(.white.opacity(0.8))
