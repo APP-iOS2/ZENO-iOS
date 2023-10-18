@@ -39,8 +39,8 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
 
     struct joinedCommInfo: Hashable, Codable {
         var id: Community.ID
-        var buddyList: [User.ID]
-        var alert: Bool
+        var buddyList: [User.ID] = []
+        var alert: Bool = true
     }
 }
 
