@@ -49,15 +49,24 @@ struct ZenoWarningView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
             Text(message)
+<<<<<<< Updated upstream
                 .font(.bold(21))
+=======
+                .font(.regular(15))
+>>>>>>> Stashed changes
                 .padding(.top, 25)
             Button {
                 isPresented = false
             } label: {
                 Text("확인")
+<<<<<<< Updated upstream
                     .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
+=======
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15
+                                                                                ))
+>>>>>>> Stashed changes
                     .foregroundColor(.white)
-                    .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.06)
+                    .frame(width: .screenWidth * 0.7, height: .screenHeight * 0.05)
                     .background(
                         Color.mainColor
                             .shadow(radius: 3)
