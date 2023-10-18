@@ -88,7 +88,7 @@ struct AlarmListCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(alarm.zenoString)")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .padding(.bottom, 1)
                     Text("\(alarm.receiveUserName) 님을 선택했습니다.")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
@@ -112,7 +112,7 @@ struct AlarmListCellView: View {
         .background(alarm.id == selectAlarm?.id ? .purple2 : Color(uiColor: .systemGray5))
         .clipped()
         .cornerRadius(20)
-        .shadow(radius: 2)
+        .shadow(radius: 1, y: 1)
     }
 }
 

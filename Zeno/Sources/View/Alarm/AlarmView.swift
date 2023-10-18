@@ -63,7 +63,7 @@ struct AlarmView: View {
                                         .background(.background)
                                         .offset(y: offsetY)
                                 }
-                                .shadow(color: .primary.opacity(0.1), radius: 3, y: 5)
+                                .shadow(color: .primary.opacity(0.1), radius: 2, y: 2)
                                 if filterAlarmByCommunity.isEmpty {
                                     Spacer()
                                         .frame(width: .screenWidth, height: .screenHeight * 0.9)
@@ -73,19 +73,35 @@ struct AlarmView: View {
                                             .frame(height: 115)
                                         LazyVStack {
                                             ForEach(filterAlarmByCommunity) { alarm in
-                                                AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
-                                                    .padding(.bottom, 4)
-                                                    .padding(.horizontal)
-                                                    .onAppear {
-                                                        Task {
-                                                            if isLastItem(alarm) {
-                                                                if let currentUser = userViewModel.currentUser {
-                                                                    await alarmViewModel.loadMoreData(showUserID: currentUser.id)
-                                                                    print("======alarmViewModel.loadMoreData")
+                                                if alarm.zenoID == "nudge" {
+                                                    AlarmNudgeCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                        .padding(.bottom, 4)
+                                                        .padding(.horizontal)
+                                                        .onAppear {
+                                                            Task {
+                                                                if isLastItem(alarm) {
+                                                                    if let currentUser = userViewModel.currentUser {
+                                                                        await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                        print("======alarmViewModel.loadMoreData")
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                    }
+                                                } else {
+                                                    AlarmListCellView(selectAlarm: $selectAlarm, alarm: alarm)
+                                                        .padding(.bottom, 4)
+                                                        .padding(.horizontal)
+                                                        .onAppear {
+                                                            Task {
+                                                                if isLastItem(alarm) {
+                                                                    if let currentUser = userViewModel.currentUser {
+                                                                        await alarmViewModel.loadMoreData(showUserID: currentUser.id)
+                                                                        print("======alarmViewModel.loadMoreData")
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                }
                                             }
                                             .navigationDestination(isPresented: $isShowInitialView) {
                                                 if let selectAlarm {
