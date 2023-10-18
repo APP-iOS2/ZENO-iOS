@@ -88,15 +88,19 @@ struct AlarmNudgeCellView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("\(alarm.receiveUserName)님이")
-                        .font(.thin(12))
-                        .padding(.bottom, 1)
-                    Text("\(alarm.zenoString) 에")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                        .padding(.bottom, 1)
-                        .offset(y: -3)
-                    Text("답변으로 지목한 친구가 \(alarm.receiveUserName)님을 콕 👉 찔렀어요  💜 ")
                         .font(.thin(13))
+                        .padding(.bottom, 1)
+                    Text("\(alarm.zenoString)에")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
+                        .padding(.bottom, 1)
                         .offset(y: -3)
+                    HStack(spacing: 0) {
+                        Text("답변으로 지목한 친구가 \(alarm.receiveUserName)님을 ")
+                            .font(.thin(13))
+                        Text("💜 콕 찔렀어요 💜")
+                            .font(.bold(14))
+                    }
+                    .offset(y: -6)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
@@ -115,7 +119,7 @@ struct AlarmNudgeCellView: View {
         .background(alarm.id == selectAlarm?.id ? .purple2 : Color.hex("F7F3FF"))
         .clipped()
         .cornerRadius(20)
-        .shadow(radius: 2)
+        .shadow(color: .mainColor, radius: 1, y: 1)
     }
 }
 

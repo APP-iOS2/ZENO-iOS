@@ -55,10 +55,10 @@ class AlarmViewModel: ObservableObject {
     @MainActor
     func pushNudgeAlarm(nudgeAlarm: Alarm, currentUserGender: Gender) async {
         // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
-        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: "내가 \(nudgeAlarm.zenoString)으로 제노했던 상대방이 나를 찔렀습니다.", createdAt: Date().timeIntervalSince1970)
+        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: nudgeAlarm.zenoString, createdAt: Date().timeIntervalSince1970)
         await createAlarm(alarm: alarm)
         
-        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: alarm.zenoString)
+        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: "\(alarm.zenoString)에 답변으로 지목한 친구가 \(alarm.sendUserName)님을 콕 👉 찔렀어요  💜 ")
     }
     
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
