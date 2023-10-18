@@ -28,8 +28,6 @@ struct CommEmptyView: View {
 						.resizable()
 						.scaledToFill()
 						.frame(width: 30, height: 30)
-					
-						.bold()
 				}
 				.tint(.mainColor)
 			}

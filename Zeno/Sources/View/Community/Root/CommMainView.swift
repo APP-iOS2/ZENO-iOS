@@ -87,17 +87,22 @@ struct CommMainView: View {
                 comm: commViewModel.currentComm ?? Community.dummy[0]
             )
         )
-        .onChange(of: commViewModel.allComm) { _ in
-            commViewModel.joinedComm = commViewModel.allComm.filterJoined(user: commViewModel.currentUser)
-        }
+//        .onChange(of: commViewModel.allComm) { _ in
+//            commViewModel.joinedComm = commViewModel.allComm.filterJoined(user: commViewModel.currentUser)
+//        }
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
         }
-        .onChange(of: commViewModel.currentComm) { _ in
-            Task {
-                await commViewModel.fetchCurrentCommMembers()
-            }
-        }
+//        .onChange(of: commViewModel.currentComm) { _ in
+//            Task {
+//                await commViewModel.fetchCurrentCommMembers()
+//            }
+//        }
+//        .onChange(of: commViewModel.currentUser?.commInfoList) { _ in
+//            Task {
+//                await commViewModel.fetchJoinedComm()
+//            }
+//        }
     }
     
     var groupNameToolbarItem: some ToolbarContent {

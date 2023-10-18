@@ -340,7 +340,9 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
 	@MainActor
 	func removeRequestComm(comm: Community, user: User) async throws {
 		// 1. 파이어베이스에서 현재 유저 requestComm 지우기
-		let requestComm = user.requestComm.filter { $0 != comm.id }
+		var requestComm = user.requestComm
+        guard let index = requestComm.firstIndex(where: { $0 == user.id }) else { return }
+        requestComm.remove(at: index)
 		do {
 			try await firebaseManager.update(data: user.self,
 											 value: \.requestComm,
