@@ -73,6 +73,11 @@ struct CommDelegateManagerView: View {
             guard let currentComm = commViewModel.currentComm else { return }
             do {
                 try await FirebaseManager.shared.update(data: currentComm, value: \.managerID, to: user.id)
+                PushNotificationManager.shared.sendPushNotification(
+                    toFCMToken: user.fcmToken,
+                    title: "\(currentComm.name)",
+                    body: "\(currentComm.name)의 매니저가 되셨어요!👑"
+                )
                 guard let commIndex = commViewModel.allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
                 commViewModel.allComm[commIndex].managerID = user.id
 				commViewModel.managerChangeWarning = true

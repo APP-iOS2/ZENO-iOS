@@ -80,7 +80,6 @@ class CommViewModel: ObservableObject {
     @Published var userSearchTerm: String = ""
     /// 모든 커뮤니티를 검색하기 위한 String
     @Published var commSearchTerm: String = ""
-	
     /// [커뮤니티 검색] 선택된 커뮤니티에서 userSearchTerm로 검색된 유저
     var searchedUsers: [User] {
         if userSearchTerm.isEmpty {
@@ -129,10 +128,12 @@ class CommViewModel: ObservableObject {
         else { return false }
         return buddyList.contains(user.id)
     }
-    /// currentUser를 변경하는 함수
+    // userViewModel.currentUser변경 -> commViewModel.currentUser변경 -> joinedComm변경 -> currentComm변경
     func updateCurrentUser(user: User?) {
         currentUser = user
-        joinedComm = allComm.filterJoined(user: user)
+        Task {
+            await fetchJoinedComm()
+        }
     }
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
@@ -275,11 +276,12 @@ class CommViewModel: ObservableObject {
                     title: "\(deepLinkTargetComm.name)",
                     body: "\(currentUser.name) 님이 그룹에 링크로 가입했어요!"
                 )
+                setCurrentID(id: deepLinkTargetComm.id)
             case .failure:
                 print("딥링크 가입시 매니저 정보 불러오기 실패")
             }
             guard let index = allComm.firstIndex(where: { $0.id == deepLinkTargetComm.id }) else { return }
-            allComm[index].joinMembers = newCommMembers 
+            allComm[index].joinMembers = newCommMembers
         } catch {
             print(#function + "딥링크 가입시 커뮤니티의 joinMembers 업데이트 실패")
         }
@@ -378,6 +380,11 @@ class CommViewModel: ObservableObject {
                 allComm[commIndex].joinMembers = updatedJoinMembers
                 do {
                     try await firebaseManager.update(data: user, value: \.commInfoList, to: deportedMembersComm)
+                    PushNotificationManager.shared.sendPushNotification(
+                        toFCMToken: user.fcmToken,
+                        title: "\(currentComm.name)",
+                        body: "\(currentComm.name)에서 추방당했어요...🥲"
+                    )
                 } catch {
                     print(#function + "내보낸 유저 Document에 commInfoList 업데이트 실패")
                 }
@@ -387,6 +394,22 @@ class CommViewModel: ObservableObject {
         }
     }
     /// db의 모든 커뮤니티를 받아오는 함수
+    @MainActor
+    func fetchJoinedComm() async {
+        let user = await firebaseManager.read(type: User.self, id: "")
+        guard let currentUser else { return }
+        let results = await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: currentUser.commInfoList.map({ $0.id }))
+        let joinedComm = results.compactMap {
+            switch $0 {
+            case .success(let success):
+                return success
+            case .failure:
+                return nil
+            }
+        }
+        self.joinedComm = joinedComm
+    }
+    
     @MainActor
     func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)
@@ -601,7 +624,7 @@ class CommViewModel: ObservableObject {
         }
     }
     /// ShareSheet 올리기
-    func shareText() {
+    func tempShareLink() {
         guard let commID = currentComm?.id else { return }
         let deepLink = "zenoapp://kakaolink?commID=\(commID)"
         let activityVC = UIActivityViewController(
