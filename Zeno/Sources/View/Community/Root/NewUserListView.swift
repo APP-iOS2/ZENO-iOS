@@ -17,7 +17,7 @@ struct NewUserListView: View {
     var body: some View {
         VStack {
             Section {
-                if isShowingDetailNewBuddyToggle {
+                if isShowingDetailNewBuddyToggle && !commViewModel.recentlyJoinedMembers.isEmpty {
                     ScrollView(.horizontal) {
                         HStack(spacing: 14) {
                             ForEach(commViewModel.recentlyJoinedMembers) { user in
