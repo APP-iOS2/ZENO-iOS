@@ -56,7 +56,7 @@ struct ImageMenuView: View {
         }
         .fullScreenCover(isPresented: $isCameraPicker) {
             // TODO: 카메라 띄우기
-            CommCameraPicker()
+            CommCameraPicker(selectedImage: $selectedImage)
         }
     }
     
