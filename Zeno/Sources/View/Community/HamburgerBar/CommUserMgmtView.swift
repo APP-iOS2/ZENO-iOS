@@ -31,24 +31,25 @@ struct CommUserMgmtView: View {
 						}
 					}
 					Spacer()
-					Button {
-						Task {
-							guard let comm = commViewModel.currentComm else { return }
-							await commViewModel.fetchCurrentCommMembers()
-						}
-					} label: {
-						HStack(alignment: .bottom, spacing: 2) {
-							Image(systemName: "arrow.triangle.2.circlepath")
-							Text("새로고침")
-						}
-						.font(.thin(11))
-						.foregroundColor(.white)
-						.padding(5)
-						.background(Color.mainColor)
-						.cornerRadius(10)
-						.padding(.trailing, 14)
-						.shadow(color: .gray, radius: 1)
-					}
+//					Button {
+//						Task {
+//                            await commViewModel.fetchJoinedComm()
+//                            await commViewModel.fetchCurrentCommMembers()
+//							await commViewModel.fetchWaitedMembers()
+//						}
+//					} label: {
+//						HStack(alignment: .bottom, spacing: 2) {
+//							Image(systemName: "arrow.triangle.2.circlepath")
+//							Text("새로고침")
+//						}
+//						.font(.thin(11))
+//						.foregroundColor(.white)
+//						.padding(5)
+//						.background(Color.mainColor)
+//						.cornerRadius(10)
+//						.padding(.trailing, 14)
+//						.shadow(color: .gray, radius: 1)
+//					}
 				}
                 
                 ScrollView(showsIndicators: false) {
@@ -96,11 +97,11 @@ struct CommUserMgmtView: View {
                     }
                 }
                 .animation(.easeInOut, value: [isWaitListFold, isCurrentListFold])
-                .refreshable {
-                    Task {
-                        await commViewModel.fetchCurrentCommMembers()
-                    }
-            }
+//                .refreshable {
+//                    Task {
+//                        await commViewModel.fetchWaitedMembers()
+//                    }
+//                }
         }
         .alert("\(deportUser.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
             Button("내보내기", role: .destructive) {

@@ -11,12 +11,16 @@ import KakaoSDKCommon
 import KakaoSDKTalk
 import KakaoSDKTemplate
 import KakaoSDKShare
+import Firebase
+import FirebaseFirestoreSwift
 
 class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let commRepo = CommRepository.shared
+    private var userListener: ListenerRegistration?
+    private var commListener: ListenerRegistration?
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
-    private(set) var currentUser: User?
+    @Published private(set) var currentUser: User?
     /// 마지막으로 선택한 커뮤니티의 ID를 UserDefaults에 저장
     @AppStorage("selectedCommID") var currentCommID: Community.ID = ""
     /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
@@ -24,15 +28,16 @@ class CommViewModel: ObservableObject {
     /// currentUser가 가입한 모든 커뮤니티
     @Published var joinedComm: [Community] = []
     /// currentUser가 마지막으로 선택한 커뮤니티, 가입된 커뮤니티가 없으면 nil을 반환
-    var currentComm: Community? {
-        if !joinedComm.isEmpty {
-            guard let currentComm = joinedComm.getCurrent(id: currentCommID) else {
-                return joinedComm.first
-            }
-            return currentComm
-        }
-        return nil
-    }
+    @Published var currentComm: Community?
+//    var currentComm: Community? {
+//        if !joinedComm.isEmpty {
+//            guard let currentComm = joinedComm.getCurrent(id: currentCommID) else {
+//                return joinedComm.first
+//            }
+//            return currentComm
+//        }
+//        return nil
+//    }
     /// 선택된 커뮤니티의 모든 유저(본인 포함)
     @Published var currentCommMembers: [User] = []
     /// 선택된 커뮤니티의 가입 대기중인 유저
@@ -135,10 +140,32 @@ class CommViewModel: ObservableObject {
             await fetchJoinedComm()
         }
     }
+    
+    func addCurrentCommSnapshot() {
+        commListener = Firestore.firestore().collection("Community").document(currentCommID)
+            .addSnapshotListener { [weak self] snapshot, _ in
+                self?.currentComm = try? snapshot?.data(as: Community.self)
+                Task {
+                    await self?.fetchWaitedMembers()
+                    await self?.fetchCurrentCommMembers()
+                }
+        }
+    }
+    
+    func removeCurrentCommSnapshot() {
+        commListener?.remove()
+        commListener = nil
+        currentComm = nil
+    }
     /// 선택된 커뮤니티 Index를 변경하는 함수
     func setCurrentID(id: Community.ID) {
         currentCommID = id
+        removeCurrentCommSnapshot()
+        addCurrentCommSnapshot()
     }
+//    func setCurrentID(id: Community.ID) {
+//        currentCommID = id
+//    }
     
     func getCommunityByID(_ id: String) -> Community? {
         return allComm.first { community in
@@ -393,7 +420,7 @@ class CommViewModel: ObservableObject {
             }
         }
     }
-    /// db의 모든 커뮤니티를 받아오는 함수
+    /// user정보로 커뮤니티를 받아오는 함수
     @MainActor
     func fetchJoinedComm() async {
         let user = await firebaseManager.read(type: User.self, id: "")
@@ -409,7 +436,7 @@ class CommViewModel: ObservableObject {
         }
         self.joinedComm = joinedComm
     }
-    
+    /// db의 모든 커뮤니티를 받아오는 함수
     @MainActor
     func fetchAllComm() async {
         let results = await firebaseManager.readAllCollection(type: Community.self)
@@ -467,37 +494,59 @@ class CommViewModel: ObservableObject {
     }
     /// 선택된 커뮤니티에 가입된 유저, 가입신청된 유저를 받아오는 함수
     @MainActor
-	func fetchCurrentCommMembers() async {
+    func fetchCurrentCommMembers() async {
+        // 1. 파베에서 현재 그룹 정보 불러오기
+        let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
+        
+        do {
+            let fetchComm = try resultComm.get()
+            // 2. 현재 그룹 유저 ID 나누기
+            let currentCommMemberIDs = fetchComm.joinMembers.map { $0.id }
+            // 3. 유저 ID로 유저객체값 받기
+            let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                     ids: currentCommMemberIDs)
+            // 4. result의 유저객체값 분류
+            let currentUsers = results.compactMap {
+                switch $0 {
+                case .success(let success):
+                    return success
+                case .failure:
+                    return nil
+                }
+            }
+            // 5. 현재 그룹의 유저정보에 뿌려주기
+            self.currentCommMembers = exceptCurrentUser(users: currentUsers)
+                .filter { currentCommMemberIDs.contains($0.id) }
+        } catch {
+            print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
+        }
+    }
+    @MainActor
+	func fetchWaitedMembers() async {
 		// 1. 파베에서 현재 그룹 정보 불러오기
 		let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
-		
-		do {
-			let fetchComm = try resultComm.get()
-			// 2. 현재 그룹 유저 ID 나누기
-			let currentCommMemberIDs = fetchComm.joinMembers.map { $0.id }
-			let currentWaitMemberIDs = fetchComm.waitApprovalMemberIDs
-			// 3. 유저 ID로 유저객체값 받기
-			let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
-																	 ids: currentCommMemberIDs + currentWaitMemberIDs)
-			// 4. result의 유저객체값 분류
-			let currentUsers = results.compactMap {
-				switch $0 {
-				case .success(let success):
-					return success
-				case .failure:
-					return nil
-				}
-			}
-			// 5. 현재 그룹의 유저정보에 뿌려주기
-			self.currentCommMembers = exceptCurrentUser(users: currentUsers)
-				.filter { currentCommMemberIDs.contains($0.id) }
-			if isCurrentCommManager {
-				self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
-					.filter { currentWaitMemberIDs.contains($0.id) }
-				print(#function + "🔵 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
-			}
-		} catch {
-			print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
+        
+        do {
+            if isCurrentCommManager {
+                let fetchComm = try resultComm.get()
+                // 3. 유저 ID로 유저객체값 받기
+                let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
+                                                                         ids: fetchComm.waitApprovalMemberIDs)
+                // 4. result의 유저객체값 분류
+                let currentUsers = results.compactMap {
+                    switch $0 {
+                    case .success(let success):
+                        return success
+                    case .failure:
+                        return nil
+                    }
+                }
+                self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
+                    .filter { fetchComm.waitApprovalMemberIDs.contains($0.id) }
+                print(#function + "🔵 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
+            }
+        } catch {
+            print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
 		}
     }
     /*
@@ -649,4 +698,17 @@ class CommViewModel: ObservableObject {
 		guard let managerID = currentComm?.managerID.description else { return false }
 		return managerID == user.id
 	}
+    
+    func login(id: String) {
+        userListener = Firestore.firestore().collection("User").document(id).addSnapshotListener { [weak self] snapshot, _ in
+            self?.updateCurrentUser(user: try? snapshot?.data(as: User.self))
+        }
+        addCurrentCommSnapshot()
+    }
+    
+    func logout() {
+        userListener?.remove()
+        userListener = nil
+        currentUser = nil
+    }
 }
