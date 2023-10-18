@@ -95,14 +95,8 @@ struct CommListView: View {
                             isPresented = false
                         } label: {
                             HStack {
-                                Circle()
-                                    .stroke(.primary, lineWidth: 2)
-                                    .frame(width: 40, height: 40)
-                                    .background(
-                                        Image(systemName: "plus")
-                                            .clipShape(Circle())
-                                            .bold()
-                                    )
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 20))
                                 Text("새로운 그룹 만들기")
                                 Spacer()
                             }
@@ -161,7 +155,7 @@ struct GroupListView_Previews: PreviewProvider {
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
-                .environmentObject(mypageViewModel)	
+                .environmentObject(mypageViewModel)
                 .environmentObject(alarmViewModel)
                 .onAppear {
                     Task {
