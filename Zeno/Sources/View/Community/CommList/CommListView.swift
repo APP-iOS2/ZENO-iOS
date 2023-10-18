@@ -12,35 +12,34 @@ struct CommListView: View {
     @Binding var isPresented: Bool
     @Binding var isPresentedAddCommView: Bool
     
-	@EnvironmentObject private var userViewModel: UserViewModel
-	@EnvironmentObject private var commViewModel: CommViewModel
-	
-	var body: some View {
-		NavigationStack {
-			VStack {
-				Button {
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Button {
                     commViewModel.isShowingSearchCommSheet = true
-					commViewModel.commSearchTerm = .init()
-				} label: {
-					searchBar
-				}
+                    commViewModel.commSearchTerm = .init()
+                } label: {
+                    searchBar
+                }
                 
                 ScrollView(showsIndicators: false) {
                     VStack {
                         if commViewModel.joinedComm.isEmpty {
                             VStack(alignment: .center) {
-								LottieView(lottieFile: "cry")
-									.frame(width: .screenWidth * 0.3, height: .screenHeight * 0.1)
-                                Text("현재 가입된 그룹이 없습니다")
-									.foregroundColor(.primary)
-									.font(.bold(20))
-									.padding(.bottom, 5)
-								Group {
-									Text("새로운 그룹을 탐색해 그룹에 가입하거나")
-									Text("새로운 그룹을 만들어 보세요!")
-								}
-								.font(.thin(14))
-								.foregroundColor(.primary)
+                                LottieView(lottieFile: "cryggulung")
+                                    .frame(width: .screenWidth * 0.3, height: .screenHeight * 0.1)
+                                Text("가입된 그룹이 없습니다")
+                                    .foregroundColor(.primary)
+                                    .font(.bold(16))
+                                    .padding(.bottom, 1)
+                                Group {
+                                    Text("그룹에 가입하거나, 그룹을 만들어 보세요!")
+                                }
+                                .font(.thin(12))
+                                .foregroundColor(.primary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical)
@@ -53,38 +52,38 @@ struct CommListView: View {
                                 } label: {
                                     HStack(alignment: .center) {
                                         Circle()
-											.stroke()
+                                            .stroke()
                                             .frame(width: 40, height: 40)
                                             .background(
                                                 ZenoKFImageView(comm)
-													.clipShape(Circle())
+                                                    .clipShape(Circle())
                                             )
-										VStack(alignment: .leading, spacing: 4) {
-											HStack(alignment: .center) {
-												Text("\(comm.name)")
-													.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-													.lineLimit(1)
-													.foregroundColor(.primary)
-												HStack(alignment: .lastTextBaseline, spacing: 1) {
-													Image(systemName: "person.2.fill")
-														.font(.regular(11))
-													Text("\(comm.joinMembers.count)")
-												}
-												.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
-												.foregroundColor(Color(uiColor: .systemGray3))
-											}
-											if !comm.description.isEmpty {
-												Text("\(comm.description)")
-													.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
-													.foregroundColor(.gray)
-													.lineLimit(1)
-											}
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            HStack(alignment: .center) {
+                                                Text("\(comm.name)")
+                                                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+                                                    .lineLimit(1)
+                                                    .foregroundColor(.primary)
+                                                HStack(alignment: .lastTextBaseline, spacing: 1) {
+                                                    Image(systemName: "person.2.fill")
+                                                        .font(.regular(11))
+                                                    Text("\(comm.joinMembers.count)")
+                                                }
+                                                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
+                                                .foregroundColor(Color(uiColor: .systemGray3))
+                                            }
+                                            if !comm.description.isEmpty {
+                                                Text("\(comm.description)")
+                                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                                                    .foregroundColor(.gray)
+                                                    .lineLimit(1)
+                                            }
                                         }
                                         .padding(.leading, 5)
                                         Spacer()
                                         Image(systemName: "chevron.forward")
                                             .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
-											.foregroundColor(.gray)
+                                            .foregroundColor(.gray)
                                     }
                                     .groupCell()
                                 }
@@ -97,7 +96,7 @@ struct CommListView: View {
                         } label: {
                             HStack {
                                 Circle()
-									.stroke(.primary, lineWidth: 2)
+                                    .stroke(.primary, lineWidth: 2)
                                     .frame(width: 40, height: 40)
                                     .background(
                                         Image(systemName: "plus")
@@ -108,39 +107,39 @@ struct CommListView: View {
                                 Spacer()
                             }
                             .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-                                .padding(.bottom, 1)
+                            .padding(.bottom, 1)
                         }
                         .groupCell()
-						.tint(.mainColor)
+                        .tint(.mainColor)
                         .padding(2)
                     }
                     .padding()
-				}
-			}
-		}
+                }
+            }
+        }
         .fullScreenCover(isPresented: $commViewModel.isShowingSearchCommSheet) {
             CommSearchView(isShowingSearchCommSheet: $commViewModel.isShowingSearchCommSheet)
         }
-	}
+    }
 }
 
 extension CommListView {
-	var searchBar: some View {
-		HStack(spacing: 10) {
-			Image(systemName: "magnifyingglass")
-			Text("새로운 그룹 탐색하기")
-			Spacer()
-		}
-		.font(.regular(14))
-		.frame(maxWidth: .infinity)
-		.padding(.horizontal)
-		.padding(.vertical, 11)
+    var searchBar: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+            Text("새로운 그룹 탐색하기")
+            Spacer()
+        }
+        .font(.regular(14))
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
+        .padding(.vertical, 11)
         .background(HierarchicalShapeStyle.quaternary)
-		.cornerRadius(10)
-		.padding(.horizontal)
-		.padding(.top)
-		.foregroundColor(Color(uiColor: .systemGray))
-	}
+        .cornerRadius(10)
+        .padding(.horizontal)
+        .padding(.top)
+        .foregroundColor(Color(uiColor: .systemGray))
+    }
 }
 
 struct GroupListView_Previews: PreviewProvider {
@@ -162,7 +161,7 @@ struct GroupListView_Previews: PreviewProvider {
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
-                .environmentObject(mypageViewModel)
+                .environmentObject(mypageViewModel)	
                 .environmentObject(alarmViewModel)
                 .onAppear {
                     Task {
