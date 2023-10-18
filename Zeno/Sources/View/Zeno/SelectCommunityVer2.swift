@@ -16,7 +16,6 @@ enum PlayStatus {
 }
 
 struct SelectCommunityVer2: View {
-    
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject private var zenoViewModel = ZenoViewModel()
