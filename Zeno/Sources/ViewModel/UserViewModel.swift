@@ -28,15 +28,15 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
     
     @MainActor
     init() {
-        print("🦕userViewModel 초기화")
-        Task {
-            try? await loadUserData() // currentUser Value 가져오기 서버에서
-            if self.currentUser == nil {
-                SignStatusObserved.shared.isNeedLogin = true // signIn상태가 아닌데 currentUser값을 가져오지 못하면 로그인이 필요함. (로그인창 이동)
-            } else {
-                SignStatusObserved.shared.isNeedLogin = false
-            }
-        }
+        print("✔️userViewModel 초기화")
+//        Task {
+//            try? await loadUserData() // currentUser Value 가져오기 서버에서
+//            if self.currentUser == nil {
+//                SignStatusObserved.shared.isNeedLogin = true // signIn상태가 아닌데 currentUser값을 가져오지 못하면 로그인이 필요함. (로그인창 이동)
+//            } else {
+//                SignStatusObserved.shared.isNeedLogin = false
+//            }
+//        }
     }
 
     /// LoginStatusDelegate 프로토콜 메서드
@@ -51,8 +51,8 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
     func login(email: String, password: String) async {
         do {
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
-            self.userSession = result.user
-            try? await loadUserData()
+//            self.userSession = result.user
+//            try? await loadUserData()
             print("🔵 로그인 성공")
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
