@@ -194,25 +194,42 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     
     /// BuddyList에서 친구 객체 정보 반환 함수
     @MainActor
-    func returnFriendInfo(selectedGroupID: String) {
+    func returnFriendInfo(selectedGroupID: String) async {
         self.friendInfo = []
         for friend in self.returnBuddyList(selectedGroupID: selectedGroupID).removeDuplicates() {
-            db.collection("User").document(friend).getDocument { document, error in
-                if let document = document, document.exists {
+            do {
+                let document = try await db.collection("User").document(friend).getDocument() // { document, error in
+                if document.exists {
                     let data = document.data()
                     do {
-                        if let data {
+                        if let data = data {
                             let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                             let user = try JSONDecoder().decode(User.self, from: jsonData)
                             self.friendInfo.append(user)
-                            print("💙[friendInfo] \(self.friendInfo)")
                         }
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
+    //                if let document = document, document.exists {
+    //                    let data = document.data()
+    //                    do {
+    //                        if let data {
+    //                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+    //                            let user = try JSONDecoder().decode(User.self, from: jsonData)
+    //                            self.friendInfo.append(user)
+    //                            print("💙[friendInfo] \(self.friendInfo)")
+    //                        }
+    //                    } catch {
+    //                        print("json parsing Error \(error.localizedDescription)")
+    //                    }
+    //                } else {
+    //                    print("[returnFriendInfo] firebase document 존재 오류")
+    //                }
                 } else {
                     print("[returnFriendInfo] firebase document 존재 오류")
                 }
+            } catch {
+                print("returnFriendInfo Error!! \(error.localizedDescription)")
             }
         }
     }
