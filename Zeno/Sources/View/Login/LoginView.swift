@@ -26,7 +26,7 @@ struct LoginView: View {
                         .foregroundColor(.white)
                         .opacity(0.6)
                     
-                    Text("제노는어쩌구저쩌구야")
+                    Text("제노로 마음 전달하기")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
                         .foregroundColor(.white)
                         .opacity(0.6)

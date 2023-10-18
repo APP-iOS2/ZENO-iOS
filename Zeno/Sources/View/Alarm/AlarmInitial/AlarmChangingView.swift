@@ -93,6 +93,7 @@ struct AlarmChangingView: View {
                         } label: {
                             Text("다시 확인")
                                 .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                                .font(.regular(15))
                                 .foregroundColor(Color.primary)
                                 .background(
                                     RoundedRectangle(cornerRadius: 25)
