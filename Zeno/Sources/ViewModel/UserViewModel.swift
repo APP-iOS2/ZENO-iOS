@@ -325,7 +325,7 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
         }
     }
 
-    /// 가입신청 보낸 그룹 등록
+    /// [가입신청] 보낸 그룹 등록
     @MainActor
     func addRequestComm(comm: Community) async throws {
         guard let currentUser else { return }
@@ -335,4 +335,18 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
                                          to: requestComm)
         self.currentUser?.requestComm = requestComm
     }
+	
+	/// [가입수락] 매니저가 가입을 수락하면 가입한 유저의 그룹 가입요청 데이터가 지워지는 함수
+	@MainActor
+	func removeRequestComm(comm: Community, user: User) async throws {
+		// 1. 파이어베이스에서 현재 유저 requestComm 지우기
+		let requestComm = user.requestComm.filter { $0 != comm.id }
+		do {
+			try await firebaseManager.update(data: user.self,
+											 value: \.requestComm,
+											 to: requestComm)
+		} catch {
+			print("🔴 [가입수락] 가입요청 데이터 지우기 실패")
+		}
+	}
 }
