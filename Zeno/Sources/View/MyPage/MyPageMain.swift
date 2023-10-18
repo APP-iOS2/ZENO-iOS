@@ -27,7 +27,7 @@ struct MyPageMain: View {
     @State private var showInitial: Int = 0
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
-
+    
     @ViewBuilder
     private var profileImage: some View {
         if profileImageURL != KakaoAuthService.shared.noneImageURL {
@@ -71,24 +71,24 @@ struct MyPageMain: View {
     
     var body: some View {
         NavigationStack {
+            HStack {
+                Text("마이페이지")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
+                    .font(.footnote)
+                    .padding(.vertical, 10)
+                Spacer()
+                NavigationLink {
+                    MypageSettingView()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 22))
+                }
+            }
+            .foregroundColor(.primary)
+            .padding(.horizontal, 15)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        Text("마이페이지")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
-                            .font(.footnote)
-                            .padding(.vertical, 10)
-                        Spacer()
-                        NavigationLink {
-                            MypageSettingView()
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 22))
-                        }
-                    }
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 15)
-                    
                     HStack(spacing: 2) {
                         // 유저 프로필 이미지 설정
                         profileImage
@@ -124,6 +124,7 @@ struct MyPageMain: View {
                         print("💟 \(mypageViewModel.zenoStringImage)")
                     }
                     .padding(.bottom, 3)
+                    
                     GroupSelectView()
                 }
             }
@@ -131,8 +132,8 @@ struct MyPageMain: View {
                 await mypageViewModel.getUserInfo()
                 getUserData()
                 await mypageViewModel.fetchAllAlarmData()
-//                print("⏰⏰ \(mypageViewModel.allAlarmData)")
-//                print("😈😈 \(mypageViewModel.zenoStringAll)")
+                //                print("⏰⏰ \(mypageViewModel.allAlarmData)")
+                //                print("😈😈 \(mypageViewModel.zenoStringAll)")
                 mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)

@@ -21,7 +21,7 @@ struct TabBarView: View {
                 tab.view
             }
             .toolbarBackground(.hidden, for: .tabBar)
-		}
+        }
         .overlay {
             VStack(alignment: .center) {
                 Spacer()
@@ -45,11 +45,11 @@ struct TabBarView: View {
             commViewModel.isJoinWithDeeplinkView = false
         }
         .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
-		.zenoWarning("성공적으로 매니저를 위임했습니다.", isPresented: $commViewModel.managerChangeWarning)
+        .zenoWarning("성공적으로 매니저를 위임했습니다.", isPresented: $commViewModel.managerChangeWarning)
         .task {
                 await userViewModel.updateUserFCMToken(fcmToken)
         }
-	}
+    }
 }
 
 struct TabBarView_Previews: PreviewProvider {

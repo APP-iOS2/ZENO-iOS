@@ -11,7 +11,6 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-
 final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     // LoginStatusDelegate 프로토콜 메서드. -> 여기선 사용안함.
     func login() async -> Bool {
