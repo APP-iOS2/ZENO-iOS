@@ -772,6 +772,9 @@ class CommViewModel: ObservableObject {
     @MainActor
     func fetchJoinedComm() async {
         guard let currentUser else { return }
+        print(#function + "실행중")
+        self.joinedComm = []
+        
         let results = await firebaseManager.readDocumentsWithIDs(
             type: Community.self,
             ids: currentUser.commInfoList.map { $0.id }
