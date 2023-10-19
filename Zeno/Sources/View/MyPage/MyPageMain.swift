@@ -25,6 +25,9 @@ struct MyPageMain: View {
     @State private var name: String =  ""
     @State private var description: String = ""
     @State private var showInitial: Int = 0
+    
+    @Namespace var topID
+    
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
     
@@ -87,53 +90,57 @@ struct MyPageMain: View {
             .foregroundColor(.primary)
             .padding(.horizontal, 15)
             
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 2) {
-                        // 유저 프로필 이미지 설정
-                        profileImage
-                        /// 유저 재화 정보 뷰
-                        UserMoneyView()
-                            .frame(minHeight: UIScreen.main.bounds.height/9)
-                    }
-                    .frame(height: 150)
-                    VStack(alignment: .leading, spacing: 8) {
-                        // 유저 이름
-                        HStack(spacing: 10) {
-                            NavigationLink {
-                                UserProfileEdit()
-                            } label: {
-                                HStack {
-                                    Text(name)
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
-                                        .fontWeight(.semibold)
-                                    Image(systemName: "chevron.right")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+            ScrollViewReader { scrollVR in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(spacing: 2) {
+                            // 유저 프로필 이미지 설정
+                            profileImage
+                            /// 유저 재화 정보 뷰
+                            UserMoneyView()
+                                .frame(minHeight: UIScreen.main.bounds.height/9)
+                        }
+                        .frame(height: 150)
+                        VStack(alignment: .leading, spacing: 8) {
+                            // 유저 이름
+                            HStack(spacing: 10) {
+                                NavigationLink {
+                                    UserProfileEdit()
+                                } label: {
+                                    HStack {
+                                        Text(name)
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
+                                            .fontWeight(.semibold)
+                                        Image(systemName: "chevron.right")
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                    }
                                 }
                             }
+                            // 유저 한줄소개
+                            Text(description)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                .lineSpacing(6)
                         }
-                        // 유저 한줄소개
-                        Text(description)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                            .lineSpacing(6)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.primary)
+                        .onAppear {
+                            print("💟 \(mypageViewModel.zenoStringImage)")
+                        }
+                        .padding(.bottom, 3)
+                        
+                        GroupSelectView()
+                            .id(topID)
+                            .onTapGesture {
+                                scrollVR.scrollTo(topID)
+                            }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .foregroundColor(.primary)
-                    .onAppear {
-                        print("💟 \(mypageViewModel.zenoStringImage)")
-                    }
-                    .padding(.bottom, 3)
-                    
-                    GroupSelectView()
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
                 getUserData()
                 await mypageViewModel.fetchAllAlarmData()
-                //                print("⏰⏰ \(mypageViewModel.allAlarmData)")
-                //                print("😈😈 \(mypageViewModel.zenoStringAll)")
                 mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)

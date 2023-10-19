@@ -246,13 +246,13 @@ struct AlarmView: View {
                 }
             }
         }
-        .onChange(of: selectedCommunityId) { _ in
+        .onChange(of: selectedCommunityId) { chgValue in
             if let currentUser = userViewModel.currentUser {
                 Task {
-                    if selectedCommunityId.isEmpty {
+                    if chgValue.isEmpty {
                         await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
                     } else {
-                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: chgValue)
                     }
                 }
             }

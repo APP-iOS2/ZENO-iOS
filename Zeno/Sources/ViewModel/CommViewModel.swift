@@ -191,8 +191,9 @@ class CommViewModel: ObservableObject {
     @Published var isShowingSearchCommSheet: Bool = false
     @Published var isShowingCommListSheet: Bool = false
     
+    let alarmVM: AlarmViewModel = .init()
     init() {
-		loadRecentSearches() // 최근검색어 불러오기
+        loadRecentSearches() // 최근검색어 불러오기
     }
     
     // MARK: Local
@@ -232,10 +233,14 @@ class CommViewModel: ObservableObject {
     }
     /// 로그인된 유저를 변경하며 로그인된 유저가 없을 때 snapshot을 겁니다
     /// user가 가입한 커뮤니티가 없다면 currentCommID를 빈문자열로 만들어 가입된 커뮤니티가 없게 표시합니다
-    func updateCurrentUser(user: User?) {
+    func updateCurrentUser(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
+        print("📝", #function)
         if currentUser == nil {
+            print("📝1", #function)
             currentUser = user
-            addCurrentCommSnapshot()
+            addCurrentCommSnapshot {
+                forAlarmFunc()
+            }
             return
         }
         if let user,
@@ -246,6 +251,7 @@ class CommViewModel: ObservableObject {
            !user.commInfoList.isEmpty,
            let firstItem = user.commInfoList.first {
             if currentCommID.isEmpty {
+                print("📝2", #function)
                 setCurrentID(id: firstItem.id)
                 addCurrentCommSnapshot()
             }
@@ -253,19 +259,26 @@ class CommViewModel: ObservableObject {
         if let user,
            let currentUser,
            user.commInfoList != currentUser.commInfoList {
+            print("📝3", #function)
             Task {
-                self.currentUser = user
+                await MainActor.run {
+                    self.currentUser = user
+                }
                 await fetchJoinedComm()
             }
             return
         }
         currentUser = user
     }
+    
     /// 현재 표시되는 커뮤니티를 변경하며 커뮤니티의 유저 리스트를 받아옵니다
-    func updateCurrentComm(comm: Community?) {
+    func updateCurrentComm(comm: Community?, forAlarmFunc: @escaping () -> Void = {}) {
         currentComm = comm
         Task {
-            await fetchJoinedComm()
+            print("📝", #function)
+            await fetchJoinedComm {
+                forAlarmFunc()
+            }
         }
     }
     /// 현재 표시되는 커뮤니티의 ID를 변경하는 함수, 기본값은 빈 문자열입니다
@@ -708,7 +721,8 @@ class CommViewModel: ObservableObject {
     
     // MARK: Snapshot
     
-    func login(id: String) {
+    func login(id: String, forAlarmFunc: @escaping () -> Void = {}) {
+        print("📝", #function)
         guard !id.isEmpty else { return }
         userListener = Firestore.firestore().collection("User").document(id).addSnapshotListener { [weak self] snapshot, error in
             if let error {
@@ -716,7 +730,9 @@ class CommViewModel: ObservableObject {
                 return
             }
             let user = try? snapshot?.data(as: User.self)
-            self?.updateCurrentUser(user: user)
+            self?.updateCurrentUser(user: user) {
+                forAlarmFunc()
+            }
         }
     }
     
@@ -730,11 +746,16 @@ class CommViewModel: ObservableObject {
         currentCommID.removeAll()
     }
     
-    func addCurrentCommSnapshot() {
+    func addCurrentCommSnapshot(forAlarmFunc: @escaping () -> Void = {}) {
         guard let currentUser else { return }
+        print("📝", #function)
         if currentCommID.isEmpty {
+            print("📝 currentCommID 비었음 currentUser: \(currentUser.commInfoList)", #function)
             guard let defaultComm = currentUser.commInfoList.first
-            else { return }
+            else {
+                forAlarmFunc() // 그룹정보가 존재하지 않을때도 alarmVM.fetchAlarmPagenation을 실행해주어 isFetchedAlarm값을 true로 받아간다.
+                return
+            }
             currentCommID = defaultComm.id
         }
         
@@ -748,9 +769,13 @@ class CommViewModel: ObservableObject {
                       let comm = try? snapshot?.data(as: Community.self)
                 else { return }
                 if currentUser.commInfoList.contains(where: { $0.id == comm.id }) {
+                    print("📝4", #function)
                     self?.setCurrentID(id: comm.id)
-                    self?.updateCurrentComm(comm: comm)
+                    self?.updateCurrentComm(comm: comm) {
+                        forAlarmFunc()
+                    }
                 } else {
+                    print("📝5", #function)
                     self?.setCurrentID()
                     self?.updateCurrentComm(comm: nil)
                 }
@@ -770,8 +795,9 @@ class CommViewModel: ObservableObject {
     // MARK: fetch
     /// user정보로 커뮤니티를 받아오는 함수
     @MainActor
-    func fetchJoinedComm() async {
+    func fetchJoinedComm(alarmFunc: @escaping () -> Void = {}) async {
         guard let currentUser else { return }
+        print("📝", #function)
         let results = await firebaseManager.readDocumentsWithIDs(
             type: Community.self,
             ids: currentUser.commInfoList.map { $0.id }
@@ -785,13 +811,15 @@ class CommViewModel: ObservableObject {
             }
         }
         self.joinedComm = joinedComm
+        print("📝 joinedComm 패치완료")
+        alarmFunc() // alarmVM.fetchAlarmPagenation 이 실행된다. (현재 의도 23.10.20)
     }
+    
     /// 선택된 커뮤니티에 가입된 유저를 받아오는 함수
     @MainActor
     func fetchCurrentCommMembers() async {
         // 1. 파베에서 현재 그룹 정보 불러오기
         let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
-        
         do {
             let fetchComm = try resultComm.get()
             // 2. 현재 그룹 유저 ID 나누기
@@ -820,7 +848,7 @@ class CommViewModel: ObservableObject {
     func fetchWaitedMembers() async {
         // 1. 파베에서 현재 그룹 정보 불러오기
         let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
-        
+        print("📝", #function)
         do {
             if isCurrentCommManager {
                 let fetchComm = try resultComm.get()
@@ -839,7 +867,7 @@ class CommViewModel: ObservableObject {
                 // 5. 현재 그룹의 가입신청 유저정보에 뿌려주기
                 self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
                     .filter { fetchComm.waitApprovalMemberIDs.contains($0.id) }
-                print(#function + "🔵 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
+                print(#function + "🔵📝 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
             }
         } catch {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
