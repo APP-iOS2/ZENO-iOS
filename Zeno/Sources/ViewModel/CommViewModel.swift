@@ -134,6 +134,8 @@ class CommViewModel: ObservableObject {
 	@Published var recentSearches: [String] = []
 	/// [매니저 위임] 매니저 바뀌었을 때 알람
 	@Published var managerChangeWarning: Bool = false
+	/// [그룹정원 초과] 구성원 관리에서 그룹정원이 초과되었을 때 알람
+	@Published var overCapacity: Bool = false
     /// 선택된 커뮤니티의 가입한지 3일이 지나지 않은 유저
     var recentlyJoinedMembers: [User] {
         guard let currentComm else { return [] }
@@ -368,6 +370,11 @@ class CommViewModel: ObservableObject {
     func acceptMember(user: User) async {
         if isCurrentCommManager {
             guard let currentComm else { return }
+			guard currentComm.joinMembers.count < currentComm.personnel else {
+				overCapacity = true
+				print("정원초과")
+				return
+			}
             let acceptedMember = Community.Member.init(id: user.id,
                                                        joinedAt: Date().timeIntervalSince1970)
             let updatedWaitList = currentComm.waitApprovalMemberIDs
