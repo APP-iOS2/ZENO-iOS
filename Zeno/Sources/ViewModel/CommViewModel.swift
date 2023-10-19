@@ -29,21 +29,21 @@ class CommViewModel: ObservableObject {
     @Published var allComm: [Community] = []
     /// ⭐️ searchComm()를 이용해 연산프로터티 -> 저장프로퍼티로 변경 ⭐️
     /// [커뮤니티 검색] 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
-    var searchedComm: [Community] {
-        var searchCom = allComm
-            .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
-            .filter { $0.isSearchable }
-        if !joinedComm.isEmpty {
-            guard let currentUser else { return [] }
-            
-            searchCom = searchCom.filter { searched in
-                !currentUser.commInfoList.contains { userComm in
-                    userComm.id == searched.id
-                }
-            }
-        }
-        return searchCom
-    }
+//    var searchedComm: [Community] {
+//        var searchCom = allComm
+//            .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
+//            .filter { $0.isSearchable }
+//        if !joinedComm.isEmpty {
+//            guard let currentUser else { return [] }
+//
+//            searchCom = searchCom.filter { searched in
+//                !currentUser.commInfoList.contains { userComm in
+//                    userComm.id == searched.id
+//                }
+//            }
+//        }
+//        return searchCom
+//    }
     /// db의 모든 커뮤니티를 받아오는 함수
     @MainActor
     func fetchAllComm() async {
@@ -200,19 +200,21 @@ class CommViewModel: ObservableObject {
         guard let managerID = currentComm?.managerID.description else { return false }
         return managerID == user.id
     }
+    var searchedComm: [Community] = []
     /// ⭐️ searchedComm 업데이트할 함수 디바운서 적용해야함 ⭐️
-    func searchComm() {
+    func searchComm(completion: @escaping () -> Void) {
         let result = Firestore.firestore().collection("Community").whereField("name", isLessThanOrEqualTo: commSearchTerm)
-        result.getDocuments { _, error in
-//        result.getDocuments { [weak self] snapshot, error in
+//        result.getDocuments { _, error in
+        result.getDocuments { [weak self] snapshot, error in
             if let error {
                 print(error.localizedDescription)
                 return
             }
-//            guard let comms = snapshot?.documents
-//                .compactMap({ try? $0.data(as: Community.self) })
-//            else { return }
-//            self?.searchedComm = comms
+            guard let comms = snapshot?.documents
+                .compactMap({ try? $0.data(as: Community.self) })
+            else { return }
+            self?.searchedComm = comms
+            completion()
         }
     }
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
@@ -696,6 +698,8 @@ class CommViewModel: ObservableObject {
         userListener?.remove()
         userListener = nil
         currentUser = nil
+        currentComm = nil
+        joinedComm = []
         removeCurrentCommSnapshot()
         currentCommID.removeAll()
     }
