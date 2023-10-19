@@ -18,7 +18,7 @@ struct OnboardingZenoExView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainColor", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .mainColor, showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")

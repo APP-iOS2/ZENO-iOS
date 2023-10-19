@@ -15,7 +15,7 @@ struct OnboardingSecondView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainPink2", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .purple3, showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")
@@ -34,7 +34,7 @@ struct OnboardingSecondView: View {
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 38))
                 }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 40))
-                    .foregroundColor(.ggullungColor)
+                    .foregroundColor(.white.opacity(0.78))
                     .padding(40)
             }
             .opacity(isExpanded ? 1 : 0 )

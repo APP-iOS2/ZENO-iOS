@@ -18,14 +18,14 @@ struct OnboardingLastView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainColor", text: "Start", shouldToggleExpand: false)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .mainColor, text: "Start", shouldToggleExpand: false)
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")
                 Text("제노를 \n즐기러 \n가볼까요?")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 40))
                     .foregroundColor(.white)
-                    .padding(40)
+                    .padding(20)
                     .accessibilityLabel("제노를 즐기러 가볼까요?")
                     .accessibilityHint("누르면 제노를 시작할 수 있어요")
             }
