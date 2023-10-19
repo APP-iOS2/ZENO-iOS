@@ -11,6 +11,7 @@ import SwiftUI
 struct CommListView: View {
     @Binding var isPresented: Bool
     @Binding var isPresentedAddCommView: Bool
+	@Binding var isPresentedRequestCommView: Bool
     
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
@@ -18,13 +19,41 @@ struct CommListView: View {
     var body: some View {
         NavigationStack {
             VStack {
+				// 서치바 버튼
                 Button {
                     commViewModel.isShowingSearchCommSheet = true
                     commViewModel.commSearchTerm = .init()
                 } label: {
                     searchBar
                 }
-                
+				// 가입신청 목록
+				if let requestArr = commViewModel.currentUser?.requestComm {
+					if !requestArr.isEmpty {
+						Button {
+							isPresented = false
+							isPresentedRequestCommView = true
+						} label: {
+							HStack {
+								Text("가입신청한 그룹 \(requestArr.count)개 보기")
+									.font(.regular(14))
+									.foregroundColor(Color.primary)
+								Spacer()
+								Image(systemName: "chevron.forward")
+									.font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+									.foregroundColor(.gray)
+							}
+							.padding()
+							.padding(.leading)
+							.cornerRadius(7)
+							.overlay(RoundedRectangle(cornerRadius: 7)
+								.stroke(Color.orange, lineWidth: 1)
+								  )
+							.padding(.horizontal)
+							.padding(.top, 10)
+						}
+						.padding(.bottom, 5)
+					}
+				}
                 ScrollView(showsIndicators: false) {
                     VStack {
                         if commViewModel.joinedComm.isEmpty {
@@ -131,7 +160,7 @@ extension CommListView {
         .background(HierarchicalShapeStyle.quaternary)
         .cornerRadius(10)
         .padding(.horizontal)
-        .padding(.top)
+        .padding(.top, 20)
         .foregroundColor(Color(uiColor: .systemGray))
     }
 }
@@ -149,7 +178,9 @@ struct GroupListView_Previews: PreviewProvider {
         var body: some View {
             CommMainView()
                 .sheet(isPresented: $isPresented) {
-                    CommListView(isPresented: $isPresented, isPresentedAddCommView: .constant(false))
+                    CommListView(isPresented: $isPresented,
+								 isPresentedAddCommView: .constant(false),
+								 isPresentedRequestCommView: .constant(false))
                 }
                 .environmentObject(tabBarViewModel)
                 .environmentObject(userViewModel)
