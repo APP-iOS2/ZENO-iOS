@@ -14,6 +14,8 @@ extension View {
         imageTitle: String?,
         title: String,
         content: String,
+        retainPoint: Int?,
+        lackPoint: Int?,
         primaryButtonTitle: String,
         primaryAction: @escaping () -> Void) -> some View {
         return modifier(
@@ -22,6 +24,8 @@ extension View {
                 imageTitle: imageTitle,
                 title: title,
                 content: content,
+                retainPoint: retainPoint,
+                lackPoint: lackPoint,
                 primaryButtonTitle: primaryButtonTitle,
                 primaryAction: primaryAction
             )
@@ -49,9 +53,7 @@ extension View {
         primaryButtonTitle1: String,
         primaryAction1: @escaping () -> Void,
         primaryButtonTitle2: String,
-        primaryAction2: @escaping () -> Void,
-        primaryButtonTitle3: String,
-        primaryAction3: @escaping () -> Void) -> some View {
+        primaryAction2: @escaping () -> Void) -> some View {
         return modifier(
             AlarmGoodsAlertModifier(
                 isPresented: isPresented,
@@ -60,9 +62,7 @@ extension View {
                 primaryButtonTitle1: primaryButtonTitle1,
                 primaryAction1: primaryAction1,
                 primaryButtonTitle2: primaryButtonTitle2,
-                primaryAction2: primaryAction2,
-                primaryButtonTitle3: primaryButtonTitle3,
-                primaryAction3: primaryAction3
+                primaryAction2: primaryAction2
             )
         )
     }

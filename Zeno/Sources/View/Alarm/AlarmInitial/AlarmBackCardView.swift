@@ -99,6 +99,8 @@ struct AlarmBackCardView: View {
                    imageTitle: "point",
                    title: "\(chosung)님을 찌르시겠습니까 ?",
                    content: "\(chosung)님을 찌르시겠습니까 ?",
+                   retainPoint: 1,
+                   lackPoint: 1,
                    primaryButtonTitle: "확인") {
             Task {
                 await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)

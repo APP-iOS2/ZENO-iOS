@@ -37,6 +37,10 @@ struct AlarmView: View {
         return alarmViewModel.alarmArray.filter({ selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId })
     }
     
+    var lackCoin: Int {
+        return 60 - (userViewModel.currentUser?.coin ?? 0)
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
@@ -171,11 +175,8 @@ struct AlarmView: View {
                                     
                                     isShowPaymentSheet = false
                                 }
-                            },
-                            primaryButtonTitle3: "다음에",
-                            primaryAction3: {
-                                isShowPaymentSheet = false
-                            })
+                            }
+                        )
                         .usingAlert(
                             isPresented: $usingCoin,
                             imageName: "c.circle",
@@ -198,12 +199,14 @@ struct AlarmView: View {
                                 Task {
                                     await userViewModel.updateUserInitialCheck(to: -1)
                                 }
-                        }
+                            }
                         .cashAlert(
                             isPresented: $isLackingCoin,
                             imageTitle: nil,
                             title: "코인이 부족합니다.",
                             content: "투표를 통해 코인을 모아보세요.",
+                            retainPoint: userViewModel.currentUser?.coin,
+                            lackPoint: lackCoin,
                             primaryButtonTitle: "확인",
                             primaryAction: { /* 송금 로직 */ }
                         )
@@ -212,6 +215,8 @@ struct AlarmView: View {
                             imageTitle: nil,
                             title: "초성확인권이 부족합니다.",
                             content: "초성확인권을 구매하세요.",
+                            retainPoint: 0,
+                            lackPoint: 1,
                             primaryButtonTitle: "확인",
                             primaryAction: { isPurchaseSheet.toggle() }
                         )
@@ -219,7 +224,8 @@ struct AlarmView: View {
                             PurchaseView()
                                 .presentationDetents([.fraction(0.4)])
                                 .presentationDragIndicator(.visible)
-                            })
+                            }
+                        )
                         VStack {
                             GeometryReader { proxy in
                                 Color.primary
@@ -258,6 +264,11 @@ struct AlarmView: View {
             }
             alarmViewModel.isPagenationLast = false
             selectAlarm = nil
+        }
+        .task {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                alarmViewModel.isFetchComplete = true
+            }
         }
     }
     
