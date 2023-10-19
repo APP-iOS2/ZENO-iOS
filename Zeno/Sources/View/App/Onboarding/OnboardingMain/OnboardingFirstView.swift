@@ -16,10 +16,10 @@ struct OnboardingFirstView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainPink1", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .purple2, showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .center, spacing: 0) {
                     Spacer()
                     Text("제노에는")
                         .padding(.horizontal, 30)
@@ -27,7 +27,7 @@ struct OnboardingFirstView: View {
                         .opacity(0.9)
                         .accessibilityLabel("제노에는")
                     Text("내가 추가한 친구들만")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 35))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 39))
                         .frame(width: .screenWidth)
                         .padding(.bottom, 10)
                         .accessibilityLabel("내가 추가한 친구들만")
@@ -40,7 +40,7 @@ struct OnboardingFirstView: View {
                     
                     Image("addFriend")
                         .resizable()
-                        .frame(width: .screenWidth * 0.9 , height: .screenHeight * 0.1)
+                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.1)
                         .padding()
                     
                     Spacer()

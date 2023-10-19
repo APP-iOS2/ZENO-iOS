@@ -25,30 +25,20 @@ struct MyPageMain: View {
     @State private var name: String =  ""
     @State private var description: String = ""
     @State private var showInitial: Int = 0
+    
+    @Namespace var topID
+    
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
     
     @ViewBuilder
     private var profileImage: some View {
         if profileImageURL != KakaoAuthService.shared.noneImageURL {
-            KFImage(URL(string: profileImageURL))
-                .cacheOriginalImage()
-                .placeholder {
-                    Image(asset: ZenoAsset.Assets.zenoIcon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120, height: 120, alignment: .center)
-                }
+            KFImage((URL(string: profileImageURL)))
                 .resizable()
                 .frame(width: 120, alignment: .center)
                 .aspectRatio(contentMode: .fit)
                 .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .strokeBorder(
-                            Color(uiColor: .systemGray6), lineWidth: 1
-                        )
-                )
                 .padding(.leading, 18)
         } else {
             ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
@@ -86,12 +76,38 @@ struct MyPageMain: View {
             }
             .foregroundColor(.primary)
             .padding(.horizontal, 15)
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 2) {
                         // 유저 프로필 이미지 설정
-                        profileImage
+                        if profileImageURL != KakaoAuthService.shared.noneImageURL {
+                            KFImage(URL(string: profileImageURL))
+                                .cacheOriginalImage()
+                                .placeholder {
+                                    Image(asset: ZenoAsset.Assets.zenoIcon)
+                                        .resizable()
+                                        .frame(width: 120, height: 120)
+                                        .aspectRatio(contentMode: .fit)
+                                        
+                                }
+                                .resizable()
+                                .frame(width: 120, height: 120)
+                                .aspectRatio(contentMode: .fit)
+                                .clipShape(Circle())
+                                .overlay {
+                                    Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 1)
+                                }
+                                .padding(.leading, 18)
+                        } else {
+                            ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
+                                            ratio: .fit,
+                                            isRandom: false)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, alignment: .center)
+                            .clipShape(Circle())
+                            .padding(.leading, 18)
+                        }
                         /// 유저 재화 정보 뷰
                         UserMoneyView()
                             .frame(minHeight: UIScreen.main.bounds.height/9)
@@ -111,29 +127,31 @@ struct MyPageMain: View {
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                                 }
                             }
+                            // 유저 한줄소개
+                            Text(description)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                .lineSpacing(6)
                         }
-                        // 유저 한줄소개
-                        Text(description)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                            .lineSpacing(6)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.primary)
+                        .onAppear {
+                            print("💟 \(mypageViewModel.zenoStringImage)")
+                        }
+                        .padding(.bottom, 3)
+                        
+                        GroupSelectView()
+                            .id(topID)
+                            .onTapGesture {
+                                scrollVR.scrollTo(topID)
+                            }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .foregroundColor(.primary)
-                    .onAppear {
-                        print("💟 \(mypageViewModel.zenoStringImage)")
-                    }
-                    .padding(.bottom, 3)
-                    
-                    GroupSelectView()
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
                 getUserData()
                 await mypageViewModel.fetchAllAlarmData()
-                //                print("⏰⏰ \(mypageViewModel.allAlarmData)")
-                //                print("😈😈 \(mypageViewModel.zenoStringAll)")
                 mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)

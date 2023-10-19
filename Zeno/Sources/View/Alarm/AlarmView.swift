@@ -12,6 +12,7 @@ struct AlarmView: View {
     @EnvironmentObject var alarmViewModel: AlarmViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var commViewModel: CommViewModel
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false
@@ -35,6 +36,10 @@ struct AlarmView: View {
     
     private var filterAlarmByCommunity: [Alarm] {
         return alarmViewModel.alarmArray.filter({ selectedCommunityId.isEmpty || $0.communityID == selectedCommunityId })
+    }
+    
+    var lackCoin: Int {
+        return 60 - (userViewModel.currentUser?.coin ?? 0)
     }
     
     var body: some View {
@@ -63,7 +68,7 @@ struct AlarmView: View {
                                         .background(.background)
                                         .offset(y: offsetY)
                                 }
-                                .shadow(color: .primary.opacity(0.1), radius: 2, y: 2)
+                                .shadow(color: .primary.opacity(colorScheme == .light ? 0.1 : 0.3), radius: 2, y: 2)
                                 if filterAlarmByCommunity.isEmpty {
                                     Spacer()
                                         .frame(width: .screenWidth, height: .screenHeight * 0.9)
@@ -171,11 +176,8 @@ struct AlarmView: View {
                                     
                                     isShowPaymentSheet = false
                                 }
-                            },
-                            primaryButtonTitle3: "다음에",
-                            primaryAction3: {
-                                isShowPaymentSheet = false
-                            })
+                            }
+                        )
                         .usingAlert(
                             isPresented: $usingCoin,
                             imageName: "c.circle",
@@ -198,12 +200,14 @@ struct AlarmView: View {
                                 Task {
                                     await userViewModel.updateUserInitialCheck(to: -1)
                                 }
-                        }
+                            }
                         .cashAlert(
                             isPresented: $isLackingCoin,
                             imageTitle: nil,
                             title: "코인이 부족합니다.",
                             content: "투표를 통해 코인을 모아보세요.",
+                            retainPoint: userViewModel.currentUser?.coin,
+                            lackPoint: lackCoin,
                             primaryButtonTitle: "확인",
                             primaryAction: { /* 송금 로직 */ }
                         )
@@ -212,6 +216,8 @@ struct AlarmView: View {
                             imageTitle: nil,
                             title: "초성확인권이 부족합니다.",
                             content: "초성확인권을 구매하세요.",
+                            retainPoint: 0,
+                            lackPoint: 1,
                             primaryButtonTitle: "확인",
                             primaryAction: { isPurchaseSheet.toggle() }
                         )
@@ -219,7 +225,8 @@ struct AlarmView: View {
                             PurchaseView()
                                 .presentationDetents([.fraction(0.4)])
                                 .presentationDragIndicator(.visible)
-                            })
+                            }
+                        )
                         VStack {
                             GeometryReader { proxy in
                                 Color.primary
@@ -246,18 +253,23 @@ struct AlarmView: View {
                 }
             }
         }
-        .onChange(of: selectedCommunityId) { _ in
+        .onChange(of: selectedCommunityId) { chgValue in
             if let currentUser = userViewModel.currentUser {
                 Task {
-                    if selectedCommunityId.isEmpty {
+                    if chgValue.isEmpty {
                         await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
                     } else {
-                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
+                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: chgValue)
                     }
                 }
             }
             alarmViewModel.isPagenationLast = false
             selectAlarm = nil
+        }
+        .task {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                alarmViewModel.isFetchComplete = true
+            }
         }
     }
     

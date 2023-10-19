@@ -13,6 +13,8 @@ struct AlarmCoinShortageView: View {
     var imageTitle: String?
     let title: String
     let content: String
+    let retainPoint: Int?
+    let lackPoint: Int?
     let primaryButtonTitle: String
     let primaryAction: () -> Void
     
@@ -42,18 +44,46 @@ struct AlarmCoinShortageView: View {
                         .frame(width: 40)
                         .padding(.top, 30)
                 }
-                Text(title)
+                if imageTitle != nil {
+                    Text(title)
+                        .foregroundColor(.black)
+                        .font(.extraBold(19))
+                    
+                    Divider()
+                    
+                    VStack {
+                        Text(content)
+                    }
+                    .font(.regular(13))
                     .foregroundColor(.black)
-                    .font(.extraBold(19))
-                
-                Divider()
-                
-                VStack {
-                    Text(content)
+                } else {
+                    VStack(alignment: .center) {
+                        Text(title)
+                            .foregroundColor(.black)
+                            .font(.extraBold(19))
+                        
+                        Text(content)
+                            .font(.regular(12))
+                            .foregroundColor(.black)
+                    }
+                    Divider()
+                    HStack {
+                        VStack(alignment: .center) {
+                            Text("보유")
+                            Text("\(retainPoint ?? 0)")
+                        }
+                        .font(.regular(12))
+                        
+                        Text("/")
+                            .font(.regular(23))
+                        
+                        VStack(alignment: .center) {
+                            Text("부족")
+                            Text("\(lackPoint ?? 0)")
+                        }
+                        .font(.regular(12))
+                    }
                 }
-                .font(.regular(13))
-                .foregroundColor(.black)
-                
                 Button {
                     primaryAction()
                     isPresented = false
@@ -77,7 +107,6 @@ struct AlarmCoinShortageView: View {
             )
         }
         .foregroundColor(.black)
-            
     }
 }
 
@@ -90,6 +119,8 @@ struct AlarmCoinShortageView_Previews: PreviewProvider {
                     imageTitle: nil,
                     title: "제목",
                     content: "내용",
+                    retainPoint: 40,
+                    lackPoint: 20,
                     primaryButtonTitle: "버튼 이름",
                     primaryAction: { })
             )

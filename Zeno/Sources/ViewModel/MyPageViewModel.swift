@@ -93,16 +93,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         }
         return nil
     }
-//
-//    /// zenoString 사진 배열
-//    func zenoImageArray() {
-//        print("zenoStringAll \(self.zenoStringAll)")
-//        for zeno in self.zenoStringAll {
-//            if let zenoImage = findZenoImage(forQuestion: zeno, in: Zeno.ZenoQuestions) {
-//                self.zenoStringImage.append(zenoImage)
-//            }
-//        }
-//    }
 
     @MainActor
     func fetchAllAlarmData() async {
@@ -154,7 +144,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
             throw error
         }
     }
-
     
     /// 피커에서 선택한 그룹의 id와 유저가 가지고 있는 commInfo의 id 중 일치하는 그룹을 찾아서 해당 그룹의 buddyList(id)를 반환하는 함수
     func returnBuddyList(selectedGroupID: String) -> [User.ID] {
@@ -209,21 +198,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
-    //                if let document = document, document.exists {
-    //                    let data = document.data()
-    //                    do {
-    //                        if let data {
-    //                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-    //                            let user = try JSONDecoder().decode(User.self, from: jsonData)
-    //                            self.friendInfo.append(user)
-    //                            print("💙[friendInfo] \(self.friendInfo)")
-    //                        }
-    //                    } catch {
-    //                        print("json parsing Error \(error.localizedDescription)")
-    //                    }
-    //                } else {
-    //                    print("[returnFriendInfo] firebase document 존재 오류")
-    //                }
                 } else {
                     print("[returnFriendInfo] firebase document 존재 오류")
                 }
@@ -272,6 +246,13 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// 회원탈퇴
     @MainActor
     func memberRemove() async -> Bool {
+        // TODO: -> 만약에 batch로 DB처리를 하게될 경우 인증관련부터 삭제 후 DB데이터처리하기(왜냐면, 오프라인에서도 동작하기때문)
+        
+        defer {
+            print("인증관련 처리 완료")
+            // removeUserRelateData() 여기서 처리하면 될듯
+        }
+        
         let removeResult = await removeUserRelateData()
         
         switch removeResult {
@@ -329,7 +310,8 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         }
     }
     
-    // TODO: - 트랜잭션 추가하기>>>>!!!! 전체구문 모두 트랜잭션안에 넣고 처리하면 될듯??
+    // TODO: - batch를 만들어서 batch로 실행 ㅋㅋ -> 원자적으로 수행되며(트랜잭션과 동일), 오프라인상태에서도 실행됨(트랜잭션보다 좋음) ㅋㅎ 회원탈퇴로직에 딱이다 ㄷㄷ
+    // 백그라운드 스레드에서 실행시킬것~ DispatchQueue.global().async{ }
     /// 회원탈퇴시
     private func removeUserRelateData() async -> RemoveFailReason {
         let currentUserID = Auth.auth().currentUser?.uid
@@ -350,10 +332,8 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                 }
             }
             
-            if !resultCommDatas.isEmpty {
-                // 매니저 위임하고 오셈ㅋ
-                return .communityExists
-            }
+            // 매니저 위임하고 오셈ㅋ
+            if !resultCommDatas.isEmpty { return .communityExists }
             
             // 1. Alarm컬렉션 showUserID가 탈퇴한 User인것의 문서자체를 제거
             let resultAlarms = await firebaseManager.readDocumentsWithIDs(type: Alarm.self,
@@ -370,8 +350,10 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                 }
             }
             
+            
+            // batch delete 1
             var alarmDelCnt: Int = 0
-            // 만약에 알람데이터가 100개  50개 지우다가 51개째 지울때 오류나면 다시 시도시키기
+            // 만약에 알람데이터가 100개  50개 지우다가 51개째 지울때 오류나면 다시 시도시키기 -> 이제 이럴필요없을듯 batch사용하면
             for alarm in resultAlarmDatas {
                 do {
                     try await firebaseManager.delete(data: alarm)
@@ -400,6 +382,7 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                 }
             }
             
+            // batch update 2
             var commDelCnt: Int = 0
             for commJoin in commJoinResultDatas {
                 var joins = commJoin.joinMembers
@@ -429,6 +412,7 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
             }
             
             var userDelCnt: Int = 0
+            // batch update 3
             for userData in userInfoDatas {
                 let newCommInfo = userData.commInfoList.compactMap { comm in
                     var chgComm = comm

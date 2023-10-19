@@ -64,8 +64,15 @@ struct AlarmBackCardView: View {
                         Spacer()
                         
                         Button {
-                            isNudgingOn = true
-                            counter += 1
+                            Task {
+                                let result = await sendNudgeNotification(receiveUserID: selectAlarm.sendUserID)
+                                if result {
+                                    isNudgingOn = true
+                                    counter += 1
+                                } else {
+                                    isNoneUser = true
+                                }
+                            }
                         } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 15)
@@ -99,6 +106,8 @@ struct AlarmBackCardView: View {
                    imageTitle: "point",
                    title: "\(chosung)님을 찌르시겠습니까 ?",
                    content: "\(chosung)님을 찌르시겠습니까 ?",
+                   retainPoint: 1,
+                   lackPoint: 1,
                    primaryButtonTitle: "확인") {
             Task {
                 await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
@@ -107,13 +116,13 @@ struct AlarmBackCardView: View {
         }
     }
     
-    private func sendNudgeNotification(receiveUserID: String) async {
+    private func sendNudgeNotification(receiveUserID: String) async -> Bool {
         let receiveUser = try? await userVM.fetchUser(withUid: receiveUserID)
         if receiveUser != nil {
-            await alarmVM.pushNudgeAlarm(nudgeAlarm: selectAlarm, currentUserGender: userVM.currentUser?.gender ?? .female)
+            return true
         } else {
             // 유저가 없다는 팝업창
-            isNoneUser = true
+            return false
         }
     }
 }

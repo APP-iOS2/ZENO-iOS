@@ -22,65 +22,62 @@ struct CommMainView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                if commViewModel.currentComm != nil {
-                    ScrollView {
-                        Group {
-                            NewUserListView(isShowingDetailNewBuddyToggle: $isShowingDetailNewBuddyToggle)
-                            SearchableUserListView(isShowingUserSearchView: $isShowingUserSearchView)
-                        }
-                        .modifier(HomeListModifier())
-                        .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
-                        if commViewModel.currentCommMembers.isEmpty {
-                            Button {
-                                commViewModel.kakao()
-                            } label: {
-                                VStack {
-                                    LottieView(lottieFile: "invitePeople")
-                                        .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
-                                        .overlay {
-                                            Image(systemName: "plus.circle.fill")
-                                                .font(.system(size: 50))
-												.foregroundColor(.mainColor)
-                                                .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
-                                        }
-                                    Text("친구를 초대해보세요")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
-										.foregroundColor(.primary)
-                                        .offset(y: .screenHeight * -0.03)
-                                }
+            if commViewModel.isFetchComplete {
+                VStack {
+                    if commViewModel.currentComm != nil {
+                        ScrollView {
+                            Group {
+                                NewUserListView(isShowingDetailNewBuddyToggle: $isShowingDetailNewBuddyToggle)
+                                SearchableUserListView(isShowingUserSearchView: $isShowingUserSearchView)
                             }
-                            .frame(height: .screenHeight * 0.55)
+                            .modifier(HomeListModifier())
+                            .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
+                            if commViewModel.currentCommMembers.isEmpty {
+                                Button {
+                                    commViewModel.kakao()
+                                } label: {
+                                    VStack {
+                                        LottieView(lottieFile: "invitePeople")
+                                            .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
+                                            .overlay {
+                                                Image(systemName: "plus.circle.fill")
+                                                    .font(.system(size: 50))
+                                                    .foregroundColor(.mainColor)
+                                                    .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
+                                            }
+                                        Text("친구를 초대해보세요")
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
+                                            .foregroundColor(.primary)
+                                            .offset(y: .screenHeight * -0.03)
+                                    }
+                                }
+                                .frame(height: .screenHeight * 0.55)
+                            }
+                        }
+                    } else {
+                        // 가입된 커뮤니티가 없을 때
+                        CommEmptyView {
+                            commViewModel.isShowingCommListSheet.toggle()
                         }
                     }
-                } else {
-					// 가입된 커뮤니티가 없을 때
-					CommEmptyView {
-                        commViewModel.isShowingCommListSheet.toggle()
-					}
                 }
-            }
-            .refreshable {
-                Task {
-                    try? await userViewModel.loadUserData()
-                    await commViewModel.fetchAllComm()
+                .toolbar {
+                    if commViewModel.currentComm != nil {
+                        // 커뮤니티 선택 버튼
+                        groupNameToolbarItem
+                        // 햄버거 바
+                        hamburgerToolbarItem
+                    }
                 }
-            }
-            .toolbar {
-                if commViewModel.currentComm != nil {
-					// 커뮤니티 선택 버튼
-					groupNameToolbarItem
-					// 햄버거 바
-                    hamburgerToolbarItem
+                .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
+                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
                 }
-            }
-            .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
-				CommListView(isPresented: $commViewModel.isShowingCommListSheet,
-							 isPresentedAddCommView: $isPresentedAddCommView,
-							 isPresentedRequestCommView: $isPresentedRequestCommView)
-            }
-            .navigationDestination(isPresented: $isPresentedAddCommView) {
-                CommSettingView(editMode: .addNew)
+                .navigationDestination(isPresented: $isPresentedAddCommView) {
+                    CommSettingView(editMode: .addNew)
+                }
+            } else {
+                ProgressView()
+                    .tint(.mainColor)
             }
 			.navigationDestination(isPresented: $isPresentedRequestCommView) {
 				CommRequestListView()

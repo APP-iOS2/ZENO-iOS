@@ -1,5 +1,5 @@
 //
-//  CommListView.swift
+//  CommJoinedListView.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/09/26.
@@ -7,8 +7,8 @@
 //
 
 import SwiftUI
-/// 전체 커뮤니티 리스트 뷰
-struct CommListView: View {
+/// 가입한 전체 커뮤니티 리스트 뷰
+struct CommJoinedListView: View {
     @Binding var isPresented: Bool
     @Binding var isPresentedAddCommView: Bool
 	@Binding var isPresentedRequestCommView: Bool
@@ -146,7 +146,7 @@ struct CommListView: View {
     }
 }
 
-extension CommListView {
+extension CommJoinedListView {
     var searchBar: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")

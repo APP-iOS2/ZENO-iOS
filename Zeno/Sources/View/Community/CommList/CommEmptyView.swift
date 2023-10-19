@@ -19,10 +19,6 @@ struct CommEmptyView: View {
 			HStack {
 				Spacer()
 				Button {
-					Task {
-						try? await userViewModel.loadUserData()
-						await commViewModel.fetchAllComm()
-					}
 				} label: {
 					Image(systemName: "arrow.triangle.2.circlepath")
 						.resizable()

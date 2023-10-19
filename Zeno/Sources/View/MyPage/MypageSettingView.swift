@@ -73,7 +73,6 @@ struct MypageSettingView: View {
                             Task {
                                 await LoginManager(delegate: mypageVM).logout()                               
                                 SignStatusObserved.shared.isNeedLogin = true
-								
                             }
                         } else if alertMessage == "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다." {
                             print("회원탈퇴됨")

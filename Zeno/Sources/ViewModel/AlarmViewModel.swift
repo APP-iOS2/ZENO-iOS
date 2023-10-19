@@ -129,8 +129,9 @@ class AlarmViewModel: ObservableObject {
     @MainActor
     func fetchAlarmPagenation(showUserID: String) async {
         isFetchComplete = false
-        
+        print("📝 alarm 시작", #function)
         defer {
+            print("📝 alarm 끗", #function)
             isFetchComplete = true
         }
         // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는

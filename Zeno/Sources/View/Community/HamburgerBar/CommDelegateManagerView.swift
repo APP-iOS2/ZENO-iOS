@@ -78,8 +78,6 @@ struct CommDelegateManagerView: View {
                     title: "\(currentComm.name)",
                     body: "\(currentComm.name)의 매니저가 되셨어요!👑"
                 )
-                guard let commIndex = commViewModel.allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                commViewModel.allComm[commIndex].managerID = user.id
 				commViewModel.managerChangeWarning = true
 				self.dismiss()
             } catch {

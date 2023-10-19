@@ -18,9 +18,8 @@ struct GroupSelectView: View {
     @State var userSelected: UserChoice = .friends
     
     var body: some View {
-        LazyVGrid(columns: [.init()],
-                  alignment: .trailing,
-                  pinnedViews: .sectionHeaders) {
+        LazyVStack(alignment: .trailing,
+                   pinnedViews: .sectionHeaders) {
             Section {
                 if userSelected.rawValue == "친구 목록" {
                     MypageFriendListView()
@@ -57,9 +56,8 @@ struct GroupSelectView: View {
                     }
                 }
                 .background(Color(uiColor: .systemBackground))
-            }
+            }            
         }
-        
     }
 }
 
