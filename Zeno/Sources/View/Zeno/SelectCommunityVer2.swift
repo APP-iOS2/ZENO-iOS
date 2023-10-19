@@ -93,7 +93,7 @@ struct SelectCommunityVer2: View {
                         .padding(.top, 10)
                         .frame(width: .screenWidth)
                         .background {
-                            Blur(style: .light)
+                            ZenoBlur(style: .light)
                                 .opacity(0.9)
                                 .edgesIgnoringSafeArea(.bottom)
                         }
@@ -103,8 +103,6 @@ struct SelectCommunityVer2: View {
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
-
-//                        await commViewModel.fetchAllComm()
                     }
                     currentIndex = 0
                     selected = ""
