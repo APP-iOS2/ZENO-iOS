@@ -29,9 +29,12 @@ struct NickNameRegistView: View {
     @State private var 이용약관: Bool = false
     @State private var 개인정보처리방침: Bool = false
     
+    @State private var female: Bool = false
+    @State private var male: Bool = false
+    
     private var checkingText: String {
         if nameText.count >= 2 {
-            return "한글로 입력바랍니다. 영어이름인경우 발음대로 입력. 공백없이 입력."
+            return "한글로 입력해주세요. 영어 이름인 경우 발음대로 입력 (공백없이 입력)"
         } else {
             return "2자 이상 입력해주세요."
         }
@@ -113,23 +116,52 @@ struct NickNameRegistView: View {
                                textMaxCount: 5,
                                isFocusing: true)
                 .font(.regular(16))
-                
-                if isChecking {
-                    Text(checkingText)
-                        .foregroundStyle(Color.red.opacity(0.9))
-                        .font(.caption)
-                        .padding(.horizontal)
-                }
-                
+
+                Text(checkingText)
+                    .foregroundStyle(Color.red.opacity(0.9))
+                    .font(.caption)
+                    .padding(.horizontal)
+                    .opacity(isChecking ? 1.0 : 0.0)
+              
                 HStack {
                     Text("성별")
                         .frame(width: 60, alignment: .leading)
                         .font(.regular(16))
-                    Picker("Gender", selection: $gender) {
-                        ForEach(Gender.allCases, id: \.self) { gd in
-                            Text(gd.toString)
-                                .font(.regular(12))
-                                .tag(gd)
+                    
+                    // 여자 버튼
+                    Button {
+                        female.toggle()
+                        if male {
+                            male.toggle()
+                        }
+                        gender = Gender.female
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: female ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.female.toString)
+                                .font(.regular(14))
+                        }
+                    }
+                    
+                    // 남자 버튼
+                    Button {
+                        male.toggle()
+                        gender = Gender.male
+                        if female {
+                            female.toggle()
+                        }
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: male ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.male.toString)
+                                .font(.regular(14))
+                            
                         }
                     }
                     .tint(.primary)
@@ -138,6 +170,7 @@ struct NickNameRegistView: View {
                         .font(.thin(10))
                         .foregroundColor(.red)
                 }
+                .foregroundColor(.primary)
                 .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
                 .padding()
                 

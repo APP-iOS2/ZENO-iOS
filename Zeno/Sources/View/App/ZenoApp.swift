@@ -40,8 +40,10 @@ struct ZenoApp: App {
                             alarmViewModel.isFetchComplete = false // 로그아웃시 초기화 알람데이터 Fetch완료시 true
                             alarmViewModel.isLoading = false       // 로그아웃시 초기화
                         }
-                        
+                       
+                        print("✔️ userInfo :\(String(describing: userViewModel.currentUser))")
                         if let currentUser = userViewModel.currentUser {
+
                             if commViewModel.currentUser == nil {
                                 // snapshot 연결
                                 commViewModel.login(id: currentUser.id) {

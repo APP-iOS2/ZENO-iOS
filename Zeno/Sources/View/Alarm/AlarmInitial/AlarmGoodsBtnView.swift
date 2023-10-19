@@ -22,16 +22,12 @@ struct AlarmGoodsBtnView: View {
     let primaryButtonTitle2: String
     let primaryAction2: () -> Void
     
-    let primaryButtonTitle3: String
-    let primaryAction3: () -> Void
-    
     // MARK: - View
     var body: some View {
         VStack {
             HStack {
                 Spacer()
                 Button {
-                    primaryAction3()
                     isPresented = false
                 } label: {
                     Image(systemName: "xmark")
@@ -54,16 +50,15 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    HStack {
-                        Image("pointCoin")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                            .offset(x: .screenWidth * 0.1)
-                        Text(primaryButtonTitle1)
+                    HStack(alignment: .center) {
+//                        Image("pointCoin")
+//                            .resizable()
+//                            .frame(width: 20, height: 18)
+//                            .offset(x: .screenWidth * 0.1)
+                        Text("60 \(primaryButtonTitle1)")
                             .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                             .bold()
                             .frame(maxWidth: .infinity)
-                        Spacer()
                     }
                 }
             }
@@ -73,13 +68,16 @@ struct AlarmGoodsBtnView: View {
                 primaryAction2()
                 isPresented = false
             } label: {
-                HStack {
-                    Text(primaryButtonTitle2)
+                HStack(alignment: .center) {
+                    Text("Z")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+                        .foregroundColor(Color.purple3)
+                    Text("1 \(primaryButtonTitle2)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
                         .shadow(color: .purple, radius: 3)
-                        .frame(maxWidth: .infinity)
                 }
+                .frame(maxWidth: .infinity)
             }
             .padding()
             .foregroundColor(.white)
@@ -97,7 +95,7 @@ struct AlarmGoodsBtnView: View {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .stroke(lineWidth: 2.5)
                                 .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
-                    }
+                        }
                 }
             )
         }
@@ -115,7 +113,7 @@ struct AlarmGoodsBtnView: View {
                 .background(
                     RoundedRectangle(cornerRadius: 30)
                         .fill(.white)
-            )
+                )
         )
     }
 }
@@ -128,8 +126,6 @@ struct AlarmGoodsBtnView_Previews: PreviewProvider {
                           primaryButtonTitle1: "코인 사용",
                           primaryAction1: {},
                           primaryButtonTitle2: "초성 확인권 사용",
-                          primaryAction2: {},
-                          primaryButtonTitle3: "취소",
-                          primaryAction3: {})
+                          primaryAction2: {})
     }
 }

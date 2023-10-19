@@ -20,9 +20,6 @@ struct AlarmGoodsAlertModifier: ViewModifier {
     let primaryButtonTitle2: String
     let primaryAction2: () -> Void
     
-    let primaryButtonTitle3: String
-    let primaryAction3: () -> Void
-    
     func body(content: Content) -> some View {
         ZStack {
             content
@@ -44,9 +41,7 @@ struct AlarmGoodsAlertModifier: ViewModifier {
                         primaryButtonTitle1: self.primaryButtonTitle1,
                         primaryAction1: self.primaryAction1,
                         primaryButtonTitle2: self.primaryButtonTitle2,
-                        primaryAction2: self.primaryAction2,
-                        primaryButtonTitle3: self.primaryButtonTitle3,
-                        primaryAction3: self.primaryAction3
+                        primaryAction2: self.primaryAction2
                     )
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }

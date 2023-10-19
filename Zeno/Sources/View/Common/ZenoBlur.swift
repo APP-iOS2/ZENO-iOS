@@ -1,5 +1,5 @@
 //
-//  CustomUIViewRepresentable.swift
+//  ZenoBlur.swift
 //  Zeno
 //
 //  Created by woojin Shin on 2023/09/27.
@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// Blur 효과를 줌
-struct Blur: UIViewRepresentable {
+struct ZenoBlur: UIViewRepresentable {
     let style: UIBlurEffect.Style
     
     func makeUIView(context: Context) -> UIVisualEffectView {

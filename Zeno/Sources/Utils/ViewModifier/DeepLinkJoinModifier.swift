@@ -115,7 +115,7 @@ struct JoinWithDeepLinkView: View {
                 ZenoKFImageView(comm)
                 Color.primary.colorInvert()
                     .opacity(0.4)
-                Blur(style: .dark)
+                ZenoBlur(style: .dark)
             }
             .frame(width: .screenWidth * 0.8, height: .screenHeight * 0.75)
             .clipped()

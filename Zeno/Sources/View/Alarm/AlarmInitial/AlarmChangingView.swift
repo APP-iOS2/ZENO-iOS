@@ -19,6 +19,12 @@ struct AlarmChangingView: View {
     @State private var isFlipped = false
     @State private var chosung: String = ""
     
+    @State private var chosungIndex: Int = 16
+    @State private var initialCheckCount: Int = 0
+    @State private var resultArray: [Int] = []
+    
+    @State private var isFirstOnAppear: Bool = true
+    
     let selectAlarm: Alarm
     
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
@@ -68,8 +74,13 @@ struct AlarmChangingView: View {
                 dismiss()
                 backAlert = false
         })
-        .task {
-            chosung = ChosungCheck(word: selectAlarm.sendUserName)
+        .onAppear {
+            if isFirstOnAppear {
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
+            }
+        }
+        .onDisappear {
+            isFirstOnAppear = false
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -87,7 +98,7 @@ struct AlarmChangingView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isFlipped {
-                    if userVM.currentUser?.showInitial ?? 0 > 0 {
+                    if userVM.currentUser?.showInitial ?? 0 > 0 && initialCheckCount < selectAlarm.sendUserName.count {
                         Button {
                             isCheckInitialTwice = true
                         } label: {
@@ -98,7 +109,7 @@ struct AlarmChangingView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.mainColor, lineWidth: 1)
-                            )
+                                )
                         }
                     }
                 }
@@ -108,7 +119,10 @@ struct AlarmChangingView: View {
     
     /// 초성 확인 로직
     private func ChosungCheck(word: String) -> String {
+        initialCheckCount += 1
+        print("💩 \(initialCheckCount)번째 확인")
         var initialResult = ""
+        
         // 문자열하나씩 짤라서 확인
         for char in word {
             let octal = char.unicodeScalars[char.unicodeScalars.startIndex].value
@@ -118,11 +132,36 @@ struct AlarmChangingView: View {
             }
         }
         var nameArray = Array(initialResult)
+        print("💩 \(resultArray)")
+        
         // 하나의 문자를 제외하고 나머지를 "X"로 바꿈
         if nameArray.count > 1 {
-            let randomIndex = Int.random(in: 0..<nameArray.count)
-            for i in 0..<nameArray.count where i != randomIndex {
-                nameArray[i] = "X"
+            switch initialCheckCount {
+            case 1:
+                while resultArray.count < nameArray.count {
+                    let randomNum = Int.random(in: 0..<nameArray.count)
+                    if !resultArray.contains(randomNum) {
+                        resultArray.append(randomNum)
+                    }
+                }
+                print("💩 \(resultArray)")
+                for i in 0..<nameArray.count where i != resultArray[0] {
+                    nameArray[i] = "X"
+                }
+            case 2:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] {
+                    nameArray[i] = "X"
+                }
+            case 3:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] && i != resultArray[2] {
+                    nameArray[i] = "X"
+                }
+            case 4:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] && i != resultArray[2] && i != resultArray[3] {
+                    nameArray[i] = "X"
+                }
+            default:
+                break
             }
         }
         // 문자 배열을 다시 문자열로 합쳐서 반환
