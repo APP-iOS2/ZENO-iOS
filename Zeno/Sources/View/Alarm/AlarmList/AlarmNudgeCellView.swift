@@ -24,17 +24,17 @@ struct AlarmNudgeCellView: View {
     }
     
     private var getFontColor: Color {
-            if alarm.id == selectAlarm?.id || colorScheme == .dark {
-                return Color.white
-            }
-            return Color.gray4
+        if alarm.id == selectAlarm?.id || colorScheme == .dark {
+            return Color.white
+        }
+        return Color.gray4
     }
-        
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 16) {
                 if let urlStr = getCommunity.imageURL,
-                    let url = URL(string: urlStr) {
+                   let url = URL(string: urlStr) {
                     KFImage(url)
                         .cacheOriginalImage()
                         .resizable()
@@ -87,27 +87,22 @@ struct AlarmNudgeCellView: View {
             }
             
             HStack {
-                VStack(alignment: .leading) {
-                    Text("\(alarm.receiveUserName)님이")
-                        .font(.thin(13))
-                        .padding(.bottom, 1)
+                VStack(alignment: .leading, spacing: 3) {
+//                    Text("\(alarm.receiveUserName)님이")
+//                        .font(.thin(13))
                     Text("\(alarm.zenoString)에")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
-                        .padding(.bottom, 1)
-                        .offset(y: -3)
-                    HStack(spacing: 0) {
-                        Text("답변으로 지목한 친구가 \(alarm.receiveUserName)님을 ")
-                            .font(.thin(13))
-                        Text("💜 콕 찔렀어요 💜")
-                            .font(.bold(14))
-                    }
-                    .offset(y: -6)
+                    
+                    Text("답변으로 지목한 친구가 \(alarm.receiveUserName)님을 ")
+                        .font(.thin(13))
+                    Text("💜 콕 찔렀어요 💜")
+                        .font(.bold(14))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     if let selectCell = selectAlarm, selectCell.id == alarm.id {
-                   } else {
+                    } else {
                         selectAlarm = alarm
                     }
                 }
