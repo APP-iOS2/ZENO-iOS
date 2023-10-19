@@ -10,6 +10,8 @@ struct ZenoApp: App {
     @StateObject private var mypageViewModel = MypageViewModel()
     @StateObject private var alarmViewModel: AlarmViewModel = AlarmViewModel()
     @StateObject private var iAPStore: IAPStore = IAPStore()
+	
+	@AppStorage("fcmToken") var fcmToken: String = ""
     
     init() {
         let kakaoKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_APP_KEY")
@@ -40,6 +42,7 @@ struct ZenoApp: App {
                         if let currentUser = userViewModel.currentUser {
                             await alarmViewModel.fetchAlarmPagenation(showUserID: currentUser.id)
                             SignStatusObserved.shared.isNeedLogin = false
+							await userViewModel.updateUserFCMToken(fcmToken)
                         } else {
                             SignStatusObserved.shared.isNeedLogin = true // signIn상태가 아닌데 currentUser값을 가져오지 못하면
                         }
