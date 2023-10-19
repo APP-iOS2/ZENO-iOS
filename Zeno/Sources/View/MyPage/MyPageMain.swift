@@ -25,6 +25,9 @@ struct MyPageMain: View {
     @State private var name: String =  ""
     @State private var description: String = ""
     @State private var showInitial: Int = 0
+    
+    @Namespace var topID
+    
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
     
@@ -73,7 +76,7 @@ struct MyPageMain: View {
             }
             .foregroundColor(.primary)
             .padding(.horizontal, 15)
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 2) {
@@ -124,29 +127,31 @@ struct MyPageMain: View {
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                                 }
                             }
+                            // 유저 한줄소개
+                            Text(description)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                .lineSpacing(6)
                         }
-                        // 유저 한줄소개
-                        Text(description)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                            .lineSpacing(6)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.primary)
+                        .onAppear {
+                            print("💟 \(mypageViewModel.zenoStringImage)")
+                        }
+                        .padding(.bottom, 3)
+                        
+                        GroupSelectView()
+                            .id(topID)
+                            .onTapGesture {
+                                scrollVR.scrollTo(topID)
+                            }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .foregroundColor(.primary)
-                    .onAppear {
-                        print("💟 \(mypageViewModel.zenoStringImage)")
-                    }
-                    .padding(.bottom, 3)
-                    
-                    GroupSelectView()
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
                 getUserData()
                 await mypageViewModel.fetchAllAlarmData()
-                //                print("⏰⏰ \(mypageViewModel.allAlarmData)")
-                //                print("😈😈 \(mypageViewModel.zenoStringAll)")
                 mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)

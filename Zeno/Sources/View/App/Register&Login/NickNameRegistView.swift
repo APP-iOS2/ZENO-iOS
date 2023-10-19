@@ -116,13 +116,13 @@ struct NickNameRegistView: View {
                                textMaxCount: 5,
                                isFocusing: true)
                 .font(.regular(16))
-                
+
                 Text(checkingText)
                     .foregroundStyle(Color.red.opacity(0.9))
                     .font(.caption)
                     .padding(.horizontal)
                     .opacity(isChecking ? 1.0 : 0.0)
-                
+              
                 HStack {
                     Text("성별")
                         .frame(width: 60, alignment: .leading)
@@ -164,7 +164,6 @@ struct NickNameRegistView: View {
                             
                         }
                     }
-                    
                     .tint(.primary)
                     Spacer()
                     Text("필수")
@@ -284,7 +283,7 @@ struct NickNameRegistView: View {
                     Color.black.opacity(0.25)
                         .edgesIgnoringSafeArea(.all)
                     VStack {
-                        Text("Zeno에 입장중이에요~!\n잠시만 기다려주세요 ^.^")
+                        Text("Zeno에 입장중이에요!\n잠시만 기다려주세요")
                             .font(.callout)
                             .bold()
                             .foregroundStyle(Color.white)
@@ -305,14 +304,13 @@ struct NickNameRegistView: View {
             .sheet(isPresented: $isConfirmSheet, content: {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("한번 더 확인해주세요!!")
+                        Text("한번 더 확인해주세요!")
                             .bold()
                             .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 25))
                         Text("아래정보들은 가입 후에 더이상 수정하실 수가 없습니다.")
                             .font(.footnote)
                             .foregroundStyle(Color.red)
                     }
-                    .padding(.horizontal, 12)
                     .padding(.top, 30)
                     
                     VStack(alignment: .leading, spacing: 10) {
@@ -320,11 +318,14 @@ struct NickNameRegistView: View {
                         Text("성별 : \(gender.toString)")
                     }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
-                    .padding(.horizontal, 12)
                     .padding(.bottom, 20)
                     
                     Spacer().frame(height: 30)
-                    
+                }
+                .padding(.horizontal, 25)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.title2)
+                .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
                     HStack(spacing: 50) {
                         Button {
                             isConfirmSheet.toggle()
@@ -360,12 +361,10 @@ struct NickNameRegistView: View {
                                 .fill(Color.purple2)
                         }
                     }
-                    .padding(.horizontal, 5)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 35)
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
-                .font(.title2)
                 .presentationDetents([.height(geo.size.height * 0.45)])
             })
             .onAppear {
