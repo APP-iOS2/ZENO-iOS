@@ -113,6 +113,7 @@ struct CommUserMgmtView: View {
                 deportUser = .emptyUser
             }
         }
+		.zenoWarning("그룹 인원이 꽉 찼습니다.", isPresented: $commViewModel.overCapacity)
     }
     
     private enum MGMTSection: CaseIterable, Identifiable {
