@@ -43,7 +43,6 @@ struct CardViewVer2: View {
                             .rotation3DEffect(
                                 .degrees(currentIndex == index ? 0 : 30),
                                 axis: (x: -0.3, y: 0.0, z: 0.1)
-//                                axis: (x: 0.5, y: 0, z: 0)
                             )
                         /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
@@ -55,6 +54,11 @@ struct CardViewVer2: View {
             }
             .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.35)
             .padding(.vertical)
+        }
+        .onAppear{
+            print("-----셀렉트카드뷰-------")
+            debugPrint(commViewModel.joinedComm)
+            debugPrint(commViewModel.joinedComm.count)
         }
         .animation(.easeInOut, value: currentIndex)
         .disabled(true)

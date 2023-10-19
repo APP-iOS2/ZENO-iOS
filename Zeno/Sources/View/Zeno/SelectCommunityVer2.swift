@@ -43,6 +43,7 @@ struct SelectCommunityVer2: View {
                                 .offset(y: -20)
                             CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                                 .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                                
                                 .onChange(of: currentIndex) { _ in
                                     withAnimation {
                                         ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
@@ -52,8 +53,10 @@ struct SelectCommunityVer2: View {
                     }
                     .frame(height: .screenHeight * 0.35)
                     /// 커뮤니티 리스트 뷰
-                    commuityListView
+                    commuityListView()
+                        .padding(.top, 10)
                         .background(.clear)
+//                    CommunityListView2(currentIndex: $currentIndex, selected: $selected, useConfentti: $useConfentti, counter: $counter, isPlay: $isPlay).background(.clear)
                 }
                 .navigationDestination(for: Community.self) { value in
                     ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
@@ -100,7 +103,8 @@ struct SelectCommunityVer2: View {
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
-                        await commViewModel.fetchAllComm()
+
+//                        await commViewModel.fetchAllComm()
                     }
                     currentIndex = 0
                     selected = ""
@@ -134,9 +138,9 @@ struct SelectCommunityVer2: View {
         }
     }
     
-    var commuityListView: some View {
+    func commuityListView() -> some View {
         ScrollViewReader { proxy in
-            List {
+            ScrollView {
                 ForEach(Array(commViewModel.joinedComm.indices),
                         id: \.self) { index in
                     Button {
@@ -161,7 +165,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, .screenWidth * 0.05)
                         }
                     }
-                    
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
                     .frame(width: .screenWidth * 0.9)
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
@@ -187,6 +192,12 @@ struct SelectCommunityVer2: View {
                 withAnimation {
                     proxy.scrollTo(commViewModel.joinedComm[newValue].id, anchor: .center)
                 }
+            }
+            // MARK: 안먹음
+            .onAppear {
+                print("-----그룹 리스트 뷰-------")
+                debugPrint(commViewModel.joinedComm)
+                debugPrint(commViewModel.joinedComm.count)
             }
         }
     }
