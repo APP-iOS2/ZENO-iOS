@@ -95,7 +95,7 @@ struct AlarmNudgeCellView: View {
                     
                     Text("답변으로 지목한 친구가 \(alarm.receiveUserName)님을 ")
                         .font(.thin(13))
-                    Text("💜 콕 찔렀어요 💜")
+                    Text("콕 찔렀어요 ! ")
                         .font(.bold(14))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
