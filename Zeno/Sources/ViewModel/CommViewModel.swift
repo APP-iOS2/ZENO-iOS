@@ -47,16 +47,16 @@ class CommViewModel: ObservableObject {
     /// db의 모든 커뮤니티를 받아오는 함수
     @MainActor
     func fetchAllComm() async {
-        let results = await firebaseManager.readAllCollection(type: Community.self)
-        let communities = results.compactMap {
-            switch $0 {
-            case .success(let success):
-                return success
-            case .failure:
-                return nil
-            }
-        }
-        allComm = communities
+//        let results = await firebaseManager.readAllCollection(type: Community.self)
+//        let communities = results.compactMap {
+//            switch $0 {
+//            case .success(let success):
+//                return success
+//            case .failure:
+//                return nil
+//            }
+//        }
+//        allComm = communities
     }
     /// 시뮬레이터용 초대링크를 복사할 수 있는 ShareSheet를 띄워줌
     @MainActor
@@ -202,23 +202,23 @@ class CommViewModel: ObservableObject {
     }
     @Published var searchedComm: [Community] = []
     /// ⭐️ searchedComm 업데이트할 함수 디바운서 적용해야함 ⭐️
-	func searchComm(completion: @escaping () -> Void) {
-			let result = Firestore.firestore().collection("Community").whereField("name", isGreaterThanOrEqualTo: commSearchTerm)
-			result.getDocuments { [weak self] snapshot, error in
-				if let error {
-					print(error.localizedDescription)
-					return
-				}
-				guard let comms = snapshot?.documents
-					.compactMap({ try? $0.data(as: Community.self) })
-				else { return }
-				guard let joinedComm = self?.joinedComm,
-					  let searchTerm = self?.commSearchTerm
-				else { return }
-				self?.searchedComm = comms.filter({ comm in !joinedComm.contains { $0.id == comm.id } }).filter({ $0.name.contains(searchTerm) })
-				completion()
-			}
-		}
+    func searchComm(completion: @escaping () -> Void) {
+        let result = Firestore.firestore().collection("Community").whereField("name", isGreaterThanOrEqualTo: commSearchTerm)
+        result.getDocuments { [weak self] snapshot, error in
+            if let error {
+                print(error.localizedDescription)
+                return
+            }
+            guard let comms = snapshot?.documents
+                .compactMap({ try? $0.data(as: Community.self) })
+            else { return }
+            guard let joinedComm = self?.joinedComm,
+                  let searchTerm = self?.commSearchTerm
+            else { return }
+            self?.searchedComm = comms.filter({ comm in !joinedComm.contains { $0.id == comm.id } }).filter({ $0.name.contains(searchTerm) })
+            completion()
+        }
+    }
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
     func isFriend(user: User) -> Bool {
         guard let currentComm,
@@ -247,6 +247,15 @@ class CommViewModel: ObservableObject {
                 setCurrentID(id: firstItem.id)
                 addCurrentCommSnapshot()
             }
+        }
+        if let user,
+           let currentUser,
+           user.commInfoList != currentUser.commInfoList {
+            Task {
+                self.currentUser = user
+                await fetchJoinedComm()
+            }
+            return
         }
         currentUser = user
     }
