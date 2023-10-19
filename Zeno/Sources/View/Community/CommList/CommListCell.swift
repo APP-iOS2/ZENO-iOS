@@ -67,7 +67,7 @@ struct CommListCell: View {
 		}
 		.fullScreenCover(isPresented: $isShowingCommRequestView) {
 			CommRequestView(isShowingCommRequestView: $isShowingCommRequestView,
-							aplicationStatus: commViewModel.checkApplied(comm: comm),
+							aplicationStatus: commViewModel.checkApplied(comm: comm) || comm.personnel <= comm.joinMembers.count,
 							comm: comm)
 		}
 	}
