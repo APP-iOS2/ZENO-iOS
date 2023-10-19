@@ -12,6 +12,7 @@ struct AlarmView: View {
     @EnvironmentObject var alarmViewModel: AlarmViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var commViewModel: CommViewModel
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var selectedCommunityId: String = ""
     @State private var isShowPaymentSheet: Bool = false
@@ -67,7 +68,7 @@ struct AlarmView: View {
                                         .background(.background)
                                         .offset(y: offsetY)
                                 }
-                                .shadow(color: .primary.opacity(0.1), radius: 2, y: 2)
+                                .shadow(color: .primary.opacity(colorScheme == .light ? 0.1 : 0.3), radius: 2, y: 2)
                                 if filterAlarmByCommunity.isEmpty {
                                     Spacer()
                                         .frame(width: .screenWidth, height: .screenHeight * 0.9)

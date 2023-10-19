@@ -47,7 +47,7 @@ struct ZenoApp: App {
                             SignStatusObserved.shared.isNeedLogin = true // signIn상태가 아닌데 currentUser값을 가져오지 못하면
                         }
                         
-                        print("✔️ userInfo :\(userViewModel.currentUser)")
+                        print("✔️ userInfo :\(String(describing: userViewModel.currentUser))")
                         if let currentUser = userViewModel.currentUser {
                             if commViewModel.currentUser == nil {
                                 // snapshot 연결
