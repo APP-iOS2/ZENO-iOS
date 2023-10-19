@@ -34,7 +34,7 @@ class CommViewModel: ObservableObject {
     private var userListener: ListenerRegistration?
     private var commListener: ListenerRegistration?
     /// 앱 시작을 딥링크로 할 때 유저 정보를 받아온 뒤 딥링크를 처리하기 위한 클로저
-    var deepLinkHandler: (() -> Void)?
+    var deepLinkHandler: () -> Void = { }
     
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     @Published private(set) var currentUser: User?
@@ -165,11 +165,18 @@ class CommViewModel: ObservableObject {
     @MainActor
     func updateCurrentUser(user: User?) {
         // 기존에 로그인된 유저가 없을 때 로그인하는 스코프
+        enum UserStatus {
+            case unSign
+            case signIn(JoinedCommStatus)
+        }
+        enum JoinedCommStatus {
+            case unJoined
+            case joined
+            case empty
+        }
         if currentUser == nil {
             currentUser = user
             addCurrentCommSnapshot()
-            guard let deepLinkHandler else { return }
-            deepLinkHandler()
             return
         }
         // 로그인된 유저의 값을 업데이트 할 때
@@ -178,7 +185,8 @@ class CommViewModel: ObservableObject {
            user.commInfoList.isEmpty {
             currentCommID.removeAll()
         }
-        // 2. 선택이 저장된 커뮤니티가 없고 가입한 커뮤니티가 있을 때
+        // 2. 선택한 커뮤니티가 저장되어 있고 가입한 커뮤니티가 있을 때
+        // 3. 선택한 커뮤니티가 저장되지 않고 가입한 커뮤니티가 있을 때
         if let user,
            !user.commInfoList.isEmpty,
            let firstItem = user.commInfoList.first {
@@ -187,7 +195,7 @@ class CommViewModel: ObservableObject {
                 addCurrentCommSnapshot()
             }
         }
-        // 3. 변경된 유저의 정보중 joinedComm 정보가 달라졌을 때
+        // 4. 변경된 유저의 정보중 joinedComm 정보가 달라졌을 때
         if let user,
            let currentUser,
            user.commInfoList != currentUser.commInfoList {
@@ -758,6 +766,7 @@ class CommViewModel: ObservableObject {
             }
         }
         self.joinedComm = joinedComm
+        deepLinkHandler()
     }
     /// 선택된 커뮤니티에 가입된 유저를 받아오는 함수
     @MainActor
