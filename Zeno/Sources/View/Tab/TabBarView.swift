@@ -43,6 +43,11 @@ struct TabBarView: View {
             }
             commViewModel.isJoinWithDeeplinkView = false
         }
+        .onChange(of: commViewModel.isJoinWithDeeplinkView) { newValue in
+            if !newValue {
+                commViewModel.deepLinkHandler = nil
+            }
+        }
         .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
         .zenoWarning("성공적으로 매니저를 위임했습니다.", isPresented: $commViewModel.managerChangeWarning)
         .onAppear {

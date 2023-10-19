@@ -33,126 +33,8 @@ class CommViewModel: ObservableObject {
     private let commRepo = CommRepository.shared
     private var userListener: ListenerRegistration?
     private var commListener: ListenerRegistration?
-    var deepLinkHandler: (() -> ())?
-    // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-    
-    // MARK: Legacy
-    
-    /// Firebase의 커뮤니티 Collection에 있는 모든 커뮤니티
-    @Published var allComm: [Community] = []
-    /// ⭐️ searchComm()를 이용해 연산프로터티 -> 저장프로퍼티로 변경 ⭐️
-    /// [커뮤니티 검색] 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
-//    var searchedComm: [Community] {
-//        var searchCom = allComm
-//            .filter { $0.name.lowercased().contains(commSearchTerm.lowercased()) }
-//            .filter { $0.isSearchable }
-//        if !joinedComm.isEmpty {
-//            guard let currentUser else { return [] }
-//
-//            searchCom = searchCom.filter { searched in
-//                !currentUser.commInfoList.contains { userComm in
-//                    userComm.id == searched.id
-//                }
-//            }
-//        }
-//        return searchCom
-//    }
-    /// db의 모든 커뮤니티를 받아오는 함수
-    @MainActor
-    func fetchAllComm() async {
-//        let results = await firebaseManager.readAllCollection(type: Community.self)
-//        let communities = results.compactMap {
-//            switch $0 {
-//            case .success(let success):
-//                return success
-//            case .failure:
-//                return nil
-//            }
-//        }
-//        allComm = communities
-    }
-    /// 시뮬레이터용 초대링크를 복사할 수 있는 ShareSheet를 띄워줌
-    @MainActor
-    private func tempHandleInviteURL(_ url: URL) async {
-        guard url.scheme == "zenoapp" else { return }
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            print("유효하지 않은 URL")
-            return
-        }
-        guard let action = components.host, action == "kakaolink" else {
-            print("유효하지 않은 URL action")
-            return
-        }
-        guard let commID = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
-            print("유효하지 않은 URL value")
-            return
-        }
-        if let currentUser {
-            isShowingSearchCommSheet = false
-            isShowingCommListSheet = false
-            if currentUser.commInfoList.contains(where: { $0.id == commID }) {
-                guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
-                self.setCurrentID(id: comm.id)
-            } else {
-                Task {
-                    let result = await firebaseManager.read(type: Community.self, id: commID)
-                    switch result {
-                    case let .success(success):
-                        deepLinkTargetComm = success
-                        isJoinWithDeeplinkView = true
-                    case .failure:
-                        isDeepLinkExpired = true
-                        print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
-                    }
-                }
-            }
-        } else {
-            deepLinkHandler = {
-                guard let currentUser = self.currentUser else { return }
-                self.isShowingSearchCommSheet = false
-                self.isShowingCommListSheet = false
-                if currentUser.commInfoList.contains(where: { $0.id == commID }) {
-                    guard let comm = self.joinedComm.first(where: { $0.id == commID }) else { return }
-                    self.setCurrentID(id: comm.id)
-                } else {
-                    Task {
-                        let result = await self.firebaseManager.read(type: Community.self, id: commID)
-                        switch result {
-                        case let .success(success):
-                            self.deepLinkTargetComm = success
-                            self.isJoinWithDeeplinkView = true
-                        case .failure:
-                            self.isDeepLinkExpired = true
-                            print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /// 시뮬레이터용 ShareSheet 올리기
-    func tempShareLink() {
-        guard let commID = currentComm?.id else { return }
-        let deepLink = "zenoapp://kakaolink?commID=\(commID)"
-        let activityVC = UIActivityViewController(
-            activityItems: [deepLink],
-            applicationActivities: [KakaoActivity(), IGActivity()]
-        )
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            if let mainWindow = windowScene.windows.first {
-                mainWindow.rootViewController?.present(
-                    activityVC,
-                    animated: true,
-                    completion: {
-//                        print("공유창 나타나면서 할 작업들?")
-                    }
-                )
-            }
-        }
-    }
-    
-    // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    /// 앱 시작을 딥링크로 할 때 유저 정보를 받아온 뒤 딥링크를 처리하기 위한 클로저
+    var deepLinkHandler: (() -> Void)?
     
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     @Published private(set) var currentUser: User?
@@ -219,13 +101,17 @@ class CommViewModel: ObservableObject {
     }
     /// 모든 커뮤니티를 검색하기 위한 String
     @Published var commSearchTerm: String = ""
+    /// [커뮤니티 검색] 모든 커뮤니티에서 communitySearchTerm로 검색된 커뮤니티
+    @Published var searchedComm: [Community] = []
 	/// 딥링크로 초대받은 커뮤니티 ID
     @Published var deepLinkTargetComm: Community = .emptyComm
-    /// 딥링크 수신 정상 처리에 따라 가입하는 View를 보여주는 Bool
+    /// 딥링크 수신: 가입하는 View를 보여주는 Bool
     @Published var isJoinWithDeeplinkView: Bool = false
+    /// 딥링크 수신: 해당하는 커뮤니티가 존재하지 않을 때 알림을 보여주는 Bool
     @Published var isDeepLinkExpired: Bool = false
     @Published var isShowingSearchCommSheet: Bool = false
     @Published var isShowingCommListSheet: Bool = false
+    @Published var isFetchComplete: Bool = false
     
     init() {
 		loadRecentSearches() // 최근검색어 불러오기
@@ -233,36 +119,21 @@ class CommViewModel: ObservableObject {
     
     // MARK: Local
     
-    func recomendComm() {
-//        let userArr = [[id: UUID().uuidString, name: "원강묵"],
-//                       [id: UUID().uuidString, name: "김건섭"],
-//                       [id: UUID().uuidString, name: "안효명"],
-//                       [id: UUID().uuidString, name: "함지수"],
-//                       [id: UUID().uuidString, name: "원강묵"],
-//                       [id: UUID().uuidString, name: "유하은"],
-//                       [id: UUID().uuidString, name: "유하은"],
-//                       [id: UUID().uuidString, name: "원강묵"],
-//                       [id: UUID().uuidString, name: "김건섭"],
-//                       [id: UUID().uuidString, name: "함지수"],
-//                       [id: UUID().uuidString, name: "원강묵"],
-//                       [id: UUID().uuidString, name: "안효명"],
-//                       [id: UUID().uuidString, name: "원강묵"],
-//                       [id: UUID().uuidString, name: "유하은"],
-//        ]
-//
-//        let closeFriend = Dictionary(grouping: userArr) { $0.name }
-//            .mapValues { $0.count }
-//            .sorted { $0.value > $1.value }
-//
-//        closeFriend.forEach { print($0.key) }
+    func recomendComm() async {
+        guard let allBuddies = currentUser?.commInfoList.flatMap({ $0.buddyList }) else { return }
+        
+        _ = Dictionary(grouping: allBuddies) { $0 }
+//        let closeFriend = Dictionary(grouping: allBuddies) { $0 }
+            .mapValues { $0.count }
+            .sorted { $0.value > $1.value }
+            .map { $0.key }
     }
     /// [그룹 메인 뷰] 현재 커뮤니티의 매니저인지 확인
     func checkManagerUser(user: User) -> Bool {
         guard let managerID = currentComm?.managerID.description else { return false }
         return managerID == user.id
     }
-    @Published var searchedComm: [Community] = []
-    /// ⭐️ searchedComm 업데이트할 함수 디바운서 적용해야함 ⭐️
+    /// searchedComm을 업데이트하는 함수
     func searchComm(completion: @escaping () -> Void) {
         let result = Firestore.firestore().collection("Community").whereField("name", isGreaterThanOrEqualTo: commSearchTerm)
         result.getDocuments { [weak self] snapshot, error in
@@ -302,10 +173,12 @@ class CommViewModel: ObservableObject {
             return
         }
         // 로그인된 유저의 값을 업데이트 할 때
+        // 1. 가입한 커뮤니티가 없을 때
         if let user,
            user.commInfoList.isEmpty {
             currentCommID.removeAll()
         }
+        // 2. 선택이 저장된 커뮤니티가 없고 가입한 커뮤니티가 있을 때
         if let user,
            !user.commInfoList.isEmpty,
            let firstItem = user.commInfoList.first {
@@ -314,6 +187,7 @@ class CommViewModel: ObservableObject {
                 addCurrentCommSnapshot()
             }
         }
+        // 3. 변경된 유저의 정보중 joinedComm 정보가 달라졌을 때
         if let user,
            let currentUser,
            user.commInfoList != currentUser.commInfoList {
@@ -328,10 +202,12 @@ class CommViewModel: ObservableObject {
         currentUser = user
     }
     /// 현재 표시되는 커뮤니티를 변경하며 커뮤니티의 유저 리스트를 받아옵니다
+    @MainActor
     func updateCurrentComm(comm: Community?) {
         currentComm = comm
         Task {
             await fetchJoinedComm()
+            isFetchComplete = true
         }
     }
     /// 현재 표시되는 커뮤니티의 ID를 변경하는 함수, 기본값은 빈 문자열입니다
@@ -942,4 +818,91 @@ class CommViewModel: ObservableObject {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
         }
     }
+    
+    // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    
+    // MARK: Legacy
+    
+    /// 시뮬레이터용 초대링크를 복사할 수 있는 ShareSheet를 띄워줌
+    @MainActor
+    private func tempHandleInviteURL(_ url: URL) async {
+        guard url.scheme == "zenoapp" else { return }
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            print("유효하지 않은 URL")
+            return
+        }
+        guard let action = components.host, action == "kakaolink" else {
+            print("유효하지 않은 URL action")
+            return
+        }
+        guard let commID = components.queryItems?.first(where: { $0.name == "commID" })?.value else {
+            print("유효하지 않은 URL value")
+            return
+        }
+        if let currentUser {
+            isShowingSearchCommSheet = false
+            isShowingCommListSheet = false
+            if currentUser.commInfoList.contains(where: { $0.id == commID }) {
+                guard let comm = joinedComm.first(where: { $0.id == commID }) else { return }
+                self.setCurrentID(id: comm.id)
+            } else {
+                Task {
+                    let result = await firebaseManager.read(type: Community.self, id: commID)
+                    switch result {
+                    case let .success(success):
+                        deepLinkTargetComm = success
+                        isJoinWithDeeplinkView = true
+                    case .failure:
+                        isDeepLinkExpired = true
+                        print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
+                    }
+                }
+            }
+        } else {
+            deepLinkHandler = {
+                guard let currentUser = self.currentUser else { return }
+                self.isShowingSearchCommSheet = false
+                self.isShowingCommListSheet = false
+                if currentUser.commInfoList.contains(where: { $0.id == commID }) {
+                    guard let comm = self.joinedComm.first(where: { $0.id == commID }) else { return }
+                    self.setCurrentID(id: comm.id)
+                } else {
+                    Task {
+                        let result = await self.firebaseManager.read(type: Community.self, id: commID)
+                        switch result {
+                        case let .success(success):
+                            self.deepLinkTargetComm = success
+                            self.isJoinWithDeeplinkView = true
+                        case .failure:
+                            self.isDeepLinkExpired = true
+                            print("딥링크 커뮤니티 아이디 찾을 수 없음: \(commID)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /// 시뮬레이터용 ShareSheet 올리기
+    func tempShareLink() {
+        guard let commID = currentComm?.id else { return }
+        let deepLink = "zenoapp://kakaolink?commID=\(commID)"
+        let activityVC = UIActivityViewController(
+            activityItems: [deepLink],
+            applicationActivities: [KakaoActivity(), IGActivity()]
+        )
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            if let mainWindow = windowScene.windows.first {
+                mainWindow.rootViewController?.present(
+                    activityVC,
+                    animated: true,
+                    completion: {
+//                        print("공유창 나타나면서 할 작업들?")
+                    }
+                )
+            }
+        }
+    }
+    
+    // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 }
