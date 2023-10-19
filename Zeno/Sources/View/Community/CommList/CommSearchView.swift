@@ -39,7 +39,7 @@ struct CommSearchView: View {
 					case .done:
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-								CommListCell(comm: item) { }
+								CommSearchedListCell(comm: item) { }
 							}
 						}
 						.scrollDismissesKeyboard(.immediately)
@@ -147,6 +147,14 @@ extension CommSearchView {
 									.foregroundColor(Color(uiColor: .gray))
 								Text(searchTitle)
 								Spacer()
+                                Button {
+                                    commViewModel.removeSearchTerm(searchTitle)
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                        .foregroundColor(.gray)
+                                        .padding(.trailing)
+                                }
 							}
 							.font(.regular(14))
 							.padding([.top], 5)

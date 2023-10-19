@@ -74,7 +74,7 @@ struct CommMainView: View {
                 }
             }
             .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
-                CommListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
+                CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
             }
             .navigationDestination(isPresented: $isPresentedAddCommView) {
                 CommSettingView(editMode: .addNew)

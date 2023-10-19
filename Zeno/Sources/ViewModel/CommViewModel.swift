@@ -369,6 +369,11 @@ class CommViewModel: ObservableObject {
 		UserDefaults.standard.set(recentSearches, forKey: "recentSearches")
 		loadRecentSearches()
 	}
+    
+    func removeSearchTerm(_ term: String) {
+        recentSearches.removeFirstElement(term)
+        saveRecentSearches()
+    }
     /// User배열에서 현재 로그인된 유저를 제외하기 위한 함수
     private func exceptCurrentUser(users: [User]) -> [User] {
         guard let currentUser else { return users }
