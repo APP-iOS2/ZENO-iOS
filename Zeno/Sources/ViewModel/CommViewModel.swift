@@ -200,7 +200,7 @@ class CommViewModel: ObservableObject {
         guard let managerID = currentComm?.managerID.description else { return false }
         return managerID == user.id
     }
-    var searchedComm: [Community] = []
+    @Published var searchedComm: [Community] = []
     /// ⭐️ searchedComm 업데이트할 함수 디바운서 적용해야함 ⭐️
     func searchComm(completion: @escaping () -> Void) {
         let result = Firestore.firestore().collection("Community").whereField("name", isLessThanOrEqualTo: commSearchTerm)
@@ -213,7 +213,8 @@ class CommViewModel: ObservableObject {
             guard let comms = snapshot?.documents
                 .compactMap({ try? $0.data(as: Community.self) })
             else { return }
-            self?.searchedComm = comms
+            guard let joinedComm = self?.joinedComm else { return }
+            self?.searchedComm = comms.filter({ comm in !joinedComm.contains { $0.id == comm.id } })
             completion()
         }
     }
@@ -237,6 +238,14 @@ class CommViewModel: ObservableObject {
         if let user,
            user.commInfoList.isEmpty {
             currentCommID.removeAll()
+        }
+        if let user,
+           !user.commInfoList.isEmpty,
+           let firstItem = user.commInfoList.first {
+            if currentCommID.isEmpty {
+                setCurrentID(id: firstItem.id)
+                addCurrentCommSnapshot()
+            }
         }
         currentUser = user
     }

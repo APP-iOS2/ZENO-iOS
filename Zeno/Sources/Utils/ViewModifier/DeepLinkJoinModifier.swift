@@ -80,7 +80,7 @@ struct JoinWithDeepLinkView: View {
                 } label: {
                     HStack {
                         Group {
-                            if comm.personnel > comm.joinMembers.count && btn == .join {
+                            if btn == .join {
                                 Text(comm.personnel > comm.joinMembers.count ? btn.title : "인원이 꽉 찼습니다")
                             } else {
                                 Text(btn.title)
