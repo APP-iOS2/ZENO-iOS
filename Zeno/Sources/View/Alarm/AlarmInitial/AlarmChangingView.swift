@@ -22,6 +22,9 @@ struct AlarmChangingView: View {
     @State private var chosungIndex: Int = 16
     @State private var initialCheckCount: Int = 0
     @State private var resultArray: [Int] = []
+    
+    @State private var isFirstOnAppear: Bool = true
+    
     let selectAlarm: Alarm
     
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
@@ -71,8 +74,13 @@ struct AlarmChangingView: View {
                 dismiss()
                 backAlert = false
         })
-        .task {
-            chosung = ChosungCheck(word: selectAlarm.sendUserName)
+        .onAppear {
+            if isFirstOnAppear {
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
+            }
+        }
+        .onDisappear {
+            isFirstOnAppear = false
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
