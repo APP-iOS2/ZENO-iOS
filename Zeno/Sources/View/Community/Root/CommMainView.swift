@@ -70,18 +70,18 @@ struct CommMainView: View {
                     }
                 }
                 .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
-                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
+                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView, isPresentedRequestCommView: $isPresentedRequestCommView)
                 }
                 .navigationDestination(isPresented: $isPresentedAddCommView) {
                     CommSettingView(editMode: .addNew)
+                }
+                .navigationDestination(isPresented: $isPresentedRequestCommView) {
+                    CommRequestListView()
                 }
             } else {
                 ProgressView()
                     .tint(.mainColor)
             }
-			.navigationDestination(isPresented: $isPresentedRequestCommView) {
-				CommRequestListView()
-			}
         }
         .tint(.ggullungColor)
         .overlay(

@@ -178,7 +178,7 @@ struct GroupListView_Previews: PreviewProvider {
         var body: some View {
             CommMainView()
                 .sheet(isPresented: $isPresented) {
-                    CommListView(isPresented: $isPresented,
+                    CommJoinedListView(isPresented: $isPresented,
 								 isPresentedAddCommView: .constant(false),
 								 isPresentedRequestCommView: .constant(false))
                 }
