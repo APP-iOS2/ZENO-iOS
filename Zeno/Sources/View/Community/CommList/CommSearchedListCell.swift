@@ -1,5 +1,5 @@
 //
-//  CommCell.swift
+//  CommSearchedListCell.swift
 //  Zeno
 //
 //  Created by Muker on 2023/10/08.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct CommListCell: View {
+struct CommSearchedListCell: View {
 	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
