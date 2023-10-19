@@ -202,22 +202,23 @@ class CommViewModel: ObservableObject {
     }
     @Published var searchedComm: [Community] = []
     /// ⭐️ searchedComm 업데이트할 함수 디바운서 적용해야함 ⭐️
-    func searchComm(completion: @escaping () -> Void) {
-        let result = Firestore.firestore().collection("Community").whereField("name", isLessThanOrEqualTo: commSearchTerm)
-//        result.getDocuments { _, error in
-        result.getDocuments { [weak self] snapshot, error in
-            if let error {
-                print(error.localizedDescription)
-                return
-            }
-            guard let comms = snapshot?.documents
-                .compactMap({ try? $0.data(as: Community.self) })
-            else { return }
-            guard let joinedComm = self?.joinedComm else { return }
-            self?.searchedComm = comms.filter({ comm in !joinedComm.contains { $0.id == comm.id } })
-            completion()
-        }
-    }
+	func searchComm(completion: @escaping () -> Void) {
+			let result = Firestore.firestore().collection("Community").whereField("name", isGreaterThanOrEqualTo: commSearchTerm)
+			result.getDocuments { [weak self] snapshot, error in
+				if let error {
+					print(error.localizedDescription)
+					return
+				}
+				guard let comms = snapshot?.documents
+					.compactMap({ try? $0.data(as: Community.self) })
+				else { return }
+				guard let joinedComm = self?.joinedComm,
+					  let searchTerm = self?.commSearchTerm
+				else { return }
+				self?.searchedComm = comms.filter({ comm in !joinedComm.contains { $0.id == comm.id } }).filter({ $0.name.contains(searchTerm) })
+				completion()
+			}
+		}
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
     func isFriend(user: User) -> Bool {
         guard let currentComm,
