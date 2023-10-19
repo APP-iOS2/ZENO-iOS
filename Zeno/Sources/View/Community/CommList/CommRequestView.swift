@@ -87,9 +87,20 @@ struct CommRequestView: View {
                         //							.font(.system(size: 21))
                         //							.offset(x: -.screenWidth * 0.3)
                         //							.foregroundColor(aplicationStatus ? .gray : .white)
-                        Text(aplicationStatus ? "이미 신청한 그룹" : "가입 신청 하기")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17))
-                            .foregroundColor(aplicationStatus ? .gray : .white)
+						
+							if comm.personnel <= comm.joinMembers.count {
+								Text("인원이 꽉 찼습니다.")
+									.font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17))
+									.foregroundColor(.gray)
+							} else if aplicationStatus {
+								Text("이미 신청한 그룹")
+									.font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17))
+									.foregroundColor(.gray)
+							} else {
+								Text("가입 신청 하기")
+									.font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17))
+									.foregroundColor(.white)
+							}
                     }
                     .offset(y: -20)
                     .padding(.top, 30)
