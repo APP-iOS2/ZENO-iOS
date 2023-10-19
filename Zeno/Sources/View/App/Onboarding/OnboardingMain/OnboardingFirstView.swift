@@ -40,7 +40,7 @@ struct OnboardingFirstView: View {
                     
                     Image("addFriend")
                         .resizable()
-                        .frame(width: .screenWidth * 0.9 , height: .screenHeight * 0.1)
+                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.1)
                         .padding()
                     
                     Spacer()
