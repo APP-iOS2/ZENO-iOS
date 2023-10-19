@@ -50,6 +50,7 @@ class CommViewModel: ObservableObject {
     @Published var currentWaitApprovalMembers: [User] = []
 	/// [커뮤니티최근검색] 최근 검색된 검색어들
 	@Published var recentSearches: [String] = []
+	/// [가입 신청된 그룹]
 	/// [매니저 위임] 매니저 바뀌었을 때 알람
 	@Published var managerChangeWarning: Bool = false
 	/// [그룹정원 초과] 구성원 관리에서 그룹정원이 초과되었을 때 알람
@@ -117,7 +118,7 @@ class CommViewModel: ObservableObject {
         loadRecentSearches() // 최근검색어 불러오기
     }
     
-    // MARK: Local
+    // MARK: - Local
     
     func recomendComm() async {
         guard let allBuddies = currentUser?.commInfoList.flatMap({ $0.buddyList }) else { return }
@@ -152,6 +153,7 @@ class CommViewModel: ObservableObject {
         }
     }
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
+	@MainActor
     func isFriend(user: User) -> Bool {
         guard let currentComm,
               let currentUser,
@@ -226,7 +228,7 @@ class CommViewModel: ObservableObject {
             print("📝", #function)
             await fetchJoinedComm {
                 forAlarmFunc()
-                isFetchComplete = true
+                self.isFetchComplete = true
             }
         }
     }
@@ -282,6 +284,26 @@ class CommViewModel: ObservableObject {
 		if let savedSearches = UserDefaults.standard.array(forKey: "recentSearches") as? [String] {
 			recentSearches = savedSearches
 		}
+	}
+	
+	/// [가입신청] 가입 신청된 커뮤니티 불러오기
+	@MainActor
+	func getRequestComm() async -> [Community] {
+		guard let currentUser else { return [] }
+		
+		let results =  await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: currentUser.requestComm)
+		
+		var requestComm: [Community] = []
+		
+		await results.asyncForEach { result in
+			switch result {
+			case .success(let comm):
+				requestComm.append(comm)
+			case .failure:
+				print("가입신청 보낸 그룹 정보 불러오기 실패")
+			}
+		}
+		return requestComm
 	}
     
     // MARK: Interaction
@@ -341,6 +363,28 @@ class CommViewModel: ObservableObject {
             }
         }
     }
+	
+	/// [가입 신청 취소]
+	@MainActor
+	func removeJoinRequestUser(comm: Community) async {
+		guard let currentUser else { return }
+		
+		let updatedWaitList = comm.waitApprovalMemberIDs
+			.filter { $0 != currentUser.id }
+		
+		do {
+			try await firebaseManager.update(data: currentUser,
+											 value: \.requestComm,
+											 to: currentUser.requestComm.filter({ $0 != comm.id }))
+			
+			try await firebaseManager.update(data: comm,
+											 value: \.waitApprovalMemberIDs,
+											 to: updatedWaitList)
+		} catch {
+			print(#function + "그룹 가입 신청 취소 실패")
+		}
+	}
+	
     /// 매니저가 그룹 가입신청 수락하는 함수
     @MainActor
     func acceptMember(user: User) async {
@@ -523,14 +567,18 @@ class CommViewModel: ObservableObject {
 		do {
             // 해당 커뮤니티의 최신 정보를 가져와 가입신청 리스트에 로그인된 유저를 추가해 업데이트
 			let result = try await firebaseManager.read(type: Community.self, id: comm.id).get()
+			
+			do {
+				try await firebaseManager.update(data: currentUser, value: \.requestComm, to: currentUser.requestComm + [comm.id])
+			} catch {
+				print(#function + "유저의 가입신청 정보 업데이트 실패")
+			}
+			
 			try await firebaseManager.update(data: comm.self,
 											 value: \.waitApprovalMemberIDs,
 											 to: result.waitApprovalMemberIDs + [currentUser.id])
-            do {
-                try await firebaseManager.update(data: currentUser, value: \.requestComm, to: currentUser.requestComm + [comm.id])
-            } catch {
-                print(#function + "유저의 가입신청 정보 업데이트 실패")
-            }
+			
+            
             // 해당 커뮤니티의 매니저에게 푸시 노티 발사
             let managerInfoResult = await firebaseManager.read(type: User.self, id: comm.managerID)
             switch managerInfoResult {
@@ -547,8 +595,8 @@ class CommViewModel: ObservableObject {
 			print(#function + "🔴 그룹 가입 신청 실패")
 		}
     }
-    
-    // MARK: DeepLink
+	
+    // MARK: - DeepLink
     
     /// 딥링크 url의 정보를 구분해 처리하는 함수
     /// 1. 가입되어 있을 때: 그룹탭으로 이동해 링크의 커뮤니티를 보여줌

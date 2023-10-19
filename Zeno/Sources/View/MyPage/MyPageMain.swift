@@ -143,7 +143,7 @@ struct MyPageMain: View {
                         GroupSelectView()
                             .id(topID)
                             .onTapGesture {
-                                scrollVR.scrollTo(topID)
+//                                scrollVR.scrollTo(topID)
                             }
                     }
                 }
