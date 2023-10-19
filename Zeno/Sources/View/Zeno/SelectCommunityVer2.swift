@@ -54,7 +54,7 @@ struct SelectCommunityVer2: View {
                     .frame(height: .screenHeight * 0.35)
                     /// 커뮤니티 리스트 뷰
                     commuityListView()
-                        .padding(.top, 10)
+                        .padding(.top, 5)
                         .background(.clear)
 //                    CommunityListView2(currentIndex: $currentIndex, selected: $selected, useConfentti: $useConfentti, counter: $counter, isPlay: $isPlay).background(.clear)
                 }
@@ -154,8 +154,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, 10)
                             Text(commViewModel.joinedComm[index].name)
                                 .font(selected == commViewModel.joinedComm[index].id ?
-                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16) :
-                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17) :
+                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
                                 .foregroundColor(.primary.opacity(0.7))
                             
                             Spacer()
@@ -178,6 +178,7 @@ struct SelectCommunityVer2: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
+            .frame(height: .screenHeight * 0.45)
             .overlay {
                 HStack {
                     Spacer()
@@ -192,12 +193,6 @@ struct SelectCommunityVer2: View {
                 withAnimation {
                     proxy.scrollTo(commViewModel.joinedComm[newValue].id, anchor: .center)
                 }
-            }
-            // MARK: 안먹음
-            .onAppear {
-                print("-----그룹 리스트 뷰-------")
-                debugPrint(commViewModel.joinedComm)
-                debugPrint(commViewModel.joinedComm.count)
             }
         }
     }

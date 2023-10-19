@@ -46,7 +46,7 @@ struct CardViewVer2: View {
                             )
                         /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 24))
                             .frame(width: 200)
                             .opacity(currentIndex == index ? 1.0 : 0.3)
                     }
@@ -54,11 +54,6 @@ struct CardViewVer2: View {
             }
             .frame(width: CGFloat(commViewModel.joinedComm.count+1) * itemSize, height: .screenHeight * 0.35)
             .padding(.vertical)
-        }
-        .onAppear{
-            print("-----셀렉트카드뷰-------")
-            debugPrint(commViewModel.joinedComm)
-            debugPrint(commViewModel.joinedComm.count)
         }
         .animation(.easeInOut, value: currentIndex)
         .disabled(true)
@@ -89,9 +84,9 @@ struct CardViewVer2_Previews: PreviewProvider {
                             commViewModel.updateCurrentUser(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
-                        }
                     }
                 }
+            }
         }
     }
     
