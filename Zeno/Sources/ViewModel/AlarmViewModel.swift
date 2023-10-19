@@ -58,7 +58,7 @@ class AlarmViewModel: ObservableObject {
         let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: nudgeAlarm.zenoString, createdAt: Date().timeIntervalSince1970)
         await createAlarm(alarm: alarm)
         
-        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: "\(alarm.zenoString)에 답변으로 지목한 친구가 \(alarm.sendUserName)님을 콕 👉 찔렀어요  💜 ")
+        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: "\(alarm.zenoString)에 답변으로 지목한 친구가 \(alarm.receiveUserName)님을 콕 👉 찔렀어요 ! ")
     }
     
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
