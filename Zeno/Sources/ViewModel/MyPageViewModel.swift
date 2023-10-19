@@ -93,16 +93,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         }
         return nil
     }
-//
-//    /// zenoString 사진 배열
-//    func zenoImageArray() {
-//        print("zenoStringAll \(self.zenoStringAll)")
-//        for zeno in self.zenoStringAll {
-//            if let zenoImage = findZenoImage(forQuestion: zeno, in: Zeno.ZenoQuestions) {
-//                self.zenoStringImage.append(zenoImage)
-//            }
-//        }
-//    }
 
     @MainActor
     func fetchAllAlarmData() async {
@@ -209,21 +199,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                     } catch {
                         print("json parsing Error \(error.localizedDescription)")
                     }
-    //                if let document = document, document.exists {
-    //                    let data = document.data()
-    //                    do {
-    //                        if let data {
-    //                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-    //                            let user = try JSONDecoder().decode(User.self, from: jsonData)
-    //                            self.friendInfo.append(user)
-    //                            print("💙[friendInfo] \(self.friendInfo)")
-    //                        }
-    //                    } catch {
-    //                        print("json parsing Error \(error.localizedDescription)")
-    //                    }
-    //                } else {
-    //                    print("[returnFriendInfo] firebase document 존재 오류")
-    //                }
                 } else {
                     print("[returnFriendInfo] firebase document 존재 오류")
                 }

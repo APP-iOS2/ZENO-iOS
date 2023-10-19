@@ -318,7 +318,9 @@ class CommViewModel: ObservableObject {
            let currentUser,
            user.commInfoList != currentUser.commInfoList {
             Task {
-                self.currentUser = user
+                await MainActor.run {
+                    self.currentUser = user
+                }
                 await fetchJoinedComm()
             }
             return

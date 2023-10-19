@@ -29,9 +29,12 @@ struct NickNameRegistView: View {
     @State private var 이용약관: Bool = false
     @State private var 개인정보처리방침: Bool = false
     
+    @State private var female: Bool = false
+    @State private var male: Bool = false
+    
     private var checkingText: String {
         if nameText.count >= 2 {
-            return "한글로 입력바랍니다. 영어이름인경우 발음대로 입력. 공백없이 입력."
+            return "한글로 입력해주세요. 영어 이름인 경우 발음대로 입력 (공백없이 입력)"
         } else {
             return "2자 이상 입력해주세요."
         }
@@ -69,174 +72,205 @@ struct NickNameRegistView: View {
     var body: some View {
         GeometryReader { geo in
             VStack(alignment: .leading, spacing: 0) {
-                        HStack(spacing: 30) {
-                            Text("제노 회원가입")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
-                            Spacer()
-                        }
-                        .padding()
-                        .tint(.black)
-                        
+                HStack(spacing: 30) {
+                    Text("제노 회원가입")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
+                    Spacer()
+                }
+                .padding()
+                .tint(.black)
+                
+                Circle()
+                    .frame(width: 150, alignment: .center)
+                    .foregroundColor(.clear)
+                    .background(
+                        profileImage
+                            .clipShape(Circle())
+                    )
+                    .background {
                         Circle()
-                            .frame(width: 150, alignment: .center)
-                            .foregroundColor(.clear)
-                            .background(
-                                profileImage
-                                    .clipShape(Circle())
-                            )
-                            .background {
-                                Circle()
-                                    .stroke(.gray.opacity(5.0))
-                            }
-                            .overlay(alignment: .bottomTrailing) {
-                                Image(systemName: "camera.circle.fill")
-                                    .foregroundStyle(Color.gray)
-                                    .font(.title)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .onTapGesture {
-                                isImagePicker.toggle()
-                            }
-                        HStack {
-                            Spacer()
-                            Text("필수")
-                                .font(.thin(10))
-                                .foregroundColor(.red)
-                                .padding(.trailing)
-                                .offset(y: 5)
-                        }
-                        RegistCustomTF(titleText: "이름",
-                                       placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
-                                       customText: $nameText,
-                                       isNotHanguel: $isChecking,
-                                       textMaxCount: 5,
-                                       isFocusing: true)
-                        .font(.regular(16))
-                        
-                        if isChecking {
-                            Text(checkingText)
-                                .foregroundStyle(Color.red.opacity(0.9))
-                                .font(.caption)
-                                .padding(.horizontal)
-                        }
-                        
-                        HStack {
-                            Text("성별")
-                                .frame(width: 60, alignment: .leading)
-                                .font(.regular(16))
-                            Picker("Gender", selection: $gender) {
-                                ForEach(Gender.allCases, id: \.self) { gd in
-                                    Text(gd.toString)
-                                        .font(.regular(12))
-                                        .tag(gd)
-                                }
-                            }
-                            .tint(.primary)
-                            Spacer()
-                            Text("필수")
-                                .font(.thin(10))
-                                .foregroundColor(.red)
-                        }
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
-                        .padding()
-                        
-                        RegistCustomTF(titleText: "한줄소개",
-                                       placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
-                                       customText: $descriptionText,
-                                       isNotHanguel: .constant(false),
-                                       textMaxCount: 50,
-                                       isFocusing: false)
-                        .font(.regular(13))
-                        
-                        Spacer()
-                        
-                        // MARK: 10.17 추가
-                        Group {
-                            Spacer()
-                            
-                            HStack {
-                                Text("회원가입을 위해 아래의 이용약관과 개인정보 처리방침에 동의해주세요")
-                                    .font(.thin(13))
-                            }
-                            Divider()
-                                .padding()
-                            
-                            VStack(alignment: .leading) {
-                                /// 이용약관 동의
-                                HStack {
-                                    Button {
-                                        이용약관.toggle()
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: 이용약관 ? "checkmark.circle.fill" : "circle")
-                                                .foregroundColor(.mainColor)
-                                            Text("이용약관")
-                                            Text("(필수)")
-                                                .foregroundColor(.red)
-                                        }
-                                        .foregroundColor(.primary)
-                                    }
-                                    .frame(width: geo.size.width * 0.8, alignment: .leading)
-                                    
-                                    Spacer()
-                                    
-                                    /// 이용약관 보러가기
-                                    linkView("", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
-                                }
-                                .padding(.bottom, 10)
-                                /// 개인정보 처리방침 동의
-                                HStack {
-                                    Button {
-                                        개인정보처리방침.toggle()
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: 개인정보처리방침 ? "checkmark.circle.fill" : "circle")
-                                                .foregroundColor(.mainColor)
-                                            Text("개인정보 처리방침")
-                                            Text("(필수)")
-                                                .foregroundColor(.red)
-                                        }
-                                        .foregroundColor(.primary)
-                                    }
-                                    .frame(width: geo.size.width * 0.8, alignment: .leading)
-                                    
-                                    Spacer()
-                                    
-                                    /// 개인정보처리방침 보러가기
-                                    linkView("", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
-                                }
-                                
-                                Spacer()
-
-                                /// 확인버튼
-                                Button {
-                                    if koreaLangCheck(nameText) {
-                                        if nameText.count >= 2 {
-                                            isConfirmSheet.toggle()
-                                        } else {
-                                            isChecking.toggle()
-                                        }
-                                    }
-                                } label: {
-                                    Rectangle()
-                                        .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray2 : .mainColor)
-                                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.06)
-                                        .cornerRadius(10)
-                                        .overlay {
-                                            Text("회원가입")
-                                                .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray3 : .white)
-                                                .font(.bold(17))
-                                    }
-                                }
-                                .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
-                                .padding(.top, 30)
-                            }
-                            .font(.thin(16))
-                        }
-                        .padding(.horizontal)
-                        Spacer()
+                            .stroke(.gray.opacity(5.0))
                     }
+                    .overlay(alignment: .bottomTrailing) {
+                        Image(systemName: "camera.circle.fill")
+                            .foregroundStyle(Color.gray)
+                            .font(.title)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .onTapGesture {
+                        isImagePicker.toggle()
+                    }
+                HStack {
+                    Spacer()
+                    Text("필수")
+                        .font(.thin(10))
+                        .foregroundColor(.red)
+                        .padding(.trailing)
+                        .offset(y: 5)
+                }
+                RegistCustomTF(titleText: "이름",
+                               placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
+                               customText: $nameText,
+                               isNotHanguel: $isChecking,
+                               textMaxCount: 5,
+                               isFocusing: true)
+                .font(.regular(16))
+                
+                Text(checkingText)
+                    .foregroundStyle(Color.red.opacity(0.9))
+                    .font(.caption)
+                    .padding(.horizontal)
+                    .opacity(isChecking ? 1.0 : 0.0)
+                
+                HStack {
+                    Text("성별")
+                        .frame(width: 60, alignment: .leading)
+                        .font(.regular(16))
+                    
+                    // 여자 버튼
+                    Button {
+                        female.toggle()
+                        if male {
+                            male.toggle()
+                        }
+                        gender = Gender.female
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: female ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.female.toString)
+                                .font(.regular(14))
+                        }
+                    }
+                    
+                    // 남자 버튼
+                    Button {
+                        male.toggle()
+                        gender = Gender.male
+                        if female {
+                            female.toggle()
+                        }
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: male ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.male.toString)
+                                .font(.regular(14))
+                            
+                        }
+                    }
+                    
+                    .tint(.primary)
+                    Spacer()
+                    Text("필수")
+                        .font(.thin(10))
+                        .foregroundColor(.red)
+                }
+                .foregroundColor(.primary)
+                .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+                .padding()
+                
+                RegistCustomTF(titleText: "한줄소개",
+                               placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
+                               customText: $descriptionText,
+                               isNotHanguel: .constant(false),
+                               textMaxCount: 50,
+                               isFocusing: false)
+                .font(.regular(13))
+                
+                Spacer()
+                
+                // MARK: 10.17 추가
+                Group {
+                    Spacer()
+                    
+                    HStack {
+                        Text("회원가입을 위해 아래의 이용약관과 개인정보 처리방침에 동의해주세요")
+                            .font(.thin(13))
+                    }
+                    Divider()
+                        .padding()
+                    
+                    VStack(alignment: .leading) {
+                        /// 이용약관 동의
+                        HStack {
+                            Button {
+                                이용약관.toggle()
+                            } label: {
+                                HStack {
+                                    Image(systemName: 이용약관 ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(.mainColor)
+                                    Text("이용약관")
+                                    Text("(필수)")
+                                        .foregroundColor(.red)
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            .frame(width: geo.size.width * 0.8, alignment: .leading)
+                            
+                            Spacer()
+                            
+                            /// 이용약관 보러가기
+                            linkView("", "https://www.notion.so/muker/a6553756734d4b619b5e45e70732560b?pvs=4")
+                        }
+                        .padding(.bottom, 10)
+                        /// 개인정보 처리방침 동의
+                        HStack {
+                            Button {
+                                개인정보처리방침.toggle()
+                            } label: {
+                                HStack {
+                                    Image(systemName: 개인정보처리방침 ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(.mainColor)
+                                    Text("개인정보 처리방침")
+                                    Text("(필수)")
+                                        .foregroundColor(.red)
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            .frame(width: geo.size.width * 0.8, alignment: .leading)
+                            
+                            Spacer()
+                            
+                            /// 개인정보처리방침 보러가기
+                            linkView("", "https://www.notion.so/muker/fe4abdf9bfa44cac899e77f1092461ee?pvs=4")
+                        }
+                        
+                        Spacer()
+                        
+                        /// 확인버튼
+                        Button {
+                            if koreaLangCheck(nameText) {
+                                if nameText.count >= 2 {
+                                    isConfirmSheet.toggle()
+                                } else {
+                                    isChecking.toggle()
+                                }
+                            }
+                        } label: {
+                            Rectangle()
+                                .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray2 : .mainColor)
+                                .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.06)
+                                .cornerRadius(10)
+                                .overlay {
+                                    Text("회원가입")
+                                        .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray3 : .white)
+                                        .font(.bold(17))
+                                }
+                        }
+                        .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
+                        .padding(.top, 30)
+                    }
+                    .font(.thin(16))
+                }
+                .padding(.horizontal)
+                Spacer()
+            }
             .opacity(nextNavigation ? 0.0 : 1.0)
             .contentShape(Rectangle())
             .hideKeyboardOnTap()
