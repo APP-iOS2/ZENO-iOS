@@ -165,7 +165,6 @@ struct CommSideBarView: View {
                 Task {
                     guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
-                    await userViewModel.leaveComm(commID: currntID)
                     isPresented = false
                 }
             }
