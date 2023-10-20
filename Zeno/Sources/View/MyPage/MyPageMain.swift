@@ -26,8 +26,6 @@ struct MyPageMain: View {
     @State private var description: String = ""
     @State private var showInitial: Int = 0
     
-    @Namespace var topID
-    
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
     
@@ -89,7 +87,6 @@ struct MyPageMain: View {
                                         .resizable()
                                         .frame(width: 120, height: 120)
                                         .aspectRatio(contentMode: .fit)
-                                        
                                 }
                                 .resizable()
                                 .frame(width: 120, height: 120)
@@ -141,10 +138,6 @@ struct MyPageMain: View {
                         .padding(.bottom, 3)
                         
                         GroupSelectView()
-                            .id(topID)
-                            .onTapGesture {
-//                                scrollVR.scrollTo(topID)
-                            }
                     }
                 }
             }
