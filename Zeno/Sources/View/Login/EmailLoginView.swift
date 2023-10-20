@@ -10,13 +10,16 @@ import SwiftUI
 
 struct EmailLoginView: View {
     @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
-    @EnvironmentObject var userViewModel: UserViewModel
+//    @EnvironmentObject var userViewModel: UserViewModel
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var isRegistPage: Bool = false
     
     var body: some View {
         VStack {
             Spacer()
             Text("Zeno")
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 60))
                 .fontWeight(.black)
                 .foregroundStyle(LinearGradient(
                     colors: [Color("MainPurple1"), Color("MainPurple2")],
@@ -24,19 +27,18 @@ struct EmailLoginView: View {
                     endPoint: .trailing
                 ))
             Spacer()
-            TextField("이메일을 입력해 주세요.", text: $emailLoginViewModel.email)
+            TextField("이메일을 입력해 주세요.", text: $email)
                 .modifier(LoginTextFieldModifier())
-            SecureField("비밀번호를 입력해 주세요.", text: $emailLoginViewModel.password)
+            SecureField("비밀번호를 입력해 주세요.", text: $password)
                 .modifier(LoginTextFieldModifier())
             Button {
+                emailLoginViewModel.email = self.email
+                emailLoginViewModel.password = self.password
+                
                 Task {
-                    do {
-                        try await userViewModel.login(
-                            email: emailLoginViewModel.email,
-                            password: emailLoginViewModel.password)
-                    } catch {
-                        print("로그인 실패 \(error.localizedDescription)")
-                    }
+                    // MARK: 닉네임 변경창 열렸었는지 판단. 여기서 초기설정해줌. -> 이메일회원가입은 이거 하지말장..
+                    UserDefaults.standard.set(true, forKey: "nickNameChanged")
+                    await LoginManager(delegate: emailLoginViewModel).login()
                 }
             } label: {
                 loginButtonLabel(
@@ -46,15 +48,20 @@ struct EmailLoginView: View {
             }
             HStack {
                 Spacer()
-                NavigationLink {
-                    EmailRegistrationView()
-                        .environmentObject(emailLoginViewModel)
+                Button {
+                    self.email = ""
+                    self.password = ""
+                    isRegistPage.toggle()
                 } label: {
                     Text("이메일로 회원가입")
                         .font(.caption)
                         .underline()
                 }
                 .padding(.horizontal)
+                .navigationDestination(isPresented: $isRegistPage) {
+                    EmailRegistrationView(registEmail: $email, registPassword: $password)
+                        .environmentObject(emailLoginViewModel)
+                }
             }
             Spacer()
             Spacer()
@@ -64,8 +71,10 @@ struct EmailLoginView: View {
 
 struct EmailLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        EmailLoginView()
-            .environmentObject(EmailLoginViewModel())
-            .environmentObject(UserViewModel())
+        NavigationStack {
+            EmailLoginView()
+                .environmentObject(EmailLoginViewModel())
+                .environmentObject(UserViewModel())
+        }
     }
 }

@@ -11,73 +11,40 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
-final class UserViewModel: ObservableObject {
+final class UserViewModel: ObservableObject, LoginStatusDelegate {
+    func logout() async { }
+    func memberRemove() async -> Bool { return false }
+    
     /// 파이어베이스 Auth의 User
     @Published var userSession: FirebaseAuth.User?
     /// 현재 로그인된 유저
     @Published var currentUser: User?
-    /// ZenoViewSheet닫는용
-    @Published var isShowingSheet: Bool = false
-    /// 로그인여부(상태)
-    @Published var signStatus: SignStatus = .none
-    
+    /// 회원가입창 열림 여부
+    @Published var isNickNameRegistViewPop: Bool = false
+    /* userViewModel의 currentUser가 변경되었지만 alarmViewModel의 정보가 변경되기 이전에 isNeedLogin이 변경되어
+    AlarmView에 순간적으로 가입된 커뮤니티가 없습니다가 뜨는 버그있음 */
+
     private let firebaseManager = FirebaseManager.shared
     private let coolTime: Int = 7
     
+    @MainActor
     init() {
-        print("🦕userViewModel 초기화")
-        Task {
-            try? await loadUserData() // currentUser Value 가져오기 서버에서
-            if self.currentUser != nil {
-                await self.getSignStatus() // currentUser의 값이 nil이 아닐때만 상태값 가져오기.
-            }
-        }
+        print("✔️userViewModel 초기화")
+//        Task {
+//            try? await loadUserData() // currentUser Value 가져오기 서버에서
+//            if self.currentUser == nil {
+//                SignStatusObserved.shared.isNeedLogin = true // signIn상태가 아닌데 currentUser값을 가져오지 못하면 로그인이 필요함. (로그인창 이동)
+//            } else {
+//                SignStatusObserved.shared.isNeedLogin = false
+//            }
+//        }
     }
-    
-    init(currentUser: User) {
-        self.currentUser = currentUser
-    }
-    
+
+    /// LoginStatusDelegate 프로토콜 메서드
     @MainActor
-    func joinCommWithDeeplink(comm: Community) async {
-        guard let currentUser else { return }
-        let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newCommList)
-        } catch {
-            print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
-            self.currentUser?.commInfoList = newCommList
-        }
-    }
-    
-    @MainActor
-    func leaveComm(commID: String) async {
-        guard let currentUser else { return }
-        let changedList = currentUser.commInfoList.filter { $0.id != commID }
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedList)
-            self.currentUser?.commInfoList = changedList
-        } catch {
-            print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
-        }
-    }
-    
-    @MainActor
-    func commAlertToggle(id: String) async {
-        guard var currentUser else { return }
-        guard var currentCommInfo = currentUser.commInfoList
-            .filter({ $0.id == id })
-            .first else { return }
-        currentCommInfo.alert.toggle()
-        guard let index = currentUser.commInfoList
-            .firstIndex(where: { $0.id == currentCommInfo.id }) else { return }
-        currentUser.commInfoList[index] = currentCommInfo
-        do {
-            try await firebaseManager.create(data: currentUser)
-            self.currentUser = currentUser
-        } catch {
-            print(#function + "User Collection에 알람 업데이트 실패")
-        }
+    func login() async -> Bool {
+        print("✔️ userVM login")
+        return await self.startWithKakao()
     }
     
     /// 이메일 로그인
@@ -85,14 +52,9 @@ final class UserViewModel: ObservableObject {
     func login(email: String, password: String) async {
         do {
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
-            self.userSession = result.user
-            try? await loadUserData()
-            
-            if self.currentUser != nil {
-                self.setSignStatus(.signIn)
-            }
+//            self.userSession = result.user
+//            try? await loadUserData()
             print("🔵 로그인 성공")
-            
         } catch let error as NSError {
             switch AuthErrorCode.Code(rawValue: error.code) {
             case .wrongPassword:  // 잘못된 비밀번호
@@ -112,14 +74,70 @@ final class UserViewModel: ObservableObject {
         }
     }
     
-    /// 이메일 회원가입
+//    @MainActor
+//    func addFriend(user: User, comm: Community) async {
+//        guard let currentUser,
+//              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+//        var newInfo = currentUser.commInfoList
+//        newInfo[index].buddyList.append(user.id)
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+//            self.currentUser?.commInfoList = newInfo
+//        } catch {
+//            print(#function + "User Document에 commInfoList 업데이트 실패")
+//        }
+//    }
+//    
+//    @MainActor
+//    func joinCommWithDeeplink(comm: Community) async {
+//        guard let currentUser else { return }
+//        let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newCommList)
+//        } catch {
+//            print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
+//            self.currentUser?.commInfoList = newCommList
+//        }
+//    }
+//    
+//    @MainActor
+//    func leaveComm(commID: String) async {
+//        guard let currentUser else { return }
+//        let changedList = currentUser.commInfoList.filter { $0.id != commID }
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedList)
+//            self.currentUser?.commInfoList = changedList
+//        } catch {
+//            print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
+//        }
+//    }
+    
+    @MainActor
+    func commAlertToggle(id: String) async {
+        guard var currentUser else { return }
+        guard var currentCommInfo = currentUser.commInfoList
+            .filter({ $0.id == id })
+            .first else { return }
+        currentCommInfo.alert.toggle()
+        guard let index = currentUser.commInfoList
+            .firstIndex(where: { $0.id == currentCommInfo.id }) else { return }
+        currentUser.commInfoList[index] = currentCommInfo
+        do {
+            try await firebaseManager.create(data: currentUser)
+            self.currentUser = currentUser
+        } catch {
+            print(#function + "User Collection에 알람 업데이트 실패")
+        }
+    }
+    
+    /// 이메일 회원가입 ->  카카오가입할때
     @MainActor
     func createUser(email: String,
                     passwrod: String,
                     name: String,
-                    gender: String,
+                    gender: Gender,
                     description: String,
-                    imageURL: String
+                    imageURL: String?
     ) async throws {
         do {
             let result = try await Auth.auth().createUser(withEmail: email, password: passwrod)
@@ -142,30 +160,36 @@ final class UserViewModel: ObservableObject {
             throw error
         }
     }
+    
     /// 이메일 회원가입 정보 등록하기
     @MainActor
     func uploadUserData(user: User) async {
         self.currentUser = user
-        try? await firebaseManager.create(data: user)
+        print("🦕유저: \(user)")
+        do {
+            try await firebaseManager.create(data: user)
+        } catch {
+            print("🦕creatUser에러: \(error.localizedDescription)")
+        }
     }
     
     /// 유저 데이터 가져오기
     @MainActor
     func loadUserData() async throws {
         self.userSession = Auth.auth().currentUser
-        guard let currentUid = userSession?.uid else { return print("🦕로그인된 유저 없음")}
-        print("UID = \(currentUid)")
+        print("🦕Auth.currentUser: \(String(describing: userSession))")
+        guard let currentUid = userSession?.uid else {
+            SignStatusObserved.shared.isNeedLogin = true
+            print("🦕로그인된 유저 없음")
+            return
+        }
+        print("🦕UID = \(currentUid)")
         self.currentUser = try? await fetchUser(withUid: currentUid)
-        print("🦕현재 로그인된 유저: \(currentUser)")
-    }
-    
-    /// 로그아웃
-    @MainActor
-    func logout() async {
-        try? Auth.auth().signOut()
-        self.userSession = nil
-        self.currentUser = nil
-        self.setSignStatus(.none)
+        if let currentUser {
+            print("🦕현재 로그인된 유저: \(String(describing: currentUser))")
+        } else {
+            print("🦕현재 로그인된 유저 없음")
+        }
     }
     
     /// 코인 사용 업데이트 함수
@@ -201,6 +225,17 @@ final class UserViewModel: ObservableObject {
         try? await loadUserData()
     }
     
+    func updateUserFCMToken(_ fcmToken: String) async {
+        guard let currentUser else { return }
+        guard !fcmToken.isEmpty else { return }
+        
+        try? await firebaseManager.update(data: currentUser,
+                                          value: \.fcmToken,
+                                          to: fcmToken)
+        try? await loadUserData()
+    }
+    
+    // MARK: 제노 뷰
     /// 유저가 문제를 다 풀었을 경우, 다 푼 시간을 서버에 등록함
     @MainActor
     func updateZenoTimer() async {
@@ -209,78 +244,76 @@ final class UserViewModel: ObservableObject {
             let zenoStartTime = Date().timeIntervalSince1970
             try await firebaseManager.update(data: currentUser, value: \.zenoEndAt, to: zenoStartTime + Double(coolTime))
             try await loadUserData()
-            print("------------------------")
-            print("\(zenoStartTime)")
-            print("\(zenoStartTime + Double(coolTime))")
-            print("updateZenoTimer !! ")
         } catch {
-            print("Error updating zeno timer: \(error)")
+            debugPrint(#function + "Error updating zeno timer: \(error)")
         }
     }
     
-    // MARK: 이 함수가 자원 갉아먹고 있음
-    /// 사용자한테 몇초 남았다고 초를 보여주는 함수
-    func comparingTime() -> Double {
-        let currentTime = Date().timeIntervalSince1970
-        
-        if let currentUser = currentUser,
-           let zenoEndAt = currentUser.zenoEndAt {
-            return zenoEndAt - currentTime
-        } else {
-            return 0.0
-        }
-    }
-    
-    // MARK: 제노 뷰 모델로 옮길 예정
-    /// 친구 id 배열로  친구 이름 배열 받아오는 함수
-    func userIDtoName(idArray: [String]) async -> [String] {
-        var resultArray: [String] = []
+    // MARK: 제노 뷰
+    /// 친구 id 배열로  친구 User  배열 받아오는 함수
+    func IDArrayToUserArrary(idArray: [String]) async -> [User] {
+        var resultArray: [User] = []
         do {
             for index in 0..<idArray.count {
                 let result = try await fetchUser(withUid: idArray[index])
-                resultArray.append(result.name)
+                resultArray.append(result)
             }
         } catch {
-            print("fetch 유저 실패")
+            debugPrint(#function + "fetch 유저 실패")
             return []
         }
         return resultArray
     }
     
-    // MARK: 제노 뷰 모델로 옮길 예정
-    /// 커뮤니티 id로 커뮤니티 이름 받아오는 함수
-    func commIDtoName(id: String) async -> String? {
+    // MARK: 제노 뷰
+    /// 친구 id로  친구 이름 받아오는 함수
+    func IDToName(id: String) async -> String {
         do {
-            let result = try await fetchCommunity(withUid: id)
+            let result = try await fetchUser(withUid: id)
             return result.name
         } catch {
-            print("fetchName 실패")
-            return nil
+            debugPrint(#function + "fetch 유저 실패")
         }
+        return "fetch실패" }
+    
+    // MARK: 제노 뷰
+    /// 해당 커뮤니티의 친구 수가 4명 이상인지 확인하는 함수
+    func hasFourFriends(comm: Community) -> Bool {
+        if let currentUser {
+            if let buddyListCount = currentUser.commInfoList.first(where: { $0.id == comm.id })?.buddyList.count {
+                return buddyListCount >= 4
+            }
+        } else {
+            debugPrint(#function + "실패")
+        }
+        return false
+    }
+
+    // MARK: 제노 뷰
+    /// 커뮤니티 id로 친구 id배열을 받아오는 함수.
+    func getFriendsInComm(comm: Community) -> [String] {
+        if let currentUser {
+            return currentUser.commInfoList.first(where: { $0.id == comm.id })?.buddyList ?? []
+        } else {
+            debugPrint(#function + "commid로 해당하는 community를 찾을 수 없음")
+        }
+        debugPrint(#function + "currentUser가 없음")
+        return []
     }
     
-    // MARK: 제노 뷰 모델로 옮길 예정
-    func fetchCommunity (withUid uid: String) async throws -> Community {
-        let result = await firebaseManager.read(type: Community.self, id: uid)
-        switch result {
-        case .success(let success):
-            return success
-        case .failure(let error):
-            throw error
-        }
-    }
-    
-    @MainActor
-    func joinNewGroup(newID: String) async {
-        guard var currentUser else { return }
-        currentUser.commInfoList.append(.init(id: newID, buddyList: [], alert: true))
-        do {
-            try await firebaseManager.create(data: currentUser)
-            self.currentUser = currentUser
-        } catch {
-            print(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
-        }
-    }
+//    @MainActor
+//    func joinNewGroup(newComm: Community?) async {
+//        guard var currentUser,
+//              let newComm
+//        else { return }
+//        currentUser.commInfoList.append(.init(id: newComm.id, buddyList: [], alert: true))
+//        do {
+//            try await firebaseManager.create(data: currentUser)
+//            self.currentUser = currentUser
+//        } catch {
+//            debugPrint(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
+//        }
+//    }
     
     /// 파베유저정보 Fetch
     func fetchUser(withUid uid: String) async throws -> User {
@@ -293,40 +326,30 @@ final class UserViewModel: ObservableObject {
         }
     }
 
-    /// 회원탈퇴
-    func deleteUser() async {
-        do {
-            if let currentUser {
-                try await firebaseManager.delete(data: currentUser)
-                try await Auth.auth().currentUser?.delete()
-                await self.logoutWithKakao()
-            }
-        } catch {
-            print("🦕로그아웃 오류 : \(error.localizedDescription)")
-            return
-        }
-    }
-    
-    /// 가입신청 보낸 그룹 등록
-    @MainActor
-    func addRequestComm(comm: Community) async throws {
-        guard var currentUser else { return }
-		let requestComm = currentUser.requestComm + [comm.id]
-        try await firebaseManager.update(data: currentUser.self,
-                                         value: \.requestComm,
-                                         to: requestComm)
-        self.currentUser?.requestComm = requestComm
-    }
-   
-    @MainActor
-    private func getSignStatus() {
-        self.signStatus = SignStatus.getStatus() // signStatus 값 가져오기. User정보를 받았을때
-        print("🦕signStatus = \(self.signStatus.rawValue)")
-    }
-    
-    @MainActor
-    private func setSignStatus(_ status: SignStatus) {
-        self.signStatus = status
-        self.signStatus.saveStatus()
-    }
+    // [가입신청] 보낸 그룹 등록
+//    @MainActor
+//    func addRequestComm(comm: Community) async throws {
+//        guard let currentUser else { return }
+//		let requestComm = currentUser.requestComm + [comm.id]
+//        try await firebaseManager.update(data: currentUser.self,
+//                                         value: \.requestComm,
+//                                         to: requestComm)
+//        self.currentUser?.requestComm = requestComm
+//    }
+	
+	// [가입수락] 매니저가 가입을 수락하면 가입한 유저의 그룹 가입요청 데이터가 지워지는 함수
+//	@MainActor
+//	func removeRequestComm(comm: Community, user: User) async throws {
+//		// 1. 파이어베이스에서 현재 유저 requestComm 지우기
+//		var requestComm = user.requestComm
+//        guard let index = requestComm.firstIndex(where: { $0 == user.id }) else { return }
+//        requestComm.remove(at: index)
+//		do {
+//			try await firebaseManager.update(data: user.self,
+//											 value: \.requestComm,
+//											 to: requestComm)
+//		} catch {
+//			print("🔴 [가입수락] 가입요청 데이터 지우기 실패")
+//		}
+//	}
 }

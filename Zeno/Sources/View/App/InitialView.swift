@@ -1,62 +1,101 @@
 import SwiftUI
 
 struct InitialView: View {
-    //    @StateObject var contentViewModel = ContentViewModel()
     @EnvironmentObject private var userViewModel: UserViewModel
-    @State var isLoading: Bool = true
+    @State private var isLoading: Bool = true
+    @State private var isNickChangeSheet = false
+    @AppStorage("nickNameChanged") private var isnickNameChanged = false // 닉변 안했으면 하게 한다.
+    
+    @StateObject var signObserved = SignStatusObserved.shared
     
     var body: some View {
         ZStack {
             Group {
                 // 로그인 분기 처리
-                if userViewModel.signStatus == .signIn {
+                switch signObserved.signStatus {
+                case .signIn:
                     TabBarView()
-                } else {
-                    LoginView()
-                        .environmentObject(EmailLoginViewModel())
-                        .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
+                        .fullScreenCover(isPresented: $isNickChangeSheet) {
+                            NickNameRegistView() // 처음 회원가입시에만 뜨는 뷰
+                        }
+                case .unSign:
+                    if signObserved.isNeedLogin {
+                        LoginView()
+                            .accessibilityHint("로그인 화면으로 진입했어요")
+                            .environmentObject(EmailLoginViewModel())
+                            .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
+                    } else {
+                        // 로그인 정보가 저장되어 있다면 런치스크린과 같은 화면을 띄워줌
+                        InitialStoryBoard()
+                    }
                 }
             }
+            .tint(.mainColor)
+            
             // 런치스크린
-            if isLoading {
-                launchScreenView.transition(.opacity).zIndex(1)
+            if isLoading && !isnickNameChanged {
+                InitView()
+                    .accessibilityHint("제노가 시작하고 있어요")
+                    .transition(.opacity).zIndex(1)
             }
+        }
+        .edgesIgnoringSafeArea(.isIPhoneSE ? .top : .all)
+        .onReceive(userViewModel.$isNickNameRegistViewPop) { chg in
+            // isNickNameRegistViewPop을 true로 바꿔주는 시점이 onAppear가 끝난 시점이라서 onReceive에서 받아서 처리.
+            print("🦕chg : \(chg.description)")
+            isNickChangeSheet = chg ? true : false
         }
         .onAppear {
+            print("✔️nick : \(isnickNameChanged.description)")
+            
+            // 회원가입이 완료되지않았을때만 온보딩과 회원가입뷰 뿌려준다.
             // 런치스크린 타이머
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5, execute: {
-                withAnimation { isLoading.toggle() }
-            })
-        }
-    }
-}
-
-extension InitialView {
-    /// 런치스크린
-    var launchScreenView: some View {
-        ZStack(alignment: .center) {
-            LinearGradient(gradient: Gradient(colors: [Color("MainPink2"), Color("MainPink3")]),
-                           startPoint: .top, endPoint: .bottom)
-            .edgesIgnoringSafeArea(.all)
-            VStack {
-                LottieView(lottieFile: "nudgeDevil")
-                    .frame(width: 100, height: 100)
-                Text("Zeno")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
-                    .fontWeight(.black)
-                    .foregroundStyle(LinearGradient(
-                        colors: [Color("MainPurple1"), Color("MainPurple2")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    isLoading = false
+                    signObserved.isNeedLogin = true
+                }
+                if !isnickNameChanged {
+                    isNickChangeSheet = true
+                }
             }
         }
+        .tint(.mainColor)
     }
 }
 
 struct StartView_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject private var userViewModel: UserViewModel = .init()
+        @StateObject private var commViewModel: CommViewModel = .init()
+        @StateObject private var zenoViewModel: ZenoViewModel = .init()
+        @StateObject private var mypageViewModel: MypageViewModel = .init()
+        @StateObject private var alarmViewModel: AlarmViewModel = .init()
+        
+        var body: some View {
+            InitialView()
+                .environmentObject(userViewModel)
+                .environmentObject(commViewModel)
+                .environmentObject(zenoViewModel)
+                .environmentObject(mypageViewModel)
+                .environmentObject(alarmViewModel)
+//                .onAppear {
+//                    Task {
+//                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+//                        switch result {
+//                        case .success(let user):
+//                            userViewModel.currentUser = user
+//                            userViewModel.signStatus = .signIn
+//                            print("preview 유저로드 성공")
+//                        case .failure:
+//                            print("preview 유저로드 실패")
+//                        }
+//                    }
+//                }
+        }
+    }
+    
     static var previews: some View {
-        InitialView()
-            .environmentObject(UserViewModel())
+        Preview()
     }
 }

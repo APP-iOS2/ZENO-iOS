@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearchable {
+struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoProfileVisible {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
 	var name: String
@@ -38,7 +38,20 @@ struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoSearch
 }
 
 extension Community {
-	static let emptyComm = Community(name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
+    static let emptyComm = Community(id: "", name: "", description: "", imageURL: nil, createdAt: Date().timeIntervalSince1970, personnel: 6, isSearchable: true, managerID: "", joinMembers: [], waitApprovalMemberIDs: [])
+	// 욕설 주의;;
+    static let badWords = ["시발", "씨발", "개새끼", "병신", "시바", "엿먹어", "븅신", "ㅅㅂ", "ㅂㅅ", "ㅅㅂㄴ", "ㅂㅅㅅㄲ", "간나", "개씨발", "개쓰레기", "개년", "씨발년", "좆", "좆같은", "ㅆㅂ", "지랄", "개지랄", "미친년", "좆밥", "걸레", "등신", "쌍년", "쌍놈", "씹", "엠창"]
+}
+
+extension Array<Community> {
+    func filterJoined(user: User?) -> Self {
+        guard let user else { return [] }
+        return filter { $0.joinMembers.contains { $0.id == user.id } }
+    }
+    
+    func getCurrent(id: Community.ID) -> Community? {
+        first { $0.id == id }
+    }
 }
 
 #if DEBUG

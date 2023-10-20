@@ -19,22 +19,31 @@ struct CommDelegateManagerView: View {
     
     var body: some View {
         ScrollView {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
+            ZenoNavigationBackBtn {
+                dismiss()
+            } tailingLabel: {
+                HStack {
+                    if commViewModel.currentCommMembers.isEmpty {
+                        Text("가입된 유저가 없습니다")
+                    } else {
+                        Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
+                    }
+                    Spacer()
                 }
-                titleView
-                    .padding(.leading, 30)
-                Spacer()
+				.font(.regular(16))
             }
-            .padding()
-            .tint(.primary)
             if !commViewModel.currentCommMembers.isEmpty {
                 ForEach(commViewModel.currentCommMembers) { user in
                     HStack {
-                        ZenoSearchableCellView(item: user,
-                                               actionTitle: "매니저 권한 위임"
-                        ) {
+						ZenoProfileVisibleCellView(item: user,
+												   isBtnHidden: false,
+												   manager: commViewModel.checkManagerUser(user: user)) {
+                            HStack(alignment: .bottom, spacing: 2) {
+                                Image(systemName: "person.crop.square.filled.and.at.rectangle")
+                                Text("매니저 권한 위임")
+									.font(.thin(12))
+                            }
+                        } interaction: { user in
                             selectedUser = user
                             isAlert = true
                         }
@@ -48,7 +57,7 @@ struct CommDelegateManagerView: View {
             Button("변경", role: .destructive) {
                 Task {
                     if let selectedUser {
-                        await commViewModel.delegateManager(user: selectedUser)
+                        await delegateManager(user: selectedUser)
                     }
                 }
             }
@@ -58,12 +67,22 @@ struct CommDelegateManagerView: View {
         }
     }
     
-    @ViewBuilder
-    var titleView: some View {
-        if commViewModel.currentCommMembers.isEmpty {
-            Text("가입된 유저가 없습니다")
-        } else {
-            Text("\(commViewModel.currentComm?.name ?? "커뮤니티") 유저 목록")
+    @MainActor
+    func delegateManager(user: User) async {
+        if commViewModel.isCurrentCommManager {
+            guard let currentComm = commViewModel.currentComm else { return }
+            do {
+                try await FirebaseManager.shared.update(data: currentComm, value: \.managerID, to: user.id)
+                PushNotificationManager.shared.sendPushNotification(
+                    toFCMToken: user.fcmToken,
+                    title: "\(currentComm.name)",
+                    body: "\(currentComm.name)의 매니저가 되셨어요!👑"
+                )
+				commViewModel.managerChangeWarning = true
+				self.dismiss()
+            } catch {
+                print(#function + "매니저 권한 위임 업데이트 실패")
+            }
         }
     }
 }

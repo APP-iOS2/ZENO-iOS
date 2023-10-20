@@ -39,10 +39,10 @@ final class FirebaseManager {
             throw FirebaseError.failToCreate
         }
     }
-    
+    @discardableResult
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
-    ) async throws -> T where T: Encodable, T: ZenoSearchable {
+    ) async throws -> T where T: Encodable, T: ZenoProfileVisible {
         var changableData = data
         do {
             let imageURL = try await createImageURL(id: data.id, image: image)
@@ -91,7 +91,7 @@ final class FirebaseManager {
         }
     }
     
-    func readDocumentsWithIDs<T>(type: T.Type, ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
+    func readDocumentsWithIDs<T>(type: T.Type, whereField: String = "id", ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
         let collectionRef = db.collection("\(type)")
         var values: [String]
@@ -101,7 +101,30 @@ final class FirebaseManager {
         case false:
             values = ids
         }
-        let query = collectionRef.whereField("id", in: values)
+        let query = collectionRef.whereField(whereField, in: values)
+        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+        for item in snapshot.documents {
+            do {
+                let result = try item.data(as: T.self)
+                results.append(.success(result))
+            } catch {
+                results.append(.failure(FirebaseError.documentToData))
+            }
+        }
+        return results
+    }
+    
+    func readDocumentsArrayWithID<T>(type: T.Type, whereField: String = "id", id: String) async -> [Result<T, FirebaseError>] where T: Decodable {
+        var results: [Result<T, FirebaseError>] = []
+        let collectionRef = db.collection("\(type)")
+        var values: String
+        switch id.isEmpty {
+        case true:
+            values = "empty"
+        case false:
+            values = id
+        }
+        let query = collectionRef.whereField(whereField, arrayContains: values)
         guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
         for item in snapshot.documents {
             do {
@@ -152,6 +175,44 @@ final class FirebaseManager {
             }
         } catch {
             throw FirebaseError.failToEncode
+        }
+    }
+    
+    func updateModelPropertyAllCollention<T: FirebaseAvailable, U: Encodable>(type: T.Type,
+                                                        propertyPath keyPath: WritableKeyPath<T, U>,
+                                                        defaultValue: U) async where T: Decodable {
+        let collectionRef = db.collection("\(type)")
+        var documentIDs: [String] = []
+        guard let query = try? await collectionRef.getDocuments() else { return }
+        for docSnapshot in query.documents {
+            let result = docSnapshot.data()
+            guard let any = result["id"],
+                  let id = any as? String
+            else { return }
+            documentIDs.append(id)
+        }
+        
+        await documentIDs.asyncForEach { id in
+            do {
+                guard let propertyName = "\(keyPath.debugDescription)".split(separator: ".").last else { return }
+                let dataType = try JSONEncoder().encode(defaultValue)
+                do {
+                    let any = try JSONSerialization.jsonObject(with: dataType)
+                    do {
+                        try await collectionRef.document(id).updateData([propertyName: any])
+                    } catch {
+                        print(FirebaseError.failToUpdate.localizedDescription)
+                    }
+                } catch {
+                    do {
+                        try await collectionRef.document(id).updateData([propertyName: defaultValue])
+                    } catch {
+                        print(FirebaseError.failToUpdate.localizedDescription)
+                    }
+                }
+            } catch {
+                print(FirebaseError.failToEncode.localizedDescription)
+            }
         }
     }
     

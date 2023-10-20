@@ -11,68 +11,71 @@ import SwiftUI
 struct PurchaseView: View {
     @EnvironmentObject var iAPVM: IAPStore
     @EnvironmentObject var userVM: UserViewModel
+    
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Rectangle()
-                    .fill(
-                        AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]),
-                                        center: .topLeading,
-                                        angle: .degrees(180 + 55)))
-                    .frame(width: .screenWidth, height: .screenHeight * 0.4)
-                    .offset(y: -350)
-                VStack(alignment: .center, spacing: 10) {
-                    Image(systemName: "heart")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                    Text("See who likes you!")
-                        .bold()
-                        .font(.title)
-                    Text("View the members")
-                    Text("that want to connect with you")
+        VStack {
+            Rectangle()
+                .fill(
+                    AngularGradient(gradient: Gradient(colors: [Color.purple, Color.mint]),
+                                    center: .topLeading,
+                                    angle: .degrees(180 + 55)))
+                .frame(width: .screenWidth, height: .screenHeight * 0.2)
+                .edgesIgnoringSafeArea(.top)
+                .overlay {
+                    VStack(alignment: .center, spacing: 0) {
+                        Spacer()
+                        Image(systemName: "heart.fill")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                        Text("See who likes you!")
+                            .bold()
+                            .font(.extraBold(17))
+                            .padding(10)
+                        Text("View the members")
+                        Text("that want to connect with you")
+                        Spacer()
+                    }
+                    .font(.thin(10))
+                    .foregroundColor(.white)
                 }
-                .foregroundColor(.white)
-                .offset(y: -280)
-                
-                VStack {
-                    ForEach(iAPVM.products) { product in
-                        PurchaseCellView(
-                            itemQuantity: product.id == "initialCheck" ? 10 : 1,
-                            itemTitle: product.id == "initialCheck" ? "초성 확인권" : "메가폰",
-                            itemDescription: product.id == "initialCheck" ? "당신을 제노한 사람의 초성이 궁금할 땐?" : "내 마음을 들어내고 싶을 땐?\t\t\t  ",
-                            itemFeature1: product.id == "initialCheck" ? "🔎 초성 확인\tex) XㅈX" : "📢 문구,, \nex) 누구누구야! 우리 어디서 만나자 !",
-                            itemFeature2: product.id == "initialCheck" ? "🤏🏻 찌르기" : "",
-                            itemPrice: product.displayPrice
-                        ) {
-                            Task {
-                                do {
-                                    let purchaseResult = try await iAPVM.purchase(product)
-                                    
-                                    if await purchaseResult?.finish() != nil {
-                                        switch purchaseResult?.productID {
-                                        case "initialCheck":
-                                            await userVM.updateUserInitialCheck(to: 10)
-                                            dismiss()
-                                        case "megaphone":
-                                            // MARK: - 이후 메가폰 카운트 올려주는 함수 호출하면 됨.
-                                            await userVM.updateUserMegaphone(to: 1)
-                                            dismiss()
-                                        default:
-                                            break
-                                        }
-                                    }
-                                } catch {
-                                    print(error)
+            
+            Spacer()
+            
+            PurchaseCellView(itemQuantity: 10,
+                             itemTitle: "초성 확인권",
+                             itemDescription: "코인 없이 빠르게 초성을 확인할 수 있어요!",
+                             itemFeature1: "10회 초성 확인권",
+                             itemPrice: "1.99",
+                             purchaseAction: {
+                Task {
+                    if let product = iAPVM.products.last ?? iAPVM.products.first {
+                        do {
+                            let purchaseResult = try await iAPVM.purchase(product)
+                            
+                            if await purchaseResult?.finish() != nil {
+                                switch purchaseResult?.productID {
+                                case "initialCheck":
+                                    await userVM.updateUserInitialCheck(to: 10)
+                                    dismiss()
+                                case "megaphone":
+                                    await userVM.updateUserMegaphone(to: 1)
+                                    dismiss()
+                                default:
+                                    break
                                 }
                             }
+                        } catch {
+                            print(error)
                         }
+                    } else {
+                        print("Products not available")
                     }
                 }
-                .padding(.top, 65)
-            }
-            .edgesIgnoringSafeArea(.all)
+            })
+            
+            Spacer()
         }
     }
 }

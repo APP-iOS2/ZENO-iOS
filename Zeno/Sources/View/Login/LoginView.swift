@@ -9,38 +9,51 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var emailLoginViewModel: EmailLoginViewModel
+    @EnvironmentObject private var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
-    
+
     var body: some View {
         NavigationStack {
-            VStack {
-                Spacer()
-                Text("Zeno")
-                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 60))
-                    .fontWeight(.black)
-                    .foregroundStyle(LinearGradient(
-                        colors: [Color("MainPurple1"), Color("MainPurple2")],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    ))
-                Spacer()
+            ZStack {
+                Image("bubbleBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
                 
-                Button {
-                    Task {
-                        await userViewModel.startWithKakao()
+                LottieView(lottieFile: "bubbles")
+                VStack {
+                    Text("zeno")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 80))
+                        .foregroundColor(.white)
+                        .opacity(0.6)
+                    
+                    Text("제노로 마음 전달하기")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 18))
+                        .foregroundColor(.white)
+                        .opacity(0.6)
+                        .padding(.bottom, 100)
+                }
+                .overlay {
+                    VStack {
+                        Spacer()
+                        Button {
+                            Task {
+//                                await userViewModel.startWithKakao()
+                                await LoginManager(delegate: userViewModel).login()
+                            }
+                        } label: {
+                            loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                        }
+                        NavigationLink {
+                            EmailLoginView()
+                        } label: {
+                            loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
+                        }
+                        .padding(.bottom, .isIPhoneSE ? 30 : 50)
                     }
-                } label: {
-                    loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                    .frame(width: .screenWidth, height: .screenHeight)
                 }
-                
-                NavigationLink {
-                    EmailLoginView()
-                } label: {
-                    loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
-                }
-                Spacer().frame(height: 20)
             }
+            .ignoresSafeArea()
         }
     }
 }
@@ -48,5 +61,7 @@ struct LoginView: View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()
+            .environmentObject(UserViewModel())
+            .environmentObject(EmailLoginViewModel())
     }
 }

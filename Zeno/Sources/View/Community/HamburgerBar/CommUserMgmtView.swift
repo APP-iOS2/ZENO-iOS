@@ -11,54 +11,109 @@ import SwiftUI
 struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
+	@EnvironmentObject private var userViewModel: UserViewModel
+    
+    @State private var deportUser = User.emptyUser
+    @State private var isDeportAlert = false
+    @State private var isWaitListFold = false
+    @State private var isCurrentListFold = false
     
     var body: some View {
-        VStack {
-            HStack {
-                ZenoNavigationBackBtn {
-                    dismiss()
-                }
-                Text("구성원 관리")
-                    .padding(.leading, 30)
-                Spacer()
-            }
-            .padding()
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading) {
+            VStack {
+				HStack(alignment: .center) {
+					ZenoNavigationBackBtn {
+						dismiss()
+					} tailingLabel: {
+						HStack {
+							Text("구성원 관리")
+								.font(.regular(16))
+							Spacer()
+						}
+					}
+					Spacer()
+//					Button {
+//						Task {
+//                            await commViewModel.fetchJoinedComm()
+//                            await commViewModel.fetchCurrentCommMembers()
+//							await commViewModel.fetchWaitedMembers()
+//						}
+//					} label: {
+//						HStack(alignment: .bottom, spacing: 2) {
+//							Image(systemName: "arrow.triangle.2.circlepath")
+//							Text("새로고침")
+//						}
+//						.font(.thin(11))
+//						.foregroundColor(.white)
+//						.padding(5)
+//						.background(Color.mainColor)
+//						.cornerRadius(10)
+//						.padding(.trailing, 14)
+//						.shadow(color: .gray, radius: 1)
+//					}
+				}
+                
+                ScrollView(showsIndicators: false) {
                     ForEach(MGMTSection.allCases) { section in
-                        Section {
-                            switch section {
-                            case .wait:
-                                ForEach($commViewModel.currentWaitApprovalMembers) { $user in
-                                        CommUserMgmtCellView(user: $user, actionType: .accept)
+                        switch section {
+                        case .wait:
+                            ZenoProfileFoldableListView(isListFold: $isWaitListFold,
+														list: commViewModel.currentWaitApprovalMembers) {
+								HStack(alignment: .top) {
+									Text("\(section.header) \(commViewModel.currentWaitApprovalMembers.count)")
+									if !commViewModel.currentWaitApprovalMembers.isEmpty {
+										Circle()
+											.fill(Color.red)
+											.frame(width: 5, height: 5)
+											.offset(x: -3)
+									}
+								}
+                            } btnLabel: {
+                                HStack(alignment: .bottom, spacing: 2) {
+                                    Image(systemName: "person.crop.circle.badge.plus")
+                                    Text("가입수락")
+										.font(.thin(12))
                                 }
-                            case .general:
-                                ForEach($commViewModel.currentCommMembers) { $user in
-                                    CommUserMgmtCellView(user: $user, actionType: .deport)
+                            } interaction: { user in
+                                Task {
+									guard let currentComm = commViewModel.currentComm else { return }
+                                    await commViewModel.acceptMember(user: user)
+//									try await userViewModel.removeRequestComm(comm: currentComm, user: user)
                                 }
                             }
-                        } header: {
-                            HStack {
-                                Text(section.header)
-                                    .font(.headline)
-                                Spacer()
-                                switch section {
-                                case .wait:
-                                    Text("\(commViewModel.currentWaitApprovalMembers.count) 명")
-                                case .general:
-                                    Text("\(commViewModel.currentCommMembers.count) 명")
+                        case .general:
+                            ZenoProfileFoldableListView(isListFold: $isCurrentListFold, list: commViewModel.currentCommMembers) {
+									Text("\(section.header) \(commViewModel.currentCommMembers.count)")
+                            } btnLabel: {
+                                HStack(alignment: .bottom, spacing: 2) {
+                                    Image(systemName: "person.crop.circle.badge.minus")
+                                    Text("추방하기")
+										.font(.thin(12))
                                 }
+                            } interaction: { user in
+                                deportUser = user
+                                isDeportAlert = true
                             }
-                            .font(.footnote)
                         }
                     }
                 }
-                .gmTitle()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
+                .animation(.easeInOut, value: [isWaitListFold, isCurrentListFold])
+//                .refreshable {
+//                    Task {
+//                        await commViewModel.fetchWaitedMembers()
+//                    }
+//                }
+        }
+        .alert("\(deportUser.name)님을 내보낼까요?", isPresented: $isDeportAlert) {
+            Button("내보내기", role: .destructive) {
+                Task {
+                    await commViewModel.deportMember(user: deportUser)
+                }
+            }
+            Button("취소", role: .cancel) {
+                deportUser = .emptyUser
             }
         }
-        .tint(.black)
+		.zenoWarning("그룹 인원이 꽉 찼습니다.", isPresented: $commViewModel.overCapacity)
     }
     
     private enum MGMTSection: CaseIterable, Identifiable {

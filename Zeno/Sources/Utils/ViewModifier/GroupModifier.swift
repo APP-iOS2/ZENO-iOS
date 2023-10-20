@@ -8,15 +8,17 @@
 
 import SwiftUI
 
-struct GroupListViewModifier: ViewModifier {
+struct GroupCellModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+			.frame(height: 45)
             .padding()
-            .background(
+            .background(.background)
+            .cornerRadius(10)
+            .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke()
+                    .stroke(Color.mainColor, lineWidth: 1)
             )
-            .padding(5)
     }
 }
 
@@ -72,7 +74,7 @@ struct GroupItemDesign: ViewModifier {
 
 extension View {
     func groupCell() -> some View {
-        modifier(GroupListViewModifier())
+        modifier(GroupCellModifier())
     }
     
     func groupTF() -> some View {

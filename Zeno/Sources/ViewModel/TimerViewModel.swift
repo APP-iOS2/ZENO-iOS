@@ -8,7 +8,7 @@
 
 import Foundation
 
-class TimerViewModel: ObservableObject {
+final class TimerViewModel: ObservableObject {
     @Published var timeRemaining: String = ""
     @Published var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Published var futureData: Date? // Optional로 선언
@@ -29,7 +29,10 @@ class TimerViewModel: ObservableObject {
         }
     }
     
-    // MARK: 이 함수가 자원 갉아먹고 있음
+    deinit {
+        self.timer.upstream.connect().cancel()
+    }
+    
     /// 사용자한테 몇초 남았다고 초를 보여주는 함수
     func comparingTime(currentUser: User?) -> Double {
         let currentTime = Date().timeIntervalSince1970

@@ -11,18 +11,77 @@ import SwiftUI
 extension View {
     func cashAlert(
         isPresented: Binding<Bool>,
+        imageTitle: String?,
         title: String,
         content: String,
+        retainPoint: Int?,
+        lackPoint: Int?,
         primaryButtonTitle: String,
-        primaryAction: @escaping () -> Void
-    ) -> some View {
+        primaryAction: @escaping () -> Void) -> some View {
         return modifier(
             CashAlertModifier(
                 isPresented: isPresented,
+                imageTitle: imageTitle,
                 title: title,
                 content: content,
+                retainPoint: retainPoint,
+                lackPoint: lackPoint,
                 primaryButtonTitle: primaryButtonTitle,
                 primaryAction: primaryAction
+            )
+        )
+    }
+    
+    func backAlert(isPresented: Binding<Bool>,
+                   title: String,
+                   subTitle: String,
+                   primaryAction1: @escaping () -> Void) -> some View {
+        return modifier(
+            AlarmBackBtnModifier(
+                isPresented: isPresented,
+                title: title,
+                subTitle: subTitle,
+                primaryAction1: primaryAction1
+            )
+        )
+    }
+    
+    func goodsAlert(
+        isPresented: Binding<Bool>,
+        content1: String,
+        content2: String,
+        primaryButtonTitle1: String,
+        primaryAction1: @escaping () -> Void,
+        primaryButtonTitle2: String,
+        primaryAction2: @escaping () -> Void) -> some View {
+        return modifier(
+            AlarmGoodsAlertModifier(
+                isPresented: isPresented,
+                content1: content1,
+                content2: content2,
+                primaryButtonTitle1: primaryButtonTitle1,
+                primaryAction1: primaryAction1,
+                primaryButtonTitle2: primaryButtonTitle2,
+                primaryAction2: primaryAction2
+            )
+        )
+    }
+    
+    func usingAlert(
+        isPresented: Binding<Bool>,
+        imageName: String,
+        content: String,
+        quantity: Int,
+        usingGoods: Int,
+        primaryAction1: @escaping () -> Void) -> some View {
+        return modifier(
+            AlarmAlertBtnModifier(
+                isPresented: isPresented,
+                imageName: imageName,
+                content: content,
+                quantity: quantity,
+                usingGoods: usingGoods,
+                primaryAction1: primaryAction1
             )
         )
     }

@@ -25,52 +25,83 @@ struct CommSideBarView: View {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다.")
-                        .font(.headline)
+						.font(.regular(16))
                     Text("\(commViewModel.currentComm?.joinMembers.count ?? 0)명 참여중")
-                        .font(.caption)
+						.font(.thin(12))
                     Text("생성일 \(commViewModel.currentComm?.createdAt.convertDate ?? "가입된 커뮤니티가 없습니다.")")
-                        .font(.caption)
+						.font(.thin(12))
                         .foregroundStyle(.gray)
                 }
-                .padding(.top, 5)
+				.foregroundColor(.primary)
+				.padding(.top, 20)
+				.padding(.bottom, 10)
                 .padding(.horizontal)
                 Divider()
-                VStack(alignment: .leading, spacing: 40) {
+                VStack(alignment: .leading, spacing: 30) {
                     ForEach(SideMenu.allCases) { item in
-                        Button {
-                            switch item {
-                            case .memberMGMT:
+                        if item == .inviteComm {
+                            Button {
                                 isPresented = false
-                                isSelectContent.toggle()
-                            case .inviteComm:
-                                shareText()
-                            case .delegateManager:
-                                if commViewModel.isCurrentCommManager {
-                                    isDelegateManagerView = true
+                                switch item {
+                                case .memberMGMT:
+                                    isSelectContent.toggle()
+                                case .inviteComm:
+                                    commViewModel.kakao()
+                                case .delegateManager:
+                                    if commViewModel.isCurrentCommManager {
+                                        isDelegateManagerView = true
+                                    }
                                 }
-                            }
-                        } label: {
-                            if item == .inviteComm {
+                            } label: {
                                 HStack {
                                     Text(item.title)
                                     Spacer()
                                     Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
                                 }
-                            } else {
-                                if commViewModel.isCurrentCommManager {
+                            }
+                        } else {
+                            if commViewModel.isCurrentCommManager {
+                                Button {
+                                    isPresented = false
+                                    switch item {
+                                    case .memberMGMT:
+                                        isSelectContent.toggle()
+                                    case .inviteComm:
+                                        commViewModel.kakao()
+                                    case .delegateManager:
+                                        if commViewModel.isCurrentCommManager {
+                                            isDelegateManagerView = true
+                                        }
+                                    }
+                                } label: {
                                     HStack {
                                         Text(item.title)
+                                        if !commViewModel.currentWaitApprovalMembers.isEmpty && item == .memberMGMT {
+                                            Circle()
+                                                .fill(Color.red)
+                                                .frame(width: 5, height: 5)
+                                                .offset(x: -3)
+                                        }
+                                        Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
+                                            .foregroundColor(.gray)
                                     }
                                 }
                             }
                         }
                     }
+                    Button("시뮬레이터용 초대버튼") {
+                        commViewModel.tempShareLink()
+                    }
                 }
+                .foregroundColor(.primary)
+                .font(.regular(14))
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
+			.background(RoundedCorners(tl: 22, tr: 0, bl: 0, br: 0).fill(Color(uiColor: .systemBackground)))
             Spacer()
             HStack {
                 ForEach(SideBarBtn.allCases) { btn in
@@ -113,12 +144,13 @@ struct CommSideBarView: View {
                     }
                 }
             }
+			.foregroundColor(.primary)
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
-            .background(Color.purple.opacity(0.2))
+            .padding(.bottom, .isIPhoneSE ? 10 : 0)
+            .background(Color.purple2.opacity(0.4))
         }
-        .foregroundStyle(Color.ggullungColor)
         .fullScreenCover(isPresented: $isSettingPresented) {
             CommSettingView(editMode: .edit)
         }
@@ -133,7 +165,6 @@ struct CommSideBarView: View {
                 Task {
                     guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
-                    await userViewModel.leaveComm(commID: currntID)
                     isPresented = false
                 }
             }
@@ -154,6 +185,7 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
+//                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }
@@ -197,40 +229,6 @@ struct CommSideBarView: View {
         }
         
         var id: Self { self }
-    }
-    
-    /// 공유 시트
-    private func shareText() {
-        guard let commID = commViewModel.currentComm?.id else { return }
-        let deepLink = "ZenoApp://invite?commID=\(commID)"
-        let activityVC = UIActivityViewController(
-            activityItems: [deepLink],
-            applicationActivities: [KakaoActivity(), IGActivity()]
-        )
-        
-        // 공유 제외할 것들. (기본 제공중에서)
-//        activityVC.excludedActivityTypes = [.postToTwitter,
-//            .postToWeibo,
-//            .postToVimeo,
-//            .postToFlickr,
-//            .postToTencentWeibo,
-//            .saveToCameraRoll,
-//            .mail,
-//            .print,
-//            .assignToContact
-//        ]
-                
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            if let mainWindow = windowScene.windows.first {
-                mainWindow.rootViewController?.present(
-                    activityVC,
-                    animated: true,
-                    completion: {
-                        print("공유창 나타나면서 할 작업들?")
-                    }
-                )
-            }
-        }
     }
 }
 
