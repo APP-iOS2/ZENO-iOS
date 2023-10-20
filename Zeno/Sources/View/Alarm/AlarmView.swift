@@ -266,11 +266,6 @@ struct AlarmView: View {
             alarmViewModel.isPagenationLast = false
             selectAlarm = nil
         }
-        .task {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                alarmViewModel.isFetchComplete = true
-            }
-        }
     }
     
     private func isLastItem(_ alarm: Alarm) -> Bool {
