@@ -125,7 +125,6 @@ class AlarmViewModel: ObservableObject {
             }
         } catch {
             print("== fetchLastestAlarm : \(error)")
-            isFetchComplete = true
         }
     }
     
