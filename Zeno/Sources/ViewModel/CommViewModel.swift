@@ -192,6 +192,7 @@ class CommViewModel: ObservableObject {
         if let user,
            user.commInfoList.isEmpty {
             currentCommID.removeAll()
+			isFetchComplete = true
         }
         // 2. 선택한 커뮤니티가 저장되어 있고 가입한 커뮤니티가 있을 때
         // 3. 선택한 커뮤니티가 저장되지 않고 가입한 커뮤니티가 있을 때
@@ -202,6 +203,7 @@ class CommViewModel: ObservableObject {
                 print("📝2", #function)
                 setCurrentID(id: firstItem.id)
                 addCurrentCommSnapshot()
+				isFetchComplete = true
             }
         }
         // 4. 변경된 유저의 정보중 joinedComm 정보가 달라졌을 때
@@ -779,6 +781,7 @@ class CommViewModel: ObservableObject {
             guard let defaultComm = currentUser.commInfoList.first
             else {
                 forAlarmFunc() // 그룹정보가 존재하지 않을때도 alarmVM.fetchAlarmPagenation을 실행해주어 isFetchedAlarm값을 true로 받아간다.
+				isFetchComplete = true
                 return
             }
             currentCommID = defaultComm.id
@@ -842,6 +845,7 @@ class CommViewModel: ObservableObject {
         self.joinedComm = joinedComm
         print("📝 joinedComm 패치완료")
         alarmFunc() // alarmVM.fetchAlarmPagenation 이 실행된다. (현재 의도 23.10.20)
+		isFetchComplete = true
         deepLinkHandler()
     }
     
