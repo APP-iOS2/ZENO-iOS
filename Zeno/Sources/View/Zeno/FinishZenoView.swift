@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct FinishZenoView: View {
-    // 타이머 뷰 진입시 3~5초부터 시작하는 버그?
+    @Environment(\.colorScheme) var colorScheme
+
     @StateObject private var timerViewModel = TimerViewModel()
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
@@ -21,8 +22,10 @@ struct FinishZenoView: View {
                 
                 if timerViewModel.timesUp {
                     Text(" 시간이 다 됐어요! ")
-                        .blueAndBMfont()
-                        .offset(y: 30)
+                        .boldAndOffset40()
+                    
+                    Spacer()
+                    
                     Button {
                         zenoViewModel.resetZenoNavigation()
                     } label: {
@@ -30,8 +33,15 @@ struct FinishZenoView: View {
                     }
                 } else {
                     Text("다음 제노까지 \(timerViewModel.timeRemaining) ")
-                        .blueAndBMfont()
-                        .offset(y: 30)
+                        .boldAndOffset40()
+                    Spacer()
+
+                    Button {
+                        zenoViewModel.resetZenoNavigation()
+                    } label: {
+                        WideButton(buttonName: "제노하러가기", isplay: true)
+                            .opacity(0)
+                    }
                 }
             }
         }

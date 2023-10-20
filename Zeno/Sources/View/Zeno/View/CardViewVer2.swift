@@ -43,11 +43,10 @@ struct CardViewVer2: View {
                             .rotation3DEffect(
                                 .degrees(currentIndex == index ? 0 : 30),
                                 axis: (x: -0.3, y: 0.0, z: 0.1)
-//                                axis: (x: 0.5, y: 0, z: 0)
                             )
                         /// 그룹 이름
                         Text(commViewModel.joinedComm[index].name)
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 23))
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 24))
                             .frame(width: 200)
                             .opacity(currentIndex == index ? 1.0 : 0.3)
                     }
@@ -85,9 +84,9 @@ struct CardViewVer2_Previews: PreviewProvider {
                             commViewModel.updateCurrentUser(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
-                        }
                     }
                 }
+            }
         }
     }
     

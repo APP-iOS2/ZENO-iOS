@@ -39,7 +39,7 @@ final class FirebaseManager {
             throw FirebaseError.failToCreate
         }
     }
-    
+    @discardableResult
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
     ) async throws -> T where T: Encodable, T: ZenoProfileVisible {
@@ -91,7 +91,7 @@ final class FirebaseManager {
         }
     }
     
-    func readDocumentsWithIDs<T>(type: T.Type, ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
+    func readDocumentsWithIDs<T>(type: T.Type, whereField: String = "id", ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
         let collectionRef = db.collection("\(type)")
         var values: [String]
@@ -101,7 +101,30 @@ final class FirebaseManager {
         case false:
             values = ids
         }
-        let query = collectionRef.whereField("id", in: values)
+        let query = collectionRef.whereField(whereField, in: values)
+        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+        for item in snapshot.documents {
+            do {
+                let result = try item.data(as: T.self)
+                results.append(.success(result))
+            } catch {
+                results.append(.failure(FirebaseError.documentToData))
+            }
+        }
+        return results
+    }
+    
+    func readDocumentsArrayWithID<T>(type: T.Type, whereField: String = "id", id: String) async -> [Result<T, FirebaseError>] where T: Decodable {
+        var results: [Result<T, FirebaseError>] = []
+        let collectionRef = db.collection("\(type)")
+        var values: String
+        switch id.isEmpty {
+        case true:
+            values = "empty"
+        case false:
+            values = id
+        }
+        let query = collectionRef.whereField(whereField, arrayContains: values)
         guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
         for item in snapshot.documents {
             do {

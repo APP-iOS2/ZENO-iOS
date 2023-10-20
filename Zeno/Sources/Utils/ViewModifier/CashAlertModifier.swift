@@ -10,8 +10,11 @@ import SwiftUI
 
 struct CashAlertModifier: ViewModifier {
     @Binding var isPresented: Bool
+    var imageTitle: String?
     let title: String
     let content: String
+    let retainPoint: Int?
+    let lackPoint: Int?
     let primaryButtonTitle: String
     let primaryAction: () -> Void
     
@@ -31,8 +34,11 @@ struct CashAlertModifier: ViewModifier {
                     
                     AlarmCoinShortageView(
                         isPresented: self.$isPresented,
+                        imageTitle: self.imageTitle,
                         title: self.title,
                         content: self.content,
+                        retainPoint: self.retainPoint,
+                        lackPoint: self.lackPoint,
                         primaryButtonTitle: self.primaryButtonTitle,
                         primaryAction: self.primaryAction
                     )

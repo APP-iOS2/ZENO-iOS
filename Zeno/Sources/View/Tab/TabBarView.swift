@@ -14,8 +14,6 @@ struct TabBarView: View {
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
     @StateObject private var tabBarViewModel = TabBarViewModel()
-    @StateObject private var alarmViewModel: AlarmViewModel = AlarmViewModel()
-    @StateObject private var iAPStore: IAPStore = IAPStore()
     
     var body: some View {
         TabView(selection: $tabBarViewModel.selected) {
@@ -23,32 +21,41 @@ struct TabBarView: View {
                 tab.view
             }
             .toolbarBackground(.hidden, for: .tabBar)
-		}
+        }
         .overlay {
             VStack(alignment: .center) {
                 Spacer()
                 CustomTabView()
                     .frame(width: .screenWidth)
-                    .offset(y: CGFloat.screenHeight == 667 ? 20 : 0)
+                    .offset(y: .isIPhoneSE ? 20 : 0)
             }
         }
         .environmentObject(tabBarViewModel)
-        .environmentObject(alarmViewModel)
-        .environmentObject(iAPStore)
         .onOpenURL { url in
             Task {
                 await commViewModel.handleInviteURL(url)
                 tabBarViewModel.selected = .comm
             }
         }
-        .task {
-            if let loginUser = userViewModel.currentUser {
-                print("fetch alarm and update user fcmtoken")
-                await alarmViewModel.fetchAlarm(showUserID: loginUser.id)
-                await userViewModel.updateUserFCMToken(fcmToken)
+        .joinWithDeepLink(isPresented: $commViewModel.isJoinWithDeeplinkView, comm: commViewModel.deepLinkTargetComm) {
+            Task {
+                await commViewModel.joinCommWithDeeplink()
+            }
+            commViewModel.isJoinWithDeeplinkView = false
+        }
+        .onChange(of: commViewModel.isJoinWithDeeplinkView) { newValue in
+            if !newValue {
+                commViewModel.deepLinkHandler = { }
             }
         }
-	}
+        .zenoWarning("존재하지 않는 커뮤니티입니다.", isPresented: $commViewModel.isDeepLinkExpired)
+        .zenoWarning("성공적으로 매니저를 위임했습니다.", isPresented: $commViewModel.managerChangeWarning)
+        .onAppear {
+			Task {
+//				await userViewModel.updateUserFCMToken(fcmToken)
+			}
+        }
+    }
 }
 
 struct TabBarView_Previews: PreviewProvider {

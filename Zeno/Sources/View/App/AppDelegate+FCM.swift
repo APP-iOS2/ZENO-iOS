@@ -9,6 +9,9 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseMessaging
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseStorage
 
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     @AppStorage("fcmToken") var fcmToken: String = ""
@@ -16,13 +19,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Firebase 설정
-//        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
-        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info-2", ofType: "plist"),
+        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+//        guard let filePath = Bundle.main.path(forResource: "GoogleService-Info2", ofType: "plist"),
               let options = FirebaseOptions(contentsOfFile: filePath)
         else { return true }
         
         FirebaseApp.configure(options: options)
-        
+//
+//         /*-----------------------------------
+//            FireBase 에뮬레이터 사용시 주석 제거
+//         ----------------------------------*/
+//        // 스토리지
+//        Storage.storage().useEmulator(withHost: "127.0.0.1", port: 9199)
+//        // 인증관련
+//        Auth.auth().useEmulator(withHost: "127.0.0.1", port: 9099)
+//        // 파이어스토어
+//        let settings = Firestore.firestore().settings
+//        settings.host = "127.0.0.1:8080"
+//        settings.isSSLEnabled = false
+//        Firestore.firestore().settings = settings
         // 원격 알림 등록
         UNUserNotificationCenter.current().delegate = self
         

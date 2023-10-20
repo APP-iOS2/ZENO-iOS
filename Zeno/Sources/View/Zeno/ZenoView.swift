@@ -12,13 +12,13 @@ struct ZenoView: View {
     let zenoList: [Zeno]
     let community: Community
     let user: [User]
-    private let debouncer: Debouncer = .init(delay: 0.5)
+    private let debouncer: Debouncer = .init(delay: 0.35)
     
     @State private var myFriends: [User] = []
     @State private var selected: Int = 0
     @State private var answer: [Alarm] = []
     @State private var isAnimation: Bool = true
-    
+        
     @EnvironmentObject private var alarmViewModel: AlarmViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var zenoViewModel: ZenoViewModel
@@ -50,22 +50,20 @@ struct ZenoView: View {
                         .frame(width: .screenWidth * 0.88,
                                height: .screenHeight * 0.13)
                         .opacityAndWhite()
+                        .shadow(radius: 3)
                         
                     /// 랜덤 제노 이미지
                     Image(zenoList[selected].zenoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: isAnimation ? .screenWidth * 0.95 : .screenWidth * 0.94
-                               , height: .screenHeight * 0.32)
-                        .animation(.interpolatingSpring(stiffness: 0.1, damping: 0.1), value: isAnimation)
-
+                        .frame(width: .screenWidth * 0.95, height: .screenHeight * 0.32)
+            
                     Spacer()
                     
                     /// 친구들 버튼 창
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 2)) {
                         ForEach(myFriends) { user in
                             Button {
-                                isAnimation.toggle()
                                 /// 진동
                                 HapticManager.instance.impact(style: .soft)
                                 /// 제노 문제를 다 풀면 서버에 사용자가 제노를 다 푼 시간을 등록함
@@ -102,7 +100,7 @@ struct ZenoView: View {
                                         .clipShape(Circle())
                                         .foregroundColor(.primary)
                                     Text(user.name)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.black)
                                 }
                                 .foregroundColor(.white)
                                 .frame(width: .screenWidth * 0.33, height: .screenHeight / 30)
@@ -111,15 +109,16 @@ struct ZenoView: View {
                                     RoundedRectangle(cornerRadius: 30)
                                         .foregroundColor(.white)
                                         .opacity(0.6)
+                                        .shadow(radius: 3)
                                 )
                             }
                             .offset(y: -20)
                         }
                     }
                     /// 버튼 클릭 바뀌는 것 때문에 애니메이션 제어했음.
-//                    .transaction { view in
-//                        view.disablesAnimations = isAnimation
-//                    }
+                    .transaction { view in
+                        view.disablesAnimations = isAnimation
+                    }
                     
                     /// 리셋 버튼
                     Button {

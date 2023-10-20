@@ -13,140 +13,149 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 
+/// 마이페이지 메인View
 struct MyPageMain: View {
     @EnvironmentObject private var mypageViewModel: MypageViewModel
     
     @State private var isShowingSettingView = false
     @State private var isShowingZenoCoin = true // 첫 번째 뷰부터 시작
     @State private var timer: Timer?
-    let coinView = CoinView()
-    let megaphoneView = MegaphoneView()
+    @State private var profileImageURL: String =  ""
+    @State private var gender: Gender = .male
+    @State private var name: String =  ""
+    @State private var description: String = ""
+    @State private var showInitial: Int = 0
     
-    private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: true) { _ in
-            withAnimation {
-                isShowingZenoCoin.toggle()
-            }
+    private let coinView = CoinView()
+    private let megaphoneView = MegaphoneView()
+    
+    @ViewBuilder
+    private var profileImage: some View {
+        if profileImageURL != KakaoAuthService.shared.noneImageURL {
+            KFImage((URL(string: profileImageURL)))
+                .resizable()
+                .frame(width: 120, alignment: .center)
+                .aspectRatio(contentMode: .fit)
+                .clipShape(Circle())
+                .padding(.leading, 18)
+        } else {
+            ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
+                            ratio: .fit,
+                            isRandom: false)
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 120, alignment: .center)
+            .clipShape(Circle())
+            .padding(.leading, 18)
         }
     }
     
-    private func stopTimer() {
-        timer?.invalidate()
+    private func getUserData() {
+        self.name = mypageViewModel.userInfo?.name ?? ""
+        self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
+        self.gender = mypageViewModel.userInfo?.gender ?? .male
+        self.description = mypageViewModel.userInfo?.description ?? ""
+        self.showInitial = mypageViewModel.userInfo?.showInitial ?? 0
     }
     
     var body: some View {
         NavigationStack {
+            HStack {
+                Text("마이페이지")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
+                    .font(.footnote)
+                    .padding(.vertical, 10)
+                Spacer()
+                NavigationLink {
+                    MypageSettingView()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 22))
+                }
+            }
+            .foregroundColor(.primary)
+            .padding(.horizontal, 15)
+
             ScrollView {
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("마이페이지")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 22))
-                            .font(.footnote)
-                            .padding(.vertical, 10)
-                        Spacer()
-                        NavigationLink {
-                            MypageSettingView()
-                                .environmentObject(mypageViewModel)
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.light.swiftUIFont(size: 22))
-                        }
-                    }
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 15)
-                    HStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 2) {
                         // 유저 프로필 이미지 설정
-                        if let imageURLString = mypageViewModel.userInfo?.imageURL, let imageURL = URL(string: imageURLString) {
-                            KFImage(imageURL)
+                        if profileImageURL != KakaoAuthService.shared.noneImageURL {
+                            KFImage(URL(string: profileImageURL))
+                                .cacheOriginalImage()
                                 .placeholder {
-                                    Image("ZenoIcon")
+                                    Image(asset: ZenoAsset.Assets.zenoIcon)
                                         .resizable()
-                                        .modifier(TextModifier())
+                                        .frame(width: 120, height: 120)
+                                        .aspectRatio(contentMode: .fit)
                                 }
                                 .resizable()
-                                .modifier(TextModifier())
+                                .frame(width: 120, height: 120)
+                                .aspectRatio(contentMode: .fit)
+                                .clipShape(Circle())
+                                .overlay {
+                                    Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 1)
+                                }
+                                .padding(.leading, 18)
                         } else {
-                            Image("ZenoIcon")
-                                .resizable()
-                                .modifier(TextModifier())
+                            ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
+                                            ratio: .fit,
+                                            isRandom: false)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, alignment: .center)
+                            .clipShape(Circle())
+                            .padding(.leading, 18)
                         }
-                        
-                        VStack(alignment: .leading, spacing: 15) {
-                            HStack(spacing: 10) {
-                                NavigationLink {
-                                    UserProfileEdit()
-                                } label: {
-                                    Text(mypageViewModel.userInfo?.name ?? "홍길동")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 19))
-                                        .fontWeight(.semibold)
-                                }
-                                NavigationLink {
-                                    UserProfileEdit()
-                                } label: {
-                                    Image(systemName: "chevron.right")
-                                }
-                            }
-                            Text(mypageViewModel.userInfo?.description ?? "안녕하세요. 홍길동입니다.")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                            HStack {
-                                Button {
-                                    print("button tapped")
-                                } label: {
-                                    HStack(spacing: 3) {
-                                        Text("Z")
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 18))
-                                            .foregroundColor(Color.mainColor)
-                                            .fontWeight(.bold)
-                                        Text("\(mypageViewModel.userInfo?.showInitial ?? 0)회")
-                                            .foregroundColor(.primary)
-                                    }.font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
-                                }
-                                Button {
-                                    print("info button tapped!")
-                                } label: {
-                                    InformationButtonView()
-                                }
-                            }
-                        }
-                        Spacer()
+                        /// 유저 재화 정보 뷰
+                        UserMoneyView()
+                            .frame(minHeight: UIScreen.main.bounds.height/9)
                     }
-                    .frame(maxHeight: 120)
-                    .foregroundColor(.primary)
-                    
-                    /// 유저 재화 정보 뷰
-                    UserMoneyView()
-                        .frame(minHeight: UIScreen.main.bounds.height/9)
-                        .padding(.horizontal, 17)
-                    
-                    //                    /// 재화정보 스크롤뷰
-                    //                    ScrollView(.horizontal, showsIndicators: false) {
-                    //                        HStack(spacing: 0) {
-                    //                            if isShowingZenoCoin {
-                    //                                coinView
-                    //                            } else {
-                    //                                megaphoneView
-                    //                            }
-                    //                        }
-                    //                        .frame(width: UIScreen.main.bounds.width, height: 60)
-                    //                    }
-                    //                    .background(Color.black)
-                    //                    .onAppear {
-                    //                        startTimer()
-                    //                    }
-                    //                    .onDisappear {
-                    //                        print("⏰ 타이머 끝")
-                    //                        stopTimer()
-                    //                    }
-                    GroupSelectView()
+                    .frame(height: 150)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // 유저 이름
+                        HStack(spacing: 10) {
+                            NavigationLink {
+                                UserProfileEdit()
+                            } label: {
+                                HStack {
+                                    Text(name)
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
+                                        .fontWeight(.semibold)
+                                    Image(systemName: "chevron.right")
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                }
+                            }
+                            // 유저 한줄소개
+                            Text(description)
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                                .lineSpacing(6)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.primary)
+                        .onAppear {
+                            print("💟 \(mypageViewModel.zenoStringImage)")
+                        }
+                        .padding(.bottom, 3)
+                        
+                        GroupSelectView()
+                    }
                 }
             }
             .task {
                 await mypageViewModel.getUserInfo()
+                getUserData()
+                await mypageViewModel.fetchAllAlarmData()
+                mypageViewModel.zenoStringCalculator()
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)
             .refreshable {
-                await mypageViewModel.getUserInfo()
+                Task {
+                    await mypageViewModel.getUserInfo()
+                    getUserData()
+                    await mypageViewModel.fetchAllAlarmData()
+                    mypageViewModel.zenoStringCalculator()
+                }
             }
         }
     }
@@ -158,16 +167,5 @@ struct MyPageMain_Previews: PreviewProvider {
             MyPageMain()
                 .environmentObject(MypageViewModel()) // MypageViewModel 환경 객체 제공
         }
-    }
-}
-
-struct TextModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .scaledToFill()
-            .frame(width: 120, height: 120)
-        //            .clipShape(RoundedRectangle(cornerRadius: 30))
-            .clipShape(Circle())
-            .padding()
     }
 }

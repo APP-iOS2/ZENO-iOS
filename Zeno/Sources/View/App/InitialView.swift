@@ -6,19 +6,22 @@ struct InitialView: View {
     @State private var isNickChangeSheet = false
     @AppStorage("nickNameChanged") private var isnickNameChanged = false // 닉변 안했으면 하게 한다.
     
+    @StateObject var signObserved = SignStatusObserved.shared
+    
     var body: some View {
         ZStack {
             Group {
                 // 로그인 분기 처리
-                switch userViewModel.signStatus {
+                switch signObserved.signStatus {
                 case .signIn:
                     TabBarView()
                         .fullScreenCover(isPresented: $isNickChangeSheet) {
                             NickNameRegistView() // 처음 회원가입시에만 뜨는 뷰
                         }
                 case .unSign:
-                    if userViewModel.isNeedLogin {
+                    if signObserved.isNeedLogin {
                         LoginView()
+                            .accessibilityHint("로그인 화면으로 진입했어요")
                             .environmentObject(EmailLoginViewModel())
                             .tint(ZenoAsset.Assets.mainPurple1.swiftUIColor)
                     } else {
@@ -27,29 +30,30 @@ struct InitialView: View {
                     }
                 }
             }
-			.tint(.mainColor)
+            .tint(.mainColor)
+            
             // 런치스크린
             if isLoading && !isnickNameChanged {
                 InitView()
+                    .accessibilityHint("제노가 시작하고 있어요")
                     .transition(.opacity).zIndex(1)
             }
         }
-        .edgesIgnoringSafeArea(CGFloat.screenHeight == 667 ? .horizontal : .all)
+        .edgesIgnoringSafeArea(.isIPhoneSE ? .top : .all)
         .onReceive(userViewModel.$isNickNameRegistViewPop) { chg in
             // isNickNameRegistViewPop을 true로 바꿔주는 시점이 onAppear가 끝난 시점이라서 onReceive에서 받아서 처리.
             print("🦕chg : \(chg.description)")
-            if chg { isNickChangeSheet = true }
+            isNickChangeSheet = chg ? true : false
         }
         .onAppear {
-            print("🦕sign : \(userViewModel.signStatus.rawValue)")
-            print("🦕nick : \(isnickNameChanged.description)")
+            print("✔️nick : \(isnickNameChanged.description)")
             
             // 회원가입이 완료되지않았을때만 온보딩과 회원가입뷰 뿌려준다.
             // 런치스크린 타이머
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 withAnimation(.easeInOut(duration: 0.8)) {
                     isLoading = false
-                    userViewModel.isNeedLogin = true
+                    signObserved.isNeedLogin = true
                 }
                 if !isnickNameChanged {
                     isNickChangeSheet = true
@@ -75,19 +79,19 @@ struct StartView_Previews: PreviewProvider {
                 .environmentObject(zenoViewModel)
                 .environmentObject(mypageViewModel)
                 .environmentObject(alarmViewModel)
-                .onAppear {
-                    Task {
-                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
-                        switch result {
-                        case .success(let user):
-                            userViewModel.currentUser = user
-                            userViewModel.signStatus = .signIn
-                            print("preview 유저로드 성공")
-                        case .failure:
-                            print("preview 유저로드 실패")
-                        }
-                    }
-                }
+//                .onAppear {
+//                    Task {
+//                        let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
+//                        switch result {
+//                        case .success(let user):
+//                            userViewModel.currentUser = user
+//                            userViewModel.signStatus = .signIn
+//                            print("preview 유저로드 성공")
+//                        case .failure:
+//                            print("preview 유저로드 실패")
+//                        }
+//                    }
+//                }
         }
     }
     

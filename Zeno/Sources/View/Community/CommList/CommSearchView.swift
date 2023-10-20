@@ -15,6 +15,9 @@ struct CommSearchView: View {
 	@Binding var isShowingSearchCommSheet: Bool
 	@State private var currentViewSerachTerm = ""
 	@FocusState private var isFocusedKeyboard: Bool
+	@State private var duplicationState: DuplicationState = .none
+	
+	private let debouncer: Debouncer = .init(delay: 0.5)
 	
 	var body: some View {
 		NavigationStack {
@@ -24,16 +27,19 @@ struct CommSearchView: View {
 					searchBar
 						.focused($isFocusedKeyboard)
 					
-					if commViewModel.commSearchTerm.isEmpty {
-						// 최근 검색
+					switch duplicationState {
+					case .none:
 						recentSearch
 							.onAppear {
 								commViewModel.commSearchTerm = ""
 							}
-					} else {
+					case .checking:
+						ProgressView()
+							.foregroundColor(.primary)
+					case .done:
 						ScrollView {
 							ForEach(commViewModel.searchedComm) { item in
-								CommListCell(comm: item)
+								CommSearchedListCell(comm: item) { }
 							}
 						}
 						.scrollDismissesKeyboard(.immediately)
@@ -41,14 +47,19 @@ struct CommSearchView: View {
 					Spacer()
 				}
 			}
-			.navigationTitle("커뮤니티 검색")
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
+				ToolbarItem(placement: .principal) {
+						Text("그룹 검색")
+						.font(.regular(16))
+					}
 				ToolbarItem(placement: .navigationBarTrailing) {
 					Button {
 						isShowingSearchCommSheet = false
 					} label: {
 						Image(systemName: "xmark")
+							.font(.regular(15))
+							.foregroundColor(.primary)
 					}
 				}
 			}
@@ -65,14 +76,27 @@ extension CommSearchView {
 		HStack {
 			HStack(spacing: 10) {
 				TextField(text: $currentViewSerachTerm) {
-					Text("커뮤니티 이름 검색")
+					Text("그룹 이름 검색")
 				}
+				.font(.regular(15))
 				.submitLabel(.search)
 				.foregroundColor(Color(uiColor: .gray))
 				.textInputAutocapitalization(.never)
 				.autocorrectionDisabled()
+				.onChange(of: currentViewSerachTerm) { _ in
+					guard !currentViewSerachTerm.isEmpty else {
+						duplicationState = .none
+						return
+					}
+					duplicationState = .checking
+					debouncer.run {
+						commViewModel.commSearchTerm = currentViewSerachTerm
+                        commViewModel.searchComm {
+                            duplicationState = .done
+                        }
+					}
+				}
 				.onSubmit {
-					commViewModel.commSearchTerm = currentViewSerachTerm
 					commViewModel.addSearchTerm(currentViewSerachTerm)
 				}
 				
@@ -90,7 +114,7 @@ extension CommSearchView {
 				Spacer()
 			}
 			.frame(maxWidth: .infinity)
-			.padding(.horizontal)
+			.padding(.leading)
 			.padding(.vertical, 11)
 			.background(Color(uiColor: .systemGray6))
 			.cornerRadius(10)
@@ -103,10 +127,10 @@ extension CommSearchView {
 			VStack(alignment: .leading) {
 				HStack {
 					Text("최근 검색")
-						.font(.footnote)
+						.font(.thin(12))
 					Spacer()
 					Text("전체 삭제")
-						.font(.footnote)
+						.font(.thin(12))
 						.foregroundColor(.gray)
 						.onTapGesture {
 							commViewModel.recentSearches = []
@@ -122,10 +146,18 @@ extension CommSearchView {
 								Image(systemName: "magnifyingglass")
 									.foregroundColor(Color(uiColor: .gray))
 								Text(searchTitle)
-									.font(.callout)
 								Spacer()
+                                Button {
+                                    commViewModel.removeSearchTerm(searchTitle)
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 10))
+                                        .foregroundColor(.gray)
+                                        .padding(.trailing)
+                                }
 							}
-							.padding([.top], 2)
+							.font(.regular(14))
+							.padding([.top], 5)
 							.frame(maxWidth: .infinity)
 							.onTapGesture {
 								currentViewSerachTerm = searchTitle
@@ -139,5 +171,11 @@ extension CommSearchView {
 			Spacer()
 		}
 		.padding(.leading, 25)
+	}
+	
+	enum DuplicationState: String {
+		case none
+		case checking
+		case done
 	}
 }

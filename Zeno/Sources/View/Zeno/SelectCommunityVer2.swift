@@ -9,7 +9,6 @@
 import SwiftUI
 import ConfettiSwiftUI
 
-// MARK: ZVM에 넣어야함
 enum PlayStatus {
     case success
     case lessThanFour
@@ -30,6 +29,7 @@ struct SelectCommunityVer2: View {
     @State private var counter: Int = 0
     @State private var useConfentti: Bool = true
     @State private var dragWidth: CGFloat = 0
+    @State private var firstSelected: Bool = false
     
     var body: some View {
         if commViewModel.joinedComm.isEmpty {
@@ -43,17 +43,20 @@ struct SelectCommunityVer2: View {
                                 .offset(y: -20)
                             CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                                 .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
+                                
                                 .onChange(of: currentIndex) { _ in
                                     withAnimation {
                                         ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
-                                    }
                                 }
+                            }
                         }
                     }
                     .frame(height: .screenHeight * 0.35)
                     /// 커뮤니티 리스트 뷰
-                    commuityListView
+                    commuityListView()
+                        .padding(.top, 5)
                         .background(.clear)
+//                    CommunityListView2(currentIndex: $currentIndex, selected: $selected, useConfentti: $useConfentti, counter: $counter, isPlay: $isPlay).background(.clear)
                 }
                 .navigationDestination(for: Community.self) { value in
                     ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
@@ -90,17 +93,16 @@ struct SelectCommunityVer2: View {
                         .padding(.top, 10)
                         .frame(width: .screenWidth)
                         .background {
-                            Blur(style: .light)
+                            ZenoBlur(style: .light)
                                 .opacity(0.9)
                                 .edgesIgnoringSafeArea(.bottom)
                         }
-                        .offset(y: CGFloat.screenHeight == 667 ? -10 : 0)
+                        .offset(y: .isIPhoneSE ? -10 : 0)
                     }
                 }
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
-                        try? await commViewModel.fetchAllComm()
                     }
                     currentIndex = 0
                     selected = ""
@@ -134,9 +136,9 @@ struct SelectCommunityVer2: View {
         }
     }
     
-    var commuityListView: some View {
+    func commuityListView() -> some View {
         ScrollViewReader { proxy in
-            List {
+            ScrollView {
                 ForEach(Array(commViewModel.joinedComm.indices),
                         id: \.self) { index in
                     Button {
@@ -150,8 +152,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, 10)
                             Text(commViewModel.joinedComm[index].name)
                                 .font(selected == commViewModel.joinedComm[index].id ?
-                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 16) :
-                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
+                                      ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 17) :
+                                        ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
                                 .foregroundColor(.primary.opacity(0.7))
                             
                             Spacer()
@@ -161,7 +163,8 @@ struct SelectCommunityVer2: View {
                                 .padding(.trailing, .screenWidth * 0.05)
                         }
                     }
-                    
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
                     .frame(width: .screenWidth * 0.9)
                     .listRowBackground(EmptyView())
                     .id(commViewModel.joinedComm[index].id)
@@ -173,6 +176,7 @@ struct SelectCommunityVer2: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
+            .frame(height: .screenHeight * 0.45)
             .overlay {
                 HStack {
                     Spacer()

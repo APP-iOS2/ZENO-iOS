@@ -22,8 +22,8 @@ struct InitView: View {
             }
             Image("ZenoPng")
                 .resizable()
-                .frame(width: 300, height: 300)
-                .offset(y: -250)
+                .frame(width: .isIPhoneSE ? 250 : 300, height: .isIPhoneSE ? 250 : 300)
+                .offset(y: .isIPhoneSE ? -230 : -250)
             Spacer()
             VStack {
                 if firstGroupVisible {
@@ -47,7 +47,8 @@ struct InitView: View {
                                 .opacity(0.6)
                                 .cornerRadius(11)
                             AlarmCellView(gender: "남자", question: "밈을 가장 잘 아는 사람", commName: "한라산 정복까지", imgString: "man1")
-                        }  .offset(y: -60)
+                        }
+                        .offset(y: -60)
                     }
                 }
             }

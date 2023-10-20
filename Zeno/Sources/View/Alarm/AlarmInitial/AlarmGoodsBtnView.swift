@@ -11,6 +11,7 @@ import SwiftUI
 struct AlarmGoodsBtnView: View {
     // MARK: - Properties
     @Binding var isPresented: Bool
+    @State private var rotation: CGFloat = 0.0
     
     let content1: String
     let content2: String
@@ -21,19 +22,27 @@ struct AlarmGoodsBtnView: View {
     let primaryButtonTitle2: String
     let primaryAction2: () -> Void
     
-    let primaryButtonTitle3: String
-    let primaryAction3: () -> Void
-    
     // MARK: - View
     var body: some View {
         VStack {
+            HStack {
+                Spacer()
+                Button {
+                    isPresented = false
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
+                        .foregroundColor(.black)
+                }
+            }
+            
             VStack(alignment: .center) {
                 Text(content1)
                 Text(content2)
             }
             .foregroundColor(.black)
             .padding([.bottom, .top], 50)
-            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
             .bold()
             
             Button {
@@ -41,44 +50,59 @@ struct AlarmGoodsBtnView: View {
                 isPresented = false
             } label: {
                 HStack {
-                    Image(systemName: "c.circle")
-                        .resizable()
-                        .frame(width: .screenWidth * 0.06, height: .screenWidth * 0.06)
-                    Text(primaryButtonTitle1)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                        .bold()
-                        .frame(maxWidth: .infinity)
+                    HStack(alignment: .center) {
+//                        Image("pointCoin")
+//                            .resizable()
+//                            .frame(width: 20, height: 18)
+//                            .offset(x: .screenWidth * 0.1)
+                        Text("60 \(primaryButtonTitle1)")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                    }
                 }
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .hex("FFCD4A"))
+            .initialButtonBackgroundModifier(fontColor: .white, color: .purple2)
             
             Button {
                 primaryAction2()
                 isPresented = false
             } label: {
-                HStack {
-                    Image(systemName: "ticket")
-                        .resizable()
-//                        .scaledToFit()
-                        .frame(width: .screenWidth * 0.08, height: .screenWidth * 0.06)
-                    
-                    Text(primaryButtonTitle2)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                HStack(alignment: .center) {
+                    Text("Z")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+                        .foregroundColor(Color.purple3)
+                    Text("1 \(primaryButtonTitle2)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                         .bold()
-                        .frame(maxWidth: .infinity)
+                        .shadow(color: .purple, radius: 3)
                 }
+                .frame(maxWidth: .infinity)
             }
-            .initialButtonBackgroundModifier(fontColor: .white, color: .mainColor)
-            
-            Button {
-                primaryAction3()
-                isPresented = false
-            } label: {
-                Text(primaryButtonTitle3)
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 17))
-                    .frame(maxWidth: .infinity)
+            .padding()
+            .foregroundColor(.white)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .frame(width: 250)
+                        .foregroundColor(.black.opacity(0.9))
+                        .shadow(color: .purple, radius: 2)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill()
+                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .purple3]), startPoint: .top, endPoint: .bottom))
+                        .rotationEffect(.degrees(rotation))
+                        .mask {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(lineWidth: 2.5)
+                                .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
+                        }
+                }
+            )
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                rotation = 360
             }
-            .initialButtonBackgroundModifier(fontColor: .black, color: .hex("D9D9D9"))
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 18)
@@ -97,13 +121,11 @@ struct AlarmGoodsBtnView: View {
 struct AlarmGoodsBtnView_Previews: PreviewProvider {
     static var previews: some View {
         AlarmGoodsBtnView(isPresented: .constant(false),
-                          content1: "당신을 제노한 사람의 초성을",
-                          content2: "확인하시겠습니까 ?",
+                          content1: "당신을 답변으로 지목한 ",
+                          content2: "사람의 초성을 확인하시겠습니까 ?",
                           primaryButtonTitle1: "코인 사용",
                           primaryAction1: {},
                           primaryButtonTitle2: "초성 확인권 사용",
-                          primaryAction2: {},
-                          primaryButtonTitle3: "취소",
-                          primaryAction3: {})
+                          primaryAction2: {})
     }
 }

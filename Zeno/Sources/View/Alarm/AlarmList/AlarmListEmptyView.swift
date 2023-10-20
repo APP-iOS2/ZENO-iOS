@@ -8,15 +8,19 @@
 
 import SwiftUI
 // MARK: 10.15 추가
+
 struct AlarmListEmptyView: View {
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack {
-            LottieView(lottieFile: "bell")
+            LottieView(lottieFile: "bell3")
                 .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.3)
-            
-            Text("아직 알람이 울리지 않았어요")
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 16))
-                .offset(y: -50)
+    
+            Text("아직 알림이 없어요")
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
+                .offset(y: -60)
+                .foregroundColor(colorScheme == .light ? .gray4 : .white)
         }
     }
 }

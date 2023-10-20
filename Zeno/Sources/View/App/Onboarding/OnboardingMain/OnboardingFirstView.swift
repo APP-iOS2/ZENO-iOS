@@ -16,27 +16,33 @@ struct OnboardingFirstView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: "MainColor", showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .purple2, showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
-                LottieView(lottieFile: "bubbles")
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .center, spacing: 0) {
                     Spacer()
                     Text("제노에는")
-                        .padding(.leading, 40)
+                        .padding(.horizontal, 30)
                         .padding(.bottom, 10)
-                        .opacity(0.8)
+                        .opacity(0.9)
+                        .accessibilityLabel("제노에는")
                     Text("내가 추가한 친구들만")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 35))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 39))
                         .frame(width: .screenWidth)
                         .padding(.bottom, 10)
+                        .accessibilityLabel("내가 추가한 친구들만")
                     Text("등장해요")
-                        .padding(.leading, 40)
-                        .opacity(0.8)
+                        .padding(.horizontal, 30)
+                        .opacity(0.9)
+                        .accessibilityLabel("등장해요")
+                    
                     Spacer()
+                    
                     Image("addFriend")
                         .resizable()
-                        .frame(width: .screenWidth, height: .screenHeight * 0.1)
+                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.1)
+                        .padding()
+                    
                     Spacer()
                 }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 33))
@@ -57,4 +63,3 @@ struct OnboardingFirstView_Previews: PreviewProvider {
         OnboardingFirstView(showNextView: .constant(false))
     }
 }
-

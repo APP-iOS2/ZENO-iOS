@@ -45,7 +45,7 @@ class AlarmViewModel: ObservableObject {
             }
         }
     }
-    /// Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
+    // Firebase Alarm collection에 데이터 추가 및 push notification 찌른 알림 다시 보내기 [원래의 receiveUser가 sendUser가 되게 변경되는 것.]
 //    @MainActor
 //    func pushNudgeAlarm(nudgeAlarm: Alarm) async {
 //        // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
@@ -55,10 +55,10 @@ class AlarmViewModel: ObservableObject {
     @MainActor
     func pushNudgeAlarm(nudgeAlarm: Alarm, currentUserGender: Gender) async {
         // 이 내부에서 send, receive 관련 내용을 변경해주고 이제 그걸 파베에 올려서 push noti 어쩌구 불러서 보내주면  , , ,
-        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: "당신을 제노로 찌른 사람", createdAt: Date().timeIntervalSince1970)
+        let alarm = Alarm(sendUserID: nudgeAlarm.receiveUserID, sendUserName: nudgeAlarm.receiveUserName, sendUserFcmToken: nudgeAlarm.receiveUserFcmToken, sendUserGender: currentUserGender == .female ? Gender.female : Gender.male, receiveUserID: nudgeAlarm.sendUserID, receiveUserName: nudgeAlarm.sendUserName, receiveUserFcmToken: nudgeAlarm.sendUserFcmToken, communityID: nudgeAlarm.communityID, showUserID: nudgeAlarm.sendUserID, zenoID: "nudge", zenoString: nudgeAlarm.zenoString, createdAt: Date().timeIntervalSince1970)
         await createAlarm(alarm: alarm)
         
-        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: alarm.zenoString)
+        PushNotificationManager.shared.sendPushNotification(toFCMToken: alarm.receiveUserFcmToken, title: "Zeno", body: "\(alarm.zenoString)에 답변으로 지목한 친구가 \(alarm.receiveUserName)님을 콕 👉 찔렀어요 ! ")
     }
     
     // 이걸 호출해야 뷰에서 보임 ! -> Zeno 선택할때마다 호출이 되어야하는 함수 !
@@ -99,23 +99,126 @@ class AlarmViewModel: ObservableObject {
         }
     }
     
+    @Published var isLoading: Bool = false
+    @Published var lastVisible: DocumentSnapshot?
+    @Published var isPagenationLast: Bool = false
+    
     /// 로컬에서 마지막 알람 이후 Firestore 에 저장된 알람 데이터를 가져옴
     @MainActor
     func fetchLastestAlarm(showUserID: String) async {
         let alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
             .whereField("createdAt", isGreaterThan: self.alarmArray.first?.createdAt ?? 0)
+//            .limit(to: 10)
         do {
             let querySnapShot = try await alarmRef.getDocuments()
             
             try querySnapShot.documents.forEach { queryDocumentSnapshot in
                 let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
                 self.alarmArray.append(tempAlarm)
+                lastVisible = queryDocumentSnapshot
             }
             
             alarmArray.sort { $0.createdAt > $1.createdAt }
         } catch {
             print("== fetchLastestAlarm : \(error)")
+        }
+    }
+    
+    /// TabBarView 에서 앱 켜질 때 emptyView 대신 fetch 하는 동안 ProgressView() 보이게 만드는 함수, 한 번만 실행함
+    @MainActor
+    func fetchAlarmPagenation(showUserID: String) async {
+        isFetchComplete = false
+        print("📝 alarm 시작", #function)
+        defer {
+            print("📝 alarm 끗", #function)
+            isFetchComplete = true
+        }
+        // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
+        let alarmRef = Firestore.firestore().collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            .limit(to: 7)
+        do {
+            let querySnapShot = try await alarmRef.getDocuments()
+            self.alarmArray.removeAll()
+            
+            // 하나의 형태를 temp로 받아서 반복문을 통해 전체를 받아옴, removeAll을 통해 전체를 지우고 다시 받아오는 것.
+            try querySnapShot.documents.forEach { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                self.alarmArray.append(tempAlarm)
+            }
+        } catch {
+            print("== fetchAlarmPagenation : \(error)")
+        }
+    }
+    
+    /// 홈 탭에서 커뮤니티 선택할 때마다 호출, 페이지네이션으로 가져오기 전 7개 데이터 한 번 가져오는 함수
+    @MainActor
+    func fetchAlarmPagenation2(showUserID: String, communityID: String? = nil) async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        // where은 조건임 ! -> 공통적으로 가지고 있는 것을 가지고 필터링. -> nudge와 alarm을 통합해서 필터링을 하는
+        var alarmRef = Firestore.firestore().collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            
+        if let communityID {
+            alarmRef = alarmRef.whereField("communityID", isEqualTo: communityID)
+        }
+        alarmRef = alarmRef.limit(to: 7)
+        do {
+            let querySnapShot = try await alarmRef.getDocuments()
+            self.alarmArray.removeAll()
+            
+            // 하나의 형태를 temp로 받아서 반복문을 통해 전체를 받아옴, removeAll을 통해 전체를 지우고 다시 받아오는 것.
+            try querySnapShot.documents.forEach { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                self.alarmArray.append(tempAlarm)
+            }
+        } catch {
+            print("== fetchAlarmPagenation2 : \(error)")
+            isFetchComplete = true
+        }
+    }
+    
+    /// 무한 스크롤 시 알람 추가 데이터 가져오는 함수
+    @MainActor
+    func loadMoreData(showUserID: String) async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        guard let lastVisible = lastVisible else {
+            isPagenationLast = true
+            return // No more data to load
+        }
+        
+        let db = Firestore.firestore()
+        let query = db.collection("Alarm")
+            .whereField("showUserID", isEqualTo: showUserID)
+            .order(by: "createdAt", descending: true)
+            .start(afterDocument: lastVisible)
+            .limit(to: 10)
+        
+        do {
+            let querySnapShot = try await query.getDocuments()
+            
+            alarmArray += try querySnapShot.documents.compactMap { queryDocumentSnapshot in
+                let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
+                self.lastVisible = queryDocumentSnapshot
+                return tempAlarm
+            }
+        } catch {
+            print("AlarmLoadMoreData : \(error)")
         }
     }
     

@@ -19,6 +19,12 @@ struct AlarmChangingView: View {
     @State private var isFlipped = false
     @State private var chosung: String = ""
     
+    @State private var chosungIndex: Int = 16
+    @State private var initialCheckCount: Int = 0
+    @State private var resultArray: [Int] = []
+    
+    @State private var isFirstOnAppear: Bool = true
+    
     let selectAlarm: Alarm
     
     let hangul = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
@@ -33,7 +39,7 @@ struct AlarmChangingView: View {
                     .opacity(isFlipped ? 0 : 1)
                 
                 LottieView(lottieFile: "click")
-                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
+                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.9)
                     .offset(x: .screenWidth/3, y: .screenHeight/4)
                     .opacity(isFlipped ? 0 : 1)
                 
@@ -44,12 +50,37 @@ struct AlarmChangingView: View {
             }
             .onTapGesture {
                 withAnimation {
+                    HapticManager.instance.impact(style: .rigid)
                     isFlipped = true
                 }
             }
         }
-        .task {
-            chosung = ChosungCheck(word: selectAlarm.sendUserName)
+        .usingAlert(
+            isPresented: $isCheckInitialTwice,
+            imageName: "ticket",
+            content: "초성 확인권",
+            quantity: userVM.currentUser?.showInitial ?? 0,
+            usingGoods: 1) {
+                isCheckInitialTwice.toggle()
+                Task {
+                    await userVM.updateUserInitialCheck(to: -1)
+                }
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
+        }
+        .backAlert(isPresented: $backAlert,
+                   title: "이 화면을 나가면 다시 돌아올 수 없습니다.",
+                   subTitle: "돌아가시겠습니까?",
+                   primaryAction1: {
+                dismiss()
+                backAlert = false
+        })
+        .onAppear {
+            if isFirstOnAppear {
+                chosung = ChosungCheck(word: selectAlarm.sendUserName)
+            }
+        }
+        .onDisappear {
+            isFirstOnAppear = false
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -63,47 +94,22 @@ struct AlarmChangingView: View {
                             Text("Back")
                         }
                     }
-                    .alert(isPresented: $backAlert) {
-                        let firstButton = Alert.Button.destructive(Text("취소")) {
-                            backAlert = false
-                        }
-                        let secondButton = Alert.Button.default(Text("돌아가기")) {
-                            dismiss()
-                            backAlert = false
-                        }
-                        return Alert(title: Text("이 화면을 나가면 다시 들어올 수 없습니다."),
-                                     message: Text("돌아가시겠습니까 ?"),
-                                     primaryButton: firstButton, secondaryButton: secondButton)
-                    }
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isFlipped {
-                    if userVM.currentUser?.showInitial ?? 0 > 0 {
+                    if userVM.currentUser?.showInitial ?? 0 > 0 && initialCheckCount < selectAlarm.sendUserName.count {
                         Button {
                             isCheckInitialTwice = true
                         } label: {
                             Text("다시 확인")
                                 .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                                .font(.regular(15))
                                 .foregroundColor(Color.primary)
                                 .background(
                                     RoundedRectangle(cornerRadius: 25)
                                         .stroke(Color.mainColor, lineWidth: 1)
                                 )
-                        }
-                        .alert(isPresented: $isCheckInitialTwice) {
-                            let firstButton = Alert.Button.destructive(Text("취소")) {
-                                isCheckInitialTwice = false
-                            }
-                            let secondButton = Alert.Button.default(Text("사용")) {
-                                Task {
-                                    await userVM.updateUserInitialCheck(to: -1)
-                                }
-                                chosung = ChosungCheck(word: selectAlarm.sendUserName)
-                            }
-                            return Alert(title: Text("초성 확인권을 사용하여 한번 더 확인하시겠습니까?"),
-                                         message: Text("초성 확인권:\(userVM.currentUser?.showInitial ?? 0)\n결제 후 잔여 확인권: \((userVM.currentUser?.showInitial ?? 0) - 1)"),
-                                         primaryButton: firstButton, secondaryButton: secondButton)
                         }
                     }
                 }
@@ -113,7 +119,10 @@ struct AlarmChangingView: View {
     
     /// 초성 확인 로직
     private func ChosungCheck(word: String) -> String {
+        initialCheckCount += 1
+        print("💩 \(initialCheckCount)번째 확인")
         var initialResult = ""
+        
         // 문자열하나씩 짤라서 확인
         for char in word {
             let octal = char.unicodeScalars[char.unicodeScalars.startIndex].value
@@ -123,11 +132,36 @@ struct AlarmChangingView: View {
             }
         }
         var nameArray = Array(initialResult)
+        print("💩 \(resultArray)")
+        
         // 하나의 문자를 제외하고 나머지를 "X"로 바꿈
         if nameArray.count > 1 {
-            let randomIndex = Int.random(in: 0..<nameArray.count)
-            for i in 0..<nameArray.count where i != randomIndex {
-                nameArray[i] = "X"
+            switch initialCheckCount {
+            case 1:
+                while resultArray.count < nameArray.count {
+                    let randomNum = Int.random(in: 0..<nameArray.count)
+                    if !resultArray.contains(randomNum) {
+                        resultArray.append(randomNum)
+                    }
+                }
+                print("💩 \(resultArray)")
+                for i in 0..<nameArray.count where i != resultArray[0] {
+                    nameArray[i] = "X"
+                }
+            case 2:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] {
+                    nameArray[i] = "X"
+                }
+            case 3:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] && i != resultArray[2] {
+                    nameArray[i] = "X"
+                }
+            case 4:
+                for i in 0..<nameArray.count where i != resultArray[0] && i != resultArray[1] && i != resultArray[2] && i != resultArray[3] {
+                    nameArray[i] = "X"
+                }
+            default:
+                break
             }
         }
         // 문자 배열을 다시 문자열로 합쳐서 반환

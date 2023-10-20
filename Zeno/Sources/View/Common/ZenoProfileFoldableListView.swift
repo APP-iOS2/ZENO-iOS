@@ -11,8 +11,9 @@ import SwiftUI
 struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
                                   HeaderLabel: View,
                                   BtnLabel: View>: View {
+	@EnvironmentObject var commViewModel: CommViewModel
     @Binding var isListFold: Bool
-    let list: [Item]
+	var list: [Item]
     let headerLabel: () -> HeaderLabel
     let btnLabel: () -> BtnLabel
     let interaction: (Item) -> Void
@@ -20,25 +21,25 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
     @State private var emptyList: [Item] = []
     
     var body: some View {
-        LazyVStack {
-            Section {
-                ForEach(isListFold ? emptyList : list) { item in
-                    ZenoProfileVisibleCellView(item: item, isBtnHidden: false, label: btnLabel, interaction: interaction)
-                }
-            } header: {
-                HStack {
-                    headerLabel()
-                    Spacer()
-                    if !list.isEmpty {
-                        Button {
-                            isListFold.toggle()
-                        } label: {
-                            Image(systemName: isListFold ? "chevron.down" : "chevron.up")
-                        }
+        LazyVStack(alignment: .center) {
+            HStack {
+                headerLabel()
+                Spacer()
+                if !list.isEmpty {
+                    Button {
+                        isListFold.toggle()
+                    } label: {
+                        Image(systemName: isListFold ? "chevron.down" : "chevron.up")
                     }
                 }
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
-                .font(.footnote)
+            }
+            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
+            ForEach(isListFold ? emptyList : list) { item in
+                ZenoProfileVisibleCellView(item: item,
+                                           isBtnHidden: false,
+                                           manager: commViewModel.managerChangeWarning,
+                                           label: btnLabel,
+                                           interaction: interaction)
             }
         }
         .modifier(HomeListModifier())

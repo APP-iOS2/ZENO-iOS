@@ -17,21 +17,23 @@ struct NewUserListView: View {
     var body: some View {
         VStack {
             Section {
-                if isShowingDetailNewBuddyToggle {
+                if isShowingDetailNewBuddyToggle && !commViewModel.recentlyJoinedMembers.isEmpty {
                     ScrollView(.horizontal) {
-                        HStack(spacing: 15) {
+                        HStack(spacing: 14) {
                             ForEach(commViewModel.recentlyJoinedMembers) { user in
                                 VStack(spacing: 5) {
                                     Circle()
                                         .stroke()
-                                        .frame(width: 30, height: 30)
+                                        .frame(width: 35, height: 35)
                                         .background(
                                             ZenoKFImageView(user)
                                                 .clipShape(Circle())
                                         )
                                     Text("\(user.name)")
+										.lineLimit(1)
                                         .foregroundColor(.primary)
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 12))
+                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 11))
+										.frame(width: 40)
                                 }
                             }
                         }

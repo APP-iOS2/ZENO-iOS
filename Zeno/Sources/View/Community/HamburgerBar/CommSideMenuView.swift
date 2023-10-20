@@ -12,21 +12,33 @@ struct CommSideMenuView: View {
     @Binding var isPresented: Bool
     let comm: Community
     
+    @Environment(\.colorScheme) private var colorScheme
     @State private var dragOffset: CGFloat = 0
     
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .trailing) {
-                Color.black.opacity(isPresented ? 0.3 : 0)
-                    .edgesIgnoringSafeArea(.vertical)
-                    .onTapGesture {
-                        isPresented = false
+                Group {
+                    switch colorScheme {
+                    case .light:
+                        Color.black
+                    case .dark:
+                        Color.gray4
+                    @unknown default:
+                        EmptyView()
                     }
-                    .animation(.easeIn(duration: 0.2), value: isPresented)
+                }
+                .opacity(isPresented ? 0.3 : 0)
+                .edgesIgnoringSafeArea(.vertical)
+                .onTapGesture {
+                    isPresented = false
+                }
+                .animation(.easeIn(duration: 0.2), value: isPresented)
                 ZStack {
                     Color.primary
                         .edgesIgnoringSafeArea(.bottom)
                         .colorInvert()
+						.padding(.top, 35)
                     CommSideBarView(isPresented: $isPresented)
                 }
                 .frame(width: geometry.size.width * 0.8)

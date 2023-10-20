@@ -11,6 +11,7 @@ import SwiftUI
 struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
     let item: Item
     let isBtnHidden: Bool
+	let manager: Bool
     let label: () -> Label
     let interaction: (Item) -> Void
     
@@ -18,19 +19,26 @@ struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
         HStack(alignment: .center) {
             Circle()
                 .stroke()
-                .frame(width: 30, height: 30)
+                .frame(width: 35, height: 35)
                 .background(
                     ZenoKFImageView(item)
                         .clipShape(Circle())
                 )
-            VStack(alignment: .leading) {
-                Text("\(item.name)")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-                    .padding(.bottom, 1)
+            VStack(alignment: .leading, spacing: 4) {
+				HStack(alignment: .top) {
+					Text("\(item.name)")
+						.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
+					if manager {
+						Image("crown")
+							.resizable()
+							.frame(width: 13, height: 13)
+							.offset(x: -5)
+					}
+				}
                 if !item.description.isEmpty {
                     Text("\(item.description)")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
-                        .foregroundColor(Color(uiColor: .systemGray4))
+                        .foregroundColor(Color(uiColor: .systemGray2))
                         .lineLimit(1)
                 }
             }

@@ -24,10 +24,14 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
                     .placeholder {
                         placeholderImg
                             .resizable()
+                            .opacity(0.8)
+                            .background(.white)
                     }
             } else {
                 placeholderImg
                     .resizable()
+                    .opacity(0.8)
+                    .background(.white)
             }
         }
         .aspectRatio(contentMode: ratio)

@@ -30,14 +30,18 @@ struct CommDelegateManagerView: View {
                     }
                     Spacer()
                 }
+				.font(.regular(16))
             }
             if !commViewModel.currentCommMembers.isEmpty {
                 ForEach(commViewModel.currentCommMembers) { user in
                     HStack {
-                        ZenoProfileVisibleCellView(item: user, isBtnHidden: false) {
+						ZenoProfileVisibleCellView(item: user,
+												   isBtnHidden: false,
+												   manager: commViewModel.checkManagerUser(user: user)) {
                             HStack(alignment: .bottom, spacing: 2) {
                                 Image(systemName: "person.crop.square.filled.and.at.rectangle")
                                 Text("매니저 권한 위임")
+									.font(.thin(12))
                             }
                         } interaction: { user in
                             selectedUser = user
@@ -69,8 +73,13 @@ struct CommDelegateManagerView: View {
             guard let currentComm = commViewModel.currentComm else { return }
             do {
                 try await FirebaseManager.shared.update(data: currentComm, value: \.managerID, to: user.id)
-                guard let commIndex = commViewModel.allComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-                commViewModel.allComm[commIndex].managerID = user.id
+                PushNotificationManager.shared.sendPushNotification(
+                    toFCMToken: user.fcmToken,
+                    title: "\(currentComm.name)",
+                    body: "\(currentComm.name)의 매니저가 되셨어요!👑"
+                )
+				commViewModel.managerChangeWarning = true
+				self.dismiss()
             } catch {
                 print(#function + "매니저 권한 위임 업데이트 실패")
             }

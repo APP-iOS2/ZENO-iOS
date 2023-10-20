@@ -10,7 +10,7 @@ import StoreKit
 
 class IAPStore: ObservableObject {
     /// App store conncect에서 생성하는 제품을 식별하는 ID 배열, 추후에 메가폰 적용
-    private var productIDs = ["initialCheck", "megaphone"]
+    private var productIDs = ["initialCheck"]
     @Published var products = [Product]()
     /// 소모성 상품
     @Published var purchasedConsumables = [Product]()

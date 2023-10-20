@@ -13,74 +13,74 @@ struct CommMainView: View {
     @EnvironmentObject var commViewModel: CommViewModel
     @EnvironmentObject var tabBarViewModel: TabBarViewModel
     
-    @State private var isShowingCommListSheet = false
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
     @State private var isPresentedAddCommView = false
+	@State private var isPresentedRequestCommView = false
     
     @AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
     
     var body: some View {
         NavigationStack {
-            VStack {
-                if commViewModel.currentComm != nil {
-                    ScrollView {
-                        Group {
-                            NewUserListView(isShowingDetailNewBuddyToggle: $isShowingDetailNewBuddyToggle)
-                            SearchableUserListView(isShowingUserSearchView: $isShowingUserSearchView)
-                        }
-                        .modifier(HomeListModifier())
-                        .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
-                        if commViewModel.currentCommMembers.isEmpty {
-                            Button {
-                                commViewModel.shareText()
-                            } label: {
-                                VStack {
-                                    LottieView(lottieFile: "invitePeople")
-                                        .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
-                                        .overlay {
-                                            Image(systemName: "plus.circle.fill")
-                                                .font(.system(size: 50))
-                                                .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
-                                        }
-                                    Text("친구를 초대해보세요")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
-                                        .offset(y: .screenHeight * -0.03)
-                                }
-                                .foregroundColor(.ggullungColor)
+            if commViewModel.isFetchComplete {
+                VStack {
+                    if commViewModel.currentComm != nil {
+                        ScrollView {
+                            Group {
+                                NewUserListView(isShowingDetailNewBuddyToggle: $isShowingDetailNewBuddyToggle)
+                                SearchableUserListView(isShowingUserSearchView: $isShowingUserSearchView)
                             }
-                            .frame(height: .screenHeight * 0.55)
+                            .modifier(HomeListModifier())
+                            .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
+                            if commViewModel.currentCommMembers.isEmpty {
+                                Button {
+                                    commViewModel.kakao()
+                                } label: {
+                                    VStack {
+                                        LottieView(lottieFile: "invitePeople")
+                                            .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
+                                            .overlay {
+                                                Image(systemName: "plus.circle.fill")
+                                                    .font(.system(size: 50))
+                                                    .foregroundColor(.mainColor)
+                                                    .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
+                                            }
+                                        Text("친구를 초대해보세요")
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
+                                            .foregroundColor(.primary)
+                                            .offset(y: .screenHeight * -0.03)
+                                    }
+                                }
+                                .frame(height: .screenHeight * 0.55)
+                            }
+                        }
+                    } else {
+                        // 가입된 커뮤니티가 없을 때
+                        CommEmptyView {
+                            commViewModel.isShowingCommListSheet.toggle()
                         }
                     }
-                } else {
-					// 가입된 커뮤니티가 없을 때
-					CommEmptyView {
-						isShowingCommListSheet.toggle()
-					}
                 }
-            }
-            .refreshable {
-                Task {
-                    try? await userViewModel.loadUserData()
-                    await commViewModel.fetchAllComm()
+                .toolbar {
+                    if commViewModel.currentComm != nil {
+                        // 커뮤니티 선택 버튼
+                        groupNameToolbarItem
+                        // 햄버거 바
+                        hamburgerToolbarItem
+                    }
                 }
-            }
-            .toolbar {
-                if commViewModel.currentComm != nil {
-					// 커뮤니티 선택 버튼
-					groupNameToolbarItem
-					// 햄버거 바
-                    hamburgerToolbarItem
+                .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
+                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView, isPresentedRequestCommView: $isPresentedRequestCommView)
                 }
-            }
-            .sheet(isPresented: $isShowingCommListSheet) {
-                CommListView(isPresented: $isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
-            }
-            .fullScreenCover(isPresented: $commViewModel.isJoinWithDeeplinkView) {
-                CommJoinWithDeeplinkView(isPresented: $commViewModel.isJoinWithDeeplinkView)
-            }
-            .navigationDestination(isPresented: $isPresentedAddCommView) {
-                CommSettingView(editMode: .addNew)
+                .navigationDestination(isPresented: $isPresentedAddCommView) {
+                    CommSettingView(editMode: .addNew)
+                }
+                .navigationDestination(isPresented: $isPresentedRequestCommView) {
+                    CommRequestListView()
+                }
+            } else {
+                ProgressView()
+                    .tint(.mainColor)
             }
         }
         .tint(.ggullungColor)
@@ -90,23 +90,28 @@ struct CommMainView: View {
                 comm: commViewModel.currentComm ?? Community.dummy[0]
             )
         )
-        .onChange(of: commViewModel.allComm) { _ in
-            commViewModel.filterJoinedComm()
-        }
+//        .onChange(of: commViewModel.allComm) { _ in
+//            commViewModel.joinedComm = commViewModel.allComm.filterJoined(user: commViewModel.currentUser)
+//        }
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
         }
-        .onChange(of: commViewModel.currentComm) { _ in
-            Task {
-                await commViewModel.fetchCurrentCommMembers()
-            }
-        }
+//        .onChange(of: commViewModel.currentComm) { _ in
+//            Task {
+//                await commViewModel.fetchCurrentCommMembers()
+//            }
+//        }
+//        .onChange(of: commViewModel.currentUser?.commInfoList) { _ in
+//            Task {
+//                await commViewModel.fetchJoinedComm()
+//            }
+//        }
     }
     
     var groupNameToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button {
-                isShowingCommListSheet.toggle()
+                commViewModel.isShowingCommListSheet.toggle()
             } label: {
                 HStack {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")

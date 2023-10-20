@@ -43,9 +43,6 @@ struct AlarmSelectCommunityView: View {
                 }
             }
         }
-        .padding(.vertical, -10)
-//        .shadow(radius: 5)
-//        .padding(.horizontal)
     }
 }
 
