@@ -226,7 +226,7 @@ class CommViewModel: ObservableObject {
             print("📝", #function)
             await fetchJoinedComm {
                 forAlarmFunc()
-                isFetchComplete = true
+//                isFetchComplete = true
             }
         }
     }
