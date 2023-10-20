@@ -16,6 +16,7 @@ struct CommMainView: View {
     @State private var isShowingUserSearchView = false
     @State private var isShowingHamburgerView = false
     @State private var isPresentedAddCommView = false
+	@State private var isPresentedRequestCommView = false
     
     @AppStorage("isShowingDetailNewBuddyToggle") private var isShowingDetailNewBuddyToggle = true
     
@@ -69,10 +70,13 @@ struct CommMainView: View {
                     }
                 }
                 .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
-                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView)
+                    CommJoinedListView(isPresented: $commViewModel.isShowingCommListSheet, isPresentedAddCommView: $isPresentedAddCommView, isPresentedRequestCommView: $isPresentedRequestCommView)
                 }
                 .navigationDestination(isPresented: $isPresentedAddCommView) {
                     CommSettingView(editMode: .addNew)
+                }
+                .navigationDestination(isPresented: $isPresentedRequestCommView) {
+                    CommRequestListView()
                 }
             } else {
                 ProgressView()
