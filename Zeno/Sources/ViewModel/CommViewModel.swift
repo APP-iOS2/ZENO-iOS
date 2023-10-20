@@ -792,6 +792,7 @@ class CommViewModel: ObservableObject {
             else {
                 isFetchComplete = true
                 forAlarmFunc() // 그룹정보가 존재하지 않을때도 alarmVM.fetchAlarmPagenation을 실행해주어 isFetchedAlarm값을 true로 받아간다.
+				isFetchComplete = true
                 return
             }
             currentCommID = defaultComm.id
@@ -855,6 +856,7 @@ class CommViewModel: ObservableObject {
         self.joinedComm = joinedComm
         print("📝 joinedComm 패치완료")
         alarmFunc() // alarmVM.fetchAlarmPagenation 이 실행된다. (현재 의도 23.10.20)
+		isFetchComplete = true
         deepLinkHandler()
         isFetchComplete = true
     }
