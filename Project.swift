@@ -33,6 +33,7 @@ let infoPlist: [String: InfoPlist.Value] = [
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)",
 	"FIREBASE_PUSH_API_KEY" : "$(FIREBASE_PUSH_API_KEY)",
+    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),

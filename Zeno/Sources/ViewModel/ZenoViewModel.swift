@@ -112,4 +112,8 @@ final class ZenoViewModel: ObservableObject {
             throw error
         }
     }
+    
+    func resetZenoNavigation() {
+        path = .init()
+    }
 }

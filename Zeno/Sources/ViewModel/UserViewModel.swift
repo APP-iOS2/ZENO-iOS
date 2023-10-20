@@ -74,43 +74,43 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
         }
     }
     
-    @MainActor
-    func addFriend(user: User, comm: Community) async {
-        guard let currentUser,
-              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
-        var newInfo = currentUser.commInfoList
-        newInfo[index].buddyList.append(user.id)
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
-            self.currentUser?.commInfoList = newInfo
-        } catch {
-            print(#function + "User Document에 commInfoList 업데이트 실패")
-        }
-    }
-    
-    @MainActor
-    func joinCommWithDeeplink(comm: Community) async {
-        guard let currentUser else { return }
-        let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newCommList)
-        } catch {
-            print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
-            self.currentUser?.commInfoList = newCommList
-        }
-    }
-    
-    @MainActor
-    func leaveComm(commID: String) async {
-        guard let currentUser else { return }
-        let changedList = currentUser.commInfoList.filter { $0.id != commID }
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedList)
-            self.currentUser?.commInfoList = changedList
-        } catch {
-            print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
-        }
-    }
+//    @MainActor
+//    func addFriend(user: User, comm: Community) async {
+//        guard let currentUser,
+//              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+//        var newInfo = currentUser.commInfoList
+//        newInfo[index].buddyList.append(user.id)
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+//            self.currentUser?.commInfoList = newInfo
+//        } catch {
+//            print(#function + "User Document에 commInfoList 업데이트 실패")
+//        }
+//    }
+//    
+//    @MainActor
+//    func joinCommWithDeeplink(comm: Community) async {
+//        guard let currentUser else { return }
+//        let newCommList = currentUser.commInfoList + [.init(id: comm.id, buddyList: [], alert: true)]
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newCommList)
+//        } catch {
+//            print(#function + "커뮤니티 딥링크로 가입 시 유저의 commInfoList 업데이트 실패")
+//            self.currentUser?.commInfoList = newCommList
+//        }
+//    }
+//    
+//    @MainActor
+//    func leaveComm(commID: String) async {
+//        guard let currentUser else { return }
+//        let changedList = currentUser.commInfoList.filter { $0.id != commID }
+//        do {
+//            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedList)
+//            self.currentUser?.commInfoList = changedList
+//        } catch {
+//            print(#function + "User의 commInfoList에서 탈퇴할 커뮤니티정보 삭제 실패")
+//        }
+//    }
     
     @MainActor
     func commAlertToggle(id: String) async {
@@ -301,19 +301,19 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
         return []
     }
     
-    @MainActor
-    func joinNewGroup(newComm: Community?) async {
-        guard var currentUser,
-              let newComm
-        else { return }
-        currentUser.commInfoList.append(.init(id: newComm.id, buddyList: [], alert: true))
-        do {
-            try await firebaseManager.create(data: currentUser)
-            self.currentUser = currentUser
-        } catch {
-            debugPrint(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
-        }
-    }
+//    @MainActor
+//    func joinNewGroup(newComm: Community?) async {
+//        guard var currentUser,
+//              let newComm
+//        else { return }
+//        currentUser.commInfoList.append(.init(id: newComm.id, buddyList: [], alert: true))
+//        do {
+//            try await firebaseManager.create(data: currentUser)
+//            self.currentUser = currentUser
+//        } catch {
+//            debugPrint(#function + "그룹 생성 변경사항 User Collection에 추가 실패")
+//        }
+//    }
     
     /// 파베유저정보 Fetch
     func fetchUser(withUid uid: String) async throws -> User {
@@ -326,30 +326,30 @@ final class UserViewModel: ObservableObject, LoginStatusDelegate {
         }
     }
 
-    /// [가입신청] 보낸 그룹 등록
-    @MainActor
-    func addRequestComm(comm: Community) async throws {
-        guard let currentUser else { return }
-		let requestComm = currentUser.requestComm + [comm.id]
-        try await firebaseManager.update(data: currentUser.self,
-                                         value: \.requestComm,
-                                         to: requestComm)
-        self.currentUser?.requestComm = requestComm
-    }
+    // [가입신청] 보낸 그룹 등록
+//    @MainActor
+//    func addRequestComm(comm: Community) async throws {
+//        guard let currentUser else { return }
+//		let requestComm = currentUser.requestComm + [comm.id]
+//        try await firebaseManager.update(data: currentUser.self,
+//                                         value: \.requestComm,
+//                                         to: requestComm)
+//        self.currentUser?.requestComm = requestComm
+//    }
 	
-	/// [가입수락] 매니저가 가입을 수락하면 가입한 유저의 그룹 가입요청 데이터가 지워지는 함수
-	@MainActor
-	func removeRequestComm(comm: Community, user: User) async throws {
-		// 1. 파이어베이스에서 현재 유저 requestComm 지우기
-		var requestComm = user.requestComm
-        guard let index = requestComm.firstIndex(where: { $0 == user.id }) else { return }
-        requestComm.remove(at: index)
-		do {
-			try await firebaseManager.update(data: user.self,
-											 value: \.requestComm,
-											 to: requestComm)
-		} catch {
-			print("🔴 [가입수락] 가입요청 데이터 지우기 실패")
-		}
-	}
+	// [가입수락] 매니저가 가입을 수락하면 가입한 유저의 그룹 가입요청 데이터가 지워지는 함수
+//	@MainActor
+//	func removeRequestComm(comm: Community, user: User) async throws {
+//		// 1. 파이어베이스에서 현재 유저 requestComm 지우기
+//		var requestComm = user.requestComm
+//        guard let index = requestComm.firstIndex(where: { $0 == user.id }) else { return }
+//        requestComm.remove(at: index)
+//		do {
+//			try await firebaseManager.update(data: user.self,
+//											 value: \.requestComm,
+//											 to: requestComm)
+//		} catch {
+//			print("🔴 [가입수락] 가입요청 데이터 지우기 실패")
+//		}
+//	}
 }
