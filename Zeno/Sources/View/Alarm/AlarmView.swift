@@ -9,9 +9,10 @@
 import SwiftUI
 
 struct AlarmView: View {
-    @EnvironmentObject var alarmViewModel: AlarmViewModel
-    @EnvironmentObject var userViewModel: UserViewModel
-    @EnvironmentObject var commViewModel: CommViewModel
+    @EnvironmentObject private var alarmViewModel: AlarmViewModel
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var commViewModel: CommViewModel
+    @ObservedObject private var notificationObserver: NotificationObserver = NotificationObserver.shared
     @Environment(\.colorScheme) private var colorScheme
     
     @State private var selectedCommunityId: String = ""
@@ -87,7 +88,6 @@ struct AlarmView: View {
                                                                 if isLastItem(alarm) {
                                                                     if let currentUser = userViewModel.currentUser {
                                                                         await alarmViewModel.loadMoreData(showUserID: currentUser.id)
-                                                                        print("======alarmViewModel.loadMoreData")
                                                                     }
                                                                 }
                                                             }
@@ -101,7 +101,6 @@ struct AlarmView: View {
                                                                 if isLastItem(alarm) {
                                                                     if let currentUser = userViewModel.currentUser {
                                                                         await alarmViewModel.loadMoreData(showUserID: currentUser.id)
-                                                                        print("======alarmViewModel.loadMoreData")
                                                                     }
                                                                 }
                                                             }
@@ -265,6 +264,19 @@ struct AlarmView: View {
             }
             alarmViewModel.isPagenationLast = false
             selectAlarm = nil
+        }
+        .onChange(of: notificationObserver.newMessageID) { _ in
+            if let currentUser = userViewModel.currentUser {
+                Task {
+                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
+                }
+            }
+            alarmViewModel.isPagenationLast = false
+        }
+        .task {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                alarmViewModel.isFetchComplete = true
+            }
         }
     }
     

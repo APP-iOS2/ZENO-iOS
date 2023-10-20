@@ -14,6 +14,12 @@ class AlarmViewModel: ObservableObject {
     @Published var alarmArray: [Alarm] = []
     @Published var isFetchComplete: Bool = false
     
+    @Published var isLoading: Bool = false
+    @Published var lastVisible: DocumentSnapshot?
+    @Published var isPagenationLast: Bool = false
+    
+    @Published var receiveNotification: String = ""
+    
     var dummyAlarmArray: [Alarm] = [
         Alarm(sendUserID: "aa", sendUserName: "보내는유저1", sendUserFcmToken: "sendToken", sendUserGender: .female, receiveUserID: "bb", receiveUserName: "받는유저1", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "1234", zenoID: "dd", zenoString: "놀이공원에서 같이 교복입고 돌아다니면 재밌을 거 같은 사람", createdAt: 91842031),
         Alarm(sendUserID: "aa", sendUserName: "보내는유저2", sendUserFcmToken: "sendToken", sendUserGender: .male, receiveUserID: "bb", receiveUserName: "받는유저2", receiveUserFcmToken: "token", communityID: "7182280C-E27A-46A9-A0CB-FF8C6556F8D7", showUserID: "12342", zenoID: "dd", zenoString: "공포영화 못볼거 같은 사람", createdAt: 91842031)
@@ -99,27 +105,24 @@ class AlarmViewModel: ObservableObject {
         }
     }
     
-    @Published var isLoading: Bool = false
-    @Published var lastVisible: DocumentSnapshot?
-    @Published var isPagenationLast: Bool = false
-    
-    /// 로컬에서 마지막 알람 이후 Firestore 에 저장된 알람 데이터를 가져옴
+    /// push notification 왔을 때 1개만 최신 데이터 가져옴
     @MainActor
-    func fetchLastestAlarm(showUserID: String) async {
-        let alarmRef = Firestore.firestore().collection("Alarm")
+    func fetchLastestAlarm(showUserID: String, communityID: String? = nil) async {
+        var alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
             .whereField("createdAt", isGreaterThan: self.alarmArray.first?.createdAt ?? 0)
-//            .limit(to: 10)
+            
+        if let communityID {
+            alarmRef = alarmRef.whereField("communityID", isEqualTo: communityID)
+        }
+        alarmRef = alarmRef.limit(to: 1)
         do {
             let querySnapShot = try await alarmRef.getDocuments()
             
             try querySnapShot.documents.forEach { queryDocumentSnapshot in
                 let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)
-                self.alarmArray.append(tempAlarm)
-                lastVisible = queryDocumentSnapshot
+                self.alarmArray.insert(tempAlarm, at: 0)
             }
-            
-            alarmArray.sort { $0.createdAt > $1.createdAt }
         } catch {
             print("== fetchLastestAlarm : \(error)")
         }

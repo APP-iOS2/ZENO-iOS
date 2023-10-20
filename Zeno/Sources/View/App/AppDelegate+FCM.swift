@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     
     /// fcm server 에서 받는 토큰 appStorage 에 저장
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("AppDelegate - Firebase registration token: \(String(describing: fcmToken))")
+//        print("AppDelegate - Firebase registration token: \(String(describing: fcmToken))")
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
         NotificationCenter.default.post(
             name: Notification.Name("FCMToken"),
@@ -77,11 +77,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     /// 푸시메세지가 앱이 켜져 있을 상태에서 push 메세지 받을 때 처리
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {  
-        let userInfo = notification.request.content.userInfo
-        
-        print("willPresent: userInfo: ", userInfo)
-        
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        NotificationObserver.shared.processNotification(notification)
         completionHandler([.banner, .sound, .badge])
     }
     
@@ -89,8 +86,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
-        print("didReceive: userInfo: ", userInfo)
+        NotificationObserver.shared.processNotification(response.notification)
         completionHandler()
     }
 }
