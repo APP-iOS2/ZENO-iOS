@@ -273,11 +273,12 @@ struct AlarmView: View {
             }
             alarmViewModel.isPagenationLast = false
         }
-        .task {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                alarmViewModel.isFetchComplete = true
-            }
-        }
+        // 효명님 이거 안주셔도 되요.. !! ㅜㅠ
+//        .task {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+//                alarmViewModel.isFetchComplete = true
+//            }
+//        }
     }
     
     private func isLastItem(_ alarm: Alarm) -> Bool {

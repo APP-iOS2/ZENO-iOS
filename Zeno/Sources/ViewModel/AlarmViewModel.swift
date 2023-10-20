@@ -10,7 +10,7 @@ import Foundation
 import Firebase
 import FirebaseFirestoreSwift
 
-class AlarmViewModel: ObservableObject {
+final class AlarmViewModel: ObservableObject {
     @Published var alarmArray: [Alarm] = []
     @Published var isFetchComplete: Bool = false
     

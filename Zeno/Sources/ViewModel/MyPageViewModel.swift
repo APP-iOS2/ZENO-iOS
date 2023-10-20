@@ -7,9 +7,9 @@
 //
 import SwiftUI
 import Firebase
-import FirebaseAuth
-import FirebaseFirestoreSwift
-import FirebaseFirestore
+// import FirebaseAuth
+// import FirebaseFirestoreSwift
+// import FirebaseFirestore
 
 final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     // LoginStatusDelegate 프로토콜 메서드. -> 여기선 사용안함.
@@ -45,6 +45,10 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     
     @Published var isCommunityManagerAlert: Bool = false
     @Published var isUserDataDeleteFailAlert: Bool = false
+    /// 이미지 탭 Bool
+    @Published var isTappedImage: Bool = false
+    /// 확대하고자하는 탭한 이미지URL
+    @Published var selectImageURL: String = ""
     
     /// 비율 항목 계산을 위한 일반 변수
     private var itemFrequency = [String: Int]()
@@ -349,7 +353,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                     return nil
                 }
             }
-            
             
             // batch delete 1
             var alarmDelCnt: Int = 0

@@ -9,6 +9,7 @@ import Foundation
 import FirebaseStorage
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import Firebase
 
 enum FirebaseError: Error {
     case emptyID
@@ -230,4 +231,45 @@ final class FirebaseManager {
             throw FirebaseError.failToDelete
         }
     }
+    
+    private var batchWorkItemCnt: Int = 0
+    
+    func createBatch() -> WriteBatch {
+        self.batchWorkItemCnt = 0 // 초기화
+        return db.batch()
+    }
+    
+    func updateInBatch(batch: inout WriteBatch) {
+        let documentRef = db.collection("User").document("SF")
+        batch.updateData(["": ""], forDocument: documentRef)
+        self.batchWorkItemCnt += 1 // 작업 한개당 카운트 1 증가
+    }
+    
+    func deleteInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) {
+        let documentID = data.id
+        guard !documentID.isEmpty else { return }
+        
+        let documentRef = db.collection("\(type(of: data))").document(documentID)
+        batch.deleteDocument(documentRef)
+        self.batchWorkItemCnt += 1
+    }
+    
+    func setDataInBatch(batch: inout WriteBatch) {
+        let documentRef = db.collection("User").document("SF")
+        batch.setData(["": ""], forDocument: documentRef)
+        self.batchWorkItemCnt += 1
+    }
+    
+    /// 최대 500개한도 내에서 처리해야함.
+    func batchCommit(batch: WriteBatch) async -> Bool {
+        guard self.batchWorkItemCnt <= 500 else { return false } // 500개 초과하면 작업 못함.
+        do {
+            try await batch.commit()
+            return true
+        } catch {
+            print(#function, "👺" + error.localizedDescription)
+            return false
+        }
+    }
+    
 }

@@ -137,6 +137,10 @@ struct MyPageMain: View {
                 }
             }
         }
+        .overlay(
+            LargeImageView(isTapped: $mypageViewModel.isTappedImage,
+                           imageURL: mypageViewModel.selectImageURL)
+        )
     }
 }
 
