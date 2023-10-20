@@ -28,27 +28,7 @@ struct MyPageMain: View {
     
     private let coinView = CoinView()
     private let megaphoneView = MegaphoneView()
-    
-    @ViewBuilder
-    private var profileImage: some View {
-        if profileImageURL != KakaoAuthService.shared.noneImageURL {
-            KFImage((URL(string: profileImageURL)))
-                .resizable()
-                .frame(width: 120, alignment: .center)
-                .aspectRatio(contentMode: .fit)
-                .clipShape(Circle())
-                .padding(.leading, 18)
-        } else {
-            ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
-                            ratio: .fit,
-                            isRandom: false)
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 120, alignment: .center)
-            .clipShape(Circle())
-            .padding(.leading, 18)
-        }
-    }
-    
+
     private func getUserData() {
         self.name = mypageViewModel.userInfo?.name ?? ""
         self.profileImageURL = mypageViewModel.userInfo?.imageURL ?? ""
@@ -74,7 +54,7 @@ struct MyPageMain: View {
             }
             .foregroundColor(.primary)
             .padding(.horizontal, 15)
-
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 2) {
@@ -110,35 +90,34 @@ struct MyPageMain: View {
                             .frame(minHeight: UIScreen.main.bounds.height/9)
                     }
                     .frame(height: 150)
-                    VStack(alignment: .leading, spacing: 8) {
-                        // 유저 이름
-                        HStack(spacing: 10) {
-                            NavigationLink {
-                                UserProfileEdit()
-                            } label: {
-                                HStack {
-                                    Text(name)
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
-                                        .fontWeight(.semibold)
-                                    Image(systemName: "chevron.right")
-                                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                                }
+                    
+                    // 유저 이름
+                    VStack(alignment: .leading, spacing: 10) {
+                        NavigationLink {
+                            UserProfileEdit()
+                        } label: {
+                            HStack {
+                                Text(name)
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
+                                    .fontWeight(.semibold)
+                                Image(systemName: "chevron.right")
+                                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
                             }
-                            // 유저 한줄소개
-                            Text(description)
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
-                                .lineSpacing(6)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .foregroundColor(.primary)
-                        .onAppear {
-                            print("💟 \(mypageViewModel.zenoStringImage)")
-                        }
-                        .padding(.bottom, 3)
-                        
-                        GroupSelectView()
+                        // 유저 한줄소개
+                        Text(description)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 13))
+                            .lineSpacing(6)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .foregroundColor(.primary)
+                    .onAppear {
+                        print("💟 \(mypageViewModel.zenoStringImage)")
+                    }
+                    .padding(.bottom, 3)
+                    
+                    GroupSelectView()
                 }
             }
             .task {

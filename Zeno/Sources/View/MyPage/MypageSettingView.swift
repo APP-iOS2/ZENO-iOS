@@ -49,7 +49,6 @@ struct MypageSettingView: View {
                 }
                 
                 Divider()
-                      
                 Button {
                       showAlert = true
                       alertMessage = "탈퇴 시 모든 데이터는 삭제되며 복구가 불가능합니다."                    
@@ -57,8 +56,9 @@ struct MypageSettingView: View {
                     Text("회원탈퇴")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundStyle(Color.red)
+                    Image(systemName: "chevron.right")
                 }
-                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
+                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
                 .padding(.horizontal)
                 .padding(.top, 10)
             }
