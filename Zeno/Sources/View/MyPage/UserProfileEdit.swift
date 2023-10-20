@@ -152,7 +152,7 @@ struct UserProfileEdit: View {
                 Color.black.opacity(0.25)
                     .edgesIgnoringSafeArea(.all)
                 VStack {
-                    Text("수정사항이 저장중이에요~")
+                    Text("수정사항이 저장중이에요.")
                         .font(.callout)
                         .bold()
                         .foregroundStyle(Color.white)
