@@ -268,11 +268,7 @@ struct AlarmView: View {
         .onChange(of: notificationObserver.newMessageID) { _ in
             if let currentUser = userViewModel.currentUser {
                 Task {
-                    if selectedCommunityId.isEmpty {
-                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id)
-                    } else {
-                        await alarmViewModel.fetchAlarmPagenation2(showUserID: currentUser.id, communityID: selectedCommunityId)
-                    }
+                    await alarmViewModel.fetchLastestAlarm(showUserID: currentUser.id)
                 }
             }
             alarmViewModel.isPagenationLast = false
