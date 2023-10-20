@@ -192,7 +192,7 @@ class CommViewModel: ObservableObject {
         if let user,
            user.commInfoList.isEmpty {
             currentCommID.removeAll()
-			isFetchComplete = true
+            isFetchComplete = true
         }
         // 2. 선택한 커뮤니티가 저장되어 있고 가입한 커뮤니티가 있을 때
         // 3. 선택한 커뮤니티가 저장되지 않고 가입한 커뮤니티가 있을 때
@@ -202,8 +202,6 @@ class CommViewModel: ObservableObject {
             if currentCommID.isEmpty {
                 print("📝2", #function)
                 setCurrentID(id: firstItem.id)
-                addCurrentCommSnapshot()
-				isFetchComplete = true
             }
         }
         // 4. 변경된 유저의 정보중 joinedComm 정보가 달라졌을 때
@@ -309,7 +307,19 @@ class CommViewModel: ObservableObject {
 	}
     
     // MARK: Interaction
-    
+    @MainActor
+    func addFriend(user: User, comm: Community) async {
+        guard let currentUser,
+              let index = currentUser.commInfoList.firstIndex(where: { $0.id == comm.id }) else { return }
+        var newInfo = currentUser.commInfoList
+        newInfo[index].buddyList.append(user.id)
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: newInfo)
+            self.currentUser?.commInfoList = newInfo
+        } catch {
+            print(#function + "User Document에 commInfoList 업데이트 실패")
+        }
+    }
     /// 매니저가 커뮤니티를 제거하고 가입, 가입신청된 User의 commInfoList에서 커뮤니티 정보를 제거하는  함수
     @MainActor
     func deleteComm() async {
@@ -780,6 +790,7 @@ class CommViewModel: ObservableObject {
             print("📝 currentCommID 비었음 currentUser: \(currentUser.commInfoList)", #function)
             guard let defaultComm = currentUser.commInfoList.first
             else {
+                isFetchComplete = true
                 forAlarmFunc() // 그룹정보가 존재하지 않을때도 alarmVM.fetchAlarmPagenation을 실행해주어 isFetchedAlarm값을 true로 받아간다.
 				isFetchComplete = true
                 return
@@ -847,6 +858,7 @@ class CommViewModel: ObservableObject {
         alarmFunc() // alarmVM.fetchAlarmPagenation 이 실행된다. (현재 의도 23.10.20)
 		isFetchComplete = true
         deepLinkHandler()
+        isFetchComplete = true
     }
     
     /// 선택된 커뮤니티에 가입된 유저를 받아오는 함수

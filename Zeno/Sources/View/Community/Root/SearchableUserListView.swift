@@ -30,7 +30,7 @@ struct SearchableUserListView: View {
                     } interaction: { user in
                         Task {
                             guard let comm = commViewModel.currentComm else { return }
-                            await userViewModel.addFriend(user: user, comm: comm)
+                            await commViewModel.addFriend(user: user, comm: comm)
                         }
                     }
                 }
