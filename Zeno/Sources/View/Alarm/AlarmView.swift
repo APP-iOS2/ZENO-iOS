@@ -118,7 +118,7 @@ struct AlarmView: View {
                                     // 스크린 높이 - 그룹셀 이미지높이 - topSafeArea - 그룹텍스트 - 그 외 여백 예상높이
                                     .frame(
                                         minHeight:
-                                            Bool.isIPhoneSE ?
+                                            .isIPhoneSE ?
                                             .screenHeight - 60 - topSafeArea - 7 :
                                                 .screenHeight - 60 - topSafeArea - 10 - (.screenHeight * 0.035)
                                     )

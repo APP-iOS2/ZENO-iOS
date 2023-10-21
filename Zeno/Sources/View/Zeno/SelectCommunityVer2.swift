@@ -61,45 +61,6 @@ struct SelectCommunityVer2: View {
                 .navigationDestination(for: Community.self) { value in
                     ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
                 }
-                
-                .overlay {
-                    VStack {
-                        Spacer()
-                        VStack {
-                            /// isPlay 상태에 따라 달라짐
-                            switch isPlay {
-                            case .success:
-                                Button {
-                                    if let community {
-                                        Task {
-                                            await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
-                                            zenoViewModel.path.append(community)
-                                        }
-                                    }
-                                } label: {
-                                    WideButton2(buttonName: "START", isplay: true)
-                                }
-                            case .lessThanFour:
-                                WideButton2(buttonName: "START", isplay: false)
-                                    .disabled(isPlay != .success)
-                            case .notSelected:
-                                Text("그룹을 선택해주세요")
-                                    .foregroundColor(.secondary)
-                                WideButton2(buttonName: "START", isplay: false)
-                                    .disabled(isPlay != .success)
-                            }
-                        }
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                        .padding(.top, 10)
-                        .frame(width: .screenWidth)
-                        .background {
-                            ZenoBlur(style: .light)
-                                .opacity(0.9)
-                                .edgesIgnoringSafeArea(.bottom)
-                        }
-                        .offset(y: .isIPhoneSE ? -10 : 0)
-                    }
-                }
                 .onAppear {
                     Task {
                         try? await zenoViewModel.loadUserData()
@@ -130,6 +91,44 @@ struct SelectCommunityVer2: View {
                             dragWidth = 0
                         }
                 )
+            }
+            .overlay {
+                VStack {
+                    Spacer()
+                    VStack {
+                        /// isPlay 상태에 따라 달라짐
+                        switch isPlay {
+                        case .success:
+                            Button {
+                                if let community {
+                                    Task {
+                                        await myFriends = zenoViewModel.IDArrayToUserArrary(idArray: zenoViewModel.getFriendsInComm(comm: community))
+                                        zenoViewModel.path.append(community)
+                                    }
+                                }
+                            } label: {
+                                WideButton2(buttonName: "START", isplay: true)
+                            }
+                        case .lessThanFour:
+                            WideButton2(buttonName: "START", isplay: false)
+                                .disabled(isPlay != .success)
+                        case .notSelected:
+                            Text("그룹을 선택해주세요")
+                                .foregroundColor(.secondary)
+                            WideButton2(buttonName: "START", isplay: false)
+                                .disabled(isPlay != .success)
+                        }
+                    }
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                    .padding(.top, 10)
+                    .frame(width: .screenWidth)
+                    .background {
+                        ZenoBlur(style: .light)
+                            .opacity(0.9)
+                            .edgesIgnoringSafeArea(.bottom)
+                    }
+                    .offset(y: .isIPhoneSE ? -10 : 0)
+                }
             }
             .environmentObject(zenoViewModel)
             .navigationBarBackButtonHidden()
