@@ -61,7 +61,6 @@ struct WideButton2: View {
         .background(isplay ? Color.purple2 : Color(uiColor: .systemGray4))
         .cornerRadius(15)
         .shadow(radius: 1)
-        .padding(.bottom, 20)
     }
 }
 
