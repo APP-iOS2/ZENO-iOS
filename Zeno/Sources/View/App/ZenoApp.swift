@@ -46,7 +46,7 @@ struct ZenoApp: App {
 
                             if commViewModel.currentUser == nil {
                                 // snapshot 연결
-                                commViewModel.login(id: currentUser.id) {
+                                commViewModel.setUserSnapshot(id: currentUser.id) {
                                     Task {
                                         await alarmViewModel.fetchAlarmPagenation(showUserID: currentUser.id)
                                     }

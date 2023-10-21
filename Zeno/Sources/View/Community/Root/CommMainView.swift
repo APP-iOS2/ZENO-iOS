@@ -54,19 +54,42 @@ struct CommMainView: View {
                                 .frame(height: .screenHeight * 0.55)
                             }
                         }
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button {
+                                    print("그룹리스트 버튼 탭")
+                                    commViewModel.isShowingCommListSheet.toggle()
+                                } label: {
+                                    HStack {
+                                        Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
+                                            .foregroundColor(.primary)
+                                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                                        Image(systemName: "chevron.down")
+                                            .font(.system(size: 12))
+                                            .fontWeight(.semibold)
+                                    }
+                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                                    .foregroundColor(.primary)
+                                }
+                            }
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button {
+                                    print("햄버거 버튼 탭")
+                                    isShowingHamburgerView = true
+                                } label: {
+                                    Image(systemName: "line.3.horizontal")
+                                        .font(.system(size: 18))
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
+                                        .padding(.leading)
+                                }
+                            }
+                        }
                     } else {
                         // 가입된 커뮤니티가 없을 때
                         CommEmptyView {
                             commViewModel.isShowingCommListSheet.toggle()
                         }
-                    }
-                }
-                .toolbar {
-                    if commViewModel.currentComm != nil {
-                        // 커뮤니티 선택 버튼
-                        groupNameToolbarItem
-                        // 햄버거 바
-                        hamburgerToolbarItem
                     }
                 }
                 .sheet(isPresented: $commViewModel.isShowingCommListSheet) {
@@ -90,22 +113,9 @@ struct CommMainView: View {
                 comm: commViewModel.currentComm ?? Community.dummy[0]
             )
         )
-//        .onChange(of: commViewModel.allComm) { _ in
-//            commViewModel.joinedComm = commViewModel.allComm.filterJoined(user: commViewModel.currentUser)
-//        }
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
         }
-//        .onChange(of: commViewModel.currentComm) { _ in
-//            Task {
-//                await commViewModel.fetchCurrentCommMembers()
-//            }
-//        }
-//        .onChange(of: commViewModel.currentUser?.commInfoList) { _ in
-//            Task {
-//                await commViewModel.fetchJoinedComm()
-//            }
-//        }
     }
     
     var groupNameToolbarItem: some ToolbarContent {
@@ -164,7 +174,7 @@ struct HomeMainView_Previews: PreviewProvider {
                         switch result {
                         case .success(let user):
                             userViewModel.currentUser = user
-                            commViewModel.updateCurrentUser(user: user)
+                            commViewModel.userListenerHandler(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
                         }
