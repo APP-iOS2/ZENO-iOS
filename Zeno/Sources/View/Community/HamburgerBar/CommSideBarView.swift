@@ -92,9 +92,9 @@ struct CommSideBarView: View {
                             }
                         }
                     }
-                    Button("시뮬레이터용 초대버튼") {
-                        commViewModel.tempShareLink()
-                    }
+//                    Button("시뮬레이터용 초대버튼") {
+//                        commViewModel.tempShareLink()
+//                    }
                 }
                 .foregroundColor(.primary)
                 .font(.regular(14))

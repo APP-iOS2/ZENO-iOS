@@ -194,7 +194,7 @@ struct GroupListView_Previews: PreviewProvider {
                         switch result {
                         case .success(let user):
                             userViewModel.currentUser = user
-                            commViewModel.updateCurrentUser(user: user)
+                            commViewModel.userListenerHandler(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
                         }
