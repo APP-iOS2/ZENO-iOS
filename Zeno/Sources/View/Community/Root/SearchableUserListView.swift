@@ -9,10 +9,13 @@
 import SwiftUI
 
 struct SearchableUserListView: View {
+    @Binding var isShowingUserSearchView: Bool
+    
     @EnvironmentObject private var commViewModel: CommViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
     
-    @Binding var isShowingUserSearchView: Bool
+    @FocusState private var isFocusedKeyboard: Bool
+    
     
     var body: some View {
         VStack {
@@ -40,6 +43,7 @@ struct SearchableUserListView: View {
                         TextField(text: $commViewModel.userSearchTerm) {
                             Text("구성원 찾기...")
                         }
+                        .focused($isFocusedKeyboard)
                     } else {
                         Text("구성원 \(commViewModel.currentCommMembers.count)")
                     }
@@ -47,6 +51,7 @@ struct SearchableUserListView: View {
                     if !commViewModel.currentCommMembers.isEmpty {
                         Button {
                             isShowingUserSearchView.toggle()
+                            isFocusedKeyboard = isShowingUserSearchView
                             commViewModel.userSearchTerm = ""
                         } label: {
                             if isShowingUserSearchView {
