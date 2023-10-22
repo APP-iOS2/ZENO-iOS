@@ -19,7 +19,7 @@ final class ZenoViewModel: ObservableObject {
     @Published var myfriends: [User] = []
 
     private let firebaseManager = FirebaseManager.shared
-    private let coolTime: Int = 15
+    private let coolTime: Int = 600
     
     enum PlayStatus {
         case success
