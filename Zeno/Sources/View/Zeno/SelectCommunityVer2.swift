@@ -89,7 +89,7 @@ struct SelectCommunityVer2: View {
                         }
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .padding(.top, 10)
-                        .padding(.bottom, .isIPhoneSE ? .screenHeight * 0.1049 :  .screenHeight * 0.1268)
+                        .padding(.bottom, .isIPhoneSE ? 69 : 102)
                         .frame(width: .screenWidth)
                         .background {
                             ZenoBlur(style: .light)
