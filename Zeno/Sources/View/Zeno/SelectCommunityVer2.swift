@@ -132,11 +132,9 @@ struct SelectCommunityVer2: View {
                         }
                 )
             }
-            
         }
         .environmentObject(zenoViewModel)
         .navigationBarBackButtonHidden()
-        
     }
     
     func commuityListView() -> some View {
