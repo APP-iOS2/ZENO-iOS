@@ -20,33 +20,41 @@ struct MypageFriendListView: View {
     
     var body: some View {
         VStack {
-            Picker("그룹선택", selection: $selectedGroupID) {
-                Text("전체").tag("all")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
-                    Text(mypageViewModel.commArray[group].name)
+            HStack(alignment: .center) {
+                Text("친구 \(mypageViewModel.friendInfo.count)명")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 20)
+                Spacer()
+                Picker("그룹선택", selection: $selectedGroupID) {
+                    Text("전체").tag("all")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                        .tag(mypageViewModel.commArray[group].id)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .tint(.primary)
-            .onChange(of: selectedGroupID) { newValue in
-                isFetchingData = true
-                self.selectedGroupID = newValue
-                mypageViewModel.friendInfo = []
-                mypageViewModel.allMyPageFriendInfo = []
-                if newValue == "all" {
-                    Task {
-                        await mypageViewModel.getAllFriends()
-                        mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
-                        isFetchingData = false
+                    ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
+                        Text(mypageViewModel.commArray[group].name)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                            .tag(mypageViewModel.commArray[group].id)
                     }
-                } else {
-                    Task {
-                        await mypageViewModel.getAllFriends()
-                        await mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
-                        isFetchingData = false
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .tint(.primary)
+                .onChange(of: selectedGroupID) { newValue in
+                    isFetchingData = true
+                    self.selectedGroupID = newValue
+                    mypageViewModel.friendInfo = []
+                    mypageViewModel.allMyPageFriendInfo = []
+                    if newValue == "all" {
+                        Task {
+                            await mypageViewModel.getAllFriends()
+                            mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+                            isFetchingData = false
+                        }
+                    } else {
+                        Task {
+                            await mypageViewModel.getAllFriends()
+                            await mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                            isFetchingData = false
+                        }
                     }
                 }
             }
@@ -67,11 +75,11 @@ struct MypageFriendListView: View {
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
                 } else {
-                    Text("친구 \(mypageViewModel.friendInfo.count)명")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 20)
+//                    Text("친구 \(mypageViewModel.friendInfo.count)명")
+//                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
+//                        .foregroundColor(.primary)
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding(.leading, 20)
                     ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
                         if let friendInfo = friend {
                             HStack {
