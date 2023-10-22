@@ -32,10 +32,10 @@ struct SelectCommunityVer2: View {
     @State private var firstSelected: Bool = false
     
     var body: some View {
-        if commViewModel.joinedComm.isEmpty {
-            AlarmEmptyView()
-        } else {
-            NavigationStack(path: $zenoViewModel.path) {
+        NavigationStack(path: $zenoViewModel.path) {
+            if commViewModel.joinedComm.isEmpty {
+                AlarmEmptyView()
+            } else {
                 VStack {
                     ScrollViewReader { ScrollViewProxy in
                         ZStack {
@@ -43,12 +43,11 @@ struct SelectCommunityVer2: View {
                                 .offset(y: -20)
                             CardViewVer2(currentIndex: $currentIndex, isPlay: isPlay)
                                 .confettiCannon(counter: $counter, num: 50, confettis: [.text("😈"), .text("💜")], openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: .screenWidth * 0.7)
-                                
                                 .onChange(of: currentIndex) { _ in
                                     withAnimation {
                                         ScrollViewProxy.scrollTo(currentIndex, anchor: .top)
+                                    }
                                 }
-                            }
                         }
                     }
                     .frame(height: .screenHeight * 0.35)
@@ -56,12 +55,11 @@ struct SelectCommunityVer2: View {
                     commuityListView()
                         .padding(.top, 5)
                         .background(.clear)
-//                    CommunityListView2(currentIndex: $currentIndex, selected: $selected, useConfentti: $useConfentti, counter: $counter, isPlay: $isPlay).background(.clear)
+                    //                    CommunityListView2(currentIndex: $currentIndex, selected: $selected, useConfentti: $useConfentti, counter: $counter, isPlay: $isPlay).background(.clear)
                 }
                 .navigationDestination(for: Community.self) { value in
                     ZenoView(zenoList: Array(Zeno.ZenoQuestions.shuffled().prefix(10)), community: value, user: myFriends)
                 }
-                
                 .overlay {
                     VStack {
                         Spacer()
@@ -91,6 +89,7 @@ struct SelectCommunityVer2: View {
                         }
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
                         .padding(.top, 10)
+                        .padding(.bottom, .isIPhoneSE ? .screenHeight * 0.1049 :  .screenHeight * 0.1268)
                         .frame(width: .screenWidth)
                         .background {
                             ZenoBlur(style: .light)
@@ -99,6 +98,8 @@ struct SelectCommunityVer2: View {
                         }
                         .offset(y: .isIPhoneSE ? -10 : 0)
                     }
+                    .edgesIgnoringSafeArea(.vertical)
+                    .frame(height: .screenHeight)
                 }
                 .onAppear {
                     Task {
@@ -131,9 +132,11 @@ struct SelectCommunityVer2: View {
                         }
                 )
             }
-            .environmentObject(zenoViewModel)
-            .navigationBarBackButtonHidden()
+            
         }
+        .environmentObject(zenoViewModel)
+        .navigationBarBackButtonHidden()
+        
     }
     
     func commuityListView() -> some View {
@@ -233,7 +236,7 @@ struct SelectCommunityVer2_Previews: PreviewProvider {
                         switch result {
                         case .success(let user):
                             userViewModel.currentUser = user
-                            commViewModel.updateCurrentUser(user: user)
+                            commViewModel.userListenerHandler(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
                         }

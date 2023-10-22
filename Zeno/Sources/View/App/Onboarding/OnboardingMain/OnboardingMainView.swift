@@ -25,24 +25,25 @@ struct OnboardingMainView: View {
             ZStack {
                 LottieView(lottieFile: "bubbles")
               
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 3) {
                     Spacer()
                     
                     Text("제노는")
-                        .font(.extraBold(40))
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 47))
                         .accessibilityLabel("제노는")
                     Text("익명으로")
-                        .font(.bold(35))
+                        .font(.extraBold(44))
                         .accessibilityLabel("익명으로")
                     Text("마음을 전달하는")
-                        .font(.bold(33))
+                        .font(.extraBold(40))
                         .accessibilityLabel("마음을 전달하는")
                     Text("퀴즈에요")
-                        .font(.extraBold(38))
+                        .font(.extraBold(47))
                         .accessibilityLabel("퀴즈예요")
                         
                     Spacer()
                     Spacer()
+                    
                     LottieView(lottieFile: "beforeZeno")
                         .frame(width: .screenWidth * 0.4, height: .screenHeight * 0.2)
                         .offset(x: -100, y: 70)

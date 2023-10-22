@@ -45,7 +45,7 @@ struct NickNameRegistView: View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
-                .frame(width: 150, alignment: .center)
+                .frame(width: 150, height: 150, alignment: .center)
                 .aspectRatio(contentMode: .fit)
         } else {
             if profileImageURL != KakaoAuthService.shared.noneImageURL {
@@ -57,14 +57,14 @@ struct NickNameRegistView: View {
                     .placeholder {
                         Image(asset: ZenoAsset.Assets.zenoIcon)
                             .resizable()
+                            .aspectRatio(contentMode: .fill)
                     }
-                    .frame(width: 150, alignment: .center)
-                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 150, height: 150, alignment: .center)
             } else {
                 ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                                 ratio: .fill,
                                 isRandom: false)
-                .frame(width: 150, alignment: .center)
+                .frame(width: 150, height: 150, alignment: .center)
             }
         }
     }
@@ -81,7 +81,7 @@ struct NickNameRegistView: View {
                 .tint(.black)
                 
                 Circle()
-                    .frame(width: 150, alignment: .center)
+                    .frame(width: 150, height: 150, alignment: .center)
                     .foregroundColor(.clear)
                     .background(
                         profileImage
@@ -161,7 +161,6 @@ struct NickNameRegistView: View {
                                 .font(.thin(14))
                             Text(Gender.male.toString)
                                 .font(.regular(14))
-                            
                         }
                     }
                     .tint(.primary)
@@ -299,6 +298,7 @@ struct NickNameRegistView: View {
             )
             .overlay(
                 OnboardingMainView()
+                    .offset(x: -8) // MARK: 10/22 임시
                     .opacity(nextNavigation ? 1.0 : 0.0)
             )
             .sheet(isPresented: $isConfirmSheet, content: {
@@ -311,6 +311,7 @@ struct NickNameRegistView: View {
                             .font(.footnote)
                             .foregroundStyle(Color.red)
                     }
+                    .padding(.horizontal, 25)
                     .padding(.top, 30)
                     
                     VStack(alignment: .leading, spacing: 10) {
@@ -319,10 +320,9 @@ struct NickNameRegistView: View {
                     }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
                     .padding(.bottom, 20)
-                    
+                    .padding(.horizontal, 25)
                     Spacer().frame(height: 30)
                 }
-                .padding(.horizontal, 25)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title2)
                 .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
