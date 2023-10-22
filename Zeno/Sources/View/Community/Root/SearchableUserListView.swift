@@ -51,7 +51,6 @@ struct SearchableUserListView: View {
                     if !commViewModel.currentCommMembers.isEmpty {
                         Button {
                             isShowingUserSearchView.toggle()
-                            isFocusedKeyboard = isShowingUserSearchView
                             commViewModel.userSearchTerm = ""
                         } label: {
                             if isShowingUserSearchView {
@@ -66,6 +65,9 @@ struct SearchableUserListView: View {
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 12))
                 .foregroundColor(.primary)
             }
+        }
+        .onChange(of: isShowingUserSearchView) { newValue in
+            isFocusedKeyboard = newValue
         }
     }
 }
