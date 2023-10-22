@@ -583,7 +583,7 @@ class CommViewModel: ObservableObject {
                 PushNotificationManager.shared.sendPushNotification(
                     toFCMToken: success.fcmToken,
                     title: "\(deepLinkTargetComm.name)",
-                    body: "\(currentUser.name) 님이 그룹에 가입신청했어요!"
+                    body: "\(currentUser.name) 님이 \(deepLinkTargetComm.name) 그룹에 가입신청했어요!"
                 )
             case .failure:
                 print(#function + "가입신청시 매니저 정보 불러오기 실패")
@@ -686,7 +686,7 @@ class CommViewModel: ObservableObject {
                 PushNotificationManager.shared.sendPushNotification(
                     toFCMToken: success.fcmToken,
                     title: "\(deepLinkTargetComm.name)",
-                    body: "\(currentUser.name)님이 그룹에 링크로 가입했어요!"
+                    body: "\(currentUser.name) 님이 \(deepLinkTargetComm.name) 그룹에 링크로 가입했어요!"
                 )
             case .failure:
                 print(#function + "딥링크 가입시 매니저 정보 불러오기 실패")
