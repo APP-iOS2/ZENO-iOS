@@ -603,8 +603,8 @@ class CommViewModel: ObservableObject {
             case .success(let success):
                 PushNotificationManager.shared.sendPushNotification(
                     toFCMToken: success.fcmToken,
-                    title: "\(deepLinkTargetComm.name)",
-                    body: "\(currentUser.name) 님이 \(deepLinkTargetComm.name) 그룹에 가입신청했어요!"
+                    title: "\(comm.name)",
+                    body: "\(currentUser.name) 님이 \(comm.name) 그룹에 가입신청했어요!"
                 )
             case .failure:
                 print(#function + "가입신청시 매니저 정보 불러오기 실패")
@@ -696,7 +696,6 @@ class CommViewModel: ObservableObject {
                 // 로그인된 유저에 커뮤니티 정보 추가
                 try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: currentUser.commInfoList + [.init(id: deepLinkTargetComm.id)])
                 setCurrentID(id: deepLinkTargetComm.id)
-                deepLinkTargetComm = .emptyComm
             } catch {
                 print(#function + "딥링크 가입시 유저의 commInfoList 업데이트 실패")
             }
@@ -709,6 +708,7 @@ class CommViewModel: ObservableObject {
                     title: "\(deepLinkTargetComm.name)",
                     body: "\(currentUser.name) 님이 \(deepLinkTargetComm.name) 그룹에 링크로 가입했어요!"
                 )
+                deepLinkTargetComm = .emptyComm
             case .failure:
                 print(#function + "딥링크 가입시 매니저 정보 불러오기 실패")
             }
