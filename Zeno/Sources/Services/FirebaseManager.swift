@@ -115,14 +115,16 @@ final class FirebaseManager {
         case false:
             values = ids
         }
-        let query = collectionRef.whereField(whereField, in: values)
-        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
-        for item in snapshot.documents {
-            do {
-                let result = try item.data(as: T.self)
-                results.append(.success(result))
-            } catch {
-                results.append(.failure(FirebaseError.documentToData))
+        for piece in values.slice(maxCount: 30) {
+            let query = collectionRef.whereField(whereField, in: piece)
+            guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+            for item in snapshot.documents {
+                do {
+                    let result = try item.data(as: T.self)
+                    results.append(.success(result))
+                } catch {
+                    results.append(.failure(FirebaseError.documentToData))
+                }
             }
         }
         return results
