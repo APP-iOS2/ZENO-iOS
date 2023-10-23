@@ -13,17 +13,6 @@ protocol FirebaseAvailable {
 }
 
 extension FirebaseAvailable {
-    func getPropertyName<T: FirebaseAvailable, U>(_ keyPath: KeyPath<T, U>) -> String {
-        guard let propertyName = "\(keyPath.debugDescription)".split(separator: ".").last
-        else {
-            #if DEBUG
-            print(#function + ": fail to optional bind")
-            #endif
-            return ""
-        }
-        return String(propertyName)
-    }
-    
     func mirrorToDic() -> [String: Any] {
         let mirror = Mirror(reflecting: self)
         var dictionary = [String: Any]()
