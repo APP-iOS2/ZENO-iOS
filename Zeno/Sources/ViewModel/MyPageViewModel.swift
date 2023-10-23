@@ -43,7 +43,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// zenoString에 따른 이미지를 받을 데이터
     @Published var zenoStringImage: [String] = []
     
-    @Published var isCommunityManagerAlert: Bool = false
     @Published var isUserDataDeleteFailAlert: Bool = false
     /// 이미지 탭 Bool
     @Published var isTappedImage: Bool = false
@@ -297,12 +296,6 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
             }
             return true
             
-        case .communityExists:
-            // 커뮤니티 alert 열기 (그룹장으로 존재하는 그룹이 존재합니다. 그룹탭에서 처리바랍니다.( 그룹탭가는길 상세히 알려주기 )
-            print(#function, "👀 \(removeResult.toString())")
-            self.isCommunityManagerAlert = true
-            return false
-            
         default:
             // 일반 alert 열기 ( 회원탈퇴시 오류가 발생하였습니다. 앱을 종료 후 재시도바랍니다. )
             self.isUserDataDeleteFailAlert = true
@@ -481,19 +474,19 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         func toString() -> String {
             switch self {
             case .communityExists:
-                return "커뮤니티의 매니저로 존재함."
+                return "매니저로 존재하는 그룹이 존재합니다. 그룹탭으로 이동하여 확인 후 매니저를 위임하시거나, 그룹을 삭제하신 후 재시도바랍니다."
             case .alarmDataExists:
-                return "알람데이터가 전부다 지워지지않음."
+                return "알람데이터가 전부 다 지워지지않았습니다."
             case .commDataExists:
                 return "커뮤니티 업데이트 오류"
             case .dataDeleteComplete:
                 return "데이터 삭제완료"
             case .userDataDelError:
-                return "유저BuddyList업데이트 오류"
+                return "유저BuddyList업데이트 오류\n앱 종료 후 재시작하여 다시 시도바랍니다."
             case .batchCommitError:
-                return "batch 서버전송 오류"
+                return "batch 서버전송 오류\n개발자 문의 바랍니다."
             case .batchCountOver:
-                return "batch 갯수 500개 초과"
+                return "batch 갯수 500개 초과\n개발자 문의 바랍니다."
             }
         }
     }

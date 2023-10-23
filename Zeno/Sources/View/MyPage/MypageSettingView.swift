@@ -42,7 +42,7 @@ struct MypageSettingView: View {
                     HStack {
                         Text("로그아웃")
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Image(systemName: "chevron.right")
+//                        Image(systemName: "chevron.right")
                     }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
                     .padding()
@@ -56,13 +56,15 @@ struct MypageSettingView: View {
                     Text("회원탈퇴")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundStyle(Color.red)
-                    Image(systemName: "chevron.right")
+//                    Image(systemName: "chevron.right")
                 }
                 .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14))
                 .padding(.horizontal)
                 .padding(.top, 10)
             }
             .foregroundColor(.primary)
+            .zenoWarning(MypageViewModel.RemoveFailReason.communityExists.toString(),
+                         isPresented: $mypageVM.isUserDataDeleteFailAlert)
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("확인"),
