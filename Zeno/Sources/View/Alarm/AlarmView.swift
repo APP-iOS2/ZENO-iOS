@@ -273,7 +273,7 @@ struct AlarmView: View {
             }
             alarmViewModel.isPagenationLast = false
         }
-        // 효명님 이거 안주셔도 되요.. !! ㅜㅠ
+        // 이부분 콜백함수 추가해서 해결했습니당
 //        .task {
 //            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
 //                alarmViewModel.isFetchComplete = true
