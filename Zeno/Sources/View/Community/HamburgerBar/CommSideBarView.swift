@@ -119,7 +119,7 @@ struct CommSideBarView: View {
                             }
                         case .alert:
                             Task {
-                                await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
+                                await commViewModel.commAlertToggle()
                             }
                         case .setting:
                             isPresented = false
