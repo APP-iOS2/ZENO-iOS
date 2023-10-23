@@ -90,9 +90,10 @@ struct MypageFriendListView: View {
                                             ProgressView()
                                         }
                                         .resizable()
+                                        .scaledToFit()
+                                        .clipShape(Circle())
                                         .scaledToFill()
                                         .frame(width: 70, height: 70)
-                                        .clipShape(Circle())
                                         .padding(8)
                                 } else {
                                     ZenoKFImageView(User(name: "", gender: friendInfo.gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []), ratio: .fit, isRandom: false)
