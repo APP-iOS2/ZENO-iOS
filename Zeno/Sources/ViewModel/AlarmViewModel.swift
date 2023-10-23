@@ -111,6 +111,7 @@ class AlarmViewModel: ObservableObject {
         var alarmRef = Firestore.firestore().collection("Alarm")
             .whereField("showUserID", isEqualTo: showUserID)
             .whereField("createdAt", isGreaterThan: self.alarmArray.first?.createdAt ?? 0)
+            .order(by: "createdAt", descending: true)
             
         if let communityID {
             alarmRef = alarmRef.whereField("communityID", isEqualTo: communityID)
