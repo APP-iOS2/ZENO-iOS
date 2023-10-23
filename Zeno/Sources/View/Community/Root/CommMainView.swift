@@ -54,6 +54,7 @@ struct CommMainView: View {
                                 .frame(height: .screenHeight * 0.55)
                             }
                         }
+                        .scrollDismissesKeyboard(.immediately)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 Button {
@@ -106,6 +107,7 @@ struct CommMainView: View {
                     .tint(.mainColor)
             }
         }
+        .hideKeyboardOnTap()
         .tint(.ggullungColor)
         .overlay(
             CommSideMenuView(
@@ -115,6 +117,9 @@ struct CommMainView: View {
         )
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
+        }
+        .onChange(of: commViewModel.currentComm) { newValue in
+            isShowingUserSearchView = false
         }
     }
     

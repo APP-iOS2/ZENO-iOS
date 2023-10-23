@@ -92,9 +92,9 @@ struct CommSideBarView: View {
                             }
                         }
                     }
-                    Button("시뮬레이터용 초대버튼") {
-                        commViewModel.tempShareLink()
-                    }
+//                    Button("시뮬레이터용 초대버튼") {
+//                        commViewModel.tempShareLink()
+//                    }
                 }
                 .foregroundColor(.primary)
                 .font(.regular(14))
@@ -119,7 +119,7 @@ struct CommSideBarView: View {
                             }
                         case .alert:
                             Task {
-                                await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
+                                await commViewModel.commAlertToggle()
                             }
                         case .setting:
                             isPresented = false
@@ -163,7 +163,6 @@ struct CommSideBarView: View {
         .alert("그룹에서 나가시겠습니까?", isPresented: $isLeaveCommAlert) {
             Button("예", role: .destructive) {
                 Task {
-                    guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
                     isPresented = false
                 }

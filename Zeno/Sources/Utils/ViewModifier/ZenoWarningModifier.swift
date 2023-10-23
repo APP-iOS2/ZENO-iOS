@@ -68,7 +68,7 @@ struct ZenoWarningView: View {
         .multilineTextAlignment(.center)
         .padding(.horizontal, 24)
         .padding(.vertical, 22)
-        .frame(width: 300)
+        .frame(width: .screenWidth * 0.8)
         .background(
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.mainColor)

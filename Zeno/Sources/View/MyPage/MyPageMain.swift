@@ -64,16 +64,12 @@ struct MyPageMain: View {
                                 .cacheOriginalImage()
                                 .placeholder {
                                     Image(asset: ZenoAsset.Assets.zenoIcon)
-                                        .resizable()
-                                        .frame(width: 120, height: 120)
-                                        .aspectRatio(contentMode: .fit)
+                                        .modifier(MypageImageModifier())
                                 }
                                 .resizable()
-                                .frame(width: 120, height: 120)
-                                .aspectRatio(contentMode: .fit)
-                                .clipShape(Circle())
+                                .modifier(MypageImageModifier())
                                 .overlay {
-                                    Circle().stroke(Color(uiColor: .systemGray5), lineWidth: 1)
+                                    Circle().stroke(Color(uiColor: .systemGray3), lineWidth: 1)
                                 }
                                 .padding(.leading, 18)
                         } else {
@@ -151,4 +147,15 @@ struct MyPageMain_Previews: PreviewProvider {
                 .environmentObject(MypageViewModel()) // MypageViewModel 환경 객체 제공
         }
     }
+}
+
+struct MypageImageModifier: ViewModifier {
+      
+    func body(content: Content) -> some View {
+          content
+            .scaledToFit()
+            .frame(width: 120, height: 120)
+            .aspectRatio(contentMode: .fit)
+    }
+      
 }
