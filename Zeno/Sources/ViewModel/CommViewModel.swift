@@ -150,6 +150,27 @@ class CommViewModel: ObservableObject {
             completion()
         }
     }
+    
+    @MainActor
+    func commAlertToggle() async {
+        guard var currentUser,
+              let id = currentComm?.id
+        else { return }
+        guard var currentCommInfo = currentUser.commInfoList
+            .filter({ $0.id == id })
+            .first else { return }
+        currentCommInfo.alert.toggle()
+        guard let index = currentUser.commInfoList
+            .firstIndex(where: { $0.id == currentCommInfo.id }) else { return }
+        currentUser.commInfoList[index] = currentCommInfo
+        do {
+            try await firebaseManager.create(data: currentUser)
+            self.currentUser = currentUser
+        } catch {
+            print(#function + "User Collection에 알람 업데이트 실패")
+        }
+    }
+    
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
 	@MainActor
     func isFriend(user: User) -> Bool {
