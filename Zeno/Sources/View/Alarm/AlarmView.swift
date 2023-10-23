@@ -71,15 +71,8 @@ struct AlarmView: View {
                                 }
                                 .shadow(color: .primary.opacity(colorScheme == .light ? 0.1 : 0.3), radius: 2, y: 2)
                                 if filterAlarmByCommunity.isEmpty {
-//                                    Spacer()
-//                                        .frame(width: .screenWidth, height: .screenHeight * 0.9)
-                                    if alarmViewModel.isLoading {
-                                        ProgressView()
-                                            .padding(.top, 250)
-                                    } else {
-                                        AlarmListEmptyView()
-                                            .padding(.top, 150)
-                                    }
+                                    Spacer()
+                                        .frame(width: .screenWidth, height: .screenHeight * 0.9)
                                 } else {
                                     VStack {
                                         Spacer()
@@ -119,10 +112,6 @@ struct AlarmView: View {
                                                     AlarmChangingView(selectAlarm: selectAlarm)
                                                 }
                                             }
-                                            if alarmViewModel.isLoading {
-                                                ProgressView()
-                                            }
-                                            Spacer(minLength: 80)
                                         }
                                         Spacer()
                                     }
@@ -134,17 +123,20 @@ struct AlarmView: View {
                                                 .screenHeight - 60 - topSafeArea - 10 - (.screenHeight * 0.035)
                                     )
                                     .zIndex(-99)
+                                    if alarmViewModel.isLoading {
+                                        ProgressView()
+                                    }
                                 }
                             }
                         }
-//                        .background {
-//                            if filterAlarmByCommunity.isEmpty {
-//                                VStack(alignment: .center) {
-//                                    AlarmListEmptyView()
-//                                        .offset(y: -.screenHeight * 0.05)
-//                                }
-//                            }
-//                        }
+                        .background {
+                            if filterAlarmByCommunity.isEmpty {
+                                VStack(alignment: .center) {
+                                    AlarmListEmptyView()
+                                        .offset(y: -.screenHeight * 0.05)
+                                }
+                            }
+                        }
                         .refreshable {
                             if let currentUser = userViewModel.currentUser {
                                 Task {
