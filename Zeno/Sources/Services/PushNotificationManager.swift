@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Firebase
 
 final class PushNotificationManager {
     // Singleton 인스턴스
