@@ -9,7 +9,7 @@
 import Foundation
 import UserNotifications
 
-class NotificationObserver: ObservableObject {
+final class NotificationObserver: ObservableObject {
     static let shared: NotificationObserver = NotificationObserver()
 
     @Published var newMessageID: String = ""

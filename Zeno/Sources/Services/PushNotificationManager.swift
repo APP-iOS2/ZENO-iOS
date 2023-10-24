@@ -9,7 +9,7 @@
 import Foundation
 import Firebase
 
-class PushNotificationManager {
+final class PushNotificationManager {
     // Singleton 인스턴스
     static let shared = PushNotificationManager()
     

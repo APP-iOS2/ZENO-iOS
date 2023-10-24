@@ -8,6 +8,6 @@
 
 import Foundation
 
-class TabBarViewModel: ObservableObject {
+final class TabBarViewModel: ObservableObject {
     @Published var selected: MainTab = .alert
 }

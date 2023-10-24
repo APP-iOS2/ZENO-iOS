@@ -17,14 +17,12 @@ extension Array {
     func slice(maxCount: Int) -> [Self] {
         var currentIndex = 0
         var result: [[Element]] = []
-        
         while currentIndex < self.count {
             let endIndex = Swift.min(currentIndex + maxCount, self.count)
-            let chunk = Array(self[currentIndex..<endIndex])
-            result.append(chunk)
+            let piece = Array(self[currentIndex..<endIndex])
+            result.append(piece)
             currentIndex += maxCount
         }
-        
         return result
     }
 }
