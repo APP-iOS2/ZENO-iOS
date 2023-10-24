@@ -302,9 +302,9 @@ final class FirebaseManager {
             let dataType = try JSONEncoder().encode(to)
             do {
                 let any = try JSONSerialization.jsonObject(with: dataType)
-                batch.updateData([data.getPropertyName(keyPath): any], forDocument: documentRef)
+                batch.updateData([keyPath.toString: any], forDocument: documentRef)
             } catch {
-                batch.updateData([data.getPropertyName(keyPath): to], forDocument: documentRef)
+                batch.updateData([keyPath.toString: to], forDocument: documentRef)
             }
         } catch {
             return false

@@ -87,66 +87,13 @@ struct NickNameRegistView: View {
                             .onTapGesture {
                                 isImagePicker.toggle()
                             }
-                HStack {
-                    Spacer()
-                    Text("필수")
-                        .font(.thin(10))
-                        .foregroundColor(.red)
-                        .padding(.trailing)
-                        .offset(y: 5)
-                }
-                RegistCustomTF(titleText: "이름",
-                               placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
-                               customText: $nameText,
-                               isNotHanguel: $isChecking,
-                               textMaxCount: 5,
-                               isFocusing: true)
-                .font(.regular(16))
-
-                Text(checkingText)
-                    .foregroundStyle(Color.red.opacity(0.9))
-                    .font(.caption)
-                    .padding(.horizontal)
-                    .opacity(isChecking ? 1.0 : 0.0)
-              
-                HStack {
-                    Text("성별")
-                        .frame(width: 60, alignment: .leading)
-                        .font(.regular(16))
-                    
-                    // 여자 버튼
-                    Button {
-                        female.toggle()
-                        if male {
-                            male.toggle()
-                        }
-                        gender = Gender.female
-                        print(gender)
-                    } label: {
-                        HStack(spacing: 3) {
-                            Image(systemName: female ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(.mainColor)
-                                .font(.thin(14))
-                            Text(Gender.female.toString)
-                                .font(.regular(14))
-                        }
-                    }
-                    
-                    // 남자 버튼
-                    Button {
-                        male.toggle()
-                        gender = Gender.male
-                        if female {
-                            female.toggle()
-                        }
-                        print(gender)
-                    } label: {
-                        HStack(spacing: 3) {
-                            Image(systemName: male ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(.mainColor)
-                                .font(.thin(14))
-                            Text(Gender.male.toString)
-                                .font(.regular(14))
+                        HStack {
+                            Spacer()
+                            Text("필수")
+                                .font(.thin(10))
+                                .foregroundColor(.red)
+                                .padding(.trailing)
+                                .offset(y: 5)
                         }
                         RegistCustomTF(titleText: "이름",
                                        placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
@@ -181,6 +128,7 @@ struct NickNameRegistView: View {
                                         .foregroundColor(.mainColor)
                                         .font(.thin(14))
                                     Text(Gender.female.toString)
+                                        .foregroundStyle(Color.primary)
                                         .font(.regular(14))
                                 }
                             }
@@ -199,18 +147,12 @@ struct NickNameRegistView: View {
                                         .foregroundColor(.mainColor)
                                         .font(.thin(14))
                                     Text(Gender.male.toString)
+                                        .foregroundStyle(Color.primary)
                                         .font(.regular(14))
                                 }
                             }
-                            .tint(.primary)
-                            Spacer()
-                            Text("필수")
-                                .font(.thin(10))
-                                .foregroundColor(.red)
                         }
-                        .foregroundColor(.primary)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
-                        .padding()
+                        .padding(.horizontal)
                         
                         RegistCustomTF(titleText: "한줄소개",
                                        placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
@@ -419,6 +361,7 @@ struct NickNameRegistView: View {
                 UIScrollView.appearance().bounces = true
             }
         }
+        
     }
     
     /// 유저정보 가져와서 세팅.
@@ -464,7 +407,7 @@ struct NickNameRegistView: View {
     private func rowView(_ label: String) -> some View {
         HStack {
             Text(label)
-//            Spacer()
+            //            Spacer()
             Image(systemName: "chevron.right")
                 .foregroundColor(.mainColor)
         }
