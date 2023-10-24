@@ -183,7 +183,7 @@ final class CommViewModel: ObservableObject {
     }
     /// currentUser의 정보를 업데이트 하는 함수
     private func updateCurrentUser(user: User) {
-        guard let currentUser else { return }
+        guard let currentUser else { return     }
         guard user.commInfoList.map({ $0.id }) == currentUser.commInfoList.map({ $0.id }) else {
             Task {
                 await MainActor.run {
@@ -905,16 +905,13 @@ final class CommViewModel: ObservableObject {
         var alarms: [Alarm] = []
         let results = await firebaseManager.readDocumentsWithValues(type: Alarm.self, keyPath1: \.communityID, value1: currentComm.id, keyPath2: \.showUserID, value2: currentUser.id)
         alarms.append(contentsOf: results)
-        print(alarms.map({ $0.zenoString }))
-        print(alarms.map({ $0.showUserID }))
-        print(alarms.map({ $0.communityID }))
-//        await alarms.asyncForEach {
-//            do {
-//                try await self.firebaseManager.delete(data: $0)
-//            } catch {
-//
-//            }
-//        }
+        await alarms.asyncForEach {
+            do {
+                try await self.firebaseManager.delete(data: $0)
+            } catch {
+                print(#function + "\($0) 지우기 실패")
+            }
+        }
     }
     
     // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ

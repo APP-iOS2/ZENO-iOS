@@ -380,14 +380,6 @@ final class FirebaseManager {
                 .whereField(keyPath1.toString, isEqualTo: value1)
                 .whereField(keyPath2.toString, isEqualTo: value2)
                 .getDocuments()
-//                .whereFilter(
-//                    .andFilter([
-//                        // 커뮤니티 아이디 == 알람의 COMMID
-//                        .whereField(keyPath1.toString, isEqualTo: value1),
-//                        // 유저 아이디 == 알람의 showID
-//                        .whereField(keyPath2.toString, isEqualTo: value2)
-//                    ])
-//                )
             return snapshot.documents.compactMap { try? $0.data(as: T.self) }
         } catch {
             return []
