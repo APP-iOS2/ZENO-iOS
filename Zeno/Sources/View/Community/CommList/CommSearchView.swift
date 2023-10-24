@@ -91,7 +91,8 @@ extension CommSearchView {
 					duplicationState = .checking
 					debouncer.run {
 						commViewModel.commSearchTerm = currentViewSerachTerm
-                        commViewModel.searchComm {
+                        Task {
+                            await commViewModel.searchComm()
                             duplicationState = .done
                         }
 					}

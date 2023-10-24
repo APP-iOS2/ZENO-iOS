@@ -15,7 +15,7 @@ struct NewUserListView: View {
     @Binding var isShowingDetailNewBuddyToggle: Bool
     
     var body: some View {
-        VStack {
+        LazyVStack {
             Section {
                 if isShowingDetailNewBuddyToggle && !commViewModel.recentlyJoinedMembers.isEmpty {
                     ScrollView(.horizontal) {

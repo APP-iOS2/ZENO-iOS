@@ -179,7 +179,6 @@ final class AlarmViewModel: ObservableObject {
         do {
             let querySnapShot = try await alarmRef.getDocuments()
             self.alarmArray.removeAll()
-            
             // 하나의 형태를 temp로 받아서 반복문을 통해 전체를 받아옴, removeAll을 통해 전체를 지우고 다시 받아오는 것.
             try querySnapShot.documents.forEach { queryDocumentSnapshot in
                 let tempAlarm = try queryDocumentSnapshot.data(as: Alarm.self)

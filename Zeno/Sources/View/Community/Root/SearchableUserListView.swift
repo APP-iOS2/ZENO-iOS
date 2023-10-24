@@ -18,7 +18,7 @@ struct SearchableUserListView: View {
     
     
     var body: some View {
-        VStack {
+        LazyVStack {
             Section {
                 ForEach(isShowingUserSearchView ?
                         commViewModel.searchedUsers :
