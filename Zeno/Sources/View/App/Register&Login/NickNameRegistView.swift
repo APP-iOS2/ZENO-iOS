@@ -45,26 +45,19 @@ struct NickNameRegistView: View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
-                .frame(width: 150, height: 150, alignment: .center)
-                .aspectRatio(contentMode: .fit)
         } else {
             if profileImageURL != KakaoAuthService.shared.noneImageURL {
-                //                ZenoKFImageView(userVM.currentUser ?? .emptyUser)
-                //                    .frame(width: 150, alignment: .center)
                 KFImage(URL(string: profileImageURL))
                     .cacheOriginalImage()
                     .resizable()
                     .placeholder {
                         Image(asset: ZenoAsset.Assets.zenoIcon)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
                     }
-                    .frame(width: 150, height: 150, alignment: .center)
             } else {
                 ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
-                                ratio: .fill,
+                                ratio: .fit,
                                 isRandom: false)
-                .frame(width: 150, height: 150, alignment: .center)
             }
         }
     }
@@ -82,17 +75,8 @@ struct NickNameRegistView: View {
                 
                 ScrollView(.vertical) {
                     VStack(alignment: .leading, spacing: 0) {
-                        Circle()
-                            .frame(width: 150, height: 150, alignment: .center)
-                            .foregroundColor(.clear)
-                            .background(
-                                profileImage
-                                    .clipShape(Circle())
-                            )
-                            .background {
-                                Circle()
-                                    .stroke(.gray.opacity(5.0))
-                            }
+                        profileImage
+                            .imageCustomSizing()
                             .overlay(alignment: .bottomTrailing) {
                                 Image(systemName: "camera.circle.fill")
                                     .foregroundStyle(Color.gray)

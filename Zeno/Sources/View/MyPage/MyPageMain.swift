@@ -67,13 +67,13 @@ struct MyPageMain: View {
                                         .modifier(MypageImageModifier())
                                 }
                                 .resizable()
-                                .modifier(MypageImageModifier())
+                                .imageCustomSizing()
                                 .padding(.leading, 18)
                         } else {
                             ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                                             ratio: .fit,
                                             isRandom: false)
-                            .modifier(MypageImageModifier())
+                            .imageCustomSizing()
                             .padding(.leading, 18)
                         }
                         /// 유저 재화 정보 뷰
@@ -141,19 +141,5 @@ struct MyPageMain_Previews: PreviewProvider {
             MyPageMain()
                 .environmentObject(MypageViewModel()) // MypageViewModel 환경 객체 제공
         }
-    }
-}
-
-struct MypageImageModifier: ViewModifier {
-    func body(content: Content) -> some View {
-          content
-            .scaledToFit()
-            .clipShape(Circle())
-            .scaledToFill()
-            .frame(width: 120, height: 120)
-            .aspectRatio(contentMode: .fit)
-            .overlay {
-                Circle().stroke(Color(uiColor: .systemGray3), lineWidth: 1)
-            }
     }
 }

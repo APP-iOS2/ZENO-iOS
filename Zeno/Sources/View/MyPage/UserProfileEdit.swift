@@ -28,10 +28,6 @@ struct UserProfileEdit: View {
         if let img = selectedImage {
             Image(uiImage: img)
                 .resizable()
-                .scaledToFit()
-                .clipShape(Circle())
-                .scaledToFill()
-                .frame(width: 150, height: 150)
         } else {
             if profileImageURL != KakaoAuthService.shared.noneImageURL {
                 KFImage(URL(string: profileImageURL))
@@ -41,15 +37,10 @@ struct UserProfileEdit: View {
                         Image(asset: ZenoAsset.Assets.zenoIcon)
                             .resizable()
                     }
-                    .scaledToFit()
-                    .clipShape(Circle())
-                    .scaledToFill()
-                    .frame(width: 150, height: 150)
             } else {
                 ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                                 ratio: .fit,
                 isRandom: false)
-                .frame(width: 150, alignment: .center)
             }
         }
     }
@@ -57,6 +48,7 @@ struct UserProfileEdit: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             profileImage
+                .imageCustomSizing()
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: "camera.circle.fill")
                         .foregroundStyle(Color.gray)

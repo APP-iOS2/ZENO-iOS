@@ -28,7 +28,7 @@ import FirebaseFirestoreSwift
  */
 
 // TODO: 추방당하면 그룹 안보이게해야함
-class CommViewModel: ObservableObject {
+final class CommViewModel: ObservableObject {
     private let firebaseManager = FirebaseManager.shared
     private let commRepo = CommRepository.shared
     private var userListener: ListenerRegistration?

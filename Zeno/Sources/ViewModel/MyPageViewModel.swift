@@ -138,15 +138,15 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     }
 
     /// 파베유저정보 Fetch
-    func fetchUser(withUid uid: String) async throws -> User {
-        let result = await firebaseManager.read(type: User.self, id: uid)
-        switch result {
-        case .success(let success):
-            return success
-        case .failure(let error):
-            throw error
-        }
-    }
+//    func fetchUser(withUid uid: String) async throws -> User {
+//        let result = await firebaseManager.read(type: User.self, id: uid)
+//        switch result {
+//        case .success(let success):
+//            return success
+//        case .failure(let error):
+//            throw error
+//        }
+//    }
     
     /// 피커에서 선택한 그룹의 id와 유저가 가지고 있는 commInfo의 id 중 일치하는 그룹을 찾아서 해당 그룹의 buddyList(id)를 반환하는 함수
     func returnBuddyList(selectedGroupID: String) -> [User.ID] {

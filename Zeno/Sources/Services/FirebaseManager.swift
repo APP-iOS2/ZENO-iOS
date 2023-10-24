@@ -240,7 +240,7 @@ final class FirebaseManager {
         (파베서버로 보낸다는건 예상 -> 현기기 오프라인상태에서도 작업이 이루어진다는것을 바탕으로 예상.)
      --------------------------------------------------------------------------------------*/
     
-    // TODO: 23.10.22 데이터 삭제랑은 잘 작동하는 듯한데 batchWorkItemCnt의 값이 증가하지 않고 있음.
+    // TODO: 23.10.22 데이터 삭제랑은 잘 작동하는 듯한데 batchWorkItemCnt의 값이 증가하지 않고 있음. 싱글톤이라고 하나의 데이터를 공유하는게 아닌가..?
     
     /// batch 작업갯수 제한용 카운트 프로퍼티
     private var batchWorkItemCnt: Int = 0
@@ -297,7 +297,7 @@ final class FirebaseManager {
         return true
     }
     
-    /// batch용 setData메서드 -> 모든 data 객체는 id값을 지닌다는 가정.
+    /// batch용 setData메서드 -> 모든 data 객체는 id값을 지닌다는 가정.  23.10.24 기준 미완성. (잘 안쓰여서 좀 미뤘음)
     func setDataInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) -> Bool where T: Encodable {
         let documentID = data.id
         guard !documentID.isEmpty else {
@@ -308,7 +308,7 @@ final class FirebaseManager {
         let documentRef = db.collection("\(type(of: data))").document(documentID)
         
         do {
-            let dataType = try JSONEncoder().encode(data)
+            _ = try JSONEncoder().encode(data)
             batch.setData(["": ""], forDocument: documentRef)
         } catch {
             return false
