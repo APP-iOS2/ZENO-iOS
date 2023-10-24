@@ -474,7 +474,7 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         func toString() -> String {
             switch self {
             case .communityExists:
-                return "매니저로 존재하는 그룹이 존재합니다. 그룹탭으로 이동하여 확인 후 매니저를 위임하시거나, 그룹을 삭제하신 후 재시도바랍니다."
+                return "매니저로 있는 그룹이 존재합니다. 그룹탭으로 이동하여 확인 후 매니저를 위임하시거나, 그룹을 삭제하신 후 재시도바랍니다."
             case .alarmDataExists:
                 return "알람데이터가 전부 다 지워지지않았습니다."
             case .commDataExists:
