@@ -35,7 +35,6 @@ final class CommViewModel: ObservableObject {
     private var commListener: ListenerRegistration?
     /// 앱 시작을 딥링크로 할 때 유저 정보를 받아온 뒤 딥링크를 처리하기 위한 클로저
     var deepLinkHandler: () -> Void = { }
-    
     /// App단에서 UserViewModel.currentUser가 변경될 때 CommViewModel.currentUser를 받아오는 함수로 유저 정보를 공유함
     @Published private(set) var currentUser: User?
     /// 마지막으로 선택한 커뮤니티의 ID를 UserDefaults에 저장
@@ -110,8 +109,11 @@ final class CommViewModel: ObservableObject {
     @Published var isJoinWithDeeplinkView: Bool = false
     /// 딥링크 수신: 해당하는 커뮤니티가 존재하지 않을 때 알림을 보여주는 Bool
     @Published var isDeepLinkExpired: Bool = false
+    /// 커뮤니티 검색화면을 띄워주기 위한 Bool
     @Published var isShowingSearchCommSheet: Bool = false
+    /// 가입된 커뮤니티를 띄워주기 위한 Bool
     @Published var isShowingCommListSheet: Bool = false
+    /// 데이터 로딩상태에 따라 CommMainView의 ProgressView를 보여주는 여부
     @Published var isFetchComplete: Bool = false
     
     init() {
@@ -164,7 +166,7 @@ final class CommViewModel: ObservableObject {
             completion()
         }
     }
-    
+    /// 커뮤니티별 알람정보를 변경해주는 함수
     @MainActor
     func commAlertToggle() async {
         guard var currentUser,
@@ -184,7 +186,6 @@ final class CommViewModel: ObservableObject {
             print(#function + "User Collection에 알람 업데이트 실패")
         }
     }
-    
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
 	@MainActor
     func isFriend(user: User) -> Bool {
@@ -203,7 +204,7 @@ final class CommViewModel: ObservableObject {
             forAlarmFunc()
         }
     }
-    
+    /// currentUser의 정보를 업데이트 하는 함수
     private func updateCurrentUser(user: User) {
         guard let currentUser else { return }
         guard user.commInfoList.map({ $0.id }) == currentUser.commInfoList.map({ $0.id }) else {
@@ -228,7 +229,7 @@ final class CommViewModel: ObservableObject {
         }
         self.currentUser = user
     }
-    
+    /// userListener의 업데이트가 첫번째 로그인인지 정보 변경인지 나뉘는 분기
     func userListenerHandler(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
         print("📝", #function)
         switch currentUser {
@@ -239,9 +240,7 @@ final class CommViewModel: ObservableObject {
             updateCurrentUser(user: user)
         }
     }
-    
     /// 현재 표시되는 커뮤니티를 변경하며 커뮤니티의 유저 리스트를 받아옵니다
-
     func updateCurrentComm(comm: Community? = nil, forAlarmFunc: @escaping () -> Void = {}) {
         currentComm = comm
         Task {
@@ -261,7 +260,7 @@ final class CommViewModel: ObservableObject {
             addCurrentCommSnapshot()
         }
     }
-    
+    /// 홈에서 사용하는 가입된 커뮤니티 관련 메서드
     func getCommunityByID(_ id: String) -> Community? {
         return joinedComm.first { community in
             community.id == id
@@ -289,7 +288,7 @@ final class CommViewModel: ObservableObject {
 		UserDefaults.standard.set(recentSearches, forKey: "recentSearches")
 		loadRecentSearches()
 	}
-    
+    /// [커뮤니티최근검색] 유저디폴트에서 인자로 들어온 검색기록 삭제
     func removeSearchTerm(_ term: String) {
         recentSearches.removeFirstElement(term)
         saveRecentSearches()
@@ -305,7 +304,6 @@ final class CommViewModel: ObservableObject {
 			recentSearches = savedSearches
 		}
 	}
-	
 	/// [가입신청] 가입 신청된 커뮤니티 불러오기
 	@MainActor
 	func getRequestComm() async -> [Community] {
@@ -327,6 +325,7 @@ final class CommViewModel: ObservableObject {
 	}
     
     // MARK: Interaction
+    /// 인자로 들어온 커뮤니티에 친구추가하는 함수
     @MainActor
     func addFriend(user: User, comm: Community) async {
         guard let currentUser,
@@ -395,7 +394,6 @@ final class CommViewModel: ObservableObject {
             }
         }
     }
-	
 	/// [가입 신청 취소]
 	@MainActor
 	func removeJoinRequestUser(comm: Community) async {
@@ -416,7 +414,6 @@ final class CommViewModel: ObservableObject {
 			print(#function + "그룹 가입 신청 취소 실패")
 		}
 	}
-	
     /// 매니저가 그룹 가입신청 수락하는 함수
     @MainActor
     func acceptMember(user: User) async {
@@ -542,10 +539,9 @@ final class CommViewModel: ObservableObject {
     }
     /* ⭐️ TODO ⭐️
      1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
-     2. [ ] currentUser의 commInfoList에서 해당 currentComm정보지우기
+     2. [v] currentUser의 commInfoList에서 해당 currentComm정보지우기
      3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
-     4. [V] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
-     5. [ ] 로컬 업데이트
+     4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
      */
     /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수
     @MainActor
@@ -580,10 +576,6 @@ final class CommViewModel: ObservableObject {
                     break
                 }
             }
-            // 로컬 업데이트
-            guard let index = joinedComm.firstIndex(where: { $0.id == currentComm.id }) else { return }
-            joinedComm.remove(at: index)
-			
 			print("👩🏻‍🤝‍👨🏼현재 joinedComm: \(joinedComm)")
 			print("👩🏻‍🤝‍👨🏼현재 currentComm: \(currentComm)")
             guard let firstComm = joinedComm.first else { return }
@@ -777,7 +769,7 @@ final class CommViewModel: ObservableObject {
     }
     
     // MARK: Snapshot
-    
+    /// userSnapshot을 연결하는 함수
     func setUserSnapshot(id: String, forAlarmFunc: @escaping () -> Void = {}) {
         print("📝", #function)
         guard !id.isEmpty else { return }
@@ -792,7 +784,7 @@ final class CommViewModel: ObservableObject {
             }
         }
     }
-    
+    /// userSnapshot와 로그인된 유저에게 필요한 요소들을 제거하는 함수
     func logout() {
         userListener?.remove()
         userListener = nil
@@ -802,7 +794,7 @@ final class CommViewModel: ObservableObject {
         currentCommID.removeAll()
         isFetchComplete = false
     }
-    
+    /// commSnapshot을 연결하는 함수
     func addCurrentCommSnapshot(forAlarmFunc: @escaping () -> Void = {}) {
         guard let currentUser else { return }
         print("📝", #function)
@@ -840,7 +832,7 @@ final class CommViewModel: ObservableObject {
                 }
         }
     }
-    
+    /// commSnapshot을 제거하는 함수
     func removeCurrentCommSnapshot() {
         commListener?.remove()
         commListener = nil
@@ -1023,7 +1015,7 @@ final class CommViewModel: ObservableObject {
     
     // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 }
-
+// MARK: 테스트용 코드
 enum UserStatus {
     case unSign
     case signIn(JoinedCommStatus)
