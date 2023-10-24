@@ -12,6 +12,8 @@ final class PushNotificationManager {
     // Singleton 인스턴스
     static let shared = PushNotificationManager()
     
+    private init() { }
+    
     // FCM 푸시 알림을 보내는 함수
     func sendPushNotification(toFCMToken token: String?, title: String, body: String) {
         let serverKey: String = Bundle.main.object(forInfoDictionaryKey: "FIREBASE_PUSH_API_KEY") as? String ?? "1"

@@ -7,9 +7,9 @@
 //
 import SwiftUI
 import Firebase
-import FirebaseAuth
-import FirebaseFirestoreSwift
-import FirebaseFirestore
+// import FirebaseAuth
+// import FirebaseFirestoreSwift
+// import FirebaseFirestore
 
 final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     // LoginStatusDelegate 프로토콜 메서드. -> 여기선 사용안함.
@@ -43,8 +43,11 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// zenoString에 따른 이미지를 받을 데이터
     @Published var zenoStringImage: [String] = []
     
-    @Published var isCommunityManagerAlert: Bool = false
     @Published var isUserDataDeleteFailAlert: Bool = false
+    /// 이미지 탭 Bool
+    @Published var isTappedImage: Bool = false
+    /// 확대하고자하는 탭한 이미지URL
+    @Published var selectImageURL: String = ""
     
     /// 비율 항목 계산을 위한 일반 변수
     private var itemFrequency = [String: Int]()
@@ -135,15 +138,15 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     }
 
     /// 파베유저정보 Fetch
-    func fetchUser(withUid uid: String) async throws -> User {
-        let result = await firebaseManager.read(type: User.self, id: uid)
-        switch result {
-        case .success(let success):
-            return success
-        case .failure(let error):
-            throw error
-        }
-    }
+//    func fetchUser(withUid uid: String) async throws -> User {
+//        let result = await firebaseManager.read(type: User.self, id: uid)
+//        switch result {
+//        case .success(let success):
+//            return success
+//        case .failure(let error):
+//            throw error
+//        }
+//    }
     
     /// 피커에서 선택한 그룹의 id와 유저가 가지고 있는 commInfo의 id 중 일치하는 그룹을 찾아서 해당 그룹의 buddyList(id)를 반환하는 함수
     func returnBuddyList(selectedGroupID: String) -> [User.ID] {
@@ -246,17 +249,11 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// 회원탈퇴
     @MainActor
     func memberRemove() async -> Bool {
-        // TODO: -> 만약에 batch로 DB처리를 하게될 경우 인증관련부터 삭제 후 DB데이터처리하기(왜냐면, 오프라인에서도 동작하기때문)
-        
-        defer {
-            print("인증관련 처리 완료")
-            // removeUserRelateData() 여기서 처리하면 될듯
-        }
-        
         let removeResult = await removeUserRelateData()
         
         switch removeResult {
         case .dataDeleteComplete:
+            print("👀 \(removeResult.toString())")
             do {
                 if let userInfo {
                     print(#function, "✔️\(userInfo)")
@@ -298,14 +295,11 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                 }
             }
             return true
-        case .communityExists:
-            // 커뮤니티 alert 열기 (그룹장으로 존재하는 그룹이 존재합니다. 그룹탭에서 처리바랍니다.( 그룹탭가는길 상세히 알려주기 )
-            self.isCommunityManagerAlert = true
-            return false
+            
         default:
             // 일반 alert 열기 ( 회원탈퇴시 오류가 발생하였습니다. 앱을 종료 후 재시도바랍니다. )
             self.isUserDataDeleteFailAlert = true
-            print(#function, "📝✔️\(removeResult.toString())") // 이걸 어디에 저장해둘곳이 없을까..
+            print(#function, "👀📝✔️ \(removeResult.toString())") // 이걸 어디에 저장해둘곳이 없을까..
             return false
         }
     }
@@ -316,6 +310,9 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     private func removeUserRelateData() async -> RemoveFailReason {
         let currentUserID = Auth.auth().currentUser?.uid
         // 0. Community컬렉션에서 managerID가 탈퇴한 User인것을 찾고 회원탈퇴하려면 manager위임하고 오라고 하는 부분 필요!!! 임의로 위임해주면 위임받은 사람한테 알림도 가야되고 이것저것 로직이 너무 복잡해짐. 해당기능이 구현되어있는 곳에서 처리후 오는게 좋을듯.
+        
+        // 새 batch 생성
+        var batch = firebaseManager.createBatch()
         
         if let currentUserID {
             let resultComms = await firebaseManager.readDocumentsWithIDs(type: Community.self,
@@ -350,18 +347,22 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                 }
             }
             
-            
             // batch delete 1
             var alarmDelCnt: Int = 0
             // 만약에 알람데이터가 100개  50개 지우다가 51개째 지울때 오류나면 다시 시도시키기 -> 이제 이럴필요없을듯 batch사용하면
             for alarm in resultAlarmDatas {
-                do {
-                    try await firebaseManager.delete(data: alarm)
-                } catch {
-                    print(#function, "\(error.localizedDescription)")
+                if !firebaseManager.deleteInBatch(batch: &batch, data: alarm) {
                     alarmDelCnt += 1
-                    break // TODO: - 지금 break해놓은이유는 트랜잭션을 걸것이기 때문에 걸어둠. 만약에 트랜잭션으로 처리 못하면 break 빼기. 23.10.18
+                    break
                 }
+                
+//                do {
+//                    try await firebaseManager.delete(data: alarm)
+//                } catch {
+//                    print(#function, "\(error.localizedDescription)")
+//                    alarmDelCnt += 1
+//                    break // TODO: - 지금 break해놓은이유는 트랜잭션을 걸것이기 때문에 걸어둠. 만약에 트랜잭션으로 처리 못하면 break 빼기. 23.10.18
+//                }
             }
             
             // 알람데이터가 못지운게 있으면 return
@@ -387,13 +388,19 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
             for commJoin in commJoinResultDatas {
                 var joins = commJoin.joinMembers
                 joins = joins.filter { $0.id != currentUserID }
-                do {
-                    try await firebaseManager.update(data: commJoin, value: \.joinMembers, to: joins)
-                } catch {
-                    print(#function, "✔️\(error.localizedDescription)")
+                
+                if !firebaseManager.updateInBatch(batch: &batch, data: commJoin, value: \.joinMembers, to: joins) {
                     commDelCnt += 1
                     break
                 }
+//                do {
+//                    try await firebaseManager.update(data: commJoin, value: \.joinMembers, to: joins)
+//                } catch {
+//                    print(#function, "✔️\(error.localizedDescription)")
+//                    commDelCnt += 1
+//                    break
+//                }
+                
             }
             
             if commDelCnt > 0 { return .commDataExists }
@@ -425,16 +432,30 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
                     return chgComm
                 }
                 
-                do {
-                    try await firebaseManager.update(data: userData, value: \.commInfoList, to: newCommInfo)
-                } catch {
-                    print(#function, "✔️\(error.localizedDescription)")
+                if !firebaseManager.updateInBatch(batch: &batch, data: userData, value: \.commInfoList, to: newCommInfo) {
                     userDelCnt += 1
                     break
                 }
+                
+//                do {
+//                    try await firebaseManager.update(data: userData, value: \.commInfoList, to: newCommInfo)
+//                } catch {
+//                    print(#function, "✔️\(error.localizedDescription)")
+//                    userDelCnt += 1
+//                    break
+//                }
             }
             
             if userDelCnt > 0 { return .userDataDelError }
+            
+            // batch commit 실행
+            do {
+                let isNotOverBatch = try await firebaseManager.batchCommit(batch: batch)
+                if !isNotOverBatch { return .batchCountOver }
+            } catch {
+                print(#function, "👀\(error.localizedDescription)")
+                return .batchCommitError
+            }
         }
         
         return .dataDeleteComplete
@@ -447,19 +468,25 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
         case commDataExists
         case dataDeleteComplete
         case userDataDelError
+        case batchCommitError
+        case batchCountOver
         
         func toString() -> String {
             switch self {
             case .communityExists:
-                return "커뮤니티의 매니저로 존재함."
+                return "매니저로 존재하는 그룹이 존재합니다. 그룹탭으로 이동하여 확인 후 매니저를 위임하시거나, 그룹을 삭제하신 후 재시도바랍니다."
             case .alarmDataExists:
-                return "알람데이터가 전부다 지워지지않음."
+                return "알람데이터가 전부 다 지워지지않았습니다."
             case .commDataExists:
                 return "커뮤니티 업데이트 오류"
             case .dataDeleteComplete:
                 return "데이터 삭제완료"
             case .userDataDelError:
-                return "유저BuddyList업데이트 오류"
+                return "유저BuddyList업데이트 오류\n앱 종료 후 재시작하여 다시 시도바랍니다."
+            case .batchCommitError:
+                return "batch 서버전송 오류\n개발자 문의 바랍니다."
+            case .batchCountOver:
+                return "batch 갯수 500개 초과\n개발자 문의 바랍니다."
             }
         }
     }

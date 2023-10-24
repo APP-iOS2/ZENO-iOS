@@ -4,7 +4,7 @@ struct InitialView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     @State private var isLoading: Bool = true
     @State private var isNickChangeSheet = false
-    @AppStorage("nickNameChanged") private var isnickNameChanged = false // 닉변 안했으면 하게 한다.
+    @AppStorage("nickNameChanged") private var isnickNameChanged = true // 닉변 안했으면 하게 한다. 처음에는 true를 기본으로 한다.
     
     @StateObject var signObserved = SignStatusObserved.shared
     
@@ -55,6 +55,7 @@ struct InitialView: View {
                     isLoading = false
                     signObserved.isNeedLogin = true
                 }
+                // TODO: 10.22 현재 로그인을 하면 무조건 뜨게 되어있음. 초기값이 false이기 때문
                 if !isnickNameChanged {
                     isNickChangeSheet = true
                 }

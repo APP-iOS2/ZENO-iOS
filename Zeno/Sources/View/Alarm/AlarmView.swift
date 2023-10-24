@@ -273,11 +273,12 @@ struct AlarmView: View {
             }
             alarmViewModel.isPagenationLast = false
         }
-        .task {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                alarmViewModel.isFetchComplete = true
-            }
-        }
+        // 이부분 콜백함수 추가해서 해결했습니당
+//        .task {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+//                alarmViewModel.isFetchComplete = true
+//            }
+//        }
     }
     
     private func isLastItem(_ alarm: Alarm) -> Bool {

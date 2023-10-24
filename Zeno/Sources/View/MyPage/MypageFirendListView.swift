@@ -86,21 +86,26 @@ struct MypageFriendListView: View {
                                 if let imageURLString = friendInfo.imageURL,
                                    let imageURL = URL(string: imageURLString) {
                                     KFImage(imageURL)
-                                        .placeholder {
-                                            ProgressView()
-                                        }
+                                        .placeholder { ProgressView() }
                                         .resizable()
                                         .scaledToFit()
                                         .clipShape(Circle())
                                         .scaledToFill()
                                         .frame(width: 70, height: 70)
                                         .padding(8)
+                                        .onTapGesture {
+                                            mypageViewModel.selectImageURL = imageURLString
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                mypageViewModel.isTappedImage.toggle()
+                                            }
+                                        }
                                 } else {
                                     ZenoKFImageView(User(name: "", gender: friendInfo.gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []), ratio: .fit, isRandom: false)
                                         .frame(width: 70, height: 70)
                                         .clipShape(Circle())
                                         .padding(8)
                                 }
+                                
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(friendInfo.name)
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))

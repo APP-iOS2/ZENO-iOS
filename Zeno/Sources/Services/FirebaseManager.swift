@@ -9,6 +9,7 @@ import Foundation
 import FirebaseStorage
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import Firebase
 
 enum FirebaseError: Error {
     case emptyID
@@ -251,7 +252,7 @@ final class FirebaseManager {
             throw FirebaseError.failToDelete
         }
     }
-    
+  
     func searchContains<T: FirebaseAvailable, U>(type: T.Type,
                                                    value keyPath: WritableKeyPath<T, U>,
                                                    searchTerm: String)
@@ -262,6 +263,109 @@ final class FirebaseManager {
             return .success(snapshot.documents.compactMap { try? $0.data(as: T.self) })
         } catch {
             return .failure(.failToFindContains)
+        }
+    }
+  
+    /*-------------------------------------------------------------------------------------
+        batch 사용법.
+       1. createBatch로 batch생성하여 return
+       2. updateInBatch, deleteInBatch, setDataInBatch 메서드를 활용하여 생성한 batch에 작업 주입
+       3. batchCommit으로 작업 파베서버측으로 보냄.
+        (파베서버로 보낸다는건 예상 -> 현기기 오프라인상태에서도 작업이 이루어진다는것을 바탕으로 예상.)
+     --------------------------------------------------------------------------------------*/
+    
+    // TODO: 23.10.22 데이터 삭제랑은 잘 작동하는 듯한데 batchWorkItemCnt의 값이 증가하지 않고 있음. 싱글톤이라고 하나의 데이터를 공유하는게 아닌가..?
+    
+    /// batch 작업갯수 제한용 카운트 프로퍼티
+    private var batchWorkItemCnt: Int = 0
+    
+    /// 새로운 batch를 생성한다.
+    func createBatch() -> WriteBatch {
+        self.batchWorkItemCnt = 0 // 초기화
+        return db.batch()
+    }
+    
+    /// batch용 Update메서드 -> 모든 data 객체는 id값을 지닌다는 가정.
+    func updateInBatch<T: FirebaseAvailable, U: Encodable>(batch: inout WriteBatch,
+                                                           data: T,
+                                                           value keyPath: WritableKeyPath<T, U>,
+                                                           to: U) -> Bool {
+        let documentID = data.id
+        guard !documentID.isEmpty else {
+            print(#function, "👀 documentID가 존재하지않습니다.")
+            return false
+        }
+        
+        let documentRef = db.collection("\(type(of: data))").document(documentID)
+        
+        do {
+            let dataType = try JSONEncoder().encode(to)
+            do {
+                let any = try JSONSerialization.jsonObject(with: dataType)
+                batch.updateData([data.getPropertyName(keyPath): any], forDocument: documentRef)
+            } catch {
+                batch.updateData([data.getPropertyName(keyPath): to], forDocument: documentRef)
+            }
+        } catch {
+            return false
+        }
+        
+        self.batchWorkItemCnt += 1 // 작업 한개당 카운트 1 증가
+        print(#function, "👀 \(self.batchWorkItemCnt)개")
+        return true
+    }
+    
+    /// batch용 Delete메서드 -> 모든 data 객체는 id값을 지닌다는 가정.
+    func deleteInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) -> Bool {
+        let documentID = data.id
+        guard !documentID.isEmpty else {
+            print(#function, "👀 documentID가 존재하지않습니다.")
+            return false
+        }
+        
+        let documentRef = db.collection("\(type(of: data))").document(documentID)
+        batch.deleteDocument(documentRef)
+        self.batchWorkItemCnt += 1
+        print(#function, "👀 \(self.batchWorkItemCnt)개")
+        
+        return true
+    }
+    
+    /// batch용 setData메서드 -> 모든 data 객체는 id값을 지닌다는 가정.  23.10.24 기준 미완성. (잘 안쓰여서 좀 미뤘음)
+    func setDataInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) -> Bool where T: Encodable {
+        let documentID = data.id
+        guard !documentID.isEmpty else {
+            print(#function, "👀 documentID가 존재하지않습니다.")
+            return false
+        }
+        
+        let documentRef = db.collection("\(type(of: data))").document(documentID)
+        
+        do {
+            _ = try JSONEncoder().encode(data)
+            batch.setData(["": ""], forDocument: documentRef)
+        } catch {
+            return false
+        }
+        
+        self.batchWorkItemCnt += 1
+        print(#function, "👀 \(self.batchWorkItemCnt)개")
+        
+        return true
+    }
+    
+    /// batch 커밋 -> 최대 500개한도 내에서 처리해야함.
+    func batchCommit(batch: WriteBatch) async throws -> Bool {
+        // 500개 초과하면 작업 못함.
+        guard self.batchWorkItemCnt <= 500 else { return false }
+        print(#function, "👀 batchCount = \(batchWorkItemCnt)")
+        do {
+            try await batch.commit()
+            self.batchWorkItemCnt = 0   // 초기화
+            return true
+        } catch {
+            print(#function, "👀👺" + error.localizedDescription)
+            throw error
         }
     }
 }
