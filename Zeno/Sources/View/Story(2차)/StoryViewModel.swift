@@ -17,6 +17,7 @@ final class StoryViewModel: ObservableObject {
     @Published private var story: [Story] = []
     
     func idToImage() {
+        
     }
     
     func updateStory(story: Story) async {

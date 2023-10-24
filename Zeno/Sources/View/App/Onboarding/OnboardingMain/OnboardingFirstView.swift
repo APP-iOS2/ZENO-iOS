@@ -18,18 +18,18 @@ struct OnboardingFirstView: View {
         ZStack {
             GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .purple2, showNextView: $showNextView)
             
-            ZStack(alignment: .leading) {
+            ZStack(alignment: .center) {
                 VStack(alignment: .center, spacing: 0) {
                     Spacer()
                     Text("제노에는")
                         .padding(.horizontal, 30)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 4)
                         .opacity(0.9)
                         .accessibilityLabel("제노에는")
                     Text("내가 추가한 친구들만")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 39))
                         .frame(width: .screenWidth)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 4)
                         .accessibilityLabel("내가 추가한 친구들만")
                     Text("등장해요")
                         .padding(.horizontal, 30)
@@ -40,12 +40,13 @@ struct OnboardingFirstView: View {
                     
                     Image("addFriend")
                         .resizable()
-                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.1)
+                        .cornerRadius(10)
+                        .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.086)
                         .padding()
                     
                     Spacer()
                 }
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 33))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 42))
                     .foregroundColor(.white)
                     
                 // TODO: 제노 사진 넣기

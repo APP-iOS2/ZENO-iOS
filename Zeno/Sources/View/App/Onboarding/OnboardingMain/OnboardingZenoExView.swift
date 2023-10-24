@@ -18,21 +18,21 @@ struct OnboardingZenoExView: View {
     
     var body: some View {
         ZStack {
-            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .mainColor, showNextView: $showNextView)
+            GeoView(isExpanded: $isExpanded, showtext: $showtext, color: .ggullungColor, showNextView: $showNextView)
             
             ZStack(alignment: .leading) {
                 LottieView(lottieFile: "bubbles")
                 VStack(alignment: .center) {
                 Spacer()
                     Group {
-                        LottieView(lottieFile: "nudgeDevil")
-                            .frame(width: 80, height: 80)
-                        VStack(alignment: .leading) {
+//                        LottieView(lottieFile: "nudgeDevil")
+//                            .frame(width: 80, height: 80)
+                        VStack(alignment: .center) {
                             Text("누가 나를 선택했는지")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 32))
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 34))
                                 .accessibilityLabel("누가 나를 선택했는지")
                             Text("확인할 수 있어요")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 39))
+                                .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 44))
                                 .accessibilityLabel("확인할 수 있어요")
                         }
                         .multilineTextAlignment(.center)
@@ -46,7 +46,7 @@ struct OnboardingZenoExView: View {
                         .background(
                             Rectangle()
                             .fill(Color(uiColor: .systemGray6))
-                            .frame(height: .screenHeight * 0.2)
+                            .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.18)
                             .cornerRadius(10)
                             .padding(10)
                             .shadow(radius: 1)
