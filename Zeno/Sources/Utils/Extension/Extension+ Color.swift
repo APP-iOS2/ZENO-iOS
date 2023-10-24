@@ -16,6 +16,7 @@ extension Color {
     static let gray2 = hex("C6C6C9")
     static let gray3 = hex("8e8e93")
     static let gray4 = hex("35363A")
+    static let purple4 = hex("510599")
     
 	static func hex(_ hex: String) -> Self {
 		let scanner = Scanner(string: hex)

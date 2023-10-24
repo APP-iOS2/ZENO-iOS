@@ -75,9 +75,7 @@ struct CommUserMgmtView: View {
                                 }
                             } interaction: { user in
                                 Task {
-									guard let currentComm = commViewModel.currentComm else { return }
                                     await commViewModel.acceptMember(user: user)
-//									try await userViewModel.removeRequestComm(comm: currentComm, user: user)
                                 }
                             }
                         case .general:

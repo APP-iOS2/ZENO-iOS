@@ -20,6 +20,7 @@ enum FirebaseError: Error {
     case failToGetDocuments
     case failToUploadImg
     case failToEncode
+    case failToFindContains
     case documentToData
 }
 
@@ -32,7 +33,7 @@ final class FirebaseManager {
     private init() { }
     
     // MARK: async
-    func create<T: FirebaseAvailable>(data: T) async throws where T: Encodable {
+    func create<T: FirebaseAvailable>(data: T) throws where T: Encodable {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
         do {
             try documentRef.setData(from: data)
@@ -40,6 +41,16 @@ final class FirebaseManager {
             throw FirebaseError.failToCreate
         }
     }
+    // async mirrorToDic이 - "Unsupported type: __SwiftValue" 런타임에러 유발
+//    func create<T: FirebaseAvailable>(data: T) async throws where T: Encodable {
+//        let documentRef = db.collection("\(type(of: data))").document(data.id)
+//        do {
+//            try await documentRef.setData(data.mirrorToDic())
+//        } catch {
+//            throw FirebaseError.failToCreate
+//        }
+//    }
+    
     @discardableResult
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
@@ -92,7 +103,10 @@ final class FirebaseManager {
         }
     }
     
-    func readDocumentsWithIDs<T>(type: T.Type, whereField: String = "id", ids: [String]) async -> [Result<T, FirebaseError>] where T: Decodable {
+    func readDocumentsWithIDs<T>(type: T.Type,
+                                 whereField: String = "id",
+                                 ids: [String])
+    async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
         let collectionRef = db.collection("\(type)")
         var values: [String]
@@ -102,20 +116,25 @@ final class FirebaseManager {
         case false:
             values = ids
         }
-        let query = collectionRef.whereField(whereField, in: values)
-        guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
-        for item in snapshot.documents {
-            do {
-                let result = try item.data(as: T.self)
-                results.append(.success(result))
-            } catch {
-                results.append(.failure(FirebaseError.documentToData))
+        for piece in values.slice(maxCount: 30) {
+            let query = collectionRef.whereField(whereField, in: piece)
+            guard let snapshot = try? await query.getDocuments() else { return [.failure(FirebaseError.failToGetDocuments)] }
+            for item in snapshot.documents {
+                do {
+                    let result = try item.data(as: T.self)
+                    results.append(.success(result))
+                } catch {
+                    results.append(.failure(FirebaseError.documentToData))
+                }
             }
         }
         return results
     }
     
-    func readDocumentsArrayWithID<T>(type: T.Type, whereField: String = "id", id: String) async -> [Result<T, FirebaseError>] where T: Decodable {
+    func readDocumentsArrayWithID<T>(type: T.Type,
+                                     whereField: String = "id",
+                                     id: String)
+    async -> [Result<T, FirebaseError>] where T: Decodable {
         var results: [Result<T, FirebaseError>] = []
         let collectionRef = db.collection("\(type)")
         var values: String
@@ -163,13 +182,13 @@ final class FirebaseManager {
             do {
                 let any = try JSONSerialization.jsonObject(with: dataType)
                 do {
-                    try await documentRef.updateData([data.getPropertyName(keyPath): any])
+                    try await documentRef.updateData([keyPath.toString: any])
                 } catch {
                     throw FirebaseError.failToUpdate
                 }
             } catch {
                 do {
-                    try await documentRef.updateData([data.getPropertyName(keyPath): to])
+                    try await documentRef.updateData([keyPath.toString: to])
                 } catch {
                     throw FirebaseError.failToUpdate
                 }
@@ -179,9 +198,11 @@ final class FirebaseManager {
         }
     }
     
-    func updateModelPropertyAllCollention<T: FirebaseAvailable, U: Encodable>(type: T.Type,
-                                                        propertyPath keyPath: WritableKeyPath<T, U>,
-                                                        defaultValue: U) async where T: Decodable {
+    func updateModelPropertyAllCollention<T: FirebaseAvailable, U: Encodable>(
+        type: T.Type,
+        propertyPath keyPath: WritableKeyPath<T, U>,
+        defaultValue: U
+    ) async where T: Decodable {
         let collectionRef = db.collection("\(type)")
         var documentIDs: [String] = []
         guard let query = try? await collectionRef.getDocuments() else { return }
@@ -231,7 +252,20 @@ final class FirebaseManager {
             throw FirebaseError.failToDelete
         }
     }
-    
+  
+    func searchContains<T: FirebaseAvailable, U>(type: T.Type,
+                                                   value keyPath: WritableKeyPath<T, U>,
+                                                   searchTerm: String)
+    async -> Result<[T], FirebaseError> where T: Decodable {
+        let result = db.collection("\(type)").whereField(keyPath.toString, isGreaterThanOrEqualTo: searchTerm)
+        do {
+            let snapshot = try await result.getDocuments()
+            return .success(snapshot.documents.compactMap { try? $0.data(as: T.self) })
+        } catch {
+            return .failure(.failToFindContains)
+        }
+    }
+  
     /*-------------------------------------------------------------------------------------
         batch 사용법.
        1. createBatch로 batch생성하여 return

@@ -13,4 +13,16 @@ extension Array {
         guard let index = self.firstIndex(of: element) else { return }
         self.remove(at: index)
     }
+    
+    func slice(maxCount: Int) -> [Self] {
+        var currentIndex = 0
+        var result: [[Element]] = []
+        while currentIndex < self.count {
+            let endIndex = Swift.min(currentIndex + maxCount, self.count)
+            let piece = Array(self[currentIndex..<endIndex])
+            result.append(piece)
+            currentIndex += maxCount
+        }
+        return result
+    }
 }

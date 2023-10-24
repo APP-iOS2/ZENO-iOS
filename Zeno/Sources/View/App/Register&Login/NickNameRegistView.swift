@@ -87,14 +87,66 @@ struct NickNameRegistView: View {
                             .onTapGesture {
                                 isImagePicker.toggle()
                             }
-                        
-                        HStack {
-                            Spacer()
-                            Text("필수")
-                                .font(.thin(10))
-                                .foregroundColor(.red)
-                                .padding(.trailing)
-                                .offset(y: 5)
+                HStack {
+                    Spacer()
+                    Text("필수")
+                        .font(.thin(10))
+                        .foregroundColor(.red)
+                        .padding(.trailing)
+                        .offset(y: 5)
+                }
+                RegistCustomTF(titleText: "이름",
+                               placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
+                               customText: $nameText,
+                               isNotHanguel: $isChecking,
+                               textMaxCount: 5,
+                               isFocusing: true)
+                .font(.regular(16))
+
+                Text(checkingText)
+                    .foregroundStyle(Color.red.opacity(0.9))
+                    .font(.caption)
+                    .padding(.horizontal)
+                    .opacity(isChecking ? 1.0 : 0.0)
+              
+                HStack {
+                    Text("성별")
+                        .frame(width: 60, alignment: .leading)
+                        .font(.regular(16))
+                    
+                    // 여자 버튼
+                    Button {
+                        female.toggle()
+                        if male {
+                            male.toggle()
+                        }
+                        gender = Gender.female
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: female ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.female.toString)
+                                .font(.regular(14))
+                        }
+                    }
+                    
+                    // 남자 버튼
+                    Button {
+                        male.toggle()
+                        gender = Gender.male
+                        if female {
+                            female.toggle()
+                        }
+                        print(gender)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: male ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.mainColor)
+                                .font(.thin(14))
+                            Text(Gender.male.toString)
+                                .font(.regular(14))
                         }
                         RegistCustomTF(titleText: "이름",
                                        placeholderText: "실명을 입력해주세요. ex)홍길동, 선우정아",
@@ -290,6 +342,7 @@ struct NickNameRegistView: View {
             )
             .overlay(
                 OnboardingMainView()
+                    .offset(x: -8) // MARK: 10/22 임시
                     .opacity(nextNavigation ? 1.0 : 0.0)
             )
             .sheet(isPresented: $isConfirmSheet, content: {
@@ -302,6 +355,7 @@ struct NickNameRegistView: View {
                             .font(.footnote)
                             .foregroundStyle(Color.red)
                     }
+                    .padding(.horizontal, 25)
                     .padding(.top, 30)
                     
                     VStack(alignment: .leading, spacing: 10) {
@@ -310,10 +364,9 @@ struct NickNameRegistView: View {
                     }
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 20))
                     .padding(.bottom, 20)
-                    
+                    .padding(.horizontal, 25)
                     Spacer().frame(height: 30)
                 }
-                .padding(.horizontal, 25)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title2)
                 .safeAreaInset(edge: .bottom, alignment: .center, spacing: 0) {
