@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol FirebaseAvailable {
+protocol FirebaseAvailable: Codable {
     var id: String { get }
 }
 

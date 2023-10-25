@@ -119,49 +119,10 @@ final class CommViewModel: ObservableObject {
     init() {
         loadRecentSearches() // 최근검색어 불러오기
     }
-    /// 커뮤니티 추천(미구현)
-    func recomendComm() async {
-        guard let allBuddies = currentUser?.commInfoList.flatMap({ $0.buddyList }) else { return }
-        
-        _ = Dictionary(grouping: allBuddies) { $0 }
-//        let closeFriend = Dictionary(grouping: allBuddies) { $0 }
-            .mapValues { $0.count }
-            .sorted { $0.value > $1.value }
-            .map { $0.key }
-    }
     /// [그룹 메인 뷰] 현재 커뮤니티의 매니저인지 확인
     func checkManagerUser(user: User) -> Bool {
         guard let managerID = currentComm?.managerID.description else { return false }
         return managerID == user.id
-    }
-    /// searchedComm을 업데이트하는 함수
-    @MainActor
-    func searchComm() async {
-        let result = await firebaseManager.searchContains(type: Community.self, value: \.name, searchTerm: commSearchTerm)
-        switch result {
-        case .success(let success):
-            searchedComm = success
-                .filter({ comm in !joinedComm.contains { $0.id == comm.id } })
-                .filter({ $0.name.contains(commSearchTerm) })
-        case .failure:
-            searchedComm = []
-        }
-    }
-    /// 커뮤니티별 알람정보를 변경해주는 함수
-    func commAlertToggle() async {
-        guard let currentUser,
-              let currentComm
-        else { return }
-        var updatedCommList = currentUser.commInfoList
-        guard let updatedComm = currentUser.commInfoList.first(where: { $0.id == currentComm.id }),
-              let index = updatedCommList.firstIndex(where: { $0.id == updatedComm.id })
-        else { return }
-        updatedCommList[index].alert.toggle()
-        do {
-            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: updatedCommList)
-        } catch {
-            print(#function + "User Collection에 알람정보 업데이트 실패")
-        }
     }
     /// 인자로 들어온 user와 currentComm에서 친구인지를 Bool로 리턴함
 	@MainActor
@@ -173,71 +134,7 @@ final class CommViewModel: ObservableObject {
         else { return false }
         return buddyList.contains(user.id)
     }
-    /// 로그인된 유저를 변경하며 로그인된 유저가 없을 때 snapshot을 겁니다
-    /// user가 가입한 커뮤니티가 없다면 currentCommID를 빈문자열로 만들어 가입된 커뮤니티가 없게 표시합니다
-    private func loginCurrentUser(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
-        currentUser = user
-        addCurrentCommSnapshot {
-            forAlarmFunc()
-        }
-    }
-    /// currentUser의 정보를 업데이트 하는 함수
-    private func updateCurrentUser(user: User) {
-        guard let currentUser else { return     }
-        guard user.commInfoList.map({ $0.id }) == currentUser.commInfoList.map({ $0.id }) else {
-            Task {
-                await MainActor.run {
-                    self.currentUser = user
-                }
-                await fetchJoinedComm()
-            }
-            return
-        }
-        switch user.commInfoList.isEmpty {
-        case true:
-            setCurrentID()
-        case false:
-            if currentCommID.isEmpty {
-                if let firstItem = user.commInfoList.first {
-                    print("📝2", #function)
-                    setCurrentID(id: firstItem.id)
-                }
-            }
-        }
-        self.currentUser = user
-    }
-    /// userListener의 업데이트가 첫번째 로그인인지 정보 변경인지 나뉘는 분기
-    func userListenerHandler(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
-        print("📝", #function)
-        switch currentUser {
-        case .none:
-            loginCurrentUser(user: user, forAlarmFunc: forAlarmFunc)
-        case .some:
-            guard let user else { return }
-            updateCurrentUser(user: user)
-        }
-    }
-    /// 현재 표시되는 커뮤니티를 변경하며 커뮤니티의 유저 리스트를 받아옵니다
-    func updateCurrentComm(comm: Community? = nil, forAlarmFunc: @escaping () -> Void = {}) {
-        currentComm = comm
-        Task {
-            print("📝", #function)
-            await fetchJoinedComm {
-                forAlarmFunc()
-                self.isFetchComplete = true
-            }
-        }
-    }
-    /// 현재 표시되는 커뮤니티의 ID를 변경하는 함수, 기본값은 빈 문자열입니다
-    /// 인자로 들어온 값이 새로운 값일때만 snapshot을 끊고 새로운 커뮤니티에 snapshot을 겁니다
-    func setCurrentID(id: Community.ID = "") {
-        if currentCommID != id {
-            currentCommID = id
-            removeCurrentCommSnapshot()
-            addCurrentCommSnapshot()
-        }
-    }
-    /// 홈에서 사용하는 가입된 커뮤니티 관련 메서드
+    /// 홈탭에서 사용하는 가입된 커뮤니티 관련 메서드
     func getCommunityByID(_ id: String) -> Community? {
         return joinedComm.first { community in
             community.id == id
@@ -281,26 +178,65 @@ final class CommViewModel: ObservableObject {
 			recentSearches = savedSearches
 		}
 	}
-	/// [가입신청] 가입 신청된 커뮤니티 불러오기
-	func getRequestComm() async -> [Community] {
-		guard let currentUser else { return [] }
-		
-		let results =  await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: currentUser.requestComm)
-		
-		var requestComm: [Community] = []
-		
-		await results.asyncForEach { result in
-			switch result {
-			case .success(let comm):
-				requestComm.append(comm)
-			case .failure:
-				print("가입신청 보낸 그룹 정보 불러오기 실패")
-			}
-		}
-		return requestComm
-	}
     
     // MARK: Interaction
+    /// 커뮤니티 추천(미구현)
+    func recomendComm() async {
+        guard let allBuddies = currentUser?.commInfoList.flatMap({ $0.buddyList }) else { return }
+        
+        _ = Dictionary(grouping: allBuddies) { $0 }
+//        let closeFriend = Dictionary(grouping: allBuddies) { $0 }
+            .mapValues { $0.count }
+            .sorted { $0.value > $1.value }
+            .map { $0.key }
+    }
+    /// searchedComm을 업데이트하는 함수
+    @MainActor
+    func searchComm() async {
+        let result = await firebaseManager.searchContains(type: Community.self, value: \.name, searchTerm: commSearchTerm)
+        switch result {
+        case .success(let success):
+            searchedComm = success
+                .filter({ comm in !joinedComm.contains { $0.id == comm.id } })
+                .filter({ $0.name.contains(commSearchTerm) })
+        case .failure:
+            searchedComm = []
+        }
+    }
+    /// 커뮤니티별 알람정보를 변경해주는 함수
+    func commAlertToggle() async {
+        guard let currentUser,
+              let currentComm
+        else { return }
+        var updatedCommList = currentUser.commInfoList
+        guard let updatedComm = currentUser.commInfoList.first(where: { $0.id == currentComm.id }),
+              let index = updatedCommList.firstIndex(where: { $0.id == updatedComm.id })
+        else { return }
+        updatedCommList[index].alert.toggle()
+        do {
+            try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: updatedCommList)
+        } catch {
+            print(#function + "User Collection에 알람정보 업데이트 실패")
+        }
+    }
+    /// [가입신청] 가입 신청된 커뮤니티 불러오기
+    func getRequestComm() async -> [Community] {
+        guard let currentUser else { return [] }
+        
+        let results =  await firebaseManager.readDocumentsWithIDs(type: Community.self, ids: currentUser.requestComm)
+        
+        var requestComm: [Community] = []
+        
+        await results.asyncForEach { result in
+            switch result {
+            case .success(let comm):
+                requestComm.append(comm)
+            case .failure:
+                print("가입신청 보낸 그룹 정보 불러오기 실패")
+            }
+        }
+        return requestComm
+    }
     /// 인자로 들어온 커뮤니티에 친구추가하는 함수
     func addFriend(user: User, comm: Community) async {
         guard let currentUser,
@@ -506,23 +442,21 @@ final class CommViewModel: ObservableObject {
             return nil
         }
     }
-    /* ⭐️ TODO ⭐️
-     1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
-     2. [v] currentUser의 commInfoList에서 해당 currentComm정보지우기
-     3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
-     4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
-     */
     /// 그룹 멤버가 그룹을 나갈 때 커뮤니티에서 나갈 멤버의 정보를 지우고 커뮤니티의 모든 유저정보를 받아와 해당 커뮤니티의 버디리스트에서 탈퇴한 유저를 지워서 업데이트하는 함수
     @MainActor
     func leaveComm() async {
         guard let currentComm,
               let currentUser
         else { return }
+
         let changedMembers = currentComm.joinMembers.filter({ $0.id != currentUser.id })
         let changedUserCommList = currentUser.commInfoList.filter({ $0.id != currentComm.id })
         do {
+//            1. [v] currentComm의 commInfoList에서 해당 currentUser정보지우기
             try await firebaseManager.update(data: currentUser, value: \.commInfoList, to: changedUserCommList)
+//            2. [v] currentUser의 commInfoList에서 해당 currentComm정보지우기
             try await firebaseManager.update(data: currentComm, value: \.joinMembers, to: changedMembers)
+//            3. [v] currentComm의 joinedMembers에 해당하는 User Document를 받아오고 유저들의 commInfoList중 id가 currentComm.id와 같은 User.JoinedCommInfo에서 buddyList가 currentUser.id를 포함하고 있으면 지우고 업데이트
             let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
                                                                      ids: changedMembers.map({ $0.id }))
             await results.asyncForEach { [weak self] result in
@@ -545,7 +479,7 @@ final class CommViewModel: ObservableObject {
                     break
                 }
             }
-            // ⭐️ 현재 삭제하지 않고 프린트만 동작함 ⭐️
+//            4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
             await removeAlarm()
 			print("👩🏻‍🤝‍👨🏼현재 joinedComm: \(joinedComm)")
 			print("👩🏻‍🤝‍👨🏼현재 currentComm: \(currentComm)")
@@ -553,6 +487,22 @@ final class CommViewModel: ObservableObject {
             setCurrentID(id: firstComm.id)
         } catch {
             print(#function + "Community의 Members 업데이트 실패")
+        }
+    }
+    /// 인자로 들어온 커뮤니티에서 유저가 받은 알람을 지우는 메서드
+    func removeAlarm() async {
+        guard let currentUser,
+              let currentComm
+        else { return }
+        var alarms: [Alarm] = []
+        let results = await firebaseManager.readDocumentsWithValues(type: Alarm.self, keyPath1: \.communityID, value1: currentComm.id, keyPath2: \.showUserID, value2: currentUser.id)
+        alarms.append(contentsOf: results)
+        await alarms.asyncForEach {
+            do {
+                try await self.firebaseManager.delete(data: $0)
+            } catch {
+                print(#function + "\($0) 지우기 실패")
+            }
         }
     }
     /// [가입신청] 그룹에 가입신청 보내는 함수
@@ -808,6 +758,70 @@ final class CommViewModel: ObservableObject {
         commListener = nil
         currentComm = nil
     }
+    /// 로그인된 유저를 변경하며 로그인된 유저가 없을 때 snapshot을 겁니다
+    /// user가 가입한 커뮤니티가 없다면 currentCommID를 빈문자열로 만들어 가입된 커뮤니티가 없게 표시합니다
+    private func loginCurrentUser(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
+        currentUser = user
+        addCurrentCommSnapshot {
+            forAlarmFunc()
+        }
+    }
+    /// currentUser의 정보를 업데이트 하는 함수
+    private func updateCurrentUser(user: User) {
+        guard let currentUser else { return     }
+        guard user.commInfoList.map({ $0.id }) == currentUser.commInfoList.map({ $0.id }) else {
+            Task {
+                await MainActor.run {
+                    self.currentUser = user
+                }
+                await fetchJoinedComm()
+            }
+            return
+        }
+        switch user.commInfoList.isEmpty {
+        case true:
+            setCurrentID()
+        case false:
+            if currentCommID.isEmpty {
+                if let firstItem = user.commInfoList.first {
+                    print("📝2", #function)
+                    setCurrentID(id: firstItem.id)
+                }
+            }
+        }
+        self.currentUser = user
+    }
+    /// userListener의 업데이트가 첫번째 로그인인지 정보 변경인지 나뉘는 분기
+    func userListenerHandler(user: User?, forAlarmFunc: @escaping () -> Void = {}) {
+        print("📝", #function)
+        switch currentUser {
+        case .none:
+            loginCurrentUser(user: user, forAlarmFunc: forAlarmFunc)
+        case .some:
+            guard let user else { return }
+            updateCurrentUser(user: user)
+        }
+    }
+    /// 현재 표시되는 커뮤니티를 변경하며 커뮤니티의 유저 리스트를 받아옵니다
+    func updateCurrentComm(comm: Community? = nil, forAlarmFunc: @escaping () -> Void = {}) {
+        currentComm = comm
+        Task {
+            print("📝", #function)
+            await fetchJoinedComm {
+                forAlarmFunc()
+                self.isFetchComplete = true
+            }
+        }
+    }
+    /// 현재 표시되는 커뮤니티의 ID를 변경하는 함수, 기본값은 빈 문자열입니다
+    /// 인자로 들어온 값이 새로운 값일때만 snapshot을 끊고 새로운 커뮤니티에 snapshot을 겁니다
+    func setCurrentID(id: Community.ID = "") {
+        if currentCommID != id {
+            currentCommID = id
+            removeCurrentCommSnapshot()
+            addCurrentCommSnapshot()
+        }
+    }
     
     // MARK: fetch
     /// user정보로 커뮤니티를 받아오는 함수
@@ -838,7 +852,6 @@ final class CommViewModel: ObservableObject {
 		isFetchComplete = true
         deepLinkHandler()
     }
-    
     /// 선택된 커뮤니티에 가입된 유저를 받아오는 함수
     @MainActor
     func fetchCurrentCommMembers() async {
@@ -895,22 +908,6 @@ final class CommViewModel: ObservableObject {
             }
         } catch {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
-        }
-    }
-    
-    func removeAlarm() async {
-        guard let currentUser,
-              let currentComm
-        else { return }
-        var alarms: [Alarm] = []
-        let results = await firebaseManager.readDocumentsWithValues(type: Alarm.self, keyPath1: \.communityID, value1: currentComm.id, keyPath2: \.showUserID, value2: currentUser.id)
-        alarms.append(contentsOf: results)
-        await alarms.asyncForEach {
-            do {
-                try await self.firebaseManager.delete(data: $0)
-            } catch {
-                print(#function + "\($0) 지우기 실패")
-            }
         }
     }
     

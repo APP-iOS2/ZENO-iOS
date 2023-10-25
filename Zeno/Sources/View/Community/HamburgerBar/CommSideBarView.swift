@@ -229,6 +229,19 @@ struct CommSideBarView: View {
         
         var id: Self { self }
     }
+    /// 커뮤니티별 알람정보를 변경해주는 함수
+    func commAlertToggle(user: User, comm: Community) async {
+        var updatedCommList = user.commInfoList
+        guard let updatedComm = user.commInfoList.first(where: { $0.id == comm.id }),
+              let index = updatedCommList.firstIndex(where: { $0.id == updatedComm.id })
+        else { return }
+        updatedCommList[index].alert.toggle()
+        do {
+            try await FirebaseManager.shared.update(data: user, value: \.commInfoList, to: updatedCommList)
+        } catch {
+            print(#function + "User Collection에 알람정보 업데이트 실패")
+        }
+    }
 }
 
 struct GroupSideBarView_Preview: PreviewProvider {
