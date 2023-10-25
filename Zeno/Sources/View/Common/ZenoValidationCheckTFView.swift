@@ -44,7 +44,7 @@ struct ZenoValidationCheckTFView: View {
                     validationState = .checking
                     isValidWord = false
                     debouncer.run {
-                        isValidWord = checkValidation(str: text, minCount: minCount)
+                        isValidWord = checkValidation(str: text, minCount: minCount, titleKey: titleKey)
                     }
                 }
                 if !text.isEmpty {
@@ -65,21 +65,8 @@ struct ZenoValidationCheckTFView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            HStack {
-                switch validationState {
-                case .none:
-                    Text(" ")
-                case .checking:
-                    Text("사용 가능 여부 확인중...")
-                        .foregroundColor(.primary)
-                case .possibility:
-                    Text("사용 가능한 \(titleKey) 입니다.")
-                        .foregroundColor(.blue)
-                case .invailed(let opt):
-                    Text(opt.warning)
-                        .foregroundColor(.red)
-                }
-            }
+            Text(validationState.message)
+                .foregroundColor(validationState.color)
             .font(.regular(14))
             .padding(.leading)
         }
@@ -89,57 +76,6 @@ struct ZenoValidationCheckTFView: View {
             text = value
             isTextFocused = true
         }
-    }
-    
-    enum Option: Equatable {
-        case clear
-        case badWord
-        case gap
-        case koreanLang
-        case minCount(Int)
-        
-        var warning: String {
-            switch self {
-            case .clear:
-                return " "
-            case .badWord:
-                return "적절하지 않은 문자가 포함되어 있습니다."
-            case .gap:
-                return "불필요한 공백이 포함되어 있습니다."
-            case .koreanLang:
-                return "한글로 입력해주세요. 영어 이름인 경우 발음대로 입력 (공백없이 입력)"
-            case .minCount(let count):
-                return "\(count)자 이상 입력해주세요."
-            }
-        }
-        
-        static func checkOpt(_ str: String, minCount: Int = 0) -> Self {
-            // 앞뒤 공백을 제거한 문자열
-            let realText = str.trimmingCharacters(in: .whitespaces)
-            // 문자열 앞,뒤에 공백 && 공백으로만 된 문자열
-            guard !realText.isEmpty && realText == str else {
-                return .gap
-            }
-            guard str.checkKoreaLang else {
-                return .koreanLang
-            }
-            guard str.count >= minCount else {
-                return .minCount(minCount)
-            }
-            // 욕설이 포함되어 있는 문자열
-            let checkBadWord = ZenoValidationCheckTFView.badWords.allSatisfy { !realText.contains($0) }
-            guard checkBadWord else {
-                return .badWord
-            }
-            return .clear
-        }
-    }
-    
-    enum ValidationState {
-        case none
-        case checking
-        case invailed(Option)
-        case possibility
     }
     
     init(titleKey: String,
@@ -188,8 +124,85 @@ struct ZenoValidationCheckTFView: View {
         self.validationState = validationState
     }
     
+    enum ValidationState {
+        case none
+        case checking
+        case invailed(Option)
+        case possibility(String)
+        
+        var message: String {
+            switch self {
+            case .none:
+                return " "
+            case .checking:
+                return "사용 가능 여부 확인중..."
+            case .invailed(let opt):
+                return opt.warning
+            case .possibility(let titleKey):
+                return "사용 가능한 \(titleKey) 입니다."
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .none:
+                return .clear
+            case .checking:
+                return .primary
+            case .invailed:
+                return .blue
+            case .possibility:
+                return .red
+            }
+        }
+    }
+    
+    enum Option: Equatable {
+        case clear
+        case badWord
+        case gap
+        case koreanLang
+        case minCount(Int)
+        
+        var warning: String {
+            switch self {
+            case .clear:
+                return " "
+            case .badWord:
+                return "적절하지 않은 문자가 포함되어 있습니다."
+            case .gap:
+                return "불필요한 공백이 포함되어 있습니다."
+            case .koreanLang:
+                return "한글로 입력해주세요. 영어 이름인 경우 발음대로 입력 (공백없이 입력)"
+            case .minCount(let count):
+                return "\(count)자 이상 입력해주세요."
+            }
+        }
+        
+        static func checkOpt(_ str: String, minCount: Int = 0) -> Self {
+            // 앞뒤 공백을 제거한 문자열
+            let realText = str.trimmingCharacters(in: .whitespaces)
+            // 문자열 앞,뒤에 공백 && 공백으로만 된 문자열
+            guard !realText.isEmpty && realText == str else {
+                return .gap
+            }
+            guard str.checkKoreaLang else {
+                return .koreanLang
+            }
+            guard str.count >= minCount else {
+                return .minCount(minCount)
+            }
+            // 욕설이 포함되어 있는 문자열
+            let checkBadWord = ZenoValidationCheckTFView.badWords.allSatisfy { !realText.contains($0) }
+            guard checkBadWord else {
+                return .badWord
+            }
+            return .clear
+        }
+    }
+    
     /// 문자열 유효성 검사
-    func checkValidation(str: String, minCount: Int = 0) -> Bool {
+    func checkValidation(str: String, minCount: Int = 0, titleKey: String = "문자열") -> Bool {
         // 문자열이 비어있을 때
         guard !str.isEmpty else {
             validationState = .none
@@ -202,7 +215,7 @@ struct ZenoValidationCheckTFView: View {
             validationState = .invailed(result)
             return false
         }
-        validationState = .possibility
+        validationState = .possibility(titleKey)
         return true
     }
 }
