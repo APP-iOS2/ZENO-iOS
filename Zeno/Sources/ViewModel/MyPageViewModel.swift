@@ -60,6 +60,52 @@ final class MypageViewModel: ObservableObject, LoginStatusDelegate {
     /// FIrebase DB
     private let db = Firestore.firestore()
     
+    /// 유저ID 해당하는 받은 알림 전체가  몇 개인지 가져옴,
+    private func getAllZenoCount(userID: String) async -> Int {
+        let query = Firestore.firestore().collection("Alarm")
+                .whereField("showUserID", isEqualTo: userID)
+        let countQuery = query.count
+        do {
+            let snapshot = try await countQuery.getAggregation(source: .server)
+            return Int(truncating: snapshot.count)
+        } catch {
+            print("MypageViewModel.getAllZenoCount : \(error)")
+        }
+        return 0
+    }
+    
+    /// 유저ID 해당하는 zenoString 이 firestore 에서 몇 개인지 가져옴
+    private func getZenoCountByZenoString(userID: String, zenoString: String) async -> Int {
+        // getAllZenoCount 기능과 합치려 했으나 카운트를 제대로 못가져오는 문제가 있어 함수 분리
+        let query = Firestore.firestore().collection("Alarm")
+                .whereField("showUserID", isEqualTo: userID)
+                .whereField("zenoString", isEqualTo: zenoString)
+        let countQuery = query.count
+        do {
+            let snapshot = try await countQuery.getAggregation(source: .server)
+            return Int(truncating: snapshot.count)
+        } catch {
+            print("MypageViewModel.getZenoCountByZenoString : \(error)")
+        }
+        return 0
+    }
+    
+    /// badge 에 필요한 count 정보 fetch 하고 itemRatios 배열에 제노 질문과 % 정보 넣기
+    @MainActor
+    func calcZenoQuestionRatioForBadge() async {
+        if let currentUser = Auth.auth().currentUser?.uid {
+            let zenoStringAllCount = await getAllZenoCount(userID: currentUser)
+            for zeno in Zeno.ZenoQuestions {
+                let count = await getZenoCountByZenoString(userID: currentUser, zenoString: zeno.question)
+                if count != 0 {
+                    let ratio = Double(count) / Double(zenoStringAllCount)
+                    self.itemRatios[zeno.question] = ratio * 100
+                }
+            }
+            print("MypageViewModel.calcZenoQuestionRatioForBadge : \n allCount : \(zenoStringAllCount), getdata : \(itemRatios.count)")
+        }
+    }
+    
     /// zenoString들의 뱃지를 위한 비율을 계산하는 함수 (항목 / 전체 zenoString 개수)
     func zenoStringCalculator() {
         print("😡 \(self.zenoStringAll)")

@@ -114,8 +114,8 @@ struct MyPageMain: View {
             .task {
                 await mypageViewModel.getUserInfo()
                 getUserData()
-                await mypageViewModel.fetchAllAlarmData()
-                mypageViewModel.zenoStringCalculator()
+    //                await mypageViewModel.fetchAllAlarmData()
+                await mypageViewModel.calcZenoQuestionRatioForBadge()
             }
             .environmentObject(mypageViewModel)
             .foregroundColor(.white)
@@ -123,8 +123,8 @@ struct MyPageMain: View {
                 Task {
                     await mypageViewModel.getUserInfo()
                     getUserData()
-                    await mypageViewModel.fetchAllAlarmData()
-                    mypageViewModel.zenoStringCalculator()
+//                    await mypageViewModel.fetchAllAlarmData()
+                    await mypageViewModel.calcZenoQuestionRatioForBadge()
                 }
             }
         }
