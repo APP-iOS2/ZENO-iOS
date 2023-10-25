@@ -32,7 +32,7 @@ final class FirebaseManager {
     private init() { }
     
     // MARK: async
-    func create<T: FirebaseAvailable>(data: T) throws where T: Encodable {
+    func create<T: FirebaseAvailable>(data: T) throws {
         let documentRef = db.collection("\(type(of: data))").document(data.id)
         do {
             try documentRef.setData(from: data)
@@ -53,7 +53,7 @@ final class FirebaseManager {
     @discardableResult
     func createWithImage<T: FirebaseAvailable>(data: T,
                                                image: UIImage
-    ) async throws -> T where T: Encodable, T: ZenoProfileVisible {
+    ) async throws -> T where T: ZenoProfileVisible {
         var changableData = data
         do {
             let imageURL = try await createImageURL(id: data.id, image: image)
@@ -81,14 +81,14 @@ final class FirebaseManager {
         }
     }
     
-    func createDummyArray<T: FirebaseAvailable>(datas: [T]) where T: Encodable {
+    func createDummyArray<T: FirebaseAvailable>(datas: [T]) {
         datas.forEach { data in
             let collectionRef = db.collection("\(type(of: data))")
             try? collectionRef.document(data.id).setData(from: data)
         }
     }
     
-    func read<T: FirebaseAvailable>(type: T.Type, id: String) async -> Result<T, Error> where T: Decodable {
+    func read<T: FirebaseAvailable>(type: T.Type, id: String) async -> Result<T, Error> {
         guard !id.isEmpty else {
             return .failure(FirebaseError.emptyID)
         }
@@ -201,7 +201,7 @@ final class FirebaseManager {
         type: T.Type,
         propertyPath keyPath: WritableKeyPath<T, U>,
         defaultValue: U
-    ) async where T: Decodable {
+    ) async {
         let collectionRef = db.collection("\(type)")
         var documentIDs: [String] = []
         guard let query = try? await collectionRef.getDocuments() else { return }
@@ -255,7 +255,7 @@ final class FirebaseManager {
     func searchContains<T: FirebaseAvailable, U>(type: T.Type,
                                                    value keyPath: WritableKeyPath<T, U>,
                                                    searchTerm: String)
-    async -> Result<[T], FirebaseError> where T: Decodable {
+    async -> Result<[T], FirebaseError> {
         let result = db.collection("\(type)").whereField(keyPath.toString, isGreaterThanOrEqualTo: searchTerm)
         do {
             let snapshot = try await result.getDocuments()
@@ -331,7 +331,7 @@ final class FirebaseManager {
     }
     
     /// batch용 setData메서드 -> 모든 data 객체는 id값을 지닌다는 가정.  23.10.24 기준 미완성. (잘 안쓰여서 좀 미뤘음)
-    func setDataInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) -> Bool where T: Encodable {
+    func setDataInBatch<T: FirebaseAvailable>(batch: inout WriteBatch, data: T) -> Bool {
         let documentID = data.id
         guard !documentID.isEmpty else {
             print(#function, "👀 documentID가 존재하지않습니다.")
@@ -374,7 +374,7 @@ final class FirebaseManager {
         value1: String,
         keyPath2: KeyPath<T, U>,
         value2: String
-    ) async -> [T] where T: Decodable {
+    ) async -> [T] {
         do {
             let snapshot = try await db.collection("\(type)")
                 .whereField(keyPath1.toString, isEqualTo: value1)

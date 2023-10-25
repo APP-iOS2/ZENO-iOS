@@ -99,6 +99,23 @@ struct CommRequestListView: View {
 		}
 		.zenoWarning("그룹 가입 신청이 취소되었습니다.", isPresented: $joinRequestCancelAlarm)
     }
+    
+    /// [가입신청] 가입 신청된 커뮤니티 불러오기
+    func getRequestComm(user: User) async -> [Community] {
+        let results = await FirebaseManager.shared.readDocumentsWithIDs(type: Community.self, ids: user.requestComm)
+        
+        var requestComm: [Community] = []
+        
+        await results.asyncForEach { result in
+            switch result {
+            case .success(let comm):
+                requestComm.append(comm)
+            case .failure:
+                print("가입신청 보낸 그룹 정보 불러오기 실패")
+            }
+        }
+        return requestComm
+    }
 }
 
 struct CommRequestListView_Previews: PreviewProvider {
