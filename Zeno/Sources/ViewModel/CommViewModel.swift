@@ -286,6 +286,7 @@ final class CommViewModel: ObservableObject {
                             try await self?.firebaseManager.update(data: user,
                                                                    value: \.requestComm,
                                                                    to: removedRequests)
+                            await self?.deleteAlarm(user: user, comm: currentComm)
                         } catch {
                             print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
                         }
@@ -480,7 +481,7 @@ final class CommViewModel: ObservableObject {
                 }
             }
 //            4. [ ] Firebase의 Alarm 컬렉션에서 currentUser.id == receiveUserID && currentComm == communityID 조건 찾아서 알람 지우기
-            await removeAlarm()
+            await deleteAlarm(user: currentUser, comm: currentComm)
 			print("👩🏻‍🤝‍👨🏼현재 joinedComm: \(joinedComm)")
 			print("👩🏻‍🤝‍👨🏼현재 currentComm: \(currentComm)")
             guard let firstComm = joinedComm.first else { return }
@@ -490,12 +491,9 @@ final class CommViewModel: ObservableObject {
         }
     }
     /// 인자로 들어온 커뮤니티에서 유저가 받은 알람을 지우는 메서드
-    func removeAlarm() async {
-        guard let currentUser,
-              let currentComm
-        else { return }
+    func deleteAlarm(user: User, comm: Community) async {
         var alarms: [Alarm] = []
-        let results = await firebaseManager.readDocumentsWithValues(type: Alarm.self, keyPath1: \.communityID, value1: currentComm.id, keyPath2: \.showUserID, value2: currentUser.id)
+        let results = await firebaseManager.readDocumentsWithValues(type: Alarm.self, keyPath1: \.communityID, value1: comm.id, keyPath2: \.showUserID, value2: user.id)
         alarms.append(contentsOf: results)
         await alarms.asyncForEach {
             do {
@@ -768,7 +766,7 @@ final class CommViewModel: ObservableObject {
     }
     /// currentUser의 정보를 업데이트 하는 함수
     private func updateCurrentUser(user: User) {
-        guard let currentUser else { return     }
+        guard let currentUser else { return }
         guard user.commInfoList.map({ $0.id }) == currentUser.commInfoList.map({ $0.id }) else {
             Task {
                 await MainActor.run {
@@ -809,7 +807,6 @@ final class CommViewModel: ObservableObject {
             print("📝", #function)
             await fetchJoinedComm {
                 forAlarmFunc()
-                self.isFetchComplete = true
             }
         }
     }
