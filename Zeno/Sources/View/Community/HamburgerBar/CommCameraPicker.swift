@@ -12,7 +12,7 @@ import SwiftUI
 struct CommCameraPicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     @Environment(\.dismiss) private var dismiss
-    // 방법 2
+    // 방법 2: Deprecated(~iOS 13)
 //    @Environment(\.presentationMode) private var presentationMode
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> UIImagePickerController {
@@ -44,7 +44,7 @@ struct CommCameraPicker: UIViewControllerRepresentable {
             }
             
             imagePicker.dismiss()
-            // 방법 2
+            // 방법 2: Deprecated(~iOS 13)
 //            imagePicker.presentationMode.wrappedValue.dismiss()
         }
     }
