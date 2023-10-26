@@ -66,7 +66,7 @@ final class CommViewModel: ObservableObject {
                 .map { $0.id }
                 .contains($0.id)
         }
-        return exceptCurrentUser(users: users)
+        return exceptCurrentUser(users)
     }
     /// 선택된 커뮤니티의 매니저인지 확인해 햄버거바의 세팅을 보여주기 위한 Bool
     var isCurrentCommManager: Bool {
@@ -168,9 +168,18 @@ final class CommViewModel: ObservableObject {
         saveRecentSearches()
     }
     /// User배열에서 현재 로그인된 유저를 제외하기 위한 함수
-    private func exceptCurrentUser(users: [User]) -> [User] {
+    private func exceptCurrentUser(_ users: [User]) -> [User] {
         guard let currentUser else { return users }
         return users.filter { $0.id != currentUser.id }
+    }
+    /// User배열에서 현재 로그인된 유저를 첫번째 순서로 바꾸기 위한 함수
+    private func sortCurrentUserToFirst(_ users: [User]) -> [User] {
+        guard let currentUser,
+              let index = users.firstIndex(of: currentUser)
+        else { return users }
+        var results = users
+        results.swapAt(0, index)
+        return results
     }
 	/// [커뮤니티최근검색] 최신화된 유저디폴트 불러오기
 	private func loadRecentSearches() {
@@ -859,10 +868,12 @@ final class CommViewModel: ObservableObject {
             // 2. 현재 그룹 유저 ID 나누기
             let currentCommMemberIDs = fetchComm.joinMembers.map { $0.id }
             // 3. 유저 ID로 유저객체값 받기
-            let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
-                                                                     ids: currentCommMemberIDs)
+            let results = await firebaseManager.readDocumentsWithIDs(
+                type: User.self,
+                ids: currentCommMemberIDs
+            )
             // 4. result의 유저객체값 분류
-            let currentUsers = results.compactMap {
+            let currentMembers = results.compactMap {
                 switch $0 {
                 case .success(let success):
                     return success
@@ -871,7 +882,7 @@ final class CommViewModel: ObservableObject {
                 }
             }
             // 5. 현재 그룹의 유저정보에 뿌려주기
-            self.currentCommMembers = exceptCurrentUser(users: currentUsers)
+            self.currentCommMembers = exceptCurrentUser(currentMembers)
                 .filter { currentCommMemberIDs.contains($0.id) }
         } catch {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
@@ -887,10 +898,12 @@ final class CommViewModel: ObservableObject {
             if isCurrentCommManager {
                 let fetchComm = try resultComm.get()
                 // 3. 유저 ID로 유저객체값 받기
-                let results = await firebaseManager.readDocumentsWithIDs(type: User.self,
-                                                                         ids: fetchComm.waitApprovalMemberIDs)
+                let results = await firebaseManager.readDocumentsWithIDs(
+                    type: User.self,
+                    ids: fetchComm.waitApprovalMemberIDs
+                )
                 // 4. result의 유저객체값 분류
-                let currentUsers = results.compactMap {
+                let waitUsers = results.compactMap {
                     switch $0 {
                     case .success(let success):
                         return success
@@ -899,7 +912,7 @@ final class CommViewModel: ObservableObject {
                     }
                 }
                 // 5. 현재 그룹의 가입신청 유저정보에 뿌려주기
-                self.currentWaitApprovalMembers = exceptCurrentUser(users: currentUsers)
+                self.currentWaitApprovalMembers = waitUsers
                     .filter { fetchComm.waitApprovalMemberIDs.contains($0.id) }
                 print(#function + "🔵📝 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
             }
