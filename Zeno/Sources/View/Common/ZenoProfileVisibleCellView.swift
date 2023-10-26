@@ -11,7 +11,7 @@ import SwiftUI
 struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
     let item: Item
     let isBtnHidden: Bool
-	let manager: Bool
+	let isManager: Bool
     let label: () -> Label
     let interaction: (Item) -> Void
     
@@ -28,7 +28,7 @@ struct ZenoProfileVisibleCellView<Item: ZenoProfileVisible, Label: View>: View {
 				HStack(alignment: .top) {
 					Text("\(item.name)")
 						.font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 15))
-					if manager {
+					if isManager {
 						Image("crown")
 							.resizable()
 							.frame(width: 13, height: 13)

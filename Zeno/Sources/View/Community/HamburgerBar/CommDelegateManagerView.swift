@@ -37,7 +37,7 @@ struct CommDelegateManagerView: View {
                     HStack {
 						ZenoProfileVisibleCellView(item: user,
 												   isBtnHidden: false,
-												   manager: commViewModel.checkManagerUser(user: user)) {
+												   isManager: commViewModel.checkManagerUser(user: user)) {
                             HStack(alignment: .bottom, spacing: 2) {
                                 Image(systemName: "person.crop.square.filled.and.at.rectangle")
                                 Text("매니저 권한 위임")
