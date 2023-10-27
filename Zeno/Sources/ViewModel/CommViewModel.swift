@@ -903,27 +903,25 @@ final class CommViewModel: ObservableObject {
         let resultComm = await firebaseManager.read(type: Community.self, id: currentCommID.description)
         print("📝", #function)
         do {
-            if isCurrentCommManager {
-                let fetchComm = try resultComm.get()
-                // 3. 유저 ID로 유저객체값 받기
-                let results = await firebaseManager.readDocumentsWithIDs(
-                    type: User.self,
-                    ids: fetchComm.waitApprovalMemberIDs
-                )
-                // 4. result의 유저객체값 분류
-                let waitUsers = results.compactMap {
-                    switch $0 {
-                    case .success(let success):
-                        return success
-                    case .failure:
-                        return nil
-                    }
+            let fetchComm = try resultComm.get()
+            // 3. 유저 ID로 유저객체값 받기
+            let results = await firebaseManager.readDocumentsWithIDs(
+                type: User.self,
+                ids: fetchComm.waitApprovalMemberIDs
+            )
+            // 4. result의 유저객체값 분류
+            let waitUsers = results.compactMap {
+                switch $0 {
+                case .success(let success):
+                    return success
+                case .failure:
+                    return nil
                 }
-                // 5. 현재 그룹의 가입신청 유저정보에 뿌려주기
-                self.currentWaitApprovalMembers = waitUsers
-                    .filter { fetchComm.waitApprovalMemberIDs.contains($0.id) }
-                print(#function + "🔵📝 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
             }
+            // 5. 현재 그룹의 가입신청 유저정보에 뿌려주기
+            self.currentWaitApprovalMembers = waitUsers
+                .filter { fetchComm.waitApprovalMemberIDs.contains($0.id) }
+            print(#function + "🔵📝 현재 지원한 멤버 \(self.currentWaitApprovalMembers.map { $0.name })")
         } catch {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
         }
