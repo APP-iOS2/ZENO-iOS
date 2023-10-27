@@ -46,7 +46,7 @@ struct CommSideBarView: View {
                                 case .memberMGMT:
                                     isSelectContent.toggle()
                                 case .inviteComm:
-                                    commViewModel.kakao()
+                                    commViewModel.inviteWithKakao()
                                 case .delegateManager:
                                     if commViewModel.isCurrentCommManager {
                                         isDelegateManagerView = true
@@ -68,7 +68,7 @@ struct CommSideBarView: View {
                                     case .memberMGMT:
                                         isSelectContent.toggle()
                                     case .inviteComm:
-                                        commViewModel.kakao()
+                                        commViewModel.inviteWithKakao()
                                     case .delegateManager:
                                         if commViewModel.isCurrentCommManager {
                                             isDelegateManagerView = true
