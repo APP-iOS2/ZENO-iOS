@@ -258,6 +258,49 @@ final class CommViewModel: ObservableObject {
             print(#function + "User Document에 commInfoList 업데이트 실패")
         }
     }
+    // db의 User 컬렉션중 currentComm에 가입된 유저 탐색 후 commInfo 삭제
+    private func deleteJoinedMembersInfo(comm: Community) async {
+        let joinedMemberIDs = comm.joinMembers.map { $0.id }
+        let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedMemberIDs)
+        await joinedResults.asyncForEach { [weak self] result in
+            switch result {
+            case .success(let user):
+                let removedCommInfo = user.commInfoList.filter { $0.id != comm.id }
+                do {
+                    try await self?.firebaseManager.update(data: user,
+                                                           value: \.commInfoList,
+                                                           to: removedCommInfo)
+                } catch {
+                    print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
+                }
+            case .failure:
+                print(#function + "삭제 된 커뮤니티의 joinMembers의 id가 User Collection에서 Document 찾기 실패함")
+            }
+        }
+    }
+    // db의 User 컬렉션중 currentComm에 가입신청된 유저 탐색 후 삭제
+    private func deleteWaitMembersInfo(comm: Community) async {
+        let waitResults = await firebaseManager.readDocumentsWithIDs(
+            type: User.self,
+            ids: comm.waitApprovalMemberIDs
+        )
+        await waitResults.asyncForEach { [weak self] result in
+            switch result {
+            case .success(let user):
+                let removedRequests = user.requestComm.filter { $0 != comm.id }
+                do {
+                    try await self?.firebaseManager.update(data: user,
+                                                           value: \.requestComm,
+                                                           to: removedRequests)
+                    await self?.deleteAlarm(user: user, comm: comm)
+                } catch {
+                    print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
+                }
+            case .failure:
+                print(#function + "삭제 된 커뮤니티의 waitApprovalMembers의 id가 User Collection에서 Document 찾기 실패함")
+            }
+        }
+    }
     /// 매니저가 커뮤니티를 제거하고 가입, 가입신청된 User의 commInfoList에서 커뮤니티 정보를 제거하는  함수
     @MainActor
     func deleteComm() async {
@@ -266,43 +309,8 @@ final class CommViewModel: ObservableObject {
             do {
                 // currentComm 정보 삭제
                 try await firebaseManager.delete(data: currentComm)
-                let joinedIDs = currentComm.joinMembers.map { $0.id }
-                // db의 User 컬렉션중 currentComm에 가입된 유저 탐색 후 삭제
-                let joinedResults = await firebaseManager.readDocumentsWithIDs(type: User.self, ids: joinedIDs)
-                await joinedResults.asyncForEach { [weak self] result in
-                    switch result {
-                    case .success(let user):
-                        let removedCommInfo = user.commInfoList.filter { $0.id != currentComm.id }
-                        do {
-                            try await self?.firebaseManager.update(data: user,
-                                                                   value: \.commInfoList,
-                                                                   to: removedCommInfo)
-                        } catch {
-                            print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
-                        }
-                    case .failure:
-                        print(#function + "삭제 된 커뮤니티의 joinMembers의 id가 User Collection에서 Document 찾기 실패함")
-                    }
-                }
-                // db의 User 컬렉션중 currentComm에 가입신청된 유저 탐색 후 삭제
-                let waitResults = await firebaseManager.readDocumentsWithIDs(type: User.self,
-                                                                             ids: currentComm.waitApprovalMemberIDs)
-                await waitResults.asyncForEach { [weak self] result in
-                    switch result {
-                    case .success(let user):
-                        let removedRequests = user.requestComm.filter { $0 != currentComm.id }
-                        do {
-                            try await self?.firebaseManager.update(data: user,
-                                                                   value: \.requestComm,
-                                                                   to: removedRequests)
-                            await self?.deleteAlarm(user: user, comm: currentComm)
-                        } catch {
-                            print(#function + "커뮤니티 삭제 후 \(user.id)에서 commInfoList의 삭제 된 커뮤니티 정보 제거 실패")
-                        }
-                    case .failure:
-                        print(#function + "삭제 된 커뮤니티의 waitApprovalMembers의 id가 User Collection에서 Document 찾기 실패함")
-                    }
-                }
+                await deleteJoinedMembersInfo(comm: currentComm)
+                await deleteWaitMembersInfo(comm: currentComm)
                 // 작업이 끝나고 currentCommID 변경
                 if let currentCommID = currentUser?.commInfoList.first {
                     setCurrentID(id: currentCommID.id)
@@ -650,7 +658,7 @@ final class CommViewModel: ObservableObject {
         }
     }
     /// 카카오톡앱에 currentComm 초대링크 공유
-    func kakao() {
+    func inviteWithKakao() {
         guard let currentComm,
               let currentUser
         else { return }

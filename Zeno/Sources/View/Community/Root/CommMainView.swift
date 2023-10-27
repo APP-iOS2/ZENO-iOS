@@ -34,7 +34,7 @@ struct CommMainView: View {
                             .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
                             if commViewModel.currentCommMembers.isEmpty {
                                 Button {
-                                    commViewModel.kakao()
+                                    commViewModel.inviteWithKakao()
                                 } label: {
                                     VStack {
                                         LottieView(lottieFile: "invitePeople")
