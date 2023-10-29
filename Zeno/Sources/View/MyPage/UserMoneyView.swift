@@ -33,7 +33,7 @@ struct UserMoneyView: View {
                     }
                 }
                 .sheet(isPresented: $isPurchaseSheet, content: {
-                    PurchaseView()
+                    PurchaseView(isShowPaymentSheet: .constant(false))
                         .presentationDetents([.fraction(0.4)])
                         .presentationDragIndicator(.visible)
                 })
