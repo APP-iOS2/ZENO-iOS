@@ -221,7 +221,7 @@ struct AlarmView: View {
                             primaryAction: { isPurchaseSheet.toggle() }
                         )
                         .sheet(isPresented: $isPurchaseSheet, content: {
-                            PurchaseView()
+                            PurchaseView(isShowPaymentSheet: $isShowPaymentSheet)
                                 .presentationDetents([.fraction(0.4)])
                                 .presentationDragIndicator(.visible)
                             }
