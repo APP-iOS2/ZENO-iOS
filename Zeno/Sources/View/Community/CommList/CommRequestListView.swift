@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommRequestListView: View {
-	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	@Environment(\.dismiss) private var dismiss
 	

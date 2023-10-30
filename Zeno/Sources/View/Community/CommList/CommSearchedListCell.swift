@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommSearchedListCell: View {
-	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
 	let comm: Community
