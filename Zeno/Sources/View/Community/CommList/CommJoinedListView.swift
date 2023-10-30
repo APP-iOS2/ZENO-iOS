@@ -75,8 +75,8 @@ struct CommJoinedListView: View {
                         } else {
                             ForEach(commViewModel.joinedComm) { comm in
                                 Button {
-                                    commViewModel.setCurrentID(id: comm.id)
                                     isPresented = false
+                                    commViewModel.setCurrentID(id: comm.id)
                                 } label: {
                                     HStack(alignment: .center) {
                                         Circle()

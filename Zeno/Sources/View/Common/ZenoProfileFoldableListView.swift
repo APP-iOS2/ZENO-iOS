@@ -42,7 +42,7 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
                                            interaction: interaction)
             }
         }
-        .modifier(HomeListModifier())
+        .homeList()
         .onChange(of: isListFold) { _ in
             if isListFold {
                 withAnimation {
