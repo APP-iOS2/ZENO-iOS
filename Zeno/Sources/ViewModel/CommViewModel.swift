@@ -537,7 +537,6 @@ final class CommViewModel: ObservableObject {
 											 value: \.waitApprovalMemberIDs,
 											 to: result.waitApprovalMemberIDs + [currentUser.id])
 			
-            
             // 해당 커뮤니티의 매니저에게 푸시 노티 발사
             let managerInfoResult = await firebaseManager.read(type: User.self, id: comm.managerID)
             switch managerInfoResult {

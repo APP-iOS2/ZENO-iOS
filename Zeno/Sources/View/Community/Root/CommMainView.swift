@@ -29,7 +29,7 @@ struct CommMainView: View {
                                 NewUserListView(isShowingDetailNewBuddyToggle: $isShowingDetailNewBuddyToggle)
                                 SearchableUserListView(isShowingUserSearchView: $isShowingUserSearchView)
                             }
-                            .modifier(HomeListModifier())
+                            .homeList()
                             .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
                             if commViewModel.currentCommMembers.isEmpty {
                                 Button {
@@ -124,19 +124,21 @@ struct CommMainView: View {
     
     var groupNameToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button {
-                commViewModel.isShowingCommListSheet.toggle()
-            } label: {
-                HStack {
-                    Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
-                        .foregroundColor(.primary)
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12))
-                        .fontWeight(.semibold)
+            if let currentComm = commViewModel.currentComm {
+                Button {
+                    commViewModel.isShowingCommListSheet.toggle()
+                } label: {
+                    HStack {
+                        Text(currentComm.name)
+                            .foregroundColor(.primary)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 12))
+                            .fontWeight(.semibold)
+                    }
+                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
+                    .foregroundColor(.primary)
                 }
-                .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                .foregroundColor(.primary)
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-//  AppDelegate+FCM.swift
+//  AppDelegate.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/13.
