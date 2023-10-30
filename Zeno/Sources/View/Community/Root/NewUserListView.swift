@@ -10,7 +10,6 @@ import SwiftUI
 
 struct NewUserListView: View {
     @EnvironmentObject private var commViewModel: CommViewModel
-    @EnvironmentObject private var userViewModel: UserViewModel
     
     @Binding var isShowingDetailNewBuddyToggle: Bool
     

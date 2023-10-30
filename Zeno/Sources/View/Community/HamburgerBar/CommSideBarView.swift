@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommSideBarView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @Binding var isPresented: Bool
     
@@ -184,7 +183,6 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
-//                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }
@@ -252,7 +250,6 @@ struct GroupSideBarView_Preview: PreviewProvider {
         var body: some View {
             CommSideBarView(isPresented: $isPresented)
                 .environmentObject(commViewModel)
-                .environmentObject(UserViewModel())
                 .onAppear {
                     commViewModel.currentCommMembers = [
                         .fakeCurrentUser,

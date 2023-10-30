@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommRequestView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
     @Binding var isShowingCommRequestView: Bool
@@ -66,7 +65,6 @@ struct CommRequestView: View {
                         Task {
                             do {
                                 try await commViewModel.requestJoinComm(comm: comm)
-//                                try await userViewModel.addRequestComm(comm: comm)
                                 self.showingAlert = true
                                 self.aplicationStatus = true
                                 print("성공\(self.showingAlert)")
@@ -125,7 +123,6 @@ struct CommRequestView: View {
 struct CommReqestView_Previews: PreviewProvider {
     static var previews: some View {
         CommRequestView(isShowingCommRequestView: .constant(true), aplicationStatus: true, comm: Community.dummy[0])
-            .environmentObject(UserViewModel())
             .environmentObject(CommViewModel())
     }
 }

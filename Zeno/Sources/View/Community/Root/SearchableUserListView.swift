@@ -12,7 +12,6 @@ struct SearchableUserListView: View {
     @Binding var isShowingUserSearchView: Bool
     
     @EnvironmentObject private var commViewModel: CommViewModel
-    @EnvironmentObject private var userViewModel: UserViewModel
     
     @FocusState private var isFocusedKeyboard: Bool
     
@@ -76,6 +75,5 @@ struct SearchableUserListView_Previews: PreviewProvider {
     static var previews: some View {
         SearchableUserListView(isShowingUserSearchView: .constant(true))
             .environmentObject(CommViewModel())
-            .environmentObject(UserViewModel())
     }
 }

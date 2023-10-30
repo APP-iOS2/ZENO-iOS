@@ -11,7 +11,6 @@ import SwiftUI
 struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
-	@EnvironmentObject private var userViewModel: UserViewModel
     
     @State private var deportUser = User.emptyUser
     @State private var isDeportAlert = false

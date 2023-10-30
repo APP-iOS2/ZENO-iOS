@@ -9,7 +9,6 @@
 import SwiftUI
 /// 전체 커뮤니티 검색 뷰
 struct CommSearchView: View {
-	@EnvironmentObject private var userViewModel: UserViewModel
 	@EnvironmentObject private var commViewModel: CommViewModel
 	
 	@Binding var isShowingSearchCommSheet: Bool

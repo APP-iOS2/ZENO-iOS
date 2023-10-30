@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommMainView: View {
-    @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var commViewModel: CommViewModel
     @EnvironmentObject var tabBarViewModel: TabBarViewModel
     
@@ -159,7 +158,6 @@ struct CommMainView: View {
 
 struct HomeMainView_Previews: PreviewProvider {
     struct Preview: View {
-        @StateObject private var userViewModel: UserViewModel = .init()
         @StateObject private var commViewModel: CommViewModel = .init()
         @StateObject private var zenoViewModel: ZenoViewModel = .init()
         @StateObject private var mypageViewModel: MypageViewModel = .init()
@@ -168,7 +166,6 @@ struct HomeMainView_Previews: PreviewProvider {
         var body: some View {
             TabBarView()
                 .edgesIgnoringSafeArea(.vertical)
-                .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
                 .environmentObject(mypageViewModel)
@@ -178,7 +175,6 @@ struct HomeMainView_Previews: PreviewProvider {
                         let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
                         switch result {
                         case .success(let user):
-                            userViewModel.currentUser = user
                             commViewModel.userListenerHandler(user: user)
                         case .failure:
                             print("preview 유저로드 실패")

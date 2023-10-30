@@ -13,7 +13,6 @@ struct CommJoinedListView: View {
     @Binding var isPresentedAddCommView: Bool
 	@Binding var isPresentedRequestCommView: Bool
     
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     
     var body: some View {
@@ -168,7 +167,6 @@ extension CommJoinedListView {
 struct GroupListView_Previews: PreviewProvider {
     struct Preview: View {
         @StateObject private var tabBarViewModel: TabBarViewModel = .init()
-        @StateObject private var userViewModel: UserViewModel = .init()
         @StateObject private var commViewModel: CommViewModel = .init()
         @StateObject private var zenoViewModel: ZenoViewModel = .init()
         @StateObject private var mypageViewModel: MypageViewModel = .init()
@@ -183,7 +181,6 @@ struct GroupListView_Previews: PreviewProvider {
 								 isPresentedRequestCommView: .constant(false))
                 }
                 .environmentObject(tabBarViewModel)
-                .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
                 .environmentObject(zenoViewModel)
                 .environmentObject(mypageViewModel)
@@ -193,7 +190,6 @@ struct GroupListView_Previews: PreviewProvider {
                         let result = await FirebaseManager.shared.read(type: User.self, id: "neWZ4Vm1VsTH5qY5X5PQyXTNU8g2")
                         switch result {
                         case .success(let user):
-                            userViewModel.currentUser = user
                             commViewModel.userListenerHandler(user: user)
                         case .failure:
                             print("preview 유저로드 실패")
