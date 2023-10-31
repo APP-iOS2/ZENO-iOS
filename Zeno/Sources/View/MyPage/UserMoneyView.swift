@@ -8,16 +8,24 @@
 
 import SwiftUI
 
+private class UserMoneyViewModel: ObservableObject {
+    @Published var isPruchaseSheet: Bool = false
+    
+    fileprivate func tappedPruchaseButton() {
+        self.isPruchaseSheet = true
+    }
+}
+
 struct UserMoneyView: View {
-    @EnvironmentObject private var mypageViewModel: MypageViewModel
-    @State private var isPurchaseSheet: Bool = false
+    @StateObject private var userMoneyViewModel: UserMoneyViewModel = UserMoneyViewModel()
+    @ObservedObject var mypageViewModel: MypageViewModel
+//    @State private var isPurchaseSheet: Bool = false
     
     var body: some View {
         HStack {
             VStack(spacing: 3) {
                 Button {
-                    print("구매 페이지로 연결!!!")
-                    isPurchaseSheet.toggle()
+                    userMoneyViewModel.tappedPruchaseButton()
                 } label: {
                     VStack(spacing: 3) {
                         Text("\(mypageViewModel.userInfo?.showInitial ?? 0)")
@@ -32,13 +40,13 @@ struct UserMoneyView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $isPurchaseSheet, content: {
+                .sheet(isPresented: $userMoneyViewModel.isPruchaseSheet, content: {
                     PurchaseView(isShowPaymentSheet: .constant(false))
                         .presentationDetents([.fraction(0.4)])
                         .presentationDragIndicator(.visible)
                 })
             }
-            .frame(maxWidth: .infinity/3)
+            .frame(maxWidth: .infinity)
             
             /// 코인
             VStack( spacing: 4) {
@@ -48,7 +56,7 @@ struct UserMoneyView: View {
                 Text("코인")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
             }
-            .frame(maxWidth: .infinity/3)
+            .frame(maxWidth: .infinity)
             
             /// 지목 받은 제노
             VStack(spacing: 3) {
@@ -58,7 +66,7 @@ struct UserMoneyView: View {
                 Text("득표수")
                     .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
             }
-            .frame(maxWidth: .infinity/3)
+            .frame(maxWidth: .infinity)
         }
         .padding(10)
         .foregroundColor(.primary)
@@ -67,7 +75,6 @@ struct UserMoneyView: View {
 
 struct UserMoneyView_Previews: PreviewProvider {
     static var previews: some View {
-        UserMoneyView()
-            .environmentObject(MypageViewModel())
+        UserMoneyView(mypageViewModel: MypageViewModel())
     }
 }
