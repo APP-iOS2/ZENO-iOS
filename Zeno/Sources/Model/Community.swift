@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoProfileVisible {
+struct Community: Identifiable, Codable, Hashable, FirebaseAvailable, ZenoProfileVisible, Equatable {
 	var id: String = UUID().uuidString
 	/// 커뮤니티 이름
 	var name: String

@@ -7,7 +7,6 @@ struct ZenoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var commViewModel = CommViewModel()
-    @StateObject private var mypageViewModel = MypageViewModel()
     @StateObject private var alarmViewModel: AlarmViewModel = AlarmViewModel()
     @StateObject private var iAPStore: IAPStore = IAPStore()
 	
@@ -24,7 +23,6 @@ struct ZenoApp: App {
             InitialView()
                 .environmentObject(userViewModel)
                 .environmentObject(commViewModel)
-                .environmentObject(mypageViewModel)
                 .environmentObject(alarmViewModel)
                 .environmentObject(iAPStore)
                 .onReceive(SignStatusObserved.shared.$signStatus, perform: { newValue in

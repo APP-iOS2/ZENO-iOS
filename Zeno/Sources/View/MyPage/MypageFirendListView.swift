@@ -13,10 +13,14 @@ import FirebaseFirestoreSwift
 import Kingfisher
 
 struct MypageFriendListView: View {
-    @EnvironmentObject private var mypageViewModel: MypageViewModel
+    @ObservedObject var mypageViewModel: MypageViewModel
     /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
     @State private var selectedGroupID = "all"
     @State private var isFetchingData = false
+    
+//    init(mypageViewModel: MypageViewModel) {
+//        self.mypageViewModel = mypageViewModel
+//    }
     
     var body: some View {
         VStack {
@@ -150,8 +154,7 @@ struct MypageFriendListView: View {
 
 struct MypageFirendListView_Previews: PreviewProvider {
     static var previews: some View {
-        MypageFriendListView()
-            .environmentObject(MypageViewModel())
+        MypageFriendListView(mypageViewModel: MypageViewModel())
     }
 }
 

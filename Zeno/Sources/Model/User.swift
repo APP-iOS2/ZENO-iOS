@@ -6,6 +6,7 @@
 //  Copyright © 2023 https://github.com/gnksbm/Zeno. All rights reserved.
 //
 
+import SwiftUI
 import Foundation
 
 struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisible {
@@ -37,7 +38,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
     /// 제노 시작 시간
     var ZenoStartAt: Double = Date().timeIntervalSince1970
 
-    struct joinedCommInfo: Hashable, Codable {
+    struct joinedCommInfo: Hashable, Codable, Equatable {
         var id: Community.ID
         var buddyList: [User.ID] = []
         var alert: Bool = true
@@ -45,7 +46,7 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
 }
 
 /// 성별 정보 열거형(내부용)
-enum Gender: Codable, CaseIterable {
+enum Gender: Codable, CaseIterable, Equatable {
     case male, female
     
     var toString: String {

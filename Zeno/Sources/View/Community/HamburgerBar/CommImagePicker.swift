@@ -31,6 +31,7 @@ struct CommImagePicker: UIViewControllerRepresentable {
         return Coordinator(selectedImage: $selectedImage)
     }
     
+    @MainActor
     final class Coordinator: NSObject, PHPickerViewControllerDelegate {
         @Binding var selectedImage: UIImage?
         
