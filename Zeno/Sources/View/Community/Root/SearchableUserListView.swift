@@ -15,13 +15,10 @@ struct SearchableUserListView: View {
     
     @FocusState private var isFocusedKeyboard: Bool
     
-    
     var body: some View {
         LazyVStack {
             Section {
-                ForEach(isShowingUserSearchView ?
-                        commViewModel.searchedUsers :
-                            commViewModel.currentCommMembers) { user in
+                ForEach(commViewModel.searchedUsers) { user in
                     ZenoProfileVisibleCellView(item: user,
 											   isBtnHidden: commViewModel.isFriend(user: user),
 											   isManager: commViewModel.checkManagerUser(user: user)) {

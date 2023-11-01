@@ -12,6 +12,7 @@ import KakaoSDKTalk
 import KakaoSDKTemplate
 import KakaoSDKShare
 import Firebase
+import FirebaseFirestore
 import FirebaseFirestoreSwift
 /*
  snapshot - [CurrentUser, CurrentCommunity]
@@ -189,6 +190,7 @@ final class CommViewModel: ObservableObject {
 	}
     
     // MARK: Interaction
+    // 메인 / 햄버거 / 검색
     /// 커뮤니티 추천(미구현)
     func recomendComm() async {
         guard let allBuddies = currentUser?.commInfoList.flatMap({ $0.buddyList }) else { return }
@@ -555,7 +557,7 @@ final class CommViewModel: ObservableObject {
     }
 	
     // MARK: - DeepLink
-    
+    // 서비스객체로 분리
     /// 딥링크 url의 정보를 구분해 처리하는 함수
     /// 1. 가입되어 있을 때: 그룹탭으로 이동해 링크의 커뮤니티를 보여줌
     /// 2. 가입되어 있지않을 때
@@ -703,6 +705,7 @@ final class CommViewModel: ObservableObject {
     }
     
     // MARK: Snapshot
+    // Repository
     /// userSnapshot을 연결하는 함수
     func setUserSnapshot(id: String, forAlarmFunc: @escaping () -> Void = {}) {
         print("📝", #function)
@@ -1012,64 +1015,4 @@ final class CommViewModel: ObservableObject {
     }
     
     // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-}
-// MARK: 테스트용 코드
-enum UserStatus {
-    case unSign
-    case signIn(JoinedCommStatus)
-}
-
-enum JoinedCommStatus {
-    case unJoined
-    case joined
-    case empty
-}
-
-struct TestUser : Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisible {
-    var id: String = UUID().uuidString
-    /// 이름
-    var name: String
-    /// 성별
-    var gender: Gender
-    /// 프로필 이미지
-    var imageURL: String?
-    /// 한줄 소개
-    var description: String = ""
-    /// 카카오 로그인 시 생성된 토큰 저장 용도
-    var kakaoToken: String
-    /// 푸쉬 알람을 위해 현재 유저에게 발급된 token
-    var fcmToken: String?
-    /// 잔여 코인 횟수
-    var coin: Int
-    /// 메가폰 잔여 횟수
-    var megaphone: Int
-    /// 초성보기 사용권 잔여 횟수
-    var showInitial: Int
-    /// 제노 끝나는 시간
-    var zenoEndAt: Double?
-    /// 커뮤니티id, 친구관계, 커뮤니티알람
-    var commInfoList: [joinedCommInfo] = []
-    /// 가입신청한 커뮤니티 id
-    var requestComm: [DocumentReference]
-    /// 제노 시작 시간
-    var ZenoStartAt: Double = Date().timeIntervalSince1970
-
-    struct joinedCommInfo: Hashable, Codable {
-        var comm: DocumentReference
-        var buddyList: [DocumentReference] = []
-        var alert: Bool = true
-    }
-}
-
-func fetchJoinedComm(user: TestUser) async -> [Community] {
-    var comms: [Community] = []
-    await user.commInfoList.asyncForEach {
-        do {
-            let comm = try await $0.comm.getDocument(as: Community.self)
-            comms.append(comm)
-        } catch {
-            
-        }
-    }
-    return comms
 }

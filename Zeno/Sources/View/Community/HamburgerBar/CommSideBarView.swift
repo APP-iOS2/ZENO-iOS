@@ -91,9 +91,6 @@ struct CommSideBarView: View {
                             }
                         }
                     }
-//                    Button("시뮬레이터용 초대버튼") {
-//                        commViewModel.tempShareLink()
-//                    }
                 }
                 .foregroundColor(.primary)
                 .font(.regular(14))
@@ -192,7 +189,7 @@ struct CommSideBarView: View {
         }
     }
     
-    private enum SideMenu: CaseIterable, Identifiable {
+    private enum SideMenu: CaseIterable, CaseIdentifiable {
         case inviteComm, memberMGMT, delegateManager
         
         var title: String {
@@ -205,11 +202,9 @@ struct CommSideBarView: View {
                 return "매니저 위임"
             }
         }
-        
-        var id: Self { self }
     }
     
-    private enum SideBarBtn: CaseIterable, Identifiable {
+    private enum SideBarBtn: CaseIterable, CaseIdentifiable {
         case out
         case alert
         case setting
@@ -224,8 +219,6 @@ struct CommSideBarView: View {
                 return "gearshape"
             }
         }
-        
-        var id: Self { self }
     }
     /// 커뮤니티별 알람정보를 변경해주는 함수
     func commAlertToggle(user: User, comm: Community) async {

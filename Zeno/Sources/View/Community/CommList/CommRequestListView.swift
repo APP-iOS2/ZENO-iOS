@@ -120,5 +120,6 @@ struct CommRequestListView: View {
 struct CommRequestListView_Previews: PreviewProvider {
     static var previews: some View {
 		CommRequestListView(arr: [])
+            .environmentObject(CommViewModel())
     }
 }

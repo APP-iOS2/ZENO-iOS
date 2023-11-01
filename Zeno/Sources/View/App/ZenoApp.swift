@@ -41,7 +41,14 @@ struct ZenoApp: App {
                        
                         print("✔️ userInfo :\(String(describing: userViewModel.currentUser))")
                         if let currentUser = userViewModel.currentUser {
-
+// await [카카오로그인: 로그인 상태관리?] ->
+// Firebase 데이터 통신 (userRepo ㅣ currentUser.id(Auth.currentUser) <- [commRepo, alarmRepo])
+// Home: userViewModel.currentComm -> currentUser의 Alarm 받아옴 -> joinedComm이 받아와지고난뒤 progress 종료
+                            
+// await 카카오로그인 확인 -> userViewModel이 firebase에서 정보 가져옴 -> commViewModel이 firebase에서 정보 가져옴
+// await commViewModel의 (currentComm에 대한) joinedComm fetch ->
+// homeView의 progressview 해제 -> 앱 시작
+// myPage에서 user값 계속 fetch commVM sink
                             if commViewModel.currentUser == nil {
                                 // snapshot 연결
                                 commViewModel.setUserSnapshot(id: currentUser.id) {

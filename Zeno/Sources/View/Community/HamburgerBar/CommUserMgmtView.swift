@@ -113,7 +113,7 @@ struct CommUserMgmtView: View {
 		.zenoWarning("그룹 인원이 꽉 찼습니다.", isPresented: $commViewModel.overCapacity)
     }
     
-    private enum MGMTSection: CaseIterable, Identifiable {
+    private enum MGMTSection: CaseIterable, CaseIdentifiable {
         case wait, general
         
         var header: String {
@@ -124,8 +124,6 @@ struct CommUserMgmtView: View {
                 return "그룹에 가입된 유저"
             }
         }
-        
-        var id: Self { self }
     }
 }
 

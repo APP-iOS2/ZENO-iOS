@@ -64,5 +64,6 @@ struct NewUserListView: View {
 struct NewUserListView_Previews: PreviewProvider {
     static var previews: some View {
         NewUserListView(isShowingDetailNewBuddyToggle: .constant(true))
+            .environmentObject(CommViewModel())
     }
 }

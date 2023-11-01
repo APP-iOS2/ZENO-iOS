@@ -32,58 +32,13 @@ struct CommMainView: View {
                             .homeList()
                             .animation(.default, value: [isShowingDetailNewBuddyToggle, isShowingUserSearchView])
                             if commViewModel.currentCommMembers.isEmpty {
-                                Button {
-                                    commViewModel.inviteWithKakao()
-                                } label: {
-                                    VStack {
-                                        LottieView(lottieFile: "invitePeople")
-                                            .frame(width: .screenWidth * 0.6, height: .screenHeight * 0.3)
-                                            .overlay {
-                                                Image(systemName: "plus.circle.fill")
-                                                    .font(.system(size: 50))
-                                                    .foregroundColor(.mainColor)
-                                                    .offset(x: .screenWidth * 0.24, y: .screenHeight * 0.05)
-                                            }
-                                        Text("친구를 초대해보세요")
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 18))
-                                            .foregroundColor(.primary)
-                                            .offset(y: .screenHeight * -0.03)
-                                    }
-                                }
-                                .frame(height: .screenHeight * 0.55)
+                                CommMainInviteView()
                             }
                         }
                         .scrollDismissesKeyboard(.immediately)
                         .toolbar {
-                            ToolbarItem(placement: .navigationBarLeading) {
-                                Button {
-                                    print("그룹리스트 버튼 탭")
-                                    commViewModel.isShowingCommListSheet.toggle()
-                                } label: {
-                                    HStack {
-                                        Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다")
-                                            .foregroundColor(.primary)
-                                            .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 20))
-                                        Image(systemName: "chevron.down")
-                                            .font(.system(size: 12))
-                                            .fontWeight(.semibold)
-                                    }
-                                    .font(ZenoFontFamily.JalnanOTF.regular.swiftUIFont(size: 20))
-                                    .foregroundColor(.primary)
-                                }
-                            }
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button {
-                                    print("햄버거 버튼 탭")
-                                    isShowingHamburgerView = true
-                                } label: {
-                                    Image(systemName: "line.3.horizontal")
-                                        .font(.system(size: 18))
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.primary)
-                                        .padding(.leading)
-                                }
-                            }
+                            groupNameToolbarItem
+                            hamburgerToolbarItem
                         }
                     } else {
                         // 가입된 커뮤니티가 없을 때
@@ -117,7 +72,7 @@ struct CommMainView: View {
         .onChange(of: tabBarViewModel.selected) { _ in
             isShowingHamburgerView = false
         }
-        .onChange(of: commViewModel.currentComm) { newValue in
+        .onChange(of: commViewModel.currentComm) { _ in
             isShowingUserSearchView = false
         }
     }
