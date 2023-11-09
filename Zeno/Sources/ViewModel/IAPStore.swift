@@ -73,7 +73,6 @@ final class IAPStore: ObservableObject {
     }
     
     func listenForTransactions() -> Task<Void, Error> {
-        // https://www.hackingwithswift.com/quick-start/concurrency/whats-the-difference-between-a-task-and-a-detached-task
         return Task.detached {
             for await result in Transaction.updates {
                 do {
