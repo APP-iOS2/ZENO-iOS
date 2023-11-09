@@ -189,6 +189,11 @@ struct AlarmView: View {
                                 }
                                 usingCoin = false
                             }
+                            .updateAlert(
+                                isPresented: $usingInitialTicket,
+                                primaryAction1: {
+                                    usingInitialTicket.toggle()
+                            })
 //                        .usingAlert(
 //                            isPresented: $usingInitialTicket,
 //                            imageName: "ticket",
