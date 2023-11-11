@@ -51,7 +51,7 @@ struct PurchaseView: View {
                              itemPrice: "1.99",
                              purchaseAction: {
                 Task {
-                    if let product = iAPVM.products.last ?? iAPVM.products.first {
+                    if let product = iAPVM.__consumableProducts.last ?? iAPVM.__consumableProducts.first {
                         do {
                             let purchaseResult = try await iAPVM.purchase(product)
                             
