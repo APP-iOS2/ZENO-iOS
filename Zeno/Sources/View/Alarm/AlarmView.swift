@@ -185,7 +185,7 @@ struct AlarmView: View {
                             usingGoods: 60) {
                                 isShowInitialView.toggle()
                                 Task {
-                                    await userViewModel.updateUserCoin(to: -60)
+                                    await userViewModel.updateUserCoin(to: -10)
                                 }
                                 usingCoin = false
                             }

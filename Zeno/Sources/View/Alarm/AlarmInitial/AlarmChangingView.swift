@@ -63,7 +63,7 @@ struct AlarmChangingView: View {
             usingGoods: 20) {
                 isCheckInitialTwice.toggle()
                 Task {
-                    await userVM.updateUserCoin(to: -20)
+                    await userVM.updateUserCoin(to: -10)
                 }
                 chosung = ChosungCheck(word: selectAlarm.sendUserName)
         }
@@ -98,7 +98,7 @@ struct AlarmChangingView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isFlipped {
-                    if userVM.currentUser?.coin ?? 0 > 0 && initialCheckCount < selectAlarm.sendUserName.count {
+                    if userVM.currentUser?.coin ?? 0 > 10 && initialCheckCount < selectAlarm.sendUserName.count {
                         Button {
                             isCheckInitialTwice = true
                         } label: {

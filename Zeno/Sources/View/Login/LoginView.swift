@@ -42,7 +42,7 @@ struct LoginView: View {
                             }
                         } label: {
                             Image("kakao_login_medium_wide")
-                                .padding(.bottom, .screenHeight / 5)
+                                .padding(.bottom, .screenHeight / 7)
                         }
                     }
                     .frame(width: .screenWidth, height: .screenHeight)
