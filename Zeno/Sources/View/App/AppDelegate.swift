@@ -1,5 +1,5 @@
 //
-//  AppDelegate+FCM.swift
+//  AppDelegate.swift
 //  Zeno
 //
 //  Created by gnksbm on 2023/10/13.
@@ -13,7 +13,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 
-class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     @AppStorage("fcmToken") var fcmToken: String = ""
     
     func application(_ application: UIApplication,

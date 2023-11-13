@@ -30,6 +30,9 @@ struct HomeListCellModifier: ViewModifier {
 }
 
 extension View {
+    func homeList() -> some View {
+        modifier(HomeListModifier())
+    }
     func homeListCell() -> some View {
         modifier(HomeListCellModifier())
     }

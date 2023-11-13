@@ -171,7 +171,7 @@ struct AlarmView: View {
                                     usingInitialTicket.toggle()
                                 } else {
                                     print(" 유료 결제 임")
-                                    isLackingInitialTicket.toggle()
+                                    // isLackingInitialTicket.toggle()
                                     
                                     isShowPaymentSheet = false
                                 }
@@ -185,21 +185,26 @@ struct AlarmView: View {
                             usingGoods: 60) {
                                 isShowInitialView.toggle()
                                 Task {
-                                    await userViewModel.updateUserCoin(to: -60)
+                                    await userViewModel.updateUserCoin(to: -10)
                                 }
                                 usingCoin = false
                             }
-                        .usingAlert(
-                            isPresented: $usingInitialTicket,
-                            imageName: "ticket",
-                            content: "초성 확인권",
-                            quantity: userViewModel.currentUser?.showInitial ?? 0,
-                            usingGoods: 1) {
-                                isShowInitialView.toggle()
-                                Task {
-                                    await userViewModel.updateUserInitialCheck(to: -1)
-                                }
-                            }
+                            .updateAlert(
+                                isPresented: $usingInitialTicket,
+                                primaryAction1: {
+                                    usingInitialTicket.toggle()
+                            })
+//                        .usingAlert(
+//                            isPresented: $usingInitialTicket,
+//                            imageName: "ticket",
+//                            content: "초성 확인권",
+//                            quantity: userViewModel.currentUser?.showInitial ?? 0,
+//                            usingGoods: 1) {
+//                                isShowInitialView.toggle()
+//                                Task {
+//                                    await userViewModel.updateUserInitialCheck(to: -1)
+//                                }
+//                            }
                         .cashAlert(
                             isPresented: $isLackingCoin,
                             imageTitle: nil,
@@ -210,22 +215,22 @@ struct AlarmView: View {
                             primaryButtonTitle: "확인",
                             primaryAction: { /* 송금 로직 */ }
                         )
-                        .cashAlert(
-                            isPresented: $isLackingInitialTicket,
-                            imageTitle: nil,
-                            title: "초성확인권이 부족합니다.",
-                            content: "초성확인권을 구매하세요.",
-                            retainPoint: 0,
-                            lackPoint: 1,
-                            primaryButtonTitle: "확인",
-                            primaryAction: { isPurchaseSheet.toggle() }
-                        )
-                        .sheet(isPresented: $isPurchaseSheet, content: {
-                            PurchaseView()
-                                .presentationDetents([.fraction(0.4)])
-                                .presentationDragIndicator(.visible)
-                            }
-                        )
+//                        .cashAlert(
+//                            isPresented: $isLackingInitialTicket,
+//                            imageTitle: nil,
+//                            title: "초성확인권이 부족합니다.",
+//                            content: "초성확인권을 구매하세요.",
+//                            retainPoint: 0,
+//                            lackPoint: 1,
+//                            primaryButtonTitle: "확인",
+//                            primaryAction: { isPurchaseSheet.toggle() }
+//                        )
+//                        .sheet(isPresented: $isPurchaseSheet, content: {
+//                            PurchaseView(isShowPaymentSheet: $isShowPaymentSheet)
+//                                .presentationDetents([.fraction(0.4)])
+//                                .presentationDragIndicator(.visible)
+//                            }
+//                        )
                         VStack {
                             GeometryReader { proxy in
                                 Color.primary
@@ -272,11 +277,6 @@ struct AlarmView: View {
                 }
             }
             alarmViewModel.isPagenationLast = false
-        }
-        .task {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                alarmViewModel.isFetchComplete = true
-            }
         }
     }
     

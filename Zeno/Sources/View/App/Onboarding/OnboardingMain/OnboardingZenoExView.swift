@@ -46,7 +46,7 @@ struct OnboardingZenoExView: View {
                         .background(
                             Rectangle()
                             .fill(Color(uiColor: .systemGray6))
-                            .frame(width: .screenWidth * 0.9 , height: .screenHeight * 0.18)
+                            .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.18)
                             .cornerRadius(10)
                             .padding(10)
                             .shadow(radius: 1)

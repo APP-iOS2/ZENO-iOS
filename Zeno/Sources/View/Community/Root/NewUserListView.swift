@@ -10,12 +10,11 @@ import SwiftUI
 
 struct NewUserListView: View {
     @EnvironmentObject private var commViewModel: CommViewModel
-    @EnvironmentObject private var userViewModel: UserViewModel
     
     @Binding var isShowingDetailNewBuddyToggle: Bool
     
     var body: some View {
-        VStack {
+        LazyVStack {
             Section {
                 if isShowingDetailNewBuddyToggle && !commViewModel.recentlyJoinedMembers.isEmpty {
                     ScrollView(.horizontal) {
@@ -65,5 +64,6 @@ struct NewUserListView: View {
 struct NewUserListView_Previews: PreviewProvider {
     static var previews: some View {
         NewUserListView(isShowingDetailNewBuddyToggle: .constant(true))
+            .environmentObject(CommViewModel())
     }
 }

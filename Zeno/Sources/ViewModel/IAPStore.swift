@@ -8,27 +8,32 @@
 
 import StoreKit
 
-class IAPStore: ObservableObject {
+public enum StoreError: Error {
+    case failedVerification
+}
+
+final class IAPStore: ObservableObject {
     /// App store conncect에서 생성하는 제품을 식별하는 ID 배열, 추후에 메가폰 적용
-    private var productIDs = ["initialCheck"]
+    private let productIDs = ["initialCheck"]
+    
     @Published var products = [Product]()
     /// 소모성 상품
-    @Published var purchasedConsumables = [Product]()
-    /// 환불처리를 위한 배열
-    @Published var entitlements = [Transaction]()
+    @Published var __consumableProducts: [Product]
+    @Published  var __purchasedIdentifiers = Set<String>()
     
     var transactionListener: Task<Void, Error>?
     
     init() {
+        __consumableProducts = []
+        
         // 놓치는 거래가 없도록 하기 위한
         transactionListener = listenForTransactions()
         
         Task {
             // 일단 init되면서 item 불러오기.
-            print(" 시작 - request")
+            print(" 상품 Request ---")
             await requestProducts()
-            print(" 완료 ? ? ? ? ? ? - request")
-            await updateCurrentEntitlements()
+            print(" 상품 Request 완료 ---")
         }
     }
     
@@ -40,72 +45,92 @@ class IAPStore: ObservableObject {
     @MainActor
     func requestProducts() async {
         do {
-            products = try await Product.products(for: productIDs)
-        } catch {
-            print(error)
-        }
-    }
-    
-    @MainActor
-    func purchase(_ product: Product) async throws -> Transaction? {
-        let result = try await product.purchase()
-        switch result {
-        case .success(.verified(let transaction)):
-            // product type에 따라 분류해서 카운팅
-            switch product.type {
-            case .consumable:
-                purchasedConsumables.append(product)
-//            case .nonConsumable:
-//                purchasedNonConsumables.insert(product)
-            default:
-                return nil
-            }
-            // 결제 성공
-            await transaction.finish()
-            return transaction
+            let storeProducts = try await Product.products(for: productIDs)
             
-        case .userCancelled, .pending:
-            return nil
-        default:
-            return nil
+            var newNonconsums: [Product] = []
+            var newSubscriptions: [Product] = []
+            var newConsums: [Product] = []
+            
+            // 상품의 타입에 맞게 분류
+            for product in storeProducts {
+                switch product.type {
+                case .consumable:
+                    newConsums.append(product)
+                case .nonConsumable:
+                    newNonconsums.append(product)
+                case .autoRenewable:
+                    newSubscriptions.append(product)
+                default:
+                    break
+                }
+            }
+            
+            __consumableProducts = newConsums
+            print("💩 소모성 : \(__consumableProducts)")
+        } catch {
+            print("⚠️ 상품 request 실패: \(error)")
         }
     }
     
-    /// 구매가 일어난 이후에도 에러가 발생할 수 있음 -> 거래 업데이트를 실시간으로 청취하여 해결 가능
-    private func listenForTransactions() -> Task<Void, Error> {
+    func listenForTransactions() -> Task<Void, Error> {
         return Task.detached {
             for await result in Transaction.updates {
-                await self.handle(transactionVerification: result)
+                do {
+                    // 거래가 유효한지 확인
+                    let transaction = try self.checkVerified(result)
+                    
+                    await self.updatePurchasedIdentifiers(transaction)
+                    await transaction.finish()
+                } catch {
+                    print("⚠️ Transaction.updates에서 문제가 있는 것. ")
+                }
             }
         }
     }
     
-    /// 거래된 데이터를 가져오기 위해 존재.
-    private func updateCurrentEntitlements() async {
-        for await result in Transaction.currentEntitlements {
-            if let transaction = await self.handle(transactionVerification: result) {
-                entitlements.append(transaction)
-            }
-        }
-    }
-    
-    /// 구매 복원 옵션
-    @MainActor
-     func restore() async throws {
-      try await AppStore.sync()
-    }
-    
-    @MainActor
-    @discardableResult
-    private func handle(transactionVerification result: VerificationResult<Transaction>) async -> Transaction? {
+    func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
-        case let .verified(transaction):
-            guard let product = self.products.first(where: { $0.id == transaction.productID }) else { return transaction }
-            guard !transaction.isUpgraded else { return nil }
-            _ = try? await self.purchase(product)
+        case .unverified:
+            // JWS를 파싱했지만 확인은 실패 -> 유저한테 전달 X
+            throw StoreError.failedVerification
+        case .verified(let safe):
+            // isPurchased에서 부른경우 safe는 StoreKit.Transaction
+            return safe
+        }
+    }
+    
+    @MainActor
+    func updatePurchasedIdentifiers(_ trd: Transaction) async {
+        // 앱스토어에서 거래 취소가 되지 않았으면 __purchasedIdentifiers 여기에 추가
+        if trd.revocationDate == nil {
+            __purchasedIdentifiers.insert(trd.productID)
+        } else {
+            // 앱스토어에서 거래 취소가 되었다면, __purchasedIdentifiers에서 삭제 -> 기한 만료이거나, 정말 취소한 경우 등
+            __purchasedIdentifiers.remove(trd.productID)
+        }
+    }
+    
+    func AppStoreSync() async {
+        try? await AppStore.sync()
+    }
+    
+    func purchase(_ product: Product) async throws -> Transaction? {
+        // Begin a purchase.
+        let result = try await product.purchase() // authentication 인증 : 디버그에서는 팝업창
+        
+        switch result {
+        case .success(let verification):
+            /// `verification`은 가로 안에서 선언 되었는데, 밖에서 사용이 가능 하다.
+            let transaction = try checkVerified(verification)
+            // Deliver content to the user.
+            await updatePurchasedIdentifiers(transaction)
+            
+            // Always finish a transaction.
             await transaction.finish()
             
             return transaction
+        case .userCancelled, .pending:
+            return nil
         default:
             return nil
         }

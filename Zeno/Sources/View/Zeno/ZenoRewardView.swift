@@ -19,15 +19,15 @@ struct ZenoRewardView: View {
                 Group {
                     Group {
                         Text("20 코인 획득")
-                        Text("")
                     }
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 25))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.heavy.swiftUIFont(size: 25))
                     
                     Group {
                         Text("다음 제노는")
                         Text("10분 후에 풀 수 있어요")
                     }
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 16))
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 20))
+                    .padding(.top, 5)
                 }
                 .offset(y: -.screenHeight * 0.2)
                 

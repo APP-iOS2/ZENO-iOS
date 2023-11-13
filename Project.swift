@@ -84,5 +84,27 @@ let project = Project(
             ],
             settings: config
         )
+    ],
+    schemes: [
+        .init(
+            name: "Zeno",
+            shared: true,
+            buildAction: BuildAction(targets: ["Zeno"]),
+            runAction: .runAction(
+                configuration: .debug,
+//                attachDebugger: true,
+                executable: "Zeno",
+                options: .options(
+                    storeKitConfigurationPath: .relativeToRoot(
+                        "Zeno/Resources/Product.storekit"
+                    ),
+                    enableGPUFrameCaptureMode: .autoEnabled
+                ),
+                diagnosticsOptions: [
+                    .mainThreadChecker,
+                    .performanceAntipatternChecker
+                ]
+            )
+        )
     ]
 )

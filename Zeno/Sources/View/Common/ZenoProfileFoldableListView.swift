@@ -37,12 +37,12 @@ struct ZenoProfileFoldableListView<Item: ZenoProfileVisible,
             ForEach(isListFold ? emptyList : list) { item in
                 ZenoProfileVisibleCellView(item: item,
                                            isBtnHidden: false,
-                                           manager: commViewModel.managerChangeWarning,
+                                           isManager: commViewModel.managerChangeWarning,
                                            label: btnLabel,
                                            interaction: interaction)
             }
         }
-        .modifier(HomeListModifier())
+        .homeList()
         .onChange(of: isListFold) { _ in
             if isListFold {
                 withAnimation {

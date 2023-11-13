@@ -10,58 +10,64 @@ import SwiftUI
 import Kingfisher
 
 /// 프로필 수정 View
-struct UserProfileEdit: View {
-    @EnvironmentObject var mypageVM: MypageViewModel
+final class UserProfileEditViewModel: ObservableObject {
+    @Published var name: String = ""
+    @Published var descriptionText: String = ""
+    @Published var gender: Gender
+    @Published var profileImageURL: String = ""
+    
+    @Published var isChecking: Bool = false
+    @Published var isProgressLoading: Bool = false
+    @Published var selectedImage: UIImage?
+    @Published var isImagePicker: Bool = false
+    
+    init(name: String = "",
+         descriptionText: String = "",
+         gender: Gender = .female,
+         isChecking: Bool = false,
+         isProgressLoading: Bool = false,
+         selectedImage: UIImage? = nil,
+         isImagePicker: Bool = false) {
+        self.name = name
+        self.descriptionText = descriptionText
+        self.gender = gender
+        self.isChecking = isChecking
+        self.isProgressLoading = isProgressLoading
+        self.selectedImage = selectedImage
+        self.isImagePicker = isImagePicker
+    }
+}
+
+struct UserProfileEditView: View {
     @Environment(\.dismiss) var dismiss
     
-    @State private var nameText: String = ""
-    @State private var descriptionText: String = ""
-    @State private var isChecking: Bool = false
-    @State private var gender: Gender = .male
-    @State private var profileImageURL: String = ""
-    @State private var selectedImage: UIImage?
-    @State private var isImagePicker: Bool = false
-    @State private var isProgressLoading: Bool = false
-        
-    @ViewBuilder
-    private var profileImage: some View {
-        if let img = selectedImage {
-            Image(uiImage: img)
-                .resizable()
-                .frame(width: 150, alignment: .center)
-                .aspectRatio(contentMode: .fit)
+    @ObservedObject var mypageVM: MypageViewModel
+    @StateObject private var userProfileViewModel = UserProfileEditViewModel()
+    
+    @ViewBuilder private var profileImage: some View {
+        if let img = userProfileViewModel.selectedImage {
+            Image(uiImage: img).resizable()
         } else {
-            if profileImageURL != KakaoAuthService.shared.noneImageURL {
-                KFImage(URL(string: profileImageURL))
+            if userProfileViewModel.profileImageURL != KakaoAuthService.shared.noneImageURL {
+                KFImage(URL(string: userProfileViewModel.profileImageURL))
                     .cacheOriginalImage()
                     .resizable()
                     .placeholder {
                         Image(asset: ZenoAsset.Assets.zenoIcon)
                             .resizable()
                     }
-                    .frame(width: 150, alignment: .center)
-                    .aspectRatio(contentMode: .fit)
             } else {
-                ZenoKFImageView(User(name: "", gender: gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
+                ZenoKFImageView(User(name: "", gender: userProfileViewModel.gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []),
                                 ratio: .fit,
                 isRandom: false)
-                .frame(width: 150, alignment: .center)
             }
         }
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Circle()
-                .frame(width: 150, alignment: .center)
-                .foregroundColor(.clear)
-                .background(
-                    profileImage
-                        .clipShape(Circle())
-                )
-                .background {
-                    Circle().stroke(.gray.opacity(5.0))
-                }
+            profileImage
+                .imageCustomSizing()
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: "camera.circle.fill")
                         .foregroundStyle(Color.gray)
@@ -70,13 +76,13 @@ struct UserProfileEdit: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .onTapGesture {
-                    isImagePicker.toggle()
+                    userProfileViewModel.isImagePicker.toggle()
                 }
             
             RegistCustomTF(titleText: "이름",
                            placeholderText: "",
-                           customText: $nameText,
-                           isNotHanguel: $isChecking,
+                           customText: $userProfileViewModel.name,
+                           isNotHanguel: $userProfileViewModel.isChecking,
                            textMaxCount: 5,
                            isFocusing: false,
                            isDelBtnAppear: false)
@@ -86,7 +92,7 @@ struct UserProfileEdit: View {
              
             RegistCustomTF(titleText: "한줄소개",
                            placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
-                           customText: $descriptionText,
+                           customText: $userProfileViewModel.descriptionText,
                            isNotHanguel: .constant(false),
                            textMaxCount: 50,
                            isFocusing: true)
@@ -95,7 +101,7 @@ struct UserProfileEdit: View {
             HStack {
                 Text("성별")
                     .frame(width: 60, alignment: .leading)
-                Picker("Gender", selection: $gender) {
+                Picker("Gender", selection: $userProfileViewModel.gender) {
                     ForEach(Gender.allCases, id: \.self) {
                         Text($0.toString)
                             .tag($0)
@@ -125,14 +131,14 @@ struct UserProfileEdit: View {
             
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    if koreaLangCheck(nameText) {
-                        if nameText.count >= 2 {
+                    if koreaLangCheck(userProfileViewModel.name) {
+                        if userProfileViewModel.name.count >= 2 {
                             Task {
                                 await dataUpdate()
                                 dismiss()
                             }
                         } else {
-                            isChecking.toggle()
+                            userProfileViewModel.isChecking.toggle()
                         }
                     }
                 } label: {
@@ -144,48 +150,34 @@ struct UserProfileEdit: View {
         }
         .overlay(
             ImageMenuView(title: "프로필 사진 수정",
-                          isPresented: $isImagePicker,
-                          selectedImage: $selectedImage)
+                          isPresented: $userProfileViewModel.isImagePicker,
+                          selectedImage: $userProfileViewModel.selectedImage)
         )
         .overlay(
-            ZStack {
-                Color.black.opacity(0.25)
-                    .edgesIgnoringSafeArea(.all)
-                VStack {
-                    Text("수정사항이 저장중이에요.")
-                        .font(.callout)
-                        .bold()
-                        .foregroundStyle(Color.white)
-                        .multilineTextAlignment(.center)
-                    ProgressView()
-                        .tint(Color.purple)
-                        .bold()
-                    Spacer()
-                }
-                .padding(.top, 20)
-            }
-            .opacity(isProgressLoading ? 1.0 : 0.0)
+           OverlayView(viewModel: userProfileViewModel)
         )
         .navigationBarBackButtonHidden()
-        .onAppear {
-            getUserData()
-        }
+        .onAppear { makeUserInfo() }
     }
     
-    /// 유저정보 가져와서 세팅.
-    private func getUserData() {
-        self.nameText = mypageVM.userInfo?.name ?? ""
-        self.descriptionText = mypageVM.userInfo?.description ?? ""
-        self.gender = mypageVM.userInfo?.gender ?? .female
-        self.profileImageURL = mypageVM.userInfo?.imageURL ?? ""
+    func makeUserInfo() {
+        let name = mypageVM.userInfo?.name ?? ""
+        let gender = mypageVM.userInfo?.gender ?? .female
+        let desc = mypageVM.userInfo?.description ?? ""
+        let profile = mypageVM.userInfo?.imageURL ?? ""
+        
+        self.userProfileViewModel.name = name
+        self.userProfileViewModel.gender = gender
+        self.userProfileViewModel.descriptionText = desc
+        self.userProfileViewModel.profileImageURL = profile
     }
     
-    private func dataUpdate() async {
+    func dataUpdate() async {
         do {
             if let user = mypageVM.userInfo {
-                isProgressLoading = true
+                userProfileViewModel.isProgressLoading = true
                 // 이미지 선택해서 바꾼거 storage에 저장하고 URL 반환받아야함.
-                if let img = selectedImage {
+                if let img = userProfileViewModel.selectedImage {
                     var returnImageURL: String?
                     // 변환로직
                     do {
@@ -199,9 +191,9 @@ struct UserProfileEdit: View {
                     }
                 }
                 
-                try await FirebaseManager.shared.update(data: user.self, value: \.description, to: descriptionText)
+                try await FirebaseManager.shared.update(data: user.self, value: \.description, to: userProfileViewModel.descriptionText)
                
-                isProgressLoading = false
+                userProfileViewModel.isProgressLoading = false
             } else {
                 print(#function, "🦕User정보가 없음..!! 관리자 호출")
             }
@@ -212,11 +204,34 @@ struct UserProfileEdit: View {
     }
 }
 
+private struct OverlayView: View {
+    @ObservedObject var viewModel: UserProfileEditViewModel
+    
+    fileprivate var body: some View {
+        ZStack {
+            Color.black.opacity(0.25)
+                .edgesIgnoringSafeArea(.all)
+            VStack {
+                Text("수정사항이 저장중이에요.")
+                    .font(.callout)
+                    .bold()
+                    .foregroundStyle(Color.white)
+                    .multilineTextAlignment(.center)
+                ProgressView()
+                    .tint(Color.purple)
+                    .bold()
+                Spacer()
+            }
+            .padding(.top, 20)
+        }
+        .opacity(viewModel.isProgressLoading ? 1.0 : 0.0)
+    }
+}
+
 struct UserProfileEdit_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            UserProfileEdit()
-                .environmentObject(MypageViewModel())
+            UserProfileEditView(mypageVM: MypageViewModel())
         }
     }
 }

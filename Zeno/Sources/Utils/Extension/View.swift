@@ -86,6 +86,17 @@ extension View {
         )
     }
     
+    func updateAlert(
+        isPresented: Binding<Bool>,
+        primaryAction1: @escaping () -> Void) -> some View {
+        return modifier(
+            AlarmInitialModifier(
+                isPresented: isPresented,
+                primaryAction1: primaryAction1
+            )
+        )
+    }
+    
     func initialButtonBackgroundModifier(fontColor: Color, color: Color) -> some View {
         modifier(InitialButtonBackgroundModifier(color: color, fontColor: fontColor))
     }

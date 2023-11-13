@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class InitialViewController: UIViewController {
+final class InitialViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }

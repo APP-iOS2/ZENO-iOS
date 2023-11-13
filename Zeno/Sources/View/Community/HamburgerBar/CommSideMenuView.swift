@@ -89,7 +89,6 @@ struct SideMenuView_Preview: PreviewProvider {
     static var previews: some View {
         SideTestMainView()
             .environmentObject(CommViewModel())
-            .environmentObject(UserViewModel())
     }
 }
 #endif

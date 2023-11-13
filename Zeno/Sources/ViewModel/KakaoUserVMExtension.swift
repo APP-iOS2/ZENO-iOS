@@ -12,6 +12,7 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 
 /// 카카오 인증 관련 메서드
+/// 카카오로그인서비스로 변경
 extension UserViewModel {
     /// 카카오로 시작하기
     func startWithKakao() async -> Bool {

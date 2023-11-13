@@ -14,10 +14,10 @@ struct SettingTextFieldView: View {
 	@Environment(\.dismiss) var dismiss
 	let title: String
 	@Binding var value: String
+    let textMaxCount: Int = 15
 	@State private var isValidGroupName: Bool = false
     @State private var fixedText: String = ""
 	@FocusState private var isTextFocused: Bool // ios 15이상에서만 동작
-	let textMaxCount: Int = 15
 	private let debouncer: Debouncer = .init(delay: 0.5)
 	@State private var notificationStatement = "" // 텍스트 필드 밑 알림문구
 	@State private var duplicationState: DuplicationState = .none
