@@ -54,7 +54,7 @@ extension Array<Community> {
     }
 }
 
-#if DEBUG
+//#if DEBUG
 extension Community {
 	static let dummy: [Community] = [
 		.init(name: "멋쟁이 사자처럼 iOS앱스쿨 2기",
@@ -93,4 +93,4 @@ extension Community {
 			  joinMembers: [])
 	]
 }
-#endif
+//#endif

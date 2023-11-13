@@ -30,11 +30,11 @@ final class ZenoViewModel: ObservableObject {
     init() {
         self.isPlay = .notSelected
         self.currentUser = nil
-        #if DEBUG
-        self.coolTime = 15
-        #else
+//        #if DEBUG
+//        self.coolTime = 15
+//        #else
         self.coolTime = 600
-        #endif
+//        #endif
     }
     
     /// 유저 가져오기

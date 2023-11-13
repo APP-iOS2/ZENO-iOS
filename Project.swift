@@ -2,7 +2,7 @@ import ProjectDescription
 
 let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
-let bundleID = "education.techit.zeno.dev"
+let bundleID = "zeno.newyoungman"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "Zeno",
     "BundleShortVersionString": "1.0",
@@ -33,7 +33,8 @@ let infoPlist: [String: InfoPlist.Value] = [
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)",
 	"FIREBASE_PUSH_API_KEY" : "$(FIREBASE_PUSH_API_KEY)",
-    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+    "BGTaskSchedulerPermittedIdentifiers" : ["zeno.newyoungman"]
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
@@ -61,9 +62,9 @@ let project = Project(
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
             entitlements: "\(projectName)/\(projectName).entitlements",
-            scripts: [
-                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint", basedOnDependencyAnalysis: false),
-            ],
+//            scripts: [
+//                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint", basedOnDependencyAnalysis: false),
+//            ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
                 .package(product: "FirebaseAnalytics"),

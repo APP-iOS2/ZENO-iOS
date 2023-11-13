@@ -62,7 +62,7 @@ struct CommSideMenuView: View {
     }
 }
 
-#if DEBUG
+//#if DEBUG
 struct SideMenuView_Preview: PreviewProvider {
     struct SideTestMainView: View {
         @State private var isPresented: Bool = true
@@ -91,4 +91,4 @@ struct SideMenuView_Preview: PreviewProvider {
             .environmentObject(CommViewModel())
     }
 }
-#endif
+//#endif

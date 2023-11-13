@@ -59,7 +59,7 @@ enum Gender: Codable, CaseIterable, Equatable {
     }
 }
 
-#if DEBUG
+//#if DEBUG
 extension User {
     static let dummy: [User] = [
         .init(name: "원강묵",
@@ -209,4 +209,4 @@ extension User {
         requestComm: []
     )
 }
-#endif
+//#endif
