@@ -41,14 +41,9 @@ struct LoginView: View {
                                 await LoginManager(delegate: userViewModel).login()
                             }
                         } label: {
-                            loginButtonLabel(title: "카카오톡 로그인", tintColor: .white, backgroundColor: .yellow)
+                            Image("kakao_login_medium_wide")
+                                .padding(.bottom, .screenHeight / 5)
                         }
-                        NavigationLink {
-                            EmailLoginView()
-                        } label: {
-                            loginButtonLabel(title: "이메일 로그인", tintColor: .black, backgroundColor: Color(.systemGray5))
-                        }
-                        .padding(.bottom, .isIPhoneSE ? 30 : 50)
                     }
                     .frame(width: .screenWidth, height: .screenHeight)
                 }
