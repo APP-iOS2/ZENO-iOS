@@ -13,40 +13,52 @@ import FirebaseFirestoreSwift
 import Kingfisher
 
 struct MypageFriendListView: View {
-    @EnvironmentObject private var mypageViewModel: MypageViewModel
+    @ObservedObject var mypageViewModel: MypageViewModel
     /// picker에서 선택된 그룹의 id 값 저장을 위함 @State 변수
     @State private var selectedGroupID = "all"
     @State private var isFetchingData = false
     
+//    init(mypageViewModel: MypageViewModel) {
+//        self.mypageViewModel = mypageViewModel
+//    }
+    
     var body: some View {
         VStack {
-            Picker("그룹선택", selection: $selectedGroupID) {
-                Text("전체").tag("all")
-                    .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
-                    Text(mypageViewModel.commArray[group].name)
+            HStack(alignment: .center) {
+                Text("친구 \(mypageViewModel.friendInfo.count)명")
+                    .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 20)
+                Spacer()
+                Picker("그룹선택", selection: $selectedGroupID) {
+                    Text("전체").tag("all")
                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
-                        .tag(mypageViewModel.commArray[group].id)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .tint(.primary)
-            .onChange(of: selectedGroupID) { newValue in
-                isFetchingData = true
-                self.selectedGroupID = newValue
-                mypageViewModel.friendInfo = []
-                mypageViewModel.allMyPageFriendInfo = []
-                if newValue == "all" {
-                    Task {
-                        await mypageViewModel.getAllFriends()
-                        mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
-                        isFetchingData = false
+                    ForEach(mypageViewModel.commArray.indices, id: \.self) { group in
+                        Text(mypageViewModel.commArray[group].name)
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 14))
+                            .tag(mypageViewModel.commArray[group].id)
                     }
-                } else {
-                    Task {
-                        await mypageViewModel.getAllFriends()
-                        await mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
-                        isFetchingData = false
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .tint(.primary)
+                .onChange(of: selectedGroupID) { newValue in
+                    isFetchingData = true
+                    self.selectedGroupID = newValue
+                    mypageViewModel.friendInfo = []
+                    mypageViewModel.allMyPageFriendInfo = []
+                    if newValue == "all" {
+                        Task {
+                            await mypageViewModel.getAllFriends()
+                            mypageViewModel.friendInfo = mypageViewModel.allMyPageFriendInfo.removeDuplicates()
+                            isFetchingData = false
+                        }
+                    } else {
+                        Task {
+                            await mypageViewModel.getAllFriends()
+                            await mypageViewModel.returnFriendInfo(selectedGroupID: selectedGroupID)
+                            isFetchingData = false
+                        }
                     }
                 }
             }
@@ -67,31 +79,37 @@ struct MypageFriendListView: View {
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
                 } else {
-                    Text("친구 \(mypageViewModel.friendInfo.count)명")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 20)
+//                    Text("친구 \(mypageViewModel.friendInfo.count)명")
+//                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 14.5))
+//                        .foregroundColor(.primary)
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding(.leading, 20)
                     ForEach(mypageViewModel.friendInfo, id: \.self) { friend in
                         if let friendInfo = friend {
                             HStack {
                                 if let imageURLString = friendInfo.imageURL,
                                    let imageURL = URL(string: imageURLString) {
                                     KFImage(imageURL)
-                                        .placeholder {
-                                            ProgressView()
-                                        }
+                                        .placeholder { ProgressView() }
                                         .resizable()
+                                        .scaledToFit()
+                                        .clipShape(Circle())
                                         .scaledToFill()
                                         .frame(width: 70, height: 70)
-                                        .clipShape(Circle())
                                         .padding(8)
+                                        .onTapGesture {
+                                            mypageViewModel.selectImageURL = imageURLString
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                mypageViewModel.isTappedImage.toggle()
+                                            }
+                                        }
                                 } else {
                                     ZenoKFImageView(User(name: "", gender: friendInfo.gender, kakaoToken: "", coin: 0, megaphone: 0, showInitial: 0, requestComm: []), ratio: .fit, isRandom: false)
                                         .frame(width: 70, height: 70)
                                         .clipShape(Circle())
                                         .padding(8)
                                 }
+                                
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(friendInfo.name)
                                         .font(ZenoFontFamily.NanumSquareNeoOTF.bold.swiftUIFont(size: 15))
@@ -136,8 +154,7 @@ struct MypageFriendListView: View {
 
 struct MypageFirendListView_Previews: PreviewProvider {
     static var previews: some View {
-        MypageFriendListView()
-            .environmentObject(MypageViewModel())
+        MypageFriendListView(mypageViewModel: MypageViewModel())
     }
 }
 

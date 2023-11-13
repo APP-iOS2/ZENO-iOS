@@ -1,15 +1,15 @@
 //
-//  ZenoWarningModifier.swift
+//  ZenoErrorHandleModifier.swift
 //  Zeno
 //
-//  Created by gnksbm on 2023/10/17.
+//  Created by gnksbm on 2023/10/28.
 //  Copyright © 2023 https://github.com/APPSCHOOL3-iOS/final-zeno. All rights reserved.
 //
 
 import SwiftUI
 
-struct ZenoWarningModifier: ViewModifier {
-    let message: String
+struct ZenoErrorHandleModifier: ViewModifier {
+    let error: Error
     @Binding var isPresented: Bool
     let durring: Double
     
@@ -25,8 +25,8 @@ struct ZenoWarningModifier: ViewModifier {
                         .onTapGesture {
                             self.isPresented = false // 외부 영역 터치 시 내려감
                         }
-                    ZenoWarningView(
-                        message: message,
+                    ZenoErrorHandleView(
+                        error: error,
                         isPresented: $isPresented
                     )
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -40,15 +40,22 @@ struct ZenoWarningModifier: ViewModifier {
             )
         }
     }
+    
+    init(error: Error, isPresented: Binding<Bool>, durring: Double = 0.3) {
+        self.error = error
+        self._isPresented = isPresented
+        self.durring = durring
+    }
 }
 
-struct ZenoWarningView: View {
-    let message: String
+struct ZenoErrorHandleView: View {
+    let error: Error
     @Binding var isPresented: Bool
     
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
-            Text(message)
+            // TODO: Error 안내 메세지로 변경
+            Text(error.localizedDescription)
                 .font(.regular(16))
                 .padding(.top, 25)
             Button {
@@ -81,39 +88,31 @@ struct ZenoWarningView: View {
 }
 
 extension View {
-    func zenoWarning(
-        _ message: String,
+    func zenoErrorHandling(
+        _ error: Error,
         isPresented: Binding<Bool>,
-        durring: Double = 0.3
+        durrring: Double = 0.3
     ) -> some View {
         return modifier(
-            ZenoWarningModifier(
-                message: message,
-                isPresented: isPresented,
-                durring: durring
+            ZenoErrorHandleModifier(
+                error: error,
+                isPresented: isPresented
             )
         )
     }
 }
 
-struct ZenoWarningPreviews: PreviewProvider {
-    struct Preview: View {
-        @State private var showsAlert = true
+struct ZenoErrorHandleModifier_Previews: PreviewProvider {
+    private struct Preview: View {
+        @State private var isPresented = true
         
         var body: some View {
-            VStack(spacing: 50) {
-                Button {
-                    showsAlert = true
-                } label: {
-                    Text("Alert 보여줘!")
-                        .font(.title2)
-                }
-                .buttonStyle(.borderedProminent)
+            VStack {
+                
             }
-            .zenoWarning("존재하지 않는 커뮤니티입니다", isPresented: $showsAlert)
+            .zenoErrorHandling(FirebaseError.documentToData, isPresented: $isPresented)
         }
     }
-    
     static var previews: some View {
         Preview()
     }

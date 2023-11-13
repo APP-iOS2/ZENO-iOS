@@ -11,7 +11,6 @@ import SwiftUI
 struct CommSettingView: View {
     let editMode: EditMode
     
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @Environment(\.dismiss) private var dismiss
     
@@ -53,7 +52,6 @@ struct CommSettingView: View {
 											switch editMode {
 											case .addNew:
 												_ = await commViewModel.createComm(comm: emptyComm, image: selectedImage)
-//												await userViewModel.joinNewGroup(newComm: newComm)
 											case .edit:
 												await commViewModel.updateCommInfo(comm: emptyComm, image: selectedImage)
 											}

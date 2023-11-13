@@ -9,25 +9,10 @@
 import SwiftUI
 
 struct CommEmptyView: View {
-	@EnvironmentObject private var commViewModel: CommViewModel
-	@EnvironmentObject private var userViewModel: UserViewModel
-	
 	let action: () -> Void
 	
 	var body: some View {
 		VStack {
-			HStack {
-				Spacer()
-				Button {
-				} label: {
-					Image(systemName: "arrow.triangle.2.circlepath")
-						.resizable()
-						.scaledToFill()
-						.frame(width: 30, height: 30)
-				}
-				.tint(.mainColor)
-			}
-			.padding(30)
 			Spacer()
 			Section {
 				Button {

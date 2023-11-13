@@ -58,12 +58,12 @@ struct AlarmChangingView: View {
         .usingAlert(
             isPresented: $isCheckInitialTwice,
             imageName: "ticket",
-            content: "초성 확인권",
-            quantity: userVM.currentUser?.showInitial ?? 0,
-            usingGoods: 1) {
+            content: "코인",
+            quantity: userVM.currentUser?.coin ?? 0,
+            usingGoods: 20) {
                 isCheckInitialTwice.toggle()
                 Task {
-                    await userVM.updateUserInitialCheck(to: -1)
+                    await userVM.updateUserCoin(to: -10)
                 }
                 chosung = ChosungCheck(word: selectAlarm.sendUserName)
         }
@@ -98,7 +98,7 @@ struct AlarmChangingView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isFlipped {
-                    if userVM.currentUser?.showInitial ?? 0 > 0 && initialCheckCount < selectAlarm.sendUserName.count {
+                    if userVM.currentUser?.coin ?? 0 > 10 && initialCheckCount < selectAlarm.sendUserName.count {
                         Button {
                             isCheckInitialTwice = true
                         } label: {

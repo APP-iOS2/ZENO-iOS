@@ -13,6 +13,7 @@ struct PurchaseView: View {
     @EnvironmentObject var userVM: UserViewModel
     
     @Environment(\.dismiss) private var dismiss
+    @Binding var isShowPaymentSheet: Bool
     
     var body: some View {
         VStack {
@@ -50,7 +51,7 @@ struct PurchaseView: View {
                              itemPrice: "1.99",
                              purchaseAction: {
                 Task {
-                    if let product = iAPVM.products.last ?? iAPVM.products.first {
+                    if let product = iAPVM.__consumableProducts.last ?? iAPVM.__consumableProducts.first {
                         do {
                             let purchaseResult = try await iAPVM.purchase(product)
                             
@@ -59,6 +60,7 @@ struct PurchaseView: View {
                                 case "initialCheck":
                                     await userVM.updateUserInitialCheck(to: 10)
                                     dismiss()
+                                    isShowPaymentSheet = true
                                 case "megaphone":
                                     await userVM.updateUserMegaphone(to: 1)
                                     dismiss()
@@ -82,7 +84,7 @@ struct PurchaseView: View {
 
 struct PurchaseView_Previews: PreviewProvider {
     static var previews: some View {
-        PurchaseView()
+        PurchaseView(isShowPaymentSheet: .constant(false))
             .environmentObject(IAPStore())
             .environmentObject(UserViewModel())
     }

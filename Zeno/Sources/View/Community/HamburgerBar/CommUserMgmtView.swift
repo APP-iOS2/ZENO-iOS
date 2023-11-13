@@ -11,7 +11,6 @@ import SwiftUI
 struct CommUserMgmtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var commViewModel: CommViewModel
-	@EnvironmentObject private var userViewModel: UserViewModel
     
     @State private var deportUser = User.emptyUser
     @State private var isDeportAlert = false
@@ -75,9 +74,7 @@ struct CommUserMgmtView: View {
                                 }
                             } interaction: { user in
                                 Task {
-									guard let currentComm = commViewModel.currentComm else { return }
                                     await commViewModel.acceptMember(user: user)
-//									try await userViewModel.removeRequestComm(comm: currentComm, user: user)
                                 }
                             }
                         case .general:
@@ -116,7 +113,7 @@ struct CommUserMgmtView: View {
 		.zenoWarning("그룹 인원이 꽉 찼습니다.", isPresented: $commViewModel.overCapacity)
     }
     
-    private enum MGMTSection: CaseIterable, Identifiable {
+    private enum MGMTSection: CaseIterable, CaseIdentifiable {
         case wait, general
         
         var header: String {
@@ -127,8 +124,6 @@ struct CommUserMgmtView: View {
                 return "그룹에 가입된 유저"
             }
         }
-        
-        var id: Self { self }
     }
 }
 

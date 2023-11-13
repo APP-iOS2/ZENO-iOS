@@ -9,20 +9,19 @@
 import SwiftUI
 
 struct SearchableUserListView: View {
-    @EnvironmentObject private var commViewModel: CommViewModel
-    @EnvironmentObject private var userViewModel: UserViewModel
-    
     @Binding var isShowingUserSearchView: Bool
     
+    @EnvironmentObject private var commViewModel: CommViewModel
+    
+    @FocusState private var isFocusedKeyboard: Bool
+    
     var body: some View {
-        VStack {
+        LazyVStack {
             Section {
-                ForEach(isShowingUserSearchView ?
-                        commViewModel.searchedUsers :
-                            commViewModel.currentCommMembers) { user in
+                ForEach(commViewModel.searchedUsers) { user in
                     ZenoProfileVisibleCellView(item: user,
 											   isBtnHidden: commViewModel.isFriend(user: user),
-											   manager: commViewModel.checkManagerUser(user: user)) {
+											   isManager: commViewModel.checkManagerUser(user: user)) {
                         HStack(alignment: .bottom, spacing: 2) {
                             Image(systemName: "person.crop.circle.badge.plus")
                             Text("친구추가")
@@ -40,6 +39,7 @@ struct SearchableUserListView: View {
                         TextField(text: $commViewModel.userSearchTerm) {
                             Text("구성원 찾기...")
                         }
+                        .focused($isFocusedKeyboard)
                     } else {
                         Text("구성원 \(commViewModel.currentCommMembers.count)")
                     }
@@ -62,6 +62,9 @@ struct SearchableUserListView: View {
                 .foregroundColor(.primary)
             }
         }
+        .onChange(of: isShowingUserSearchView) { newValue in
+            isFocusedKeyboard = newValue
+        }
     }
 }
 
@@ -69,6 +72,5 @@ struct SearchableUserListView_Previews: PreviewProvider {
     static var previews: some View {
         SearchableUserListView(isShowingUserSearchView: .constant(true))
             .environmentObject(CommViewModel())
-            .environmentObject(UserViewModel())
     }
 }

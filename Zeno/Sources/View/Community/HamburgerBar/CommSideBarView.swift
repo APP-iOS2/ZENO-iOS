@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct CommSideBarView: View {
-    @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var commViewModel: CommViewModel
     @Binding var isPresented: Bool
     
@@ -46,7 +45,7 @@ struct CommSideBarView: View {
                                 case .memberMGMT:
                                     isSelectContent.toggle()
                                 case .inviteComm:
-                                    commViewModel.kakao()
+                                    commViewModel.inviteWithKakao()
                                 case .delegateManager:
                                     if commViewModel.isCurrentCommManager {
                                         isDelegateManagerView = true
@@ -68,7 +67,7 @@ struct CommSideBarView: View {
                                     case .memberMGMT:
                                         isSelectContent.toggle()
                                     case .inviteComm:
-                                        commViewModel.kakao()
+                                        commViewModel.inviteWithKakao()
                                     case .delegateManager:
                                         if commViewModel.isCurrentCommManager {
                                             isDelegateManagerView = true
@@ -92,9 +91,6 @@ struct CommSideBarView: View {
                             }
                         }
                     }
-//                    Button("시뮬레이터용 초대버튼") {
-//                        commViewModel.tempShareLink()
-//                    }
                 }
                 .foregroundColor(.primary)
                 .font(.regular(14))
@@ -119,7 +115,7 @@ struct CommSideBarView: View {
                             }
                         case .alert:
                             Task {
-                                await userViewModel.commAlertToggle(id: commViewModel.currentComm?.id ?? "")
+                                await commViewModel.commAlertToggle()
                             }
                         case .setting:
                             isPresented = false
@@ -163,7 +159,6 @@ struct CommSideBarView: View {
         .alert("그룹에서 나가시겠습니까?", isPresented: $isLeaveCommAlert) {
             Button("예", role: .destructive) {
                 Task {
-                    guard let currntID = commViewModel.currentComm?.id else { return }
                     await commViewModel.leaveComm()
                     isPresented = false
                 }
@@ -185,7 +180,6 @@ struct CommSideBarView: View {
             Button("제거하기", role: .destructive) {
                 Task {
                     await commViewModel.deleteComm()
-//                    try? await userViewModel.loadUserData()
                     isPresented = false
                 }
             }
@@ -195,7 +189,7 @@ struct CommSideBarView: View {
         }
     }
     
-    private enum SideMenu: CaseIterable, Identifiable {
+    private enum SideMenu: CaseIterable, CaseIdentifiable {
         case inviteComm, memberMGMT, delegateManager
         
         var title: String {
@@ -208,11 +202,9 @@ struct CommSideBarView: View {
                 return "매니저 위임"
             }
         }
-        
-        var id: Self { self }
     }
     
-    private enum SideBarBtn: CaseIterable, Identifiable {
+    private enum SideBarBtn: CaseIterable, CaseIdentifiable {
         case out
         case alert
         case setting
@@ -227,8 +219,19 @@ struct CommSideBarView: View {
                 return "gearshape"
             }
         }
-        
-        var id: Self { self }
+    }
+    /// 커뮤니티별 알람정보를 변경해주는 함수
+    func commAlertToggle(user: User, comm: Community) async {
+        var updatedCommList = user.commInfoList
+        guard let updatedComm = user.commInfoList.first(where: { $0.id == comm.id }),
+              let index = updatedCommList.firstIndex(where: { $0.id == updatedComm.id })
+        else { return }
+        updatedCommList[index].alert.toggle()
+        do {
+            try await FirebaseManager.shared.update(data: user, value: \.commInfoList, to: updatedCommList)
+        } catch {
+            print(#function + "User Collection에 알람정보 업데이트 실패")
+        }
     }
 }
 
@@ -240,7 +243,6 @@ struct GroupSideBarView_Preview: PreviewProvider {
         var body: some View {
             CommSideBarView(isPresented: $isPresented)
                 .environmentObject(commViewModel)
-                .environmentObject(UserViewModel())
                 .onAppear {
                     commViewModel.currentCommMembers = [
                         .fakeCurrentUser,
