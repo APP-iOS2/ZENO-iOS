@@ -8,43 +8,24 @@
 
 import SwiftUI
 
-private class UserMoneyViewModel: ObservableObject {
-    @Published var isPruchaseSheet: Bool = false
-    
-    fileprivate func tappedPruchaseButton() {
-        self.isPruchaseSheet = true
-    }
-}
-
 struct UserMoneyView: View {
-    @StateObject private var userMoneyViewModel: UserMoneyViewModel = UserMoneyViewModel()
     @ObservedObject var mypageViewModel: MypageViewModel
-//    @State private var isPurchaseSheet: Bool = false
     
     var body: some View {
         HStack {
             VStack(spacing: 3) {
-                Button {
-                    userMoneyViewModel.tappedPruchaseButton()
-                } label: {
-                    VStack(spacing: 3) {
-                        Text("\(mypageViewModel.userInfo?.showInitial ?? 0)")
-                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
-                            .fontWeight(.semibold)
-                        HStack(spacing: 2) {
-                            Text("Z")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
-                                .foregroundColor(Color.purple3)
-                            Text("확인권")
-                                .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
-                        }
+                VStack(spacing: 3) {
+                    Text("\(mypageViewModel.userInfo?.showInitial ?? 0)")
+                        .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 15))
+                        .fontWeight(.semibold)
+                    HStack(spacing: 2) {
+                        Text("Z")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 10))
+                            .foregroundColor(Color.purple3)
+                        Text("확인권")
+                            .font(ZenoFontFamily.NanumSquareNeoOTF.regular.swiftUIFont(size: 10))
                     }
                 }
-                .sheet(isPresented: $userMoneyViewModel.isPruchaseSheet, content: {
-                    PurchaseView(isShowPaymentSheet: .constant(false))
-                        .presentationDetents([.fraction(0.4)])
-                        .presentationDragIndicator(.visible)
-                })
             }
             .frame(maxWidth: .infinity)
             
