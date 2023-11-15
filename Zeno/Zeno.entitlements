@@ -4,9 +4,5 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>teckit.page.link/apple-app-site-association</string>
-	</array>
 </dict>
 </plist>

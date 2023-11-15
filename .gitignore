@@ -147,6 +147,7 @@ Tuist/Dependencies
 
 # Tuist Signing
 Signing/
+master.key
 
 # Swift Package Manager
 **/*.package.resolved
