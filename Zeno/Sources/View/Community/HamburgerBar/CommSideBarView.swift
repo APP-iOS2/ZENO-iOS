@@ -43,19 +43,7 @@ struct CommSideBarView: View {
                         switch item {
                         case .inviteComm:
                             Button {
-                                isPresented = false
-                                switch item {
-                                case .memberMGMT:
-                                    isSelectContent.toggle()
-                                case .inviteComm:
-                                    commViewModel.inviteWithKakao()
-                                case .delegateManager:
-                                    if commViewModel.isCurrentCommManager {
-                                        isDelegateManagerView = true
-                                    }
-                                case .report:
-                                    break
-                                }
+                                commViewModel.inviteWithKakao()
                             } label: {
                                 HStack {
                                     Text(item.title)
@@ -65,11 +53,13 @@ struct CommSideBarView: View {
                                 }
                             }
                         case .report:
-                            Button {
-                                isReportingAlert = true
-                            } label: {
-                                Text(item.title)
-                                    .foregroundColor(.red)
+                            if !commViewModel.isCurrentCommManager {
+                                Button {
+                                    isReportingAlert = true
+                                } label: {
+                                    Text(item.title)
+                                        .foregroundColor(.red)
+                                }
                             }
                         default:
                             if commViewModel.isCurrentCommManager {
@@ -78,14 +68,12 @@ struct CommSideBarView: View {
                                     switch item {
                                     case .memberMGMT:
                                         isSelectContent.toggle()
-                                    case .inviteComm:
-                                        commViewModel.inviteWithKakao()
                                     case .delegateManager:
                                         if commViewModel.isCurrentCommManager {
                                             isDelegateManagerView = true
                                         }
-                                    case .report:
-                                        break
+                                    default:
+                                        Void()
                                     }
                                 } label: {
                                     HStack {
@@ -96,7 +84,6 @@ struct CommSideBarView: View {
                                                 .frame(width: 5, height: 5)
                                                 .offset(x: -3)
                                         }
-                                        Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
                                             .foregroundColor(.gray)
