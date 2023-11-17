@@ -14,6 +14,8 @@ struct CommRequestView: View {
     @Binding var isShowingCommRequestView: Bool
     @State var aplicationStatus: Bool
     @State private var showingAlert = false
+    @State private var isReportingAlert: Bool = false
+    @State private var isReportCompleteAlert: Bool = false
     
     private let throttle: Throttle = .init(delay: 1)
     
@@ -109,12 +111,32 @@ struct CommRequestView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
+                        isReportingAlert = true
+                    } label: {
+                        Image(systemName: "exclamationmark.bubble")
+                            .foregroundColor(.red)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
                         isShowingCommRequestView = false
                     } label: {
                         Image(systemName: "xmark")
                             .foregroundColor(.primary)
                     }
                 }
+            }
+            .alert("신고 사유를 선택해주세요.", isPresented: $isReportingAlert) {
+                ForEach(["상업적 광고", "음란물", "폭력성", "기타"], id: \.self) {
+                    Button($0) {
+                        isReportCompleteAlert = true
+                    }
+                }
+            } message: {
+                Text("신고 사유에 맞지 않는 신고일 경우, 해당 신고는 처리되지 않습니다.\n누적 신고횟수가 3회 이상인 그룹은 활동이 정지됩니다.")
+            }
+            .alert("신고가 접수되었습니다.\n검토는 최대 24시간 소요됩니다.", isPresented: $isReportCompleteAlert) {
+                Button("확인") { }
             }
         }
     }
