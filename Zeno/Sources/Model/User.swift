@@ -45,6 +45,12 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
     }
 }
 
+extension Array<User> {
+    func exceptBlockedUser(blockedID: [User.ID]) -> [User] {
+        return self.filter { !blockedID.contains($0.id) }
+    }
+}
+
 /// 성별 정보 열거형(내부용)
 enum Gender: Codable, CaseIterable, Equatable {
     case male, female

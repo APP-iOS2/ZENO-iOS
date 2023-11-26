@@ -20,6 +20,7 @@ struct CommSideBarView: View {
     @State private var isDelegateManagerView: Bool = false
     @State private var isReportingAlert: Bool = false
     @State private var isReportCompleteAlert: Bool = false
+    @State private var isPresentedBlockUser: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -60,6 +61,12 @@ struct CommSideBarView: View {
                                     Text(item.title)
                                         .foregroundColor(.red)
                                 }
+                            }
+                        case .blockUser:
+                            Button {
+                                isPresentedBlockUser = true
+                            } label: {
+                                Text(item.title)
                             }
                         default:
                             if commViewModel.isCurrentCommManager {
@@ -151,6 +158,9 @@ struct CommSideBarView: View {
         .fullScreenCover(isPresented: $isSettingPresented) {
             CommSettingView(editMode: .edit)
         }
+        .fullScreenCover(isPresented: $isPresentedBlockUser) {
+            CommBlockUserView(isPresented: $isPresentedBlockUser)
+        }
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()
         }
@@ -203,7 +213,7 @@ struct CommSideBarView: View {
     }
     
     private enum SideMenu: CaseIterable, CaseIdentifiable {
-        case inviteComm, memberMGMT, delegateManager, report
+        case inviteComm, memberMGMT, delegateManager, blockUser, report
         
         var title: String {
             switch self {
@@ -213,6 +223,8 @@ struct CommSideBarView: View {
                 return "구성원 관리"
             case .delegateManager:
                 return "매니저 위임"
+            case .blockUser:
+                return "유저 차단"
             case .report:
                 return "그룹 신고"
             }
