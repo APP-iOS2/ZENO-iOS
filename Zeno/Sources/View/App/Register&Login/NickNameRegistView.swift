@@ -32,6 +32,10 @@ struct NickNameRegistView: View {
     @State private var female: Bool = false
     @State private var male: Bool = false
 	@State private var unknown: Bool = false
+	
+	private var genderSelect: Bool {
+		return female || male || unknown
+	}
     
     private var checkingText: String {
         if nameText.count >= 2 {
@@ -109,7 +113,14 @@ struct NickNameRegistView: View {
                             .font(.caption)
                             .padding(.horizontal)
                             .opacity(isChecking ? 1.0 : 0.0)
-                        
+						HStack {
+							Spacer()
+							Text("필수")
+								.font(.thin(10))
+								.foregroundColor(.red)
+								.padding(.trailing)
+								.offset(y: 5)
+						}
                         HStack {
                             Text("성별")
                                 .frame(width: 60, alignment: .leading)
@@ -130,7 +141,7 @@ struct NickNameRegistView: View {
                                         .font(.regular(14))
                                 }
                             }
-                            
+							
                             // 남자 버튼
                             Button {
 								self.female = false
@@ -168,6 +179,7 @@ struct NickNameRegistView: View {
 							}
                         }
                         .padding(.horizontal)
+						.padding(.bottom)
                         
                         RegistCustomTF(titleText: "한줄소개",
                                        placeholderText: "50자 내로 간략히 자신을 어필해주세요.",
@@ -251,16 +263,16 @@ struct NickNameRegistView: View {
                                     }
                                 } label: {
                                     Rectangle()
-                                        .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray2 : .mainColor)
+                                        .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 || !genderSelect ? .gray2 : .mainColor)
                                         .frame(width: .screenWidth * 0.9, height: .screenHeight * 0.06)
                                         .cornerRadius(10)
                                         .overlay {
                                             Text("회원가입")
-                                                .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 ? .gray3 : .white)
+                                                .foregroundColor(nameText.isEmpty || !이용약관 || !개인정보처리방침 || !genderSelect ? .gray3 : .white)
                                                 .font(.bold(17))
                                         }
                                 }
-                                .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침)
+                                .disabled(nameText.isEmpty || !이용약관 || !개인정보처리방침 || !genderSelect)
                                 .padding(.vertical, 30)
                             }
                             .font(.thin(16))

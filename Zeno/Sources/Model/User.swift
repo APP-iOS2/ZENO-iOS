@@ -56,7 +56,7 @@ enum Gender: Codable, CaseIterable, Equatable {
         case .female:
             return "여자"
 		case .unknown:
-			return ""
+			return "비공개"
 		}
     }
 }
