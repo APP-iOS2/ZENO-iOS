@@ -53,7 +53,7 @@ extension Array<User> {
 
 /// 성별 정보 열거형(내부용)
 enum Gender: Codable, CaseIterable, Equatable {
-    case male, female
+    case male, female, unknown
     
     var toString: String {
         switch self {
@@ -61,7 +61,9 @@ enum Gender: Codable, CaseIterable, Equatable {
             return "남자"
         case .female:
             return "여자"
-        }
+		case .unknown:
+			return "비공개"
+		}
     }
 }
 
