@@ -153,10 +153,11 @@ final class CommViewModel: ObservableObject {
     func blockUser(user: User) {
         blockedID.insert(user.id)
         saveBlockedUser()
+        currentCommMembers = currentCommMembers.exceptBlockedUser(blockedID: Array(blockedID))
     }
     /// [유저 차단] 차단된 유저 UserDefaults에 저장하기
     private func saveBlockedUser() {
-        UserDefaults.standard.set(blockedID, forKey: "blockedID")
+        UserDefaults.standard.set(Array(blockedID), forKey: "blockedID")
     }
 	/// [커뮤니티최근검색] 최근검색어 저장하기
 	func addSearchTerm(_ term: String) {
@@ -472,7 +473,7 @@ final class CommViewModel: ObservableObject {
                 try await firebaseManager.update(data: currentUser,
                                                  value: \.commInfoList,
                                                  to: currentUser.commInfoList + [.init(id: newComm.id)])
-            }
+            } 
             setCurrentID(id: newComm.id)
             return newComm
         } catch {
