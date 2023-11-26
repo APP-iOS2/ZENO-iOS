@@ -7,11 +7,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject private var emailLoginViewModel: EmailLoginViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
-
+    @Environment(\.colorScheme) var colorScheme
+    @StateObject var appleLoginViewModel = AppleLoginViewModel()
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -42,13 +46,30 @@ struct LoginView: View {
                             }
                         } label: {
                             Image("kakao_login_medium_wide")
-                                .padding(.bottom, .screenHeight / 7)
+
                         }
+                        
+                        SignInWithAppleButton { request in
+                            appleLoginViewModel.handleSignInWithAppleRequest(request)
+                        } onCompletion: { result in
+                            appleLoginViewModel.result = result
+                            Task {
+                                await LoginManager(delegate: appleLoginViewModel).login()
+                            }
+//                            appleLoginViewModel.handleSignInWithAppleCompletion(result)
+                        }
+                        .frame(maxWidth: .screenWidth * 0.78, maxHeight: .screenHeight/20)
+                        .padding(.bottom, .screenHeight / 7)
+                        .cornerRadius(10)
                     }
                     .frame(width: .screenWidth, height: .screenHeight)
+                    .signInWithAppleButtonStyle(colorScheme == .light ? .black : .white)
                 }
             }
             .ignoresSafeArea()
+        }
+        .onAppear {
+            appleLoginViewModel.userVM = userViewModel
         }
     }
 }
