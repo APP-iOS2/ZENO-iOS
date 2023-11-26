@@ -31,6 +31,7 @@ struct NickNameRegistView: View {
     
     @State private var female: Bool = false
     @State private var male: Bool = false
+	@State private var unknown: Bool = false
     
     private var checkingText: String {
         if nameText.count >= 2 {
@@ -113,15 +114,12 @@ struct NickNameRegistView: View {
                             Text("성별")
                                 .frame(width: 60, alignment: .leading)
                                 .font(.regular(16))
-                            
                             // 여자 버튼
                             Button {
-                                female.toggle()
-                                if male {
-                                    male.toggle()
-                                }
+								self.male = false
+								self.unknown = false
+								self.female = true
                                 gender = Gender.female
-                                print(gender)
                             } label: {
                                 HStack(spacing: 3) {
                                     Image(systemName: female ? "checkmark.circle.fill" : "circle")
@@ -135,11 +133,10 @@ struct NickNameRegistView: View {
                             
                             // 남자 버튼
                             Button {
-                                male.toggle()
+								self.female = false
+								self.unknown = false
+								self.male = true
                                 gender = Gender.male
-                                if female {
-                                    female.toggle()
-                                }
                                 print(gender)
                             } label: {
                                 HStack(spacing: 3) {
@@ -151,6 +148,24 @@ struct NickNameRegistView: View {
                                         .font(.regular(14))
                                 }
                             }
+							
+							// 성별비공개 버튼
+							Button {
+								self.female = false
+								self.male = false
+								self.unknown = true
+								gender = Gender.unknown
+								print(gender)
+							} label: {
+								HStack(spacing: 3) {
+									Image(systemName: unknown ? "checkmark.circle.fill" : "circle")
+										.foregroundColor(.mainColor)
+										.font(.thin(14))
+									Text("비공개")
+										.foregroundStyle(Color.primary)
+										.font(.regular(14))
+								}
+							}
                         }
                         .padding(.horizontal)
                         
