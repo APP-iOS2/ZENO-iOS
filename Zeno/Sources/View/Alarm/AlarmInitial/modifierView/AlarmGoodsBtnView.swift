@@ -55,7 +55,7 @@ struct AlarmGoodsBtnView: View {
 //                            .resizable()
 //                            .frame(width: 20, height: 18)
 //                            .offset(x: .screenWidth * 0.1)
-                        Text("60 \(primaryButtonTitle1)")
+                        Text("20 \(primaryButtonTitle1)")
                             .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                             .bold()
                             .frame(maxWidth: .infinity)
