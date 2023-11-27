@@ -29,7 +29,7 @@ struct AlarmInitialBtnView: View {
                 .padding(.bottom, 50)
             
             Button {
-                if userVM.currentUser?.coin ?? 0 >= 60 {
+                if userVM.currentUser?.coin ?? 0 >= 20 {
                     usingCoin.toggle()
                 } else {
                     isPresented = false
@@ -51,12 +51,12 @@ struct AlarmInitialBtnView: View {
                 let secondButton = Alert.Button.default(Text("확인")) {
                     showInitialViewAction()
                     Task {
-                        await userVM.updateUserCoin(to: -60)
+                        await userVM.updateUserCoin(to: -20)
                     }
                     isPresented = false
                 }
-                return Alert(title: Text("(C)60을 사용하여 확인하시겠습니까 ?"),
-                             message: Text("보유 코인:\(userVM.currentUser?.coin ?? 0)\n결제 후 잔여 코인: \((userVM.currentUser?.coin ?? 0) - 60)"),
+                return Alert(title: Text("(C)20을 사용하여 확인하시겠습니까 ?"),
+                             message: Text("보유 코인:\(userVM.currentUser?.coin ?? 0)\n결제 후 잔여 코인: \((userVM.currentUser?.coin ?? 0) - 20)"),
                              primaryButton: firstButton, secondaryButton: secondButton)
             }
             
