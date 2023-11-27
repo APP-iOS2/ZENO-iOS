@@ -40,7 +40,7 @@ struct AlarmView: View {
     }
     
     var lackCoin: Int {
-        return 60 - (userViewModel.currentUser?.coin ?? 0)
+        return 20 - (userViewModel.currentUser?.coin ?? 0)
     }
     
     var body: some View {
@@ -155,7 +155,7 @@ struct AlarmView: View {
                             content2: "확인하시겠습니까 ?",
                             primaryButtonTitle1: "코인 사용",
                             primaryAction1: {
-                                if userViewModel.currentUser?.coin ?? 0 >= 60 {
+                                if userViewModel.currentUser?.coin ?? 0 >= 20 {
                                     usingCoin = true
                                 } else {
                                     print(" 코인 결제 임")
@@ -182,7 +182,7 @@ struct AlarmView: View {
                             imageName: "c.circle",
                             content: "코인",
                             quantity: userViewModel.currentUser?.coin ?? 0,
-                            usingGoods: 60) {
+                            usingGoods: 20) {
                                 isShowInitialView.toggle()
                                 Task {
                                     await userViewModel.updateUserCoin(to: -10)

@@ -18,39 +18,33 @@ struct CommSideBarView: View {
     @State private var isNeedDelegateAlert: Bool = false
     @State private var isDeleteCommAlert: Bool = false
     @State private var isDelegateManagerView: Bool = false
+    @State private var isReportingAlert: Bool = false
+    @State private var isReportCompleteAlert: Bool = false
+    @State private var isPresentedBlockUser: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(commViewModel.currentComm?.name ?? "가입된 커뮤니티가 없습니다.")
-						.font(.regular(16))
+                        .font(.regular(16))
                     Text("\(commViewModel.currentComm?.joinMembers.count ?? 0)명 참여중")
-						.font(.thin(12))
+                        .font(.thin(12))
                     Text("생성일 \(commViewModel.currentComm?.createdAt.convertDate ?? "가입된 커뮤니티가 없습니다.")")
-						.font(.thin(12))
+                        .font(.thin(12))
                         .foregroundStyle(.gray)
                 }
-				.foregroundColor(.primary)
-				.padding(.top, 20)
-				.padding(.bottom, 10)
+                .foregroundColor(.primary)
+                .padding(.top, 20)
+                .padding(.bottom, 10)
                 .padding(.horizontal)
                 Divider()
                 VStack(alignment: .leading, spacing: 30) {
                     ForEach(SideMenu.allCases) { item in
-                        if item == .inviteComm {
+                        switch item {
+                        case .inviteComm:
                             Button {
-                                isPresented = false
-                                switch item {
-                                case .memberMGMT:
-                                    isSelectContent.toggle()
-                                case .inviteComm:
-                                    commViewModel.inviteWithKakao()
-                                case .delegateManager:
-                                    if commViewModel.isCurrentCommManager {
-                                        isDelegateManagerView = true
-                                    }
-                                }
+                                commViewModel.inviteWithKakao()
                             } label: {
                                 HStack {
                                     Text(item.title)
@@ -59,19 +53,34 @@ struct CommSideBarView: View {
                                         .foregroundColor(.gray)
                                 }
                             }
-                        } else {
+                        case .report:
+                            if !commViewModel.isCurrentCommManager {
+                                Button {
+                                    isReportingAlert = true
+                                } label: {
+                                    Text(item.title)
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        case .blockUser:
+                            Button {
+                                isPresentedBlockUser = true
+                            } label: {
+                                Text(item.title)
+                            }
+                        default:
                             if commViewModel.isCurrentCommManager {
                                 Button {
                                     isPresented = false
                                     switch item {
                                     case .memberMGMT:
                                         isSelectContent.toggle()
-                                    case .inviteComm:
-                                        commViewModel.inviteWithKakao()
                                     case .delegateManager:
                                         if commViewModel.isCurrentCommManager {
                                             isDelegateManagerView = true
                                         }
+                                    default:
+                                        Void()
                                     }
                                 } label: {
                                     HStack {
@@ -82,7 +91,6 @@ struct CommSideBarView: View {
                                                 .frame(width: 5, height: 5)
                                                 .offset(x: -3)
                                         }
-                                        Spacer()
                                         Spacer()
                                         Image(systemName: "chevron.right")
                                             .foregroundColor(.gray)
@@ -97,7 +105,7 @@ struct CommSideBarView: View {
                 .padding(.top, 20)
                 .padding(.horizontal)
             }
-			.background(RoundedCorners(tl: 22, tr: 0, bl: 0, br: 0).fill(Color(uiColor: .systemBackground)))
+            .background(RoundedCorners(tl: 22, tr: 0, bl: 0, br: 0).fill(Color(uiColor: .systemBackground)))
             Spacer()
             HStack {
                 ForEach(SideBarBtn.allCases) { btn in
@@ -140,7 +148,7 @@ struct CommSideBarView: View {
                     }
                 }
             }
-			.foregroundColor(.primary)
+            .foregroundColor(.primary)
             .padding(.horizontal)
             .frame(maxWidth: .infinity)
             .frame(height: 55)
@@ -149,6 +157,9 @@ struct CommSideBarView: View {
         }
         .fullScreenCover(isPresented: $isSettingPresented) {
             CommSettingView(editMode: .edit)
+        }
+        .fullScreenCover(isPresented: $isPresentedBlockUser) {
+            CommBlockUserView(isPresented: $isPresentedBlockUser)
         }
         .fullScreenCover(isPresented: $isSelectContent) {
             CommUserMgmtView()
@@ -176,6 +187,18 @@ struct CommSideBarView: View {
             }
             Button("취소", role: .cancel) { }
         }
+        .alert("신고 사유를 선택해주세요.", isPresented: $isReportingAlert) {
+            ForEach(["상업적 광고", "음란물", "폭력성", "기타"], id: \.self) {
+                Button($0) {
+                    isReportCompleteAlert = true
+                }
+            }
+        } message: {
+            Text("신고 사유에 맞지 않는 신고일 경우, 해당 신고는 처리되지 않습니다.\n누적 신고횟수가 3회 이상인 그룹은 활동이 정지됩니다.")
+        }
+        .alert("신고가 접수되었습니다.\n검토는 최대 24시간 소요됩니다.", isPresented: $isReportCompleteAlert) {
+            Button("확인") { }
+        }
         .alert("그룹이 제거됩니다.", isPresented: $isDeleteCommAlert) {
             Button("제거하기", role: .destructive) {
                 Task {
@@ -190,7 +213,7 @@ struct CommSideBarView: View {
     }
     
     private enum SideMenu: CaseIterable, CaseIdentifiable {
-        case inviteComm, memberMGMT, delegateManager
+        case inviteComm, memberMGMT, delegateManager, blockUser, report
         
         var title: String {
             switch self {
@@ -200,6 +223,10 @@ struct CommSideBarView: View {
                 return "구성원 관리"
             case .delegateManager:
                 return "매니저 위임"
+            case .blockUser:
+                return "유저 차단"
+            case .report:
+                return "그룹 신고"
             }
         }
     }

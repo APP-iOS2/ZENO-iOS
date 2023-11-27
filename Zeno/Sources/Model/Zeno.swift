@@ -18,7 +18,7 @@ struct Zeno: Identifiable, Codable, FirebaseAvailable {
 	var zenoDescription: String { return "" }
 }
 
-#if DEBUG
+//#if DEBUG
 extension Zeno {
     static let ZenoQuestions: [Zeno] = [
         Zeno(question: "혼자 밑도끝도 없이 망상을 할 것 같은 사람", zenoImage: "Image1"),
@@ -64,4 +64,4 @@ extension Zeno {
         Zeno(question: "창의적인 생각이 돋보이는 사람", zenoImage: "creativity"),
     ]
 }
-#endif
+//#endif

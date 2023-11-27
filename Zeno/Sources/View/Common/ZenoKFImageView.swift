@@ -40,16 +40,20 @@ struct ZenoKFImageView<T: ZenoProfileVisible>: View {
     private var placeholderImg: Image {
         if let user = item as? User,
            var manAsset = ["man1", "man2"].randomElement(),
-           var womanAsset = ["woman1", "woman2"].randomElement() {
+           var womanAsset = ["woman1", "woman2"].randomElement(),
+		   var unknownAsset = ["man1", "man2","woman1", "woman2"].randomElement() {
             if !isRandom {
                 manAsset = "man2"
                 womanAsset = "woman1"
+				unknownAsset = "man1"
             }
             switch user.gender {
             case .male:
                 return Image(manAsset)
             case .female:
                 return Image(womanAsset)
+			case .unknown:
+				return Image(unknownAsset)
             }
         } else if (item as? Community) != nil {
             return Image("ZenoIcon")

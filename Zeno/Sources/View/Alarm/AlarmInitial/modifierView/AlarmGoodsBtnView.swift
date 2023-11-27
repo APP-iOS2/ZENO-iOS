@@ -55,7 +55,7 @@ struct AlarmGoodsBtnView: View {
 //                            .resizable()
 //                            .frame(width: 20, height: 18)
 //                            .offset(x: .screenWidth * 0.1)
-                        Text("60 \(primaryButtonTitle1)")
+                        Text("20 \(primaryButtonTitle1)")
                             .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
                             .bold()
                             .frame(maxWidth: .infinity)
@@ -64,40 +64,40 @@ struct AlarmGoodsBtnView: View {
             }
             .initialButtonBackgroundModifier(fontColor: .white, color: .purple2)
             
-            Button {
-                primaryAction2()
-                isPresented = false
-            } label: {
-                HStack(alignment: .center) {
-                    Text("Z")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
-                        .foregroundColor(Color.purple3)
-                    Text("1 \(primaryButtonTitle2)")
-                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
-                        .bold()
-                        .shadow(color: .purple, radius: 3)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .padding()
-            .foregroundColor(.white)
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .frame(width: 250)
-                        .foregroundColor(.black.opacity(0.9))
-                        .shadow(color: .purple, radius: 2)
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill()
-                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .purple3]), startPoint: .top, endPoint: .bottom))
-                        .rotationEffect(.degrees(rotation))
-                        .mask {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(lineWidth: 2.5)
-                                .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
-                        }
-                }
-            )
+//            Button {
+//                primaryAction2()
+//                isPresented = false
+//            } label: {
+//                HStack(alignment: .center) {
+//                    Text("Z")
+//                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 16))
+//                        .foregroundColor(Color.purple3)
+//                    Text("1 \(primaryButtonTitle2)")
+//                        .font(ZenoFontFamily.NanumSquareNeoOTF.extraBold.swiftUIFont(size: 14))
+//                        .bold()
+//                        .shadow(color: .purple, radius: 3)
+//                }
+//                .frame(maxWidth: .infinity)
+//            }
+//            .padding()
+//            .foregroundColor(.white)
+//            .background(
+//                ZStack {
+//                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                        .frame(width: 250)
+//                        .foregroundColor(.black.opacity(0.9))
+//                        .shadow(color: .purple, radius: 2)
+//                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                        .fill()
+//                        .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.mainColor, .purple3]), startPoint: .top, endPoint: .bottom))
+//                        .rotationEffect(.degrees(rotation))
+//                        .mask {
+//                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                                .stroke(lineWidth: 2.5)
+//                                .frame(width: 250) // 이거 동적으로 바꿀 수 없을까
+//                        }
+//                }
+//            )
         }
         .onAppear {
             withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {

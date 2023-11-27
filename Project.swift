@@ -2,7 +2,7 @@ import ProjectDescription
 
 let projectName = "Zeno"
 let orgName = "https://github.com/APPSCHOOL3-iOS/final-zeno"
-let bundleID = "education.techit.zeno.dev"
+let bundleID = "zeno.newyoungman"
 let infoPlist: [String: InfoPlist.Value] = [
     "BundleDisplayName": "Zeno",
     "BundleShortVersionString": "1.0",
@@ -18,8 +18,8 @@ let infoPlist: [String: InfoPlist.Value] = [
         "kakaolink",
         "kakao$(KAKAO_APP_KEY)"
     ],
-    "NSCameraUsageDescription": "사진 및 동영상 촬영을 위한 카메라 사용 권한",
-    "NSPhotoLibraryUsageDescription": "사진 및 동영상 첨부를 위한 앨범 사용 권한",
+    "NSCameraUsageDescription": "프로필 사진 설정 및 변경을 위해 카메라 사용 권한이 필요합니다.",
+    "NSPhotoLibraryUsageDescription": "프로필 사진 설정 및 변경을 위해 앨범 사용 권한이 필요합니다.",
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
@@ -33,7 +33,8 @@ let infoPlist: [String: InfoPlist.Value] = [
     ],
     "KAKAO_APP_KEY" : "$(KAKAO_APP_KEY)",
 	"FIREBASE_PUSH_API_KEY" : "$(FIREBASE_PUSH_API_KEY)",
-    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+    "BGTaskSchedulerPermittedIdentifiers" : ["zeno.newyoungman"]
 ]
 let config = Settings.settings(configurations: [
     .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/Resources/Config/Secrets.xcconfig")),
@@ -61,9 +62,9 @@ let project = Project(
             sources: ["\(projectName)/Sources/**"],
             resources: ["\(projectName)/Resources/**"],
             entitlements: "\(projectName)/\(projectName).entitlements",
-            scripts: [
-                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint", basedOnDependencyAnalysis: false),
-            ],
+//            scripts: [
+//                .pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint", basedOnDependencyAnalysis: false),
+//            ],
             dependencies: [
                 .package(product: "ConfettiSwiftUI"),
                 .package(product: "FirebaseAnalytics"),

@@ -19,9 +19,9 @@ extension FirebaseAvailable {
         
         mirror.children.forEach {
             guard let key = $0.label else {
-                #if DEBUG
+//                #if DEBUG
                 print(#function + ": fail to optional bind")
-                #endif
+//                #endif
                 return
             }
             dictionary[key] = $0.value

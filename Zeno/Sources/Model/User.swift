@@ -45,9 +45,15 @@ struct User: Identifiable, Hashable, Codable, FirebaseAvailable, ZenoProfileVisi
     }
 }
 
+extension Array<User> {
+    func exceptBlockedUser(blockedID: [User.ID]) -> [User] {
+        return self.filter { !blockedID.contains($0.id) }
+    }
+}
+
 /// 성별 정보 열거형(내부용)
 enum Gender: Codable, CaseIterable, Equatable {
-    case male, female
+    case male, female, unknown
     
     var toString: String {
         switch self {
@@ -55,11 +61,13 @@ enum Gender: Codable, CaseIterable, Equatable {
             return "남자"
         case .female:
             return "여자"
-        }
+		case .unknown:
+			return "비공개"
+		}
     }
 }
 
-#if DEBUG
+//#if DEBUG
 extension User {
     static let dummy: [User] = [
         .init(name: "원강묵",
@@ -209,4 +217,4 @@ extension User {
         requestComm: []
     )
 }
-#endif
+//#endif

@@ -116,9 +116,12 @@ final class CommViewModel: ObservableObject {
     @Published var isShowingCommListSheet: Bool = false
     /// 데이터 로딩상태에 따라 CommMainView의 ProgressView를 보여주는 여부
     @Published var isFetchComplete: Bool = false
+    /// 차단당한 유저 id
+    @Published var blockedID: Set<Community.ID> = []
     
     init() {
         loadRecentSearches() // 최근검색어 불러오기
+        loadBlockedID() // 차단된ID 불러오기
     }
     /// [그룹 메인 뷰] 현재 커뮤니티의 매니저인지 확인
     func checkManagerUser(user: User) -> Bool {
@@ -145,6 +148,16 @@ final class CommViewModel: ObservableObject {
     func checkApplied(comm: Community) -> Bool {
         guard let currentUser else { return false }
         return comm.waitApprovalMemberIDs.contains(currentUser.id) ? true : false
+    }
+    /// [유저 차단] 차단된 유저 저장하기
+    func blockUser(user: User) {
+        blockedID.insert(user.id)
+        saveBlockedUser()
+        currentCommMembers = currentCommMembers.exceptBlockedUser(blockedID: Array(blockedID))
+    }
+    /// [유저 차단] 차단된 유저 UserDefaults에 저장하기
+    private func saveBlockedUser() {
+        UserDefaults.standard.set(Array(blockedID), forKey: "blockedID")
     }
 	/// [커뮤니티최근검색] 최근검색어 저장하기
 	func addSearchTerm(_ term: String) {
@@ -182,10 +195,16 @@ final class CommViewModel: ObservableObject {
         results.swapAt(0, index)
         return results
     }
-	/// [커뮤니티최근검색] 최신화된 유저디폴트 불러오기
-	private func loadRecentSearches() {
-		if let savedSearches = UserDefaults.standard.array(forKey: "recentSearches") as? [String] {
-			recentSearches = savedSearches
+    /// [커뮤니티최근검색] 최신화된 유저디폴트 불러오기
+    private func loadRecentSearches() {
+        if let savedSearches = UserDefaults.standard.array(forKey: "recentSearches") as? [String] {
+            recentSearches = savedSearches
+        }
+    }
+	/// [차단된ID] 최신화된 유저디폴트 불러오기
+	private func loadBlockedID() {
+		if let savedID = UserDefaults.standard.array(forKey: "blockedID") as? [String] {
+            blockedID = Set(savedID)
 		}
 	}
     
@@ -454,7 +473,7 @@ final class CommViewModel: ObservableObject {
                 try await firebaseManager.update(data: currentUser,
                                                  value: \.commInfoList,
                                                  to: currentUser.commInfoList + [.init(id: newComm.id)])
-            }
+            } 
             setCurrentID(id: newComm.id)
             return newComm
         } catch {
@@ -894,6 +913,7 @@ final class CommViewModel: ObservableObject {
             // 5. 현재 그룹의 유저정보에 뿌려주기
             self.currentCommMembers = exceptCurrentUser(currentMembers)
                 .filter { currentCommMemberIDs.contains($0.id) }
+                .exceptBlockedUser(blockedID: Array(self.blockedID))
         } catch {
             print("🔴 현재 커뮤니티 유저 정보 불러오기 실패")
         }
