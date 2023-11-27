@@ -42,7 +42,7 @@ extension UserViewModel {
                         try await self.createUser(email: user.kakaoAccount?.email ?? "",
                                                   passwrod: String(describing: user.id),
                                                   name: user.kakaoAccount?.profile?.nickname ?? "",
-                                                  gender: user.kakaoAccount?.gender?.convertToLocalGender() ?? .male,
+                                                  gender: user.kakaoAccount?.gender?.convertToLocalGender() ?? .unknown,
                                                   description: "",
                                                   imageURL: user.kakaoAccount?.profile?.profileImageUrl?.absoluteString)
                         print("✔️회원가입 완료")

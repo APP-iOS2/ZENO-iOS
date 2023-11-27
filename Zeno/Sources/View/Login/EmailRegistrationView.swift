@@ -36,7 +36,7 @@ struct EmailRegistrationView: View {
                             email: registEmail,
                             passwrod: registPassword,
                             name: emailLoginViewModel.registrationName,
-                            gender: .male,
+                            gender: .unknown,
                             description: "",
                             imageURL: "")
                         

@@ -30,16 +30,10 @@ final class AppleLoginViewModel: ObservableObject, LoginStatusDelegate {
         let credential = await signIn()
         
         if let credential {
-            print("🚇🚇\(credential.user.email)")
-            print("🚇🚇\(credential.user.uid)")
-            
             if await checkDuplicationEmail(uid: credential.user.uid) {
                 return true
             } else {
-                print("🚇 진 입 됨")
-                
-                try? await createUser(email: credential.user.email ?? "", passwrod: credential.user.uid, name: "", gender: .female, description: "", imageURL: "")
-                print("🚇🚇🚇🚇🚇🚇🚇🚇")
+                try? await createUser(email: credential.user.email ?? "", passwrod: credential.user.uid, name: "", gender: .unknown, description: "", imageURL: "")
                 UserDefaults.standard.set(false, forKey: "nickNameChanged") // 닉네임 변경창 열렸었는지 판단. 여기서 초기설정해줌.
                 
                 await MainActor.run {
@@ -47,13 +41,9 @@ final class AppleLoginViewModel: ObservableObject, LoginStatusDelegate {
                     userVM.isNickNameRegistViewPop = true // TabBarView에서 Sheet 오픈
                 }
             }
-            
         } else {
-            print("🐷ddddd")
             return false
         }
-
-        
         return true
     }
     
