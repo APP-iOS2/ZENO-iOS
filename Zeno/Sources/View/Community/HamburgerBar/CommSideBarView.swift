@@ -193,6 +193,9 @@ struct CommSideBarView: View {
                     isReportCompleteAlert = true
                 }
             }
+            Button("취소하기", role: .cancel) {
+                isReportCompleteAlert = false
+            }
         } message: {
             Text("신고 사유에 맞지 않는 신고일 경우, 해당 신고는 처리되지 않습니다.\n누적 신고횟수가 3회 이상인 그룹은 활동이 정지됩니다.")
         }
