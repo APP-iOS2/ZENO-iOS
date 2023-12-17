@@ -75,24 +75,14 @@ struct ZenoView: View {
                                 
                                 /// 버튼을 누를 때 마다 해당 사용자에게 알림이 감
                                 Task {
-                                    if selected == 0 {
+                                    if selected != 0 && zenoList.count >= selected{
                                         if let currentUser = zenoViewModel.currentUser {
-                                            await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected])
-                                        }
-                                    } else {
-                                        if let currentUser = zenoViewModel.currentUser {
-                                            await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected-1])
+                                            await alarmViewModel.pushAlarm(sendUser: currentUser, receiveUser: user, community: community, zeno: zenoList[selected - 1])
                                         }
                                     }
                                 }
-                                if selected < 8 {
-                                    debouncer.run {
-                                        selected += 1
-                                        resetUsers()
-                                    }
-                                } else {
-                                    selected += 1
-                                }
+                                selected += 1
+                                resetUsers()
                             } label: {
                                 HStack {
                                     ZenoKFImageView(user)
