@@ -45,8 +45,17 @@ struct LoginView: View {
                                 await LoginManager(delegate: userViewModel).login()
                             }
                         } label: {
-                            Image("kakao_login_medium_wide")
-
+                            HStack(spacing: 5) {
+                                Image("kakaotalkLogo")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                Text("카카오 로그인")
+                                    .foregroundStyle(.white)
+                                    .fontWeight(.bold)
+                            }
+                            .frame(maxWidth: .screenWidth * 0.78, maxHeight: .screenHeight/20)
+                            .background(Color.hex("FAE100"))
+                            .cornerRadius(10)
                         }
                         
                         SignInWithAppleButton { request in
